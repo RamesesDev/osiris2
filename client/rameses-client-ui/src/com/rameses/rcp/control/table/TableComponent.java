@@ -259,8 +259,8 @@ public class TableComponent extends JTable implements ListModelListener {
             }
             
             if ( !lastRow ) {
-                moveNextRecord();
                 this.changeSelection(rowIndex, 0, false, false);
+                moveNextRecord();
             } else {
                 this.changeSelection(0, 0, false, false);
                 listModel.moveFirstPage();
@@ -373,19 +373,21 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  row movements support  ">
     public void movePrevRecord() {
         if ( getSelectedRow() == 0 ) {
+            rowChanged( getSelectedRow() );
             listModel.moveBackRecord();
         }
     }
     
     public void moveNextRecord() {
         if ( getSelectedRow() == getRowCount() - 1 ) {
+            rowChanged( getSelectedRow() );
             listModel.moveNextRecord();
         }
     }
     
-    //------ i stoped here, apply this to changeRow
     public void rowChanged(int oldRowIndex) {
         if ( !rowCommited ) {
             ListItem item = listModel.getSelectedItem();
@@ -399,6 +401,7 @@ public class TableComponent extends JTable implements ListModelListener {
         rowCommited = true;
         listener.rowChanged();
     }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  TableKeyAdapter (class)  ">
     private static class TableKeyAdapter extends KeyAdapter {
