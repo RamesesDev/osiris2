@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="ChangeLog Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class TestController  {
+        
+            @ChangeLog
+            def changeLog;
+        
+            def entity = [:];
+            
+            void save() {
+                
+            }
+            
+            void undo() {
+                changeLog.undo();
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.changelog.TestPage"/>
+    </pages>
+</workunit>

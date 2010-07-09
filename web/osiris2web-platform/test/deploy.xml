@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="deployer" default="deploy to server" basedir="..">
+    <target name="deploy to server">
+        <property name="server" 
+                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/test_web/apps" />
+        <property name="project-name" 
+                  value="osiris2web-platform" />
+        <property name="project-type"
+                  value="war" />
+        
+        <delete file="${server}/${project-name}.${project-type}" />
+        <copy file="dist/${project-name}.${project-type}" todir="${server}"/>
+    </target>
+    
+    <target name="clean-server">
+        <property name="server" 
+                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/test_web" />
+        
+        <delete dir="${server}/log" />
+        <delete dir="${server}/tmp" />
+        <delete dir="${server}/work" />
+    </target>
+    
+    <target name="touch-project">
+        <property name="server" 
+                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/test_web/apps" />
+        <property name="project-name" 
+                  value="osiris2web-platform" />
+        <property name="project-type"
+                  value="war" />
+        
+        <touch file="${server}/${project-name}.${project-type}" />
+    </target>
+</project>

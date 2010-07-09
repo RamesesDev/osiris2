@@ -1,0 +1,40 @@
+
+package com.rameses.web;
+
+import java.util.Map;
+import javax.faces.context.FacesContext;
+
+public class ExpiredFileCollector implements Runnable {
+    
+    private String fileid;
+    private Map session;
+    
+    public ExpiredFileCollector() {
+    }
+
+    public void run() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        session.remove(fileid);
+
+    }
+
+    public String getFileid() {
+        return fileid;
+    }
+
+    public void setFileid(String fileid) {
+        this.fileid = fileid;
+    }
+
+    public Map getSession() {
+        return session;
+    }
+
+    public void setSession(Map session) {
+        this.session = session;
+    }
+}

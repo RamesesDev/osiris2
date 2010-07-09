@@ -1,0 +1,380 @@
+/*
+ * DatePatternUtil.java
+ *
+ * Created on March 24, 2009, 1:38 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package com.rameses.web.component.simpledate;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
+
+/**
+ *
+ * @author rameses
+ */
+public class DatePatternUtil {
+    
+    /** Creates a new instance of DatePatternUtil */
+    private UISimpleDate comp;
+    private String[] months = {"","Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    private String month;
+    private String day;
+    private String year;
+    private String hour;
+    private String minute;
+    private String second;
+    private FacesContext ctx;
+    private boolean hasPresent;
+    private boolean isChecked;
+    private boolean displayMonth;
+    private boolean displayDay;
+    private boolean displayYear;
+    //this is code is for date/time
+    private boolean displayHour = false;
+    private boolean displayMinute = false;
+    private boolean displaySecond = false;
+    private int maxYear;
+    private int minYear;
+    private String styleClass;
+    private String type;
+    private ResponseWriter writer;
+    DecimalFormat format = new DecimalFormat("00");
+    public DatePatternUtil(FacesContext ctx, boolean hasPresent, UISimpleDate comp, String styleClass, boolean displayDay, boolean displayMonth, boolean displayYear, boolean isChecked, int maxYear, int minYear, String month, String day, String year, String hour, String minute, String second, String type){
+        this.ctx = ctx;
+        this.hasPresent = hasPresent;
+        this.comp = comp;
+        this.isChecked = isChecked;
+        this.displayDay = displayDay;
+        this.displayMonth = displayMonth;
+        this.displayYear = displayYear;
+        this.minYear = minYear;
+        this.maxYear = maxYear;
+        this.month = month;
+        this.day = day;
+        this.year = year;
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
+        this.styleClass = styleClass;
+        this.type = type;
+        writer = ctx.getResponseWriter();
+    }
+    
+    public String getClientId(FacesContext ctx){
+        return comp.getClientId(ctx);
+    }
+    public void encodeMonth(String _type) throws IOException{
+        String type;
+        if(_type == null)
+            type = this.type;
+        else 
+            type = _type;
+        writer.startElement("span", null);
+        writer.writeAttribute("style", "float: left; text-align: center", null);
+        if(!type.equals("text"))
+            writer.startElement("select", null);
+        else{
+            writer.startElement("input", null);
+            writer.writeAttribute("type", "text", null);
+            writer.writeAttribute("size", "3", null);
+            writer.writeAttribute("maxLength", "2", null);
+        }
+        writer.writeAttribute("name", getClientId(ctx) + "month", null);
+        if(isChecked)
+            writer.writeAttribute("disabled", true, null);
+        writer.writeAttribute("id", getClientId(ctx) + "month", null);
+        writer.writeAttribute("class", styleClass, null);
+        String strMonth = null;
+        if(!(type.equals("text"))){
+            writer.startElement("option", null);
+            writer.writeAttribute("value", "null", null);
+            writer.write("--");
+            writer.endElement("option");
+            for (int i = 1; i < months.length; i++) {
+                writer.startElement("option", null);
+                strMonth = format.format(i);
+                writer.writeAttribute("value", strMonth, null);
+                DecimalFormat format = new DecimalFormat("00");
+                if (month.equals(strMonth) && (!isChecked)) {
+                    writer.writeAttribute("selected", true, null);
+                }
+                writer.write(months[i]);
+                writer.endElement("option");
+            }
+            //end element for the month select
+            writer.endElement("select");
+        }else{
+            if(!month.equals("0")){
+                writer.writeAttribute("value", month, null);
+            }
+            writer.writeAttribute("onkeyup", "focusTo(event, this, this.parentNode);", null);
+            writer.endElement("input");
+            writer.write("<br/>");
+            writer.write("MM");
+        }        
+        writer.endElement("span");
+    }
+    
+    public void encodeDay() throws IOException{
+        writer.startElement("span", null);
+        writer.writeAttribute("style", "float: left; text-align: center", null);
+        if(!type.equals("text"))
+            writer.startElement("select", null);
+        else{
+            writer.startElement("input", null);
+            writer.writeAttribute("type", "text", null);
+            writer.writeAttribute("size", "3", null);
+            writer.writeAttribute("maxLength", "2", null);
+        }
+        writer.writeAttribute("name", getClientId(ctx) + "day", null);
+        if(isChecked)
+            writer.writeAttribute("disabled", true, null);
+        writer.writeAttribute("id", getClientId(ctx) + "day", null);
+        writer.writeAttribute("class", styleClass, null);
+        String strDay = null;
+        if(!type.equals("text")){
+            //adding null value for day select tag
+            writer.startElement("option", null);
+            writer.writeAttribute("value", "null", null);
+            writer.write("--");
+            writer.endElement("option");
+            for (int i = 1; i <= 31; i++) {
+                writer.startElement("option", null);
+                strDay = format.format(i);
+                writer.writeAttribute("value", strDay, null);
+                if (day.equals(strDay)  && (!isChecked)) {
+                    writer.writeAttribute("selected", true, null);
+                }
+                writer.write(i + "");
+                writer.endElement("option");
+            }
+            writer.endElement("select");
+        }else{
+            if(!day.equals("0")){
+                writer.writeAttribute("value", day, null);
+            }
+            writer.writeAttribute("onkeyup", "focusTo(event, this, this.parentNode);", null);
+            writer.endElement("input");
+            writer.write("<br/>");
+            writer.write("dd");
+        }
+        //end element for the day select tag
+        
+        writer.endElement("span");
+        
+    }
+    
+    public void encodeYear() throws IOException{
+        writer.startElement("span", null);
+        writer.writeAttribute("style", "float: left; text-align: center", null);
+        //start element for the year select tag
+        if(!type.equals("text"))
+            writer.startElement("select", null);
+        else{
+            writer.startElement("input", null);
+            writer.writeAttribute("size", "6", null);
+            writer.writeAttribute("maxLength", "4", null);
+            writer.writeAttribute("type", "text", null);
+        }
+        writer.writeAttribute("name", getClientId(ctx) + "year", null);
+        if(isChecked)
+            writer.writeAttribute("disabled", true, null);
+        writer.writeAttribute("id", getClientId(ctx) + "year", null);
+        writer.writeAttribute("class", styleClass, null);
+        if(!type.equals("text")){
+            //adding null value for year select tag
+            writer.startElement("option", null);
+            writer.writeAttribute("value", "null", null);
+            writer.write("--");
+            writer.endElement("option");
+            for (int i = maxYear; i >= minYear; i--) {
+                writer.startElement("option", null);
+                writer.writeAttribute("value", i, null);
+                if (year.equals(i + "") && (!isChecked)) {
+                    writer.writeAttribute("selected", true, null);
+                }
+                writer.write(i + "");
+                writer.endElement("option");
+            }
+            //end of year select tag
+            writer.endElement("select");
+        }else{
+            if(!year.equals("-1")){
+                writer.writeAttribute("value", year, null);
+            }
+            writer.writeAttribute("onkeyup", "focusTo(event, this, this.parentNode);", null);
+            writer.endElement("input");
+            writer.write("<br/>");
+            writer.write("yyyy");
+        }
+        
+        writer.endElement("span");
+    }
+    //code added for date/time
+    public void encodeHour(boolean display) throws Exception{
+        if(!display)
+            return;
+        writer.startElement("span", null);
+        writer.writeAttribute("style", "float: left; text-align: center", null);
+        //start element for the hour select tag
+        if(!type.equals("text"))
+            writer.startElement("select", null);
+        else{
+            writer.startElement("input", null);
+            writer.writeAttribute("size", "3", null);
+            writer.writeAttribute("maxLength", "2", null);
+            writer.writeAttribute("type", "text", null);
+        }
+        writer.writeAttribute("name", getClientId(ctx) + "hour", null);
+        if(isChecked)
+            writer.writeAttribute("disabled", true, null);
+        writer.writeAttribute("id", getClientId(ctx) + "hour", null);
+        writer.writeAttribute("class", styleClass, null);
+        if(!type.equals("text")){
+            //adding null value for hour select tag
+            writer.startElement("option", null);
+            writer.writeAttribute("value", "null", null);
+            writer.write("--");
+            writer.endElement("option");
+            String strHour = null;
+            for (int i = 23; i >= 0; i--) {
+                writer.startElement("option", null);
+                strHour = format.format(i);
+                writer.writeAttribute("value", strHour, null);
+                if (hour.equals(strHour) && (!isChecked)) {
+                    writer.writeAttribute("selected", true, null);
+                }
+                writer.write(strHour + "");
+                writer.endElement("option");
+            }
+            //end of hour select tag
+            writer.endElement("select");
+        }else{
+            if(!hour.equals("-1")){
+                writer.writeAttribute("value", hour, null);
+            }
+            writer.writeAttribute("onkeyup", "focusTo(this, this.parentNode);", null);
+            writer.endElement("input");
+            writer.write("<br/>");
+            writer.write("HH");
+        }
+        
+        writer.endElement("span");
+    }
+    
+    public void encodeMinute(boolean display) throws Exception{
+        if(!display)
+            return;
+        writer.startElement("span", null);
+        writer.writeAttribute("style", "float: left; text-align: center", null);
+        //start element for the minute select tag
+        if(!type.equals("text"))
+            writer.startElement("select", null);
+        else{
+            writer.startElement("input", null);
+            writer.writeAttribute("size", "3", null);
+            writer.writeAttribute("maxLength", "2", null);
+            writer.writeAttribute("type", "text", null);
+        }
+        writer.writeAttribute("name", getClientId(ctx) + "minute", null);
+
+        if(isChecked)
+            writer.writeAttribute("disabled", true, null);
+        writer.writeAttribute("id", getClientId(ctx) + "minute", null);
+        writer.writeAttribute("class", styleClass, null);
+        if(!type.equals("text")){
+            //adding null value for minute select tag
+            writer.startElement("option", null);
+            writer.writeAttribute("value", "null", null);
+            writer.write("--");
+            writer.endElement("option");
+            String strMinute = null;
+            for (int i = 59; i >= 0; i--) {
+                writer.startElement("option", null);
+                strMinute = format.format(i);
+                writer.writeAttribute("value", strMinute, null);
+                if (minute.equals(strMinute) && (!isChecked)) {
+                    writer.writeAttribute("selected", true, null);
+                }
+                writer.write(strMinute);
+                writer.endElement("option");
+            }
+            //end of minute select tag
+            writer.endElement("select");
+        }else{
+            if(!minute.equals("-1")){
+                writer.writeAttribute("value", minute, null);
+            }
+            writer.writeAttribute("onkeyup", "focusTo(this, this.parentNode);", null);
+            writer.endElement("input");
+            writer.write("<br/>");
+            writer.write("mm");
+        }
+        
+        writer.endElement("span");
+    }
+    
+    public void encodeSecond(boolean display) throws Exception{
+        if(!display)
+            return;
+        writer.startElement("span", null);
+        writer.writeAttribute("style", "float: left; text-align: center", null);
+        //start element for the seconde select tag
+        if(!type.equals("text"))
+            writer.startElement("select", null);
+        else{
+            writer.startElement("input", null);
+            writer.writeAttribute("size", "3", null);
+            writer.writeAttribute("maxLength", "2", null);
+            writer.writeAttribute("type", "text", null);
+        }
+        writer.writeAttribute("name", getClientId(ctx) + "second", null);
+        if(isChecked)
+            writer.writeAttribute("disabled", true, null);
+        writer.writeAttribute("id", getClientId(ctx) + "second", null);
+        writer.writeAttribute("class", styleClass, null);
+        if(!type.equals("text")){
+            //adding null value for second select tag
+            writer.startElement("option", null);
+            writer.writeAttribute("value", "null", null);
+            writer.write("--");
+            writer.endElement("option");
+            String strSec = null;
+            for (int i = 59; i >= 0; i--) {
+                writer.startElement("option", null);
+                strSec = format.format(i);
+                writer.writeAttribute("value", strSec, null);
+                if (second.equals(strSec) && (!isChecked)) {
+                    writer.writeAttribute("selected", true, null);
+                }
+                writer.write(strSec);
+                writer.endElement("option");
+            }
+            //end of second select tag
+            writer.endElement("select");
+        }else{
+            if(!second.equals("-1")){
+                writer.writeAttribute("value", second, null);
+            }
+            writer.writeAttribute("onkeyup", "focusTo(this, this.parentNode);", null);
+            writer.endElement("input");
+            writer.write("<br/>");
+            writer.write("ss");
+        }
+        
+        writer.endElement("span");
+    }
+    ///----
+    public void writeSeparator(String separator) throws Exception{
+        writer.startElement("span", null);
+        writer.writeAttribute("style", "float: left", null);
+        writer.write(separator);
+        writer.endElement("span");
+    }
+}

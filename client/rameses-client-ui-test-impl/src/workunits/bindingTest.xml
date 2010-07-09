@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Binding Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.rcp.framework.ClientContext;
+                
+        public class TestController  {
+        
+            @Binding
+            def binding;
+            
+            def ended = true;
+            def counter = 0;
+                       
+            void init() {
+                if ( !ended ) return;
+                ClientContext.currentContext.taskManager.addTask( new PollTask(this) );
+            }
+            
+            void start() { 
+                init();
+                ended = false; 
+            }
+            
+            void stop() { ended=true; }
+                                                           
+        }
+        
+        public class PollTask extends ScheduledTask {
+            
+            def controller;
+        
+            PollTask(def con) { controller = con; }
+        
+            public long getInterval() {
+                return 1000;
+            }
+
+            public void execute() {
+                controller.counter++;
+                controller.binding.refresh();
+            }
+
+            public boolean isEnded() {
+                return controller.ended;
+            }
+
+            public boolean isImmediate() {
+                return true;
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.binding.TestPage"/>
+    </pages>
+</workunit>

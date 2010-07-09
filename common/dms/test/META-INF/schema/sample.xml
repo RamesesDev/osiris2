@@ -1,0 +1,18 @@
+<schema sourcedialect="mysql" targetdialect="mysql">
+    
+    <table name="table1">
+        <fields>
+            <field name="objid"/>
+            <field name="strsenderfname" />
+            <field name="strsenderlname"/>
+        </fields>
+        <parameters>
+            <parameter name="fname" type="STRING"/>
+        </parameters>
+        <source>
+            tblsendout WHERE strsenderfname = $P{fname}
+        </source>
+    </table>
+    
+    
+</schema>

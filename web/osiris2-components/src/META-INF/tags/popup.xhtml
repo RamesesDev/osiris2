@@ -1,0 +1,41 @@
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:h="http://java.sun.com/jsf/html" 
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+    xmlns:menu="http://com.rameses.osiris2.web/menu"
+    xmlns:os2i="http://com.rameses.osiris2.web/invoker"
+    xmlns:r="http://com.rameses.web.component"
+    xmlns:c="http://java.sun.com/jstl/core">       
+    
+    <r:loadresource name="jquery.js" />
+    <r:loadresource name="jquery-dimensions.js"/>
+    <r:loadresource name="xcontextmenu.js"/>
+    <r:loadresource name="popup.js"/>
+    <r:loadresource name="popup.css"/>
+    
+    <a4j:outputPanel id="#{id}" >        
+        <c:choose>
+            <c:when test="#{!empty value}">
+                <c:set var="path" value="#{value}" scope="request"/>
+            </c:when>
+            <c:otherwise>
+                <c:if test="#{!empty path}">
+                    <c:set var="path" value="#{Folder.folders[path]}" scope="request"/>
+                </c:if>
+            </c:otherwise>            
+        </c:choose>
+        <c:set var="width" value="#{(empty iconwidth) ? '16' : iconwidth}"/>
+        <c:set var="height" value="#{(empty iconheight) ? '16' : iconheight}"/>
+        
+        <h:form styleClass="#{empty theme ? '' : theme}">                        
+            <ul class="xmenu" style="visibility: hidden; position: absolute; top: -500px; left: -500px;">
+                <c:forEach items="#{path.folders}" var="folder">
+                    <c:if test="#{(empty folder.invoker and folder.visible) or (!empty folder.invoker and os2i:visible(folder.invoker, context))}">
+                        <menu:popupLI folder="#{folder}" item="#{folder}" theme="#{theme}" perspective="#{empty perspective ? 'false' : perspective}"/>            
+                    </c:if>
+                </c:forEach>
+            </ul>
+        </h:form>  
+    </a4j:outputPanel>
+</ui:composition>

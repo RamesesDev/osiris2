@@ -1,0 +1,82 @@
+
+/*------ Dialog template ---- */
+
+.dialog {
+    padding: 0px;
+    z-index: 20000;
+    vertical-align: top;
+    min-width: 100px;
+    background: #f4f5eb;
+    border: 1px solid gray;
+    -moz-border-radius: 2px; 
+    -webkit-border-radius: 2px;	
+}
+
+.dialog-title-bar {
+    background: #5c606b;
+    border-top: 2px solid #7e7f83;
+    border-bottom: 1px solid lightgrey;
+    font-size: 11pt;
+    font-family: Arial, Tahoma, Verdana;
+    font-weight: bold;
+    color: #fff;
+    padding: 2px 4px;
+    height: 26px;
+    cursor: move;
+    -moz-user-select: none;
+}
+
+.dialog-title {
+    float: left;
+}
+
+.dialog-close-btn {
+    background: url(../images/dialog/close_btn.gif) no-repeat center center;
+    float: right;
+    cursor: default;
+    width: 15px;
+    height: 15px;
+    border: none;
+    margin-left: 5px;
+}
+
+.dialog-close-btn-off {
+	
+}
+
+.dialog-close-btn-hover {
+    background: url(../images/dialog/close_btn_hover.gif) no-repeat center center;
+}
+
+.dialog-body {
+    padding: 10px;
+}
+
+.dialog-bottom {
+    background: #e4e5e8;
+    height: 3px;
+    border-top: #caccd0;
+}
+
+.dialog-shadow {
+    background: #000;
+    -moz-user-select: none;	
+    opacity: 0.8;
+    -moz-opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+
+.dialog-overlay  {
+    cursor:not-allowed;
+    position: absolute;
+    z-index: 10000;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background: gray;
+    -moz-user-select: none;	
+    opacity: 0.2;
+    -moz-opacity: 0.2;
+    filter: alpha(opacity=20);
+}

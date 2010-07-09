@@ -1,0 +1,38 @@
+/*Style for the iconpanel*/
+.iconpanel {
+    display: block; clear: both;
+    border: 1px solid #C9CBC7;
+    border-bottom: 2px solid #C9CBC7;
+    padding: 3px 5px 3px 5px;
+    padding-bottom: 15px;
+    margin-bottom: 10px;
+    -moz-border-radius-topright: 4px; -webkit-border-top-right-radius: 4px;
+    -moz-border-radius-topleft: 4px; -webkit-border-top-left-radius: 4px;
+}
+
+.iconpanel .header {
+    padding-bottom: 5px; margin-bottom: 5px;
+    display: block; clear: both;
+    background-color: #f7f3f7;
+    font-size: 14px; font-weight: bold;
+    color: #666666;
+}
+
+.iconpanel a {
+    cursor: hand; font-size: 9pt;
+    text-decoration: none; color: #2E73B8;
+}
+
+.iconpanel a:hover {
+    color: navy;
+}        
+
+.iconpanel a img {
+    border: none;
+}
+
+.iconpanel .icon {
+    padding-left: 5px; padding-top: 5px;
+}
+
+        

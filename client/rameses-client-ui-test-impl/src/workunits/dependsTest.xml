@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="(Table) Dependency Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class TestController  {
+        
+            def selectedGroup;
+            def selectedMember;
+        
+            def groupHandler = [
+
+                fetchList: {
+                    return data;
+                },
+
+                getColumns: {
+                    return [
+                        new Column(name: "item.name", caption: "Group Name", editable: true, required: true)
+                    ];
+                }
+
+            ] as SubListModel;
+            
+            def membersHandler = [
+
+                fetchList: {
+                    def members = selectedGroup?.item?.members;
+                    if ( members ) 
+                        return members;
+                    else
+                        return [];
+                },
+                
+                onRemoveItem: {
+                    def members = selectedGroup?.item?.members;
+                    members?.remove( it );
+                },
+
+                getColumns: {
+                    return [
+                        new Column(name: "rownum"),
+                        new Column(name: "item.name", caption: "Group Name")
+                    ];
+                }
+
+            ] as SubListModel;
+            
+            def data = [
+                [ name: 'GROUP 1', members: [[name:"11"], [name:"12"], [name:"13"], [name:"14"]] ],
+                [ name: 'GROUP 2', members: [[name:"21"], [name:"22"], [name:"23"]] ],
+                [ name: 'GROUP 3', members: [[name:"31"]]  ],
+                [ name: 'GROUP 4', members: [[name:"41"], [name:"42"], [name:"43"]] ],
+            ];
+           
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.table.DependsTest"/>
+    </pages>
+</workunit>

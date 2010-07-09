@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:r="http://com.rameses.web.component"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jstl/core">
+    
+    <r:loadresource name="js/jquery.js" />
+    <r:loadresource name="js/jquery-mousewheel.js" />
+    <r:loadresource name="js/imageviewer.js" />
+    <r:loadresource name="css/imageviewer.css" />
+    <c:set var="__width" value="#{empty width? 500 : width}"/>
+    <c:set var="__height" value="#{empty height? 350 : height}"/>
+    <h:panelGroup>
+        <div id="#{id}" class="image-viewer" style="width: #{__width}px;">
+            <div style="display: none;">
+                <ui:insert/>
+            </div>
+            <div class="image-controller" unselectable="on">
+                <span class="zoom-restore image-control">restore</span>
+                <span class="zoom-in image-control">+</span>
+                <span class="zoom-out image-control">-</span>
+            </div>
+            <div class="view" style="width: #{__width}px; height: #{__height}px;">
+                <iframe class="view-port" src="" style="display: none;width: #{__width}px; height: #{__height}px; ">
+                </iframe>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            $(function() {
+                ImageViewer.create('#{id}');
+            });
+        </script>
+    </h:panelGroup>
+</ui:composition>

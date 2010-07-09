@@ -1,0 +1,23 @@
+
+/*------ ImageViewer template ---- */
+
+.image-viewer {
+	border: 2px outset gray;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+
+.image-viewer .image-controller {
+	border: 1px solid gray; background: lightgrey; -moz-user-select: none; text-align: right;
+}
+
+.image-viewer .image-control {
+	border: 1px solid gray; padding: 0px 4px; cursor: default;
+	-moz-border-radius: 4px; 
+	-webkit-border-radius: 4px;			
+}
+
+.image-viewer .image-control-hover { border: 1px solid #000; padding: 0px 4px; cursor: default; }
+.image-viewer .image-control-hit { background: gray; color: #fff; }
+.image-viewer .view { background: url(../images/image-viewer/indicator_black.gif) no-repeat center center; }
+.image-viewer .view-port { border: none ; width: 500px; height: 375px; }

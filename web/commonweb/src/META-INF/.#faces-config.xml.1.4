@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN" "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+<faces-config>
+    
+    <!--======== select component ======================-->
+    <component> 
+        <component-type>com.rameses.web.component.select.UIBeanList</component-type>
+        <component-class>com.rameses.web.component.select.UIBeanList</component-class>
+    </component>
+    <component>
+        <component-type>com.rameses.web.component.select.UIEnumList</component-type>
+        <component-class>com.rameses.web.component.select.UIEnumList</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.lookuplist.UILookupList</component-type>
+        <component-class>com.rameses.web.component.lookuplist.UILookupList</component-class>
+    </component>        
+    <component>
+        <component-type>com.rameses.web.component.comboenum.UIComboEnum</component-type>
+        <component-class>com.rameses.web.component.comboenum.UIComboEnum</component-class>
+    </component>    
+    <component>
+        <component-type>com.rameses.web.component.simpledate.UISimpleDate</component-type>
+        <component-class>com.rameses.web.component.simpledate.UISimpleDate</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.image.UIGraphicImage</component-type>
+        <component-class>com.rameses.web.component.image.UIGraphicImage</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.outputlink.UIOutputLink</component-type>
+        <component-class>com.rameses.web.component.outputlink.UIOutputLink</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.captcha.UICaptcha</component-type>
+        <component-class>com.rameses.web.component.captcha.UICaptcha</component-class>
+    </component>
+    
+    <!--========= components from the dissolved jquery library =============-->
+    
+    <component>
+        <component-type>com.rameses.web.component.resource.UIJQueryResource</component-type>
+        <component-class>com.rameses.web.component.resource.UIJQueryResource</component-class>
+    </component>        
+    
+    <component>
+        <component-type>com.rameses.web.component.bind.UIBind</component-type>
+        <component-class>com.rameses.web.component.bind.UIBind</component-class>
+    </component>   
+    
+    <component>
+        <component-type>com.rameses.web.component.fileupload.UIFileUpload</component-type>
+        <component-class>com.rameses.web.component.fileupload.UIFileUpload</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.dialog.UIDialog</component-type>
+        <component-class>com.rameses.web.component.dialog.UIDialog</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.dialog.UIDialogClose</component-type>
+        <component-class>com.rameses.web.component.dialog.UIDialogClose</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.richtext.UIRichText</component-type>
+        <component-class>com.rameses.web.component.richtext.UIRichText</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.progressbar.UIProgressbar</component-type>
+        <component-class>com.rameses.web.component.progressbar.UIProgressbar</component-class>
+    </component>
+    
+    <component>
+        <component-type>com.rameses.web.component.imagecropper.UIImageCropper</component-type>
+        <component-class>com.rameses.web.component.imagecropper.UIImageCropper</component-class>
+    </component>
+    
+    <converter>
+        <converter-id>CalendarDateConverter</converter-id>
+        <converter-class>com.rameses.web.converter.calendar.CalendarDateConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>beanListConverter</converter-id>
+        <converter-class>com.rameses.web.component.select.BeanListConverter</converter-class>
+    </converter>
+    
+    <render-kit>
+        <renderer>
+            <component-family>com.rameses.web.component.dialog.UIDialog</component-family>
+            <renderer-type>com.rameses.web.component.dialog.DialogRenderer</renderer-type>
+            <renderer-class>com.rameses.web.component.dialog.DialogRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+    
+    <!-- session manage bean(s) -->
+    <managed-bean>
+        <managed-bean-name>AjaxFileuploadBean</managed-bean-name>
+        <managed-bean-class>com.rameses.web.managebeans.AjaxFileuploadBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <!--========== PhaseListeners =======================-->
+    
+    <lifecycle>
+        <phase-listener>com.rameses.web.FileObjectRenderer</phase-listener>
+        <phase-listener>com.rameses.web.JQueryResourcePhaseListener</phase-listener>
+        <phase-listener>com.rameses.web.ResourceUtilPhaseListener</phase-listener>
+        <phase-listener>com.rameses.web.component.fileupload.FileuploadPhaseListener</phase-listener>
+        <phase-listener>com.rameses.web.component.captcha.CaptchaPhaseListener</phase-listener>
+        <phase-listener>com.rameses.web.component.outputlink.OutputLinkPhaseListener</phase-listener>
+    </lifecycle>
+    
+    <!--============ Validators =========================-->
+    
+    <validator>
+        <validator-id>emailValidator</validator-id>
+        <validator-class>com.rameses.web.validator.EmailValidator</validator-class>
+    </validator>
+    
+    <validator>
+        <validator-id>confirmPasswordValidator</validator-id>
+        <validator-class>com.rameses.web.validator.ConfirmPasswordValidator</validator-class>
+    </validator>
+    
+    <validator>
+        <validator-id>catpchaValidator</validator-id>
+        <validator-class>com.rameses.web.component.captcha.CaptchaValidator</validator-class>
+    </validator>
+</faces-config>

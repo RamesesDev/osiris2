@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.EmployeeType;
+                
+        public class TestController  {
+        
+            public String close() {
+                return "_close";
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.SecondControllerPage"/>
+    </pages>
+</workunit>

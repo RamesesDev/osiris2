@@ -1,0 +1,7 @@
+<app>
+    <loader>test.Loader</loader>
+    <env>
+        test1=ml.host1
+    </env>
+    <module file="module1.jar" version="2.9"/>
+</app>

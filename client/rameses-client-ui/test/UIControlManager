@@ -1,0 +1,117 @@
+//
+//    // <editor-fold defaultstate="collapsed" desc="DEPENDENCY MANAGER">
+//    private class UIControlManager {
+//
+//        private  Set<UIControl> refreshed = new HashSet();
+//        private List<UIControl> controls = new ArrayList<UIControl>();
+//        private Map<String, Set<UIControl>> dependencies = new HashMap<String, Set<UIControl>>();
+//        //private StyleRule[] styleRules;
+//
+//        public void register(UIControl control) {
+//            controls.add(control);
+//            String[] dependency = control.getDepends();
+//            if (dependency !=null) {
+//                for(String name : dependency) {
+//                    if (!dependencies.containsKey(name)) {
+//                        dependencies.put(name, new HashSet<UIControl>());
+//                    }
+//                    dependencies.get(name).add(control);
+//                }
+//            }
+//        }
+//
+//        public void destroy() {
+//            Iterator iter = dependencies.values().iterator();
+//            while (iter.hasNext()) {
+//                ((Set) iter.next()).clear();
+//            }
+//            dependencies.clear();
+//            dependencies = null;
+//            controls.clear();
+//        }
+//
+//        public void refresh() {
+//            refreshed.clear();
+//            for( UIControl r: controls ) {
+//                if ( refreshed.add(r) ) {
+//                    if ( r.getDepends() == null ) {
+//                        r.refresh();
+//                    }
+//                }
+//            }
+//            refreshed.clear();
+//        }
+//
+//
+//        public final void notifyDepends(String name) {
+//            notifyDependents( name, null );
+//        }
+//
+//        /**
+//         * the binding must not be the same as the caller
+//         * to prevent recursive calls.
+//         */
+//        public final void notifyDependents(String name, Object caller) {
+//            if (name == null || name.trim().length() == 0) return;
+//            Iterator entries = dependencies.entrySet().iterator();
+//            while (entries.hasNext()) {
+//                Entry me = (Map.Entry)entries.next();
+//                if (name.matches(me.getKey()+"")) {
+//                    Set<UIControl> list = (Set)me.getValue();
+//                    for(UIControl r : list) {
+//                        if ( refreshed.add(r) ) {
+//                            r.refresh();
+//                            // applyStyle( r );
+//                        }
+//                    }
+//                }
+//            }
+////            for(BindingListener listener : this.binding.listeners) {
+////                listener.fireDependency( name,binding,caller );
+////            }
+//        }
+//
+////        public StyleRule[] getStyleRules() {
+////            return styleRules;
+////        }
+////
+////        public void setStyleRules(StyleRule[] styleRules) {
+////            this.styleRules = styleRules;
+////        }
+////
+////        public final void applyStyle(UIControl u) {
+////            if (styleRules != null) {
+////                for(StyleRule r : styleRules) {
+////                    String pattern = r.getPattern();
+////                    String rule = r.getExpression();
+////
+////                    //test expression first
+////                    boolean test = false;
+////                    if (rule!=null){
+////                        try {
+////                            Object o = ClientContext.getCurrentContext().getExpressionResolver().evaluate(binding.getBean(), rule);
+////                            test = Boolean.valueOf(o+"");
+////                            //System.out.println("testing control " + u.getName() + " pattern " + pattern + "  for rule " + rule + " result " + test );
+////                        } catch (Exception ign){
+////                            System.out.println("error " + ign.getMessage());
+////                        }
+////                    }
+////                    if (test) {
+////                        if (u instanceof UIComposite) {
+////                            ((UIComposite) u).setStyle(pattern, r.getProperties());
+////                        } else {
+////                            String name = u.getName();
+////                            if( name ==null) name = "_any_name";
+////                            if( name.matches(pattern) ) {
+////                                u.setStyle(r.getProperties());
+////                            }
+////                        }
+////                    }
+////                }
+////            }
+////        }
+////
+//
+//    }
+//    //</editor-fold>
+//

@@ -1,0 +1,52 @@
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:h="http://java.sun.com/jsf/html" 
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:r="http://com.rameses.web.component"
+    xmlns:inv="http://com.rameses.osiris2.web/invoker"
+    xmlns:c="http://java.sun.com/jstl/core">  
+    
+    <r:loadresource name="css/iconpanel.css"/>
+    <c:set var="_cols" value="#{(empty cols) ? 5 : cols+0}" scope="request"/>
+    <c:set var="ctxPath" value="#{facesContext.externalContext.requestContextPath}"/>
+    <c:set var="defaultIcon" value="#{ctxPath}/a4j.res/images/doc.png"/>
+    
+    <div styleClass="#{theme}">
+        <c:if test="#{!empty path}">
+            <c:set var="rootFolder" value="#{context.folders[path]}" scope="request"/>
+        </c:if>
+        <c:if test="#{empty path}">
+            <c:set var="rootFolder" value="#{context.folders['/menu']}" scope="request"/>
+        </c:if>
+        <c:set var="width" value="#{(empty iconwidth) ? '32' : iconwidth}"/>
+        <c:set var="height" value="#{(empty iconheight) ? '32' : iconheight}"/>
+        <c:forEach items="#{rootFolder}" var="root">
+            <div class="iconpanel">
+                <div class="header">#{root.caption}</div>
+                <c:set var="invList" value="#{context.folderInvokers[root.fullId]}" />
+                <table cellpadding="0" cellspacing="0">
+                    <c:forEach items="#{invList}" step="#{_cols}" varStatus="idx">
+                        <tr>
+                            <c:forEach items="#{invList}" var="inv">
+                                <td valign="bottom" align="center" width="130px" class="icon">
+                                    <a href="#{inv:invokerPath(inv)}">
+                                        <div>
+                                            <c:set var="icon" value="#{inv.properties['icon']}" />
+                                            <img width="#{width}" height="#{height}"
+                                                 src="#{!empty icon? inv:resourcePath(icon): defaultIcon}"/>
+                                        </div>
+                                        <div>
+                                            #{inv.caption}
+                                        </div>
+                                    </a>
+                                </td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
+        </c:forEach>
+    </div>
+</ui:composition>  
+
+

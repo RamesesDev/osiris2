@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:r="http://com.rameses.web.component"
+                xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:f="http://java.sun.com/jsf/core">
+    
+    <r:loadresource name="css/dialog.css" />
+    <r:loadresource name="js/jquery.js" />
+    <r:loadresource name="js/dialog.js" />
+    <r:loadresource name="js/WebUtil.js" />
+    
+    <div id="#{id}_dialog" style="position: absolute; display: none; z-index: 20000; top: 0px; left: 0px; visibility: hidden;" 
+         class="dialog" tabindex="0" onkeyup="Popup.escapeKey(event, '#{id}_dialog')">
+        
+        <a4j:outputPanel id="#{id}">
+            <table cellpadding="0" cellspacing="0" width="#{empty width? '150' : width}" 
+                   height="#{empty height? 'auto' : height}" style="position: relative;">
+                <tr onmousedown="Popup.move(this)">
+                    <td class="dialog-title-bar">
+                        <span class="dialog-title" onclick="">
+                            #{empty title? 'Dialog' : title}
+                        </span>
+                        <c:if test="#{empty closeButton or closeButton == true}">
+                            <r:compositeControl methodBindings="oncloseAction=void;">
+                                <span style="display: none;" class="dialog-close-btn-hover"/>
+                                <c:if test="#{empty oncloseAction}">
+                                    <span class="dialog-close-btn dialog-close-btn-off" 
+                                          onclick="Popup.cancel(this)"
+                                          onmouseover="$(this).addClass('dialog-close-btn-hover')"
+                                          onmouseout="$(this).removeClass('dialog-close-btn-hover')">
+                                    </span>
+                                </c:if>
+                                <c:if test="#{!empty oncloseAction}">
+                                    <span class="dialog-close-btn dialog-close-btn-off" 
+                                          onclick="document.getElementById('#{id}_onclose:#{id}_onclose_action').click();"
+                                          onmouseover="$(this).addClass('dialog-close-btn-hover')"
+                                          onmouseout="$(this).removeClass('dialog-close-btn-hover')">
+                                    </span>
+                                    <h:form id="#{id}_onclose" style="display:none;position:absolute;top:-100px;left:-100px;">
+                                        <a4j:region>                                            
+                                            <a4j:commandButton id="#{id}_onclose_action" action="#{oncloseAction}" 
+                                                             oncomplete="Popup.cancel('#{id}');"
+                                                             reRender="#{id} #{!empty reRenderOnClose? ', ' : ''} #{reRenderOnClose}"/>
+                                        </a4j:region>
+                                    </h:form>
+                                </c:if>
+                            </r:compositeControl>
+                        </c:if>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="dialog-body">
+                        <ui:insert/>
+                        <script type="text/javascript">
+                            var __severity = '${facesContext.maximumSeverity}';
+                            //<![CDATA[
+                            
+                            $(function() {
+                                if (window.__hideDialog) return;
+                                
+                                window.__hideDialog = Popup.close;
+                                Popup.close = function(elm) {
+                                    window.__hideDialog(elm, __severity);
+                                }
+                            });
+                            
+                            //]]>
+                        </script>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td class="dialog-bottom"></td>
+                </tr>
+            </table>
+        </a4j:outputPanel>
+    </div>
+    
+</ui:composition>

@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:r="http://com.rameses.web.component"
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+                xmlns:f="http://java.sun.com/jsf/core">
+    
+    <c:set var="progressHandler" 
+           value="#{empty progress? AjaxFileuploadBean.progressHandler[id] : progress}" />
+    
+    <a4j:outputPanel id="#{id}" >
+        <a4j:region>
+            <h:form id="#{id}_file_form" enctype="multipart/form-data" 
+                    style="display: inline; margin: 0px; padding: 0px;">
+                <r:fileupload id="#{id}_file" value="#{value}" 
+                              onstart="this.style.display='none'; document.getElementById('#{id}_progressbar_container').style.display='inline';"
+                              ajax="true"
+                              progressbar="#{id}_progressbar"
+                              oncomplete="#{id}_oncomplete();"
+                              progress="#{progressHandler}" />
+            </h:form>
+            
+            <div id="#{id}_progressbar_container" style="display: none;">
+                <r:progressBar id="#{id}_progressbar" handler="#{progressHandler}" />
+            </div>
+            
+            <h:form id="#{id}_reset_form" rendered="#{! empty value}"
+                    style="display: inline; margin: 0px; padding: 0px; margin-left: 5px;">
+                <r:compositeControl methodBindings="resetAction=void;">
+                    <c:if test="#{!empty resetAction}">
+                        <a4j:commandLink id="#{id}_reset" value="reset" 
+                                         action="#{resetAction}" 
+                                         reRender="#{id} #{empty reRender? '' : ','}#{reRender}">
+                            <f:setPropertyActionListener value="false" target="#{progressHandler.processing}" />
+                            <f:setPropertyActionListener value="0" target="#{progressHandler.progress}" />
+                        </a4j:commandLink>
+                    </c:if>
+                </r:compositeControl>
+            </h:form>
+            
+            <!-- hidden forms -->
+            <h:form id="#{id}_action_form" rendered="#{ empty value }"
+                    style="display: none; position: absolute; top: -50px; left: -50px;">
+                <r:compositeControl methodBindings="action=void;">
+                    <c:if test="#{!empty action}">
+                        <a4j:commandButton id="#{id}_action" value="action" 
+                                           action="#{action}"
+                                           reRender="#{id} #{empty reRender? '' : ','}#{reRender}">
+                            <f:setPropertyActionListener value="false" target="#{progressHandler.processing}" />
+                            <f:setPropertyActionListener value="true" target="#{progressHandler.ended}" />
+                            <c:if test="#{empty progress}">
+                                <f:attribute name="progressId" value="#{id}" />
+                                <f:actionListener type="com.rameses.web.managebeans.AjaxFileuploadBean" />
+                            </c:if>
+                        </a4j:commandButton>
+                    </c:if>
+                    <c:if test="#{empty action}">
+                        <a4j:commandButton id="#{id}_action" value="action"
+                                           reRender="#{id} #{empty reRender? '' : ','}#{reRender}">
+                            <f:setPropertyActionListener value="false" target="#{progressHandler.processing}" />
+                            <f:setPropertyActionListener value="true" target="#{progressHandler.ended}" />
+                            <c:if test="#{empty progress}">
+                                <f:attribute name="progressId" value="#{id}" />
+                                <f:actionListener type="com.rameses.web.managebeans.AjaxFileuploadBean" />
+                            </c:if>
+                        </a4j:commandButton>
+                    </c:if>
+                </r:compositeControl>
+            </h:form>
+            
+            <script type="text/javascript">
+                function #{id}_oncomplete() {
+                    var id = '#{id}_action_form:#{id}_action';
+                    var button = document.getElementById(id);
+                    if (button)
+                        button.click();
+                    else
+                        alert('fileupload error: cannot find fileupload action button.');
+                }
+            </script>
+        </a4j:region>
+    </a4j:outputPanel>
+    
+</ui:composition>

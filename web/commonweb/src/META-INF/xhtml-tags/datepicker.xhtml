@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:r="http://com.rameses.web.component"
+                xmlns:f="http://java.sun.com/jsf/core">    
+    
+    <r:loadresource name="js/jquery.js" />
+    <r:loadresource name="js/rameses.web.js" />
+    <r:loadresource name="js/jquery-ui-core.js" />
+    <r:loadresource name="js/jquery-ui-datepicker.js" />
+    <r:loadresource name="css/ui.all.css" />
+    
+    <h:inputText styleClass="datepicker #{empty styleClass? '' : styleClass}" 
+                 value="#{value}" 
+                 pattern="#{pattern}"
+                 required="#{empty required? false : required}"
+                 rendered="#{empty rendered? true : rendered}"                 
+                 onfocus="this.blur();">
+        
+        <f:converter converterId="CalendarDateConverter" />        
+        <script>
+            $(document).ready(function() {
+                var calDate = new Date();
+                if ("#{value.time}" != "") {
+                    calDate.setTime("#{value.time}");
+                }
+
+                var patt = "#{pattern}";
+                if (patt == "")
+                    patt = "mm/dd/yy";
+                patt = patt.replace("yyyy", "yy");
+                patt = patt.replace("MM", "mm");
+                $('input.datepicker').datepicker({ dateFormat: patt ,showOtherMonths: true, defaultDate: calDate });
+            });
+        </script>        
+    </h:inputText>
+    
+</ui:composition>

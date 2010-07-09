@@ -1,0 +1,12 @@
+<workunit>
+    
+    <pages>
+        <page name="report" template="com.rameses.osiris2.reports.templates.ReportViewPage"/>
+    </pages>
+    
+</workunit>
+
+
+
+
+

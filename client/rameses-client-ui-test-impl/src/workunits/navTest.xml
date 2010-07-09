@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Navigation Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.EmployeeType;
+        
+                
+        public class NavigationTestController  {
+        
+            String firstname;
+            String lastname;
+            String address;
+            boolean single;
+            EmployeeType employeeType;
+        
+            public String next() {
+                return "page2";
+            }
+
+            public Object launch() {
+                return new Opener("rameses-client-ui2-test-impl:navTest2");
+            }
+
+            public String back() {
+                return "default";
+            }
+
+            public void greet() {
+                MsgBox.alert("Hi " + getFullname());
+                System.out.println("single is " + single);
+                System.out.println("employee type is " + employeeType);
+            }
+
+            public String getFullname() {
+                return (firstname == null? "" : firstname + " ") + (lastname == null? "": lastname);
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.TestPage"/>
+        <page name="page2" template="test.client.TestPage2"/>
+    </pages>
+</workunit>

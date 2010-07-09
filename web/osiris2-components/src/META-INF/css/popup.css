@@ -1,0 +1,39 @@
+
+/*
+ul.xmenu {
+    position: absolute;
+    background-color: #adb24a;
+    list-style: none;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+Style for the text of the MenuItem of the dropdown panel 
+.xmenu a, img { 
+    text-decoration: none;  
+    font-size: 11px;
+    color: #F7F7F7;
+    font-weight: bold;
+    border: none;
+
+}
+*/
+
+li.xmenumain a{
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 11px;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+ul { cursor: default; }
+
+
+ul.xmenu a:hover{
+    background: blue;
+    color: #fff;
+}
+

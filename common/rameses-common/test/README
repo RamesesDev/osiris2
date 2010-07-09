@@ -1,0 +1,14 @@
+this package is used for several functions:
+
+Basically these are just common functions that
+can be scoped into one class. There should be no
+dependencies.
+
+CipherUtil - for ciphering
+NumberToWords - for converting number to words
+DateUtil - date functions, adding, comparing
+ConfigUtil - utility for reading and saving properties in a config file
+
+
+
+

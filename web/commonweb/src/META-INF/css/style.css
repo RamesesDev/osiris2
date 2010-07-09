@@ -1,0 +1,16 @@
+
+.thumbwrapper {
+    padding : 6px; 
+    width   : 106px; 
+    height  : 106px;
+    border  : 1px solid lightgrey;        
+}
+
+.thumbnail {
+	font-size   : 11pt;
+	display     : block;
+	text-align  : center;
+	text-decoration: none;
+}
+
+

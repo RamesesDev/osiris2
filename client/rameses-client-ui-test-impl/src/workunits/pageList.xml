@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="PageList"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class TestController  {
+        
+            @Service('TestService')
+            def svc;
+            
+            def selected;
+        
+            def handler = [
+
+                fetchList: {
+                    return svc.queryTestimonies( it );
+                },
+
+                getColumns: {
+                    return [
+                        new Column("rownum", " "),
+                        new Column("item.objid", "Id", "string", null, true),
+                        new Column("item.name", "Name", "string", true, true),
+                        new Column("item.position", "Position", "string", null, true),
+                        new Column("item.lguname", "LGU", "string", null)
+                    ];
+                }
+
+            ] as PageListModel;
+            
+            
+            public def getSelectedName() {
+                return selected?.item?.name;
+            }
+            
+            public def getSelectedName2() {
+                return handler?.selectedItem?.item?.name;
+            }
+            
+           
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.table.PageList"/>
+    </pages>
+</workunit>

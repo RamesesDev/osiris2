@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <context-param>
+        <param-name>com.sun.faces.verifyObjects</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.sun.faces.validateXml</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+        <param-value>.xhtml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>facelets.SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>facelets.DEVELOPMENT</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    
+    <!-- Osiris2Web Settings -->
+    <context-param>
+        <param-name>facelets.RESOURCE_RESOLVER</param-name>
+        <param-value>com.rameses.osiris2.web.Osiris2ResourceResolver</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>CLIENT_CONF</param-name>
+        <param-value>WEB-INF/client.conf</param-value>
+    </context-param>
+    
+    <!-- JBOSS AS SETTINGS -->
+    <listener>
+        <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
+    </listener>
+    
+    
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>   
+    
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>osiris2-startup</servlet-name>
+        <servlet-class>com.rameses.osiris2.web.Osiris2Startup</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>osiris2-startup</servlet-name>
+        <url-pattern>/reload</url-pattern>
+    </servlet-mapping>
+    
+    <!-- fileupload configuration  -->
+    <filter>
+        <filter-name>fileupload</filter-name>
+        <filter-class>
+            com.rameses.web.component.fileupload.MultiPartListener
+        </filter-class>
+    </filter>    
+    <filter-mapping>
+        <filter-name>fileupload</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>  
+    
+    <!-- Osiris Filter  -->
+    <filter>
+        <filter-name>Osiris Filter</filter-name>
+        <filter-class>com.rameses.osiris2.web.Osiris2WebFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Osiris Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- a4j configuration  -->
+    <filter>
+        <display-name>Ajax4jsf Filter</display-name>
+        <filter-name>ajax4jsf</filter-name>
+        <filter-class>org.ajax4jsf.Filter</filter-class>
+        <init-param>
+            <param-name>forceparser</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>ajax4jsf</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>               
+    
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>   
+    <welcome-file-list>
+        <welcome-file>
+            index.jsp
+        </welcome-file>
+</welcome-file-list></web-app>

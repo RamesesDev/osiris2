@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Async Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class TestController  {
+        
+            @Service('TestService')
+            def svc;
+        
+            
+            /** @Async(responseHandler="respHandler") */
+            public void test() {
+                svc.test('firing from workunit');
+            }
+            
+            public void respHandler(Object retVal) {
+                println "response value is " + retVal;
+                retVal?.each { println it };
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.table.TestPage4"/>
+    </pages>
+</workunit>
