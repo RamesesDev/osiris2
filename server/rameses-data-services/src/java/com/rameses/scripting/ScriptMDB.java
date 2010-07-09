@@ -37,19 +37,38 @@ public class ScriptMDB implements MessageListener {
                 
                 String responseHandler = (String)map.get("responseHandler");
                 String requestId = (String)map.get("requestId");
+                boolean loop = (map.get("loop")!=null) ? true : false;
                 
                 //execute the result;
-                Object result = scriptService.invoke("~" +script,method,params,env);
-                executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
-            }   
+                if(!loop) {
+                    Object result = scriptService.invoke("~" +script,method,params,env);
+                    executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
+                }
+                else {
+                    String loopVar = (String)map.get("loopVar");
+                    if(loopVar!=null && loopVar.trim().length()==0) loopVar  = "loop";  
+                    if(env==null) env = new HashMap();
+                    int i = 0;
+                    while( true ) {
+                        env.put(loopVar, i++);
+                        Object result = scriptService.invoke("~" +script,method,params,env);
+                        if(result!=null) {
+                            executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
+                        }
+                        else {
+                            break;
+                        }
+                    }    
+                }
+            }
         } catch(Exception e) {
             e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
     
-     private void executeResponse( String responseHandler, String script,Object result, Map env, String origin, boolean sameServer, String requestId ) throws Exception {
-         if(responseHandler!=null) {
+    private void executeResponse( String responseHandler, String script,Object result, Map env, String origin, boolean sameServer, String requestId ) throws Exception {
+        if(responseHandler!=null) {
             String method = null;
             if( responseHandler.contains(".") ) {
                 String[] arr = responseHandler.split("\\.");
@@ -67,7 +86,6 @@ public class ScriptMDB implements MessageListener {
                 hc.invoke( "ScriptService.invoke", new Object[]{ script, method,  new Object[]{result} } );
             }
         } else {
-            System.out.println("request Id to register " + requestId);
             if(sameServer && result!=null) {
                 responseService.registerData( requestId, result );
             } else {
@@ -78,7 +96,5 @@ public class ScriptMDB implements MessageListener {
             }
         }
     }
-   
-    
     
 }

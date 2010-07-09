@@ -173,7 +173,10 @@ public class ScriptService implements ScriptServiceLocal {
                 pass.put("origin", origin);
                 pass.put("env", env);
                 if( responseHandler!=null ) pass.put("responseHandler", responseHandler);
-                if( loop ) pass.put("loop", true);
+                if( loop ) {
+                    pass.put("loop", true);
+                    pass.put( "loopVar", asc.loopVar() );
+                }
                 
                 return invokeAsync( pass, destinationType );
             }
