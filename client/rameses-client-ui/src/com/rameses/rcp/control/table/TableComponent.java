@@ -186,7 +186,7 @@ public class TableComponent extends JTable implements ListModelListener {
         super.changeSelection(rowIndex, columnIndex, toggle, extend);
         
         if ( rowIndex != oldRowIndex ) {
-            rowChanged(oldRowIndex);
+            rowChanged();
         }
     }
     
@@ -254,10 +254,8 @@ public class TableComponent extends JTable implements ListModelListener {
             ListItem item = slm.getSelectedItem();
             boolean lastRow = !(rowIndex + slm.getTopRow() < slm.getMaxRows());
             
-            if ( item.getState() == 0 ) {
-                lastRow = false;
-            }
-            
+            if ( item.getState() == 0 ) lastRow = false;
+
             if ( !lastRow ) {
                 this.changeSelection(rowIndex, 0, false, false);
                 moveNextRecord();
@@ -336,11 +334,11 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  ListModelListener impl methods  ">
+    //<editor-fold defaultstate="collapsed" desc="  list model listener methods  ">
     public void refreshList() {
-        if ( editingMode ) {
-            hideEditor(false);
-        }
+        if ( !rowCommited ) rowChanged();
+        if ( editingMode ) hideEditor(false);
+        
         ListItem item = listModel.getSelectedItem();
         int col = getSelectedColumn();
         tableModel.fireTableDataChanged();
@@ -376,21 +374,22 @@ public class TableComponent extends JTable implements ListModelListener {
     //<editor-fold defaultstate="collapsed" desc="  row movements support  ">
     public void movePrevRecord() {
         if ( getSelectedRow() == 0 ) {
-            rowChanged( getSelectedRow() );
+            rowChanged();
             listModel.moveBackRecord();
         }
     }
     
     public void moveNextRecord() {
         if ( getSelectedRow() == getRowCount() - 1 ) {
-            rowChanged( getSelectedRow() );
+            rowChanged();
             listModel.moveNextRecord();
         }
     }
     
-    public void rowChanged(int oldRowIndex) {
+    public void rowChanged() {
         if ( !rowCommited ) {
             ListItem item = listModel.getSelectedItem();
+            int oldRowIndex = item.getIndex();
             if ( validateRow(oldRowIndex) && item.getState() == 0 ) {
                 listModel.addCreatedItem();
             }
