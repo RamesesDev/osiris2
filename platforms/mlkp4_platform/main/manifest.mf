@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+OpenIDE-Module: com.rameses.osiris2.netbeans.main
+OpenIDE-Module-Install: com/rameses/osiris2/netbeans/NBInstaller.class
+OpenIDE-Module-Layer: com/rameses/osiris2/netbeans/resource/layer.xml
+OpenIDE-Module-Localizing-Bundle: com/rameses/osiris2/netbeans/resource/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0.1
+
