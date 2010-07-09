@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: com.jgoodies.plaf
+OpenIDE-Module-Localizing-Bundle: com/jgoodies/plaf/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
