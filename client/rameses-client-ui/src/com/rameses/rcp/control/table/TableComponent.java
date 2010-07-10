@@ -70,6 +70,13 @@ public class TableComponent extends JTable implements ListModelListener {
                 hideEditor(false);
             }
         });
+        
+        int cond = JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+        KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0);
+        getInputMap(cond).put(enter, "selectNextColumnCell");
+        
+        KeyStroke shiftEnter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 1);
+        getInputMap(cond).put(shiftEnter, "selectPreviousColumnCell");
     }
     
     public void setListModel(AbstractListModel listModel) {
@@ -255,7 +262,7 @@ public class TableComponent extends JTable implements ListModelListener {
             boolean lastRow = !(rowIndex + slm.getTopRow() < slm.getMaxRows());
             
             if ( item.getState() == 0 ) lastRow = false;
-
+            
             if ( !lastRow ) {
                 this.changeSelection(rowIndex, 0, false, false);
                 moveNextRecord();

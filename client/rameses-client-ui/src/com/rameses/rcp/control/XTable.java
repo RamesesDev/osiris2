@@ -283,4 +283,22 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     //</editor-fold>
     
+    private class RowHeaderPanel extends JPanel {
+        
+        RowHeaderPanel(int rowHeight, int rowCount) {
+            //create top-left corner
+            JLabel label = new JLabel(" ");
+            Border bb = new TableHeaderBorder();
+            Border eb = BorderFactory.createEmptyBorder(2,5,2,1);
+            label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
+            add(label);
+            
+            for (int i = 0; i < rowCount; ++i) {
+                label = new JLabel("");
+                label.setBorder( new TableHeaderBorder() );
+                label.setPreferredSize(new Dimension());
+                add(label);
+            }
+        }
+    }
 }
