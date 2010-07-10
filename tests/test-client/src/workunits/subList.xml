@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="SubList"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class TestController  {
+        
+            def selectedItem;
+            
+            def getSelectedName() {
+                return selectedItem?.item?.name;
+            }
+        
+            def handler = [
+                createItem: { [:] },
+                fetchList: { data },
+                onAddItem: { data.add(it) },
+
+                onRemoveItem: {
+                    def members = selectedGroup?.item?.members;
+                    members?.remove( it );
+                },
+
+                getColumns: {
+                    return [
+                        new Column(name: "rownum", primary: true),
+                        new Column(name: "item.name", caption: "Name", editable: true, required: true),
+                        new Column(name: "item.address", caption: "Address", editable: true, required: true)
+                    ];
+                }
+
+            ] as SubListModel;
+
+            def data = [
+                [ name:"11", address:"cebu city"], [name:"12", address:"cebu city"], [name:"13", address:"cebu city"], [name:"14", address:"cebu city"],
+                [ name:"21", address:"cebu city"], [name:"22", address:"cebu city"], [name:"23", address:"cebu city"], [name:"24", address:"cebu city"]
+
+                /*
+                [ name:"31", address:"cebu city"], [name:"32", address:"cebu city"], [name:"33", address:"cebu city"], [name:"34", address:"cebu city"],
+                [ name:"41", address:"cebu city"], [name:"42", address:"cebu city"], [name:"43", address:"cebu city"], [name:"44", address:"cebu city"],
+                [ name:"51", address:"cebu city"], [name:"52", address:"cebu city"], [name:"53", address:"cebu city"], [name:"54", address:"cebu city"],
+                [ name:"61", address:"cebu city"], [name:"62", address:"cebu city"], [name:"63", address:"cebu city"], [name:"64", address:"cebu city"]
+                */
+
+            ];
+            
+            void fireAction() {
+                
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.table.SubList"/>
+    </pages>
+</workunit>

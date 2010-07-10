@@ -9,6 +9,7 @@ import javax.swing.JComponent;
  */
 public interface Platform {
     
+    static final long serialVersionUID = 1L;
     /** 
      * actionSource must the component that triggers the action,
      * it could be a JButton, JMenu, etc.

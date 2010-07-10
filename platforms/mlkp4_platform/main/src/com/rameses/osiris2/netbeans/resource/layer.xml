@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.1//EN" "http://www.netbeans.org/dtds/filesystem-1_1.dtd">
+<filesystem>
+    <folder name="Services">
+        <folder name="AutoupdateType">
+            <file name="autoupdate_xml_type.settings_hidden"/>
+            <file name="autoupdate_xml_type_1.settings_hidden"/>
+            <file name="autoupdate_xml_type_3.settings_hidden"/>
+            <file name="autoupdate_xml_type_4.settings_hidden"/>
+            
+            <file name="PlatformUpdateCenter.settings" url="PlatformUpdateCenterSettings.xml">
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="com.rameses.osiris2.netbeans.resource.Bundle"/>
+                <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/netbeans/modules/updatecenters/resources/updateAction.gif"/>
+                <attr name="url_key" stringvalue="URL_PlatformUpdateCenter"/>
+                <attr name="enabled" boolvalue="true"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="org-netbeans-api-project-libraries">
+        <folder name="Libraries">
+            <file name="rameses_osirisx_library.xml_hidden"/>
+        </folder>
+    </folder>
+</filesystem>
