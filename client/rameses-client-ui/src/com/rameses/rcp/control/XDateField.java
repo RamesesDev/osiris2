@@ -35,6 +35,7 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
     private String inputFormat;
     private ControlProperty controlProperty = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
+    private Date formattedDate;
     
     public XDateField() {
         setOutputFormat("yyyy-MM-dd");
@@ -45,7 +46,7 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
         if( Beans.isDesignTime())
             return "";
         
-        return getFormattedDate();
+        return formattedDate;
     }
     
     public void setValue(Object value) {
@@ -104,17 +105,6 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
         return this.index - u.getIndex();
     }
     
-    private Date getFormattedDate() {
-        if( ValueUtil.isEmpty(getText()) )
-            return null;
-        
-        try {
-            return inputFormatter.parse(getText());
-        } catch(Exception e) {
-            throw new IllegalStateException("Expected format: " + inputFormat, e);
-        }
-    }
-    
     public String getOutputFormat() {
         return outputFormat;
     }
@@ -152,36 +142,46 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
                 setText( inputFormatter.format(value).toString() );
         }
     }
-
+    
     public String getCaption() {
         return controlProperty.getCaption();
     }
-
+    
     public void setCaption(String caption) {
         controlProperty.setCaption(caption);
     }
-
+    
     public boolean isRequired() {
         return controlProperty.isRequired();
     }
-
+    
     public void setRequired(boolean required) {
         controlProperty.setRequired(required);
     }
-
+    
     public void validateInput() {
         actionMessage.clearMessages();
         controlProperty.setErrorMessage(null);
         if( isRequired() && ValueUtil.isEmpty(getText()) ) {
-            actionMessage.addMessage("", "{0} is required", new Object[] {getText()});
-            controlProperty.setErrorMessage(actionMessage.toString());
+            actionMessage.addMessage("", "{0} is required", new Object[] {getCaption()});
         }
+        try {
+            formattedDate = inputFormatter.parse(getText());
+        } catch(Exception e) {
+            formattedDate = null;
+            if(isRequired()) {
+                actionMessage.addMessage("", "Expected format for {0} is " + inputFormat, new Object[] {getCaption()});
+            }
+        }
+        
+        if(actionMessage.hasMessages())
+            controlProperty.setErrorMessage(actionMessage.toString());
     }
-
+    
     public ActionMessage getActionMessage() {
         return actionMessage;
     }
-
+    
     public ControlProperty getControlProperty() {
         return controlProperty;
     }
