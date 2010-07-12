@@ -7,7 +7,7 @@
 
 package com.rameses.rcp.control.table;
 
-import com.rameses.rcp.common.AbstractListModel;
+import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
@@ -17,6 +17,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Insets;
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.BorderFactory;
@@ -47,6 +53,9 @@ public final class TableManager {
         
         TableCellRenderer renderer = new StringRenderer();
         renderers.put("string", renderer);
+        renderers.put("number", renderer);
+        renderers.put("decimal", renderer);
+        renderers.put("date", renderer);
         renderers.put("combo", renderer);
         renderers.put("lookup", renderer);
         
@@ -87,6 +96,14 @@ public final class TableManager {
         return headerRenderer;
     }
     
+    public static JComponent getTableCornerComponent() {
+        JLabel label = new JLabel(" ");
+        Border bb = new TableHeaderBorder();
+        Border eb = BorderFactory.createEmptyBorder(2,5,2,1);
+        label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
+        return label;
+    }
+    
     
     //<editor-fold defaultstate="collapsed" desc="  TableHeaderRenderer (class)  ">
     private static class TableHeaderRenderer implements TableCellRenderer {
@@ -105,7 +122,7 @@ public final class TableManager {
     //</editor-fold>
     
     
-    //<editor-fold defaultstate="collapsed" desc="  abstract YTable cell renderer  ">
+    //<editor-fold defaultstate="collapsed" desc="  AbstractRenderer (class)  ">
     private static abstract class AbstractRenderer implements TableCellRenderer {
         
         public abstract JComponent getComponent();
@@ -131,10 +148,11 @@ public final class TableManager {
                 comp.setOpaque(false);
             }
             
-            AbstractListModel alm = ((TableComponent) table).getListModel();
-            if ( alm instanceof SubListModel ) {
-                SubListModel slm = (SubListModel) alm;
+            TableComponent tc = (TableComponent) table;
+            if ( tc.getListModel() instanceof SubListModel ) {
+                SubListModel slm = (SubListModel) tc.getListModel();
                 String errmsg = slm.getErrorMessage(row);
+                
                 if (errmsg != null) {
                     if (!hasFocus) {
                         comp.setBackground(Color.PINK);
@@ -147,10 +165,16 @@ public final class TableManager {
             return comp;
         }
         
+        protected int getAlignmentConstant(String alignment) {
+            if ( "right".equals(alignment)) return SwingConstants.RIGHT;
+            if ( "center".equals(alignment) ) return SwingConstants.CENTER;
+            
+            return SwingConstants.LEFT;
+        }
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  Default YTable cell renderers  ">
+    //<editor-fold defaultstate="collapsed" desc="  StringRenderer (class)  ">
     private static class StringRenderer extends AbstractRenderer {
         
         private JLabel label;
@@ -163,10 +187,48 @@ public final class TableManager {
         public JComponent getComponent() { return label; }
         
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
-            label.setText((value == null ? "" : value.toString()));
+            TableComponent tc = (TableComponent) table;
+            Column c = ((DefaultTableModel) tc.getModel()).getColumn(column);
+            String format = c.getFormat();
+            if ( "decimal".equals(c.getType()) || value instanceof BigDecimal || value instanceof Double ) {
+                label.setHorizontalAlignment( SwingConstants.RIGHT );
+                label.setText((value == null ? "" : format(value, format, "#,##0.00")));
+                
+            } else if ( "number".equals(c.getType()) || value instanceof Number ) {
+                label.setHorizontalAlignment( SwingConstants.CENTER );
+                label.setText((value == null ? "" : format(value, format, "#,##0")));
+                
+            } else if ( "date".equals(c.getType()) || value instanceof Date ||
+                    value instanceof Time || value instanceof Timestamp ) {
+                
+                label.setHorizontalAlignment( SwingConstants.CENTER );
+                SimpleDateFormat formatter = null;
+                if ( format != null )
+                    formatter = new SimpleDateFormat(format);
+                else
+                    formatter = new SimpleDateFormat("yyyy-MM-dd");
+                
+                label.setText((value == null ? "" : formatter.format(value)));
+                
+            } else {
+                label.setHorizontalAlignment( SwingConstants.LEFT );
+                label.setText((value == null ? "" : value.toString()));
+            }
+        }
+        
+        private String format(Object value, String format, String defaultFormat) {
+            DecimalFormat formatter = null;
+            if ( format != null)
+                formatter = new DecimalFormat(format);
+            else
+                formatter = new DecimalFormat(defaultFormat);
+            
+            return formatter.format(value);
         }
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  BooleanRenderer (class)  ">
     private static class BooleanRenderer extends AbstractRenderer {
         
         private JCheckBox component;

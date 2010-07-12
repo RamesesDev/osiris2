@@ -32,22 +32,23 @@
                     return [
                         new Column(name: "rownum", primary: true),
                         new Column(name: "item.name", caption: "Name", editable: true, required: true),
-                        new Column(name: "item.address", caption: "Address", editable: true, required: true)
+                        new Column(name: "item.balance", caption: "Balance", type: "decimal"),
+                        new Column(name: "item.address", caption: "Address", editable: true, required: true),
+                        new Column(name: "item.date", caption: "Date", format: "MMMM dd, yyyy")
                     ];
                 }
 
             ] as SubListModel;
 
             def data = [
-                [ name:"11", address:"cebu city"], [name:"12", address:"cebu city"], [name:"13", address:"cebu city"], [name:"14", address:"cebu city"],
-                [ name:"21", address:"cebu city"], [name:"22", address:"cebu city"], [name:"23", address:"cebu city"], [name:"24", address:"cebu city"]
-
-                /*
-                [ name:"31", address:"cebu city"], [name:"32", address:"cebu city"], [name:"33", address:"cebu city"], [name:"34", address:"cebu city"],
-                [ name:"41", address:"cebu city"], [name:"42", address:"cebu city"], [name:"43", address:"cebu city"], [name:"44", address:"cebu city"],
-                [ name:"51", address:"cebu city"], [name:"52", address:"cebu city"], [name:"53", address:"cebu city"], [name:"54", address:"cebu city"],
-                [ name:"61", address:"cebu city"], [name:"62", address:"cebu city"], [name:"63", address:"cebu city"], [name:"64", address:"cebu city"]
-                */
+                [ name:"11", address:"cebu city", date: new Date(), balance: 500.50], 
+                [name:"12", address:"cebu city", date: new Date(), balance: 1000], 
+                [name:"13", address:"cebu city", date: new Date(), balance: 500.50],
+                [name:"14", address:"cebu city", date: new Date(), balance: 1520],
+                [ name:"21", address:"cebu city", date: new Date(), balance: 500.50],
+                [name:"22", address:"cebu city", date: new Date(), balance: 2500], 
+                [name:"23", address:"cebu city", date: new Date(), balance: 500.50],
+                [name:"24", address:"cebu city", date: new Date(), balance: 700]
 
             ];
             
