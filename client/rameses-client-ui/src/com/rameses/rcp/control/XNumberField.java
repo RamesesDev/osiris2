@@ -1,7 +1,6 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.Containable;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
@@ -10,7 +9,6 @@ import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
-import com.rameses.util.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -39,7 +37,8 @@ public class XNumberField extends JTextField implements UIInput, Validatable, Co
     private ControlProperty controlProperty = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
     
-    public XNumberField() {        
+    public XNumberField() {
+        setHorizontalAlignment(JTextField.RIGHT);
     }
     
     public Object getValue() {
@@ -78,13 +77,11 @@ public class XNumberField extends JTextField implements UIInput, Validatable, Co
         } else if(fType == Integer.class) {
             return new Integer(fieldText);
         } else if(fType == Double.class) {
-            return new Double(fieldText);
-            
+            return new Double(fieldText);            
         } else if(fType == int.class) {
             return Integer.parseInt(fieldText);
         } else if(fType == Long.class) {
-            return new Long(fieldText);
-            
+            return new Long(fieldText);            
         } else if(fType == long.class) {
             return Long.parseLong(fieldText);
         } else if(fType == double.class) {
@@ -137,6 +134,7 @@ public class XNumberField extends JTextField implements UIInput, Validatable, Co
         else
             nfs.setUpdateOnKeyRelease(true);
         
+        setHorizontalAlignment(JTextField.RIGHT);
         addKeyListener(nfs);
         addFocusListener(nfs);
     }
