@@ -9,7 +9,8 @@
 
 package com.rameses.osiris2.client;
 
-import com.rameses.rcp.impl.MainDialog;
+import com.rameses.platform.interfaces.Platform;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.support.ResURLStreamHandlerFactory;
 import java.net.URL;
 import java.util.Map;
@@ -22,10 +23,10 @@ public final class OsirisTestPlatform {
     
     public static void runTest(Map map) throws Exception {
         URL.setURLStreamHandlerFactory(new ResURLStreamHandlerFactory(Thread.currentThread().getContextClassLoader()));
-        MainDialog d = new MainDialog();
         OsirisAppLoader loader = new OsirisAppLoader();
-        loader.load(Thread.currentThread().getContextClassLoader(), map, d);
-        d.show();
+        Platform platform = ClientContext.getCurrentContext().getPlatform();
+        loader.load(Thread.currentThread().getContextClassLoader(), map, platform);
+        platform.getMainWindow().show();
     }
     
     

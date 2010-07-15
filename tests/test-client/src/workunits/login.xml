@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="loader" caption="Login" index="0"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class LoginController  {
+        
+            def username;
+            def password;
+        
+            public def doLogin() {
+                return "_close";
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.LoginPage"/>
+    </pages>
+</workunit>

@@ -86,7 +86,7 @@ public final class ToolbarUtil {
             try {
                 InvokerUtil.invoke(invoker, null);
             } catch(Exception ex) {
-                throw new IllegalStateException(ex);
+                throw new IllegalStateException(ex.getMessage(), ex);
             }
         }
         

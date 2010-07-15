@@ -8,6 +8,7 @@ import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import javax.swing.JOptionPane;
 
 public class GroovyControllerProvider implements CodeProvider {
     
@@ -32,7 +33,7 @@ public class GroovyControllerProvider implements CodeProvider {
             ClassDefUtil.getInstance().injectFields(retVal, fieldHandler);
             return retVal;
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

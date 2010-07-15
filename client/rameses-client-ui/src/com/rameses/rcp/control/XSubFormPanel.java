@@ -95,6 +95,8 @@ public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel
         return controllers;
     }
     
+    public void setControllers(Stack controllers){}
+    
     public void renderView() {
         UIController controller = controllers.peek();
         UIViewPanel viewPanel = controller.getCurrentView();

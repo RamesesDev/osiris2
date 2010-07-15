@@ -11,7 +11,7 @@
         import com.rameses.rcp.common.*;
         import com.rameses.rcp.framework.ClientContext;
                 
-        public class TestController  {
+        public class BindingTestController  {
         
             @Binding
             def binding;

@@ -1,6 +1,5 @@
 package com.rameses.rcp.framework;
 
-import com.rameses.rcp.framework.UIController;
 import java.util.Stack;
 
 /**
@@ -10,11 +9,11 @@ import java.util.Stack;
 public interface NavigatablePanel {
     
     /***
-     * @description 
-     *    returns the Stack of UIControllers in the NavigatablePanel 
+     * @description
+     *    returns the Stack of UIControllers in the NavigatablePanel
      */
-    Stack<UIController> getControllers();
-    
+    Stack getControllers();
+    void setControllers(Stack controllers);
     /**
      * @description
      *    this method is called by the navigation handler

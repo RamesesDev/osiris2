@@ -1,7 +1,7 @@
 package com.rameses.osiris2.netbeans;
 
-import com.rameses.rcp.interfaces.SubWindow;
-import com.rameses.rcp.interfaces.ViewContext;
+import com.rameses.platform.interfaces.SubWindow;
+import com.rameses.platform.interfaces.ViewContext;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -10,15 +10,15 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.openide.windows.TopComponent;
 
-public class NBSubWindow extends TopComponent implements SubWindow 
-{
+public class NBSubWindow extends TopComponent implements SubWindow {
+    private NBPlatform nbPlatform;
     private NBMainWindow mainWindow;
     private String preferredID;
     private boolean closeable = true;
-    private boolean bypassVerifyClose; 
+    private boolean bypassVerifyClose;
     
-    public NBSubWindow(NBMainWindow mainWindow, String preferredID) 
-    {
+    public NBSubWindow(NBPlatform nbPlatform, NBMainWindow mainWindow, String preferredID) {
+        this.nbPlatform = nbPlatform;
         this.mainWindow = mainWindow;
         this.preferredID = preferredID;
         setLayout(new BorderLayout());
@@ -29,44 +29,35 @@ public class NBSubWindow extends TopComponent implements SubWindow
         registerKeyboardAction(closeAction, KeyStroke.getKeyStroke("ctrl W"), JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
     
-    public void setCloseable(boolean closeable) { this.closeable = closeable; }    
+    public void setCloseable(boolean closeable) { this.closeable = closeable; }
     
     protected String preferredID() { return preferredID; }
     
     public int getPersistenceType() { return PERSISTENCE_NEVER; }
     
-    public boolean canClose() 
-    { 
+    public boolean canClose() {
         if (!closeable) return false;
-        if (!bypassVerifyClose) 
-        {
+        if (!bypassVerifyClose) {
             Component c = getComponent(0);
             if (c instanceof ViewContext)
-                return ((ViewContext) c).close(); 
+                return ((ViewContext) c).close();
         }
         return true;
     }
-
-    protected void componentClosed() 
-    {
+    
+    protected void componentClosed() {
         super.componentClosed();
-        mainWindow.removeWindow(preferredID);        
+        nbPlatform.removeWindow(preferredID);
     }
-
-    public void closeWindow() 
-    {
-        if (canClose())
-        {
-            try
-            {
+    
+    public void closeWindow() {
+        if (canClose()) {
+            try {
                 bypassVerifyClose = true;
-                close(); 
-            }
-            catch(RuntimeException rex) { throw rex; }
-            catch(Exception ex) {
+                close();
+            } catch(RuntimeException rex) { throw rex; } catch(Exception ex) {
                 throw new RuntimeException(ex.getMessage(), ex);
-            }
-            finally {
+            } finally {
                 bypassVerifyClose = false;
             }
         }

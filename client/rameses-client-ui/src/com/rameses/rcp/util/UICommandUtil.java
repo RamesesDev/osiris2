@@ -27,7 +27,7 @@ public class UICommandUtil {
             String target = ValueUtil.isEmpty(command.getTarget())? "parent": command.getTarget();
             NavigatablePanel navPanel = getParentPanel(command, target);
             if ( "root".equals(target) ) {
-                UIController rootCon = navPanel.getControllers().peek();
+                UIController rootCon = (UIController) navPanel.getControllers().peek();
                 Binding rootBinding = rootCon.getCurrentView().getBinding();
                 validate(command, rootBinding);
             }
@@ -50,6 +50,7 @@ public class UICommandUtil {
                 }
             }
         } catch(Exception e) {
+            //e.printStackTrace();
             ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
         }
     }

@@ -8,7 +8,7 @@
         import com.rameses.rcp.common.*;
         import test.model.EmployeeType;
                 
-        public class TestController  {
+        public class TestNav2Controller  {
         
             public String close() {
                 return "_close";

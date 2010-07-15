@@ -2,6 +2,8 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.util.ValueUtil;
+import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -13,8 +15,8 @@ import javax.swing.JOptionPane;
  */
 public class PlatformImpl implements Platform {
     
-    private MainWindow mainWindow;
-    
+    private MainDialog mainWindow = new MainDialog(); //default impl
+    private Map windows = new HashMap();
     
     public PlatformImpl() {
     }
@@ -24,12 +26,26 @@ public class PlatformImpl implements Platform {
     }
     
     public void showPopup(JComponent actionSource, JComponent comp, Map properties) {
-        JDialog d = new JDialog();
+        String id = (String) properties.get("id");
+        if ( ValueUtil.isEmpty(id) )
+            throw new IllegalStateException("id is required for a page.");
+        
+        String title = (String) properties.get("title");
+        if ( ValueUtil.isEmpty(title) ) title = id;
+        String canClose = (String) properties.get("canclose");
+        
+        JDialog d = new JDialog(mainWindow.getComponent());
+        d.setTitle(title);
         d.setContentPane(comp);
-        d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        
+        if ( "false".equals(canClose) )
+            d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        else
+            d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        
         d.pack();
-        d.setModal(true);
         d.setVisible(true);
+        windows.put(id, d);
     }
     
     public void showError(JComponent actionSource, Exception e) {
@@ -56,8 +72,22 @@ public class PlatformImpl implements Platform {
         return mainWindow;
     }
     
-    public void setMainWindow(MainWindow mw) {
-        this.mainWindow = mw;
+    public boolean isWindowExists(String id) {
+        return windows.containsKey(id);
+    }
+    
+    public void closeWindow(String id) {
+        if ( windows.containsKey(id) ) {
+            JDialog d = (JDialog) windows.remove(id);
+            d.dispose();
+        }
+    }
+    
+    public void activateWindow(String id) {
+        if ( windows.containsKey(id) ) {
+            JDialog d = (JDialog) windows.get(id);
+            d.toFront();
+        }
     }
     
 }

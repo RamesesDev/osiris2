@@ -11,6 +11,8 @@ import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
+import com.rameses.rcp.control.XDateField;
+import com.rameses.rcp.control.XNumberField;
 import com.rameses.rcp.control.XTextField;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
@@ -47,10 +49,15 @@ public final class TableManager {
     
     //<editor-fold defaultstate="collapsed" desc="  static initializer  ">
     static {
+        //map of editors
         editors.put("string", XTextField.class);
         editors.put("boolean", XCheckBox.class);
         editors.put("combo", XComboBox.class);
+        editors.put("date", XDateField.class);
+        editors.put("number", XNumberField.class);
+        editors.put("decimal", XNumberField.class);
         
+        //map of renderers
         TableCellRenderer renderer = new StringRenderer();
         renderers.put("string", renderer);
         renderers.put("number", renderer);

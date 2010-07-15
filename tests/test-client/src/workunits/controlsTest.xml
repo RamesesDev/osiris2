@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Controls Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class ControlsTestController  {
+        
+            Date date = new Date();
+            int intNum;
+            double doubleNum;
+            BigDecimal decimalNum = 10.1;
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.ControlsTestPage"/>
+    </pages>
+</workunit>

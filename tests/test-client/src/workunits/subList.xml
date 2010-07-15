@@ -2,6 +2,7 @@
 <workunit>
     <invokers>
         <invoker folderid="/menu/file" caption="SubList"/>
+        <invoker type="toolbar" caption="SubList 1"/>
     </invokers>
     
     <code>
@@ -10,7 +11,7 @@
         import com.rameses.common.annotations.*;
         import com.rameses.rcp.common.*;
                 
-        public class TestController  {
+        public class SubListTestController  {
         
             def selectedItem;
             
@@ -32,7 +33,7 @@
                     return [
                         new Column(name: "rownum", primary: true),
                         new Column(name: "item.name", caption: "Name", editable: true, required: true),
-                        new Column(name: "item.balance", caption: "Balance", type: "decimal"),
+                        new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
                         new Column(name: "item.address", caption: "Address", editable: true, required: true),
                         new Column(name: "item.date", caption: "Date", format: "MMMM dd, yyyy")
                     ];
