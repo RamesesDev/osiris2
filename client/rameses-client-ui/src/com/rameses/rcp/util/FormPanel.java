@@ -9,12 +9,14 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 public class FormPanel extends JPanel {
@@ -30,6 +32,10 @@ public class FormPanel extends JPanel {
         super.setLayout(new Layout());
         setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         setOpaque(false);
+        
+        if ( Beans.isDesignTime() ) {
+            setPreferredSize(new Dimension(100, 100));
+        }
     }
     
     //<editor-fold defaultstate="collapsed" desc=" FormPanel implementations ">
@@ -57,6 +63,12 @@ public class FormPanel extends JPanel {
         if ( comp instanceof Containable ) {
             ItemPanel p = new ItemPanel(comp);
             super.addImpl(p, constraints, index);
+        } else if ( comp instanceof JScrollPane ) {
+            Component view = ((JScrollPane) comp).getViewport().getView();
+            if ( view instanceof Containable ) {
+                ItemPanel p = new ItemPanel(view, comp);
+                super.addImpl(p, constraints, index);
+            }
         }
     }
     
@@ -104,6 +116,10 @@ public class FormPanel extends JPanel {
         private ControlProperty property;
         
         public ItemPanel(Component editor) {
+            this(editor, null);
+        }
+        
+        public ItemPanel(Component editor, Component container) {
             this.editor = editor;
             Containable con = (Containable) editor;
             property = con.getControlProperty();
@@ -114,7 +130,11 @@ public class FormPanel extends JPanel {
             setOpaque(false);
             setLayout(new ItemPanelLayout(property));
             add(label, "label");
-            add(editor, "editor");
+            if ( container != null ) {
+                add(container, "editor");
+            } else {
+                add(editor, "editor");
+            }
             
             String caption = property.getCaption();
             boolean req = property.isRequired();

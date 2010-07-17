@@ -1,6 +1,3 @@
-import java.util.Iterator;
-import java.util.Map;
-import javax.swing.UIManager;
 import junit.framework.*;
 
 /*
@@ -22,14 +19,17 @@ public class Test extends TestCase {
     
     public void testHello() {
         
-        Iterator itr = UIManager.getLookAndFeel().getDefaults().entrySet().iterator();
-        while (itr.hasNext()) {
-            Object item = itr.next();
-            Map.Entry entry = (Map.Entry) item;
-            String name = entry.getKey().toString();
-            if (name.toLowerCase().indexOf("table") >= 0)
-                System.out.println(entry);
-        }
+//        Iterator itr = UIManager.getLookAndFeel().getDefaults().entrySet().iterator();
+//        while (itr.hasNext()) {
+//            Object item = itr.next();
+//            Map.Entry entry = (Map.Entry) item;
+//            String name = entry.getKey().toString();
+//            if (name.toLowerCase().indexOf("table") >= 0)
+//                System.out.println(entry);
+//        }
+        
+        String expr = " #{entity.name} hellow rolasdf #{sample}";
+        System.out.println(expr.matches(".*#\\{[^\\{\\}]+\\}.*"));
     }
     
 }

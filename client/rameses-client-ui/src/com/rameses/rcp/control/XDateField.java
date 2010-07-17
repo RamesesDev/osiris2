@@ -1,45 +1,35 @@
 package com.rameses.rcp.control;
 
-import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.Containable;
 import com.rameses.rcp.ui.ControlProperty;
-import com.rameses.rcp.ui.UIControl;
-import com.rameses.rcp.ui.UIInput;
-import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.beans.Beans;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.JFormattedTextField;
 
 /**
  *
  * @author Windhel
  */
 
-public class XDateField extends JFormattedTextField implements UIInput, Validatable, Containable {
+public class XDateField extends XTextField {
     
-    private boolean nullWhenEmpty = true;
-    private String[] depends;
-    private int index;
-    private Binding binding;
     private Date currentDate;
     private SimpleDateFormat inputFormatter;
     private SimpleDateFormat outputFormatter;
     private String outputFormat;
     private String inputFormat;
-    private ControlProperty controlProperty = new ControlProperty();
-    private ActionMessage actionMessage = new ActionMessage();
     private Date formattedDate;
     
     public XDateField() {
         setOutputFormat("yyyy-MM-dd");
         setInputFormat("yyyy-MM-dd");
+        addFocusListener(new DateFieldSupport());
     }
     
     public Object getValue() {
@@ -50,40 +40,13 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
     }
     
     public void setValue(Object value) {
-        value = outputFormatter.format(value);
-        setText( value==null? "" : value.toString() );
-    }
-    
-    public boolean isNullWhenEmpty() {
-        return nullWhenEmpty;
-    }
-    
-    public void setNullWhenEmpty(boolean nullWhenEmpty) {
-        this.nullWhenEmpty = nullWhenEmpty;
-    }
-    
-    public String[] getDepends() {
-        return depends;
-    }
-    
-    public void setDepends(String[] depends) {
-        this.depends = depends;
-    }
-    
-    public int getIndex() {
-        return index;
-    }
-    
-    public void setIndex(int index) {
-        this.index = index;
-    }
-    
-    public void setBinding(Binding binding) {
-        this.binding = binding;
-    }
-    
-    public Binding getBinding() {
-        return binding;
+        if ( value instanceof KeyEvent ) {
+            KeyEvent ke = (KeyEvent) value;
+            setText( ke.getKeyChar()+"" );
+        } else {
+            value = outputFormatter.format(value);
+            setText( value==null? "" : value.toString() );
+        }
     }
     
     public void refresh() {
@@ -93,16 +56,6 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
     
     public void load() {
         setInputVerifier(UIInputUtil.VERIFIER);
-        
-        addFocusListener(new DateFieldSupport());
-    }
-    
-    public int compareTo(Object o) {
-        if( o == null || !(o instanceof UIControl) )
-            return 0;
-        
-        UIControl u = (UIControl)o;
-        return this.index - u.getIndex();
     }
     
     public String getOutputFormat() {
@@ -143,23 +96,9 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
         }
     }
     
-    public String getCaption() {
-        return controlProperty.getCaption();
-    }
-    
-    public void setCaption(String caption) {
-        controlProperty.setCaption(caption);
-    }
-    
-    public boolean isRequired() {
-        return controlProperty.isRequired();
-    }
-    
-    public void setRequired(boolean required) {
-        controlProperty.setRequired(required);
-    }
-    
     public void validateInput() {
+        ActionMessage actionMessage = getActionMessage();
+        ControlProperty controlProperty = getControlProperty();
         actionMessage.clearMessages();
         controlProperty.setErrorMessage(null);
         if( isRequired() && ValueUtil.isEmpty(getText()) ) {
@@ -177,15 +116,6 @@ public class XDateField extends JFormattedTextField implements UIInput, Validata
         if(actionMessage.hasMessages())
             controlProperty.setErrorMessage(actionMessage.toString());
     }
-    
-    public ActionMessage getActionMessage() {
-        return actionMessage;
-    }
-    
-    public ControlProperty getControlProperty() {
-        return controlProperty;
-    }
-    
     
     //<editor-fold defaultstate="collapsed" desc="  DateFieldSupport (class)  ">
     private class DateFieldSupport implements FocusListener {

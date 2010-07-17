@@ -2,7 +2,7 @@
 <workunit>
     <invokers>
         <invoker type="loader" caption="Loader 2" index="2"
-                 target="process" action="init"/>
+                 target="process" action="init" permission="logDateLoggedIn"/>
     </invokers>
     
     <code>
@@ -14,7 +14,7 @@
         public class Loader2Controller  {
         
             void init() {
-                println "===> firing loader 2 (process)";
+                println "===> (LOADER 2) Logging Login Date " + new Date();
             }
 
         }

@@ -9,11 +9,9 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
-import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.table.TableManager;
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
@@ -189,8 +187,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     
     public int compareTo(Object o) {
-        if ( o == null || !(o instanceof UIControl) ) return 0;
-        return this.index = ((UIControl) o).getIndex();
+        return UIControlUtil.compare(this, o);
     }
     //</editor-fold>
     
@@ -204,9 +201,9 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         ListItem selectedItem = listModel.getSelectedItem();
         if( selectedItem!=null && selectedItem.getItem()!=null) {
             try {
-                System.out.println("selected item is " + selectedItem.getItem());
+                //fire open item here
             } catch(Exception ex){
-                MsgBox.err(ex);
+                throw new IllegalStateException("XTable::openItem", ex);
             }
         }
     }

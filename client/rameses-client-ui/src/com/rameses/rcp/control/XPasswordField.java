@@ -4,13 +4,11 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.Containable;
 import com.rameses.rcp.ui.ControlProperty;
-import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
-import com.rameses.util.ValueUtil;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -49,8 +47,55 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     private ActionMessage actionMessage = new ActionMessage();
     private ControlProperty controlProperty = new ControlProperty();
     
+    
     public XPasswordField() {}
     
+    
+    public void refresh() {
+        Object value = UIControlUtil.getBeanValue(this);
+        setValue(value);
+    }
+    
+    public void load() {
+        setInputVerifier(UIInputUtil.VERIFIER);
+        
+        if( getEchoChar() == ' ') {
+            setFont(FONT);
+            addKeyListener(new KeyListenerSupport());
+            charWidth = getFontMetrics(FONT).charWidth(passwordChar);
+            setMargin(new Insets(0,0,0,0));
+            psswrdWidth= ((int)getSize().getWidth() / charWidth) - 1;
+        }
+    }
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if(Beans.isDesignTime()) return;
+        
+        if( getEchoChar() == ' ') {
+            int x = 0;
+            int iconIndex = 0;
+            if( getPassword().length >= psswrdWidth)
+                x = getPassword().length - psswrdWidth + 1;
+            else
+                x = 1;
+            for(int counter = x, passLength = 0; counter < getPassword().length + 1 ; counter++) {
+                if(! (passLength == (psswrdWidth - 1)))
+                    passLength++;
+                if(iconIndexList.isEmpty() == true)
+                    iconIndex = 0;
+                else
+                    iconIndex = Integer.parseInt( (String) iconIndexList.get(counter - 1) );
+                g.drawImage( icons[iconIndex].getImage(), passLength * charWidth, (getHeight() - imgHeight) / 2 , charWidth, imgHeight, null);
+            }
+        }
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public Object getValue() {
         if( Beans.isDesignTime())
             return "";
@@ -94,62 +139,14 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
         this.binding = binding;
     }
     
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
-    }
-    
-    public void load() {
-        setInputVerifier(UIInputUtil.VERIFIER);
-        
-        if( getEchoChar() == ' ') {
-            setFont(FONT);
-            addKeyListener(new KeyListenerSupport());
-            charWidth = getFontMetrics(FONT).charWidth(passwordChar);
-            setMargin(new Insets(0,0,0,0));
-            psswrdWidth= ((int)getSize().getWidth() / charWidth) - 1;
-        }
-    }
-    
-    public int compareTo(Object o) {
-        if(o == null || !(o instanceof UIControl) )
-            return 0;
-        
-        UIControl u = (UIControl)o;
-        return this.index - u.getIndex();
-    }
-    
     public void setEchoChar(char c) {
-        this.passwordChar = c;            
+        this.passwordChar = c;
         icons = null;
         iconPathList = null;
     }
     
     public char getEchoChar() {
         return passwordChar;
-    }
-    
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if(Beans.isDesignTime()) return;
-        
-        if( getEchoChar() == ' ') {
-            int x = 0;
-            int iconIndex = 0;
-            if( getPassword().length >= psswrdWidth)
-                x = getPassword().length - psswrdWidth + 1;
-            else
-                x = 1;
-            for(int counter = x, passLength = 0; counter < getPassword().length + 1 ; counter++) {
-                if(! (passLength == (psswrdWidth - 1)))
-                    passLength++;
-                if(iconIndexList.isEmpty() == true)
-                    iconIndex = 0;
-                else
-                    iconIndex = Integer.parseInt( (String) iconIndexList.get(counter - 1) );
-                g.drawImage( icons[iconIndex].getImage(), passLength * charWidth, (getHeight() - imgHeight) / 2 , charWidth, imgHeight, null);
-            }
-        }
     }
     
     public void setMargin(Insets m) {
@@ -163,7 +160,7 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     
     public void setIcons(String[] iconPathList) {
         passwordChar = ' ';
-        this.iconPathList = iconPathList;        
+        this.iconPathList = iconPathList;
         if(Beans.isDesignTime()) return;
         
         icons = new ImageIcon[iconPathList.length];
@@ -179,23 +176,23 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
         ClassLoader cl = ClientContext.getCurrentContext().getClassLoader();
         return cl.getResource(path);
     }
-
+    
     public String getCaption() {
         return controlProperty.getCaption();
     }
-
+    
     public void setCaption(String caption) {
         controlProperty.setCaption(caption);
     }
-
+    
     public boolean isRequired() {
         return controlProperty.isRequired();
     }
-
+    
     public void setRequired(boolean required) {
         controlProperty.setRequired(required);
     }
-
+    
     public void validateInput() {
         actionMessage.clearMessages();
         controlProperty.setErrorMessage(null);
@@ -204,14 +201,15 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
             controlProperty.setErrorMessage(actionMessage.toString());
         }
     }
-
+    
     public ActionMessage getActionMessage() {
         return actionMessage;
     }
-
+    
     public ControlProperty getControlProperty() {
         return controlProperty;
     }
+    //</editor-fold>
     
     
     //<editor-fold defaultstate="collapsed" desc="  KeyListenerSupport (class)  ">

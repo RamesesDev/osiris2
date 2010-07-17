@@ -33,6 +33,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.JTextComponent;
 import com.rameses.rcp.control.XTable;
+import javax.swing.JButton;
+import javax.swing.JRootPane;
 
 /**
  *
@@ -77,6 +79,9 @@ public class TableComponent extends JTable implements ListModelListener {
         
         KeyStroke shiftEnter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 1);
         getInputMap(cond).put(shiftEnter, "selectPreviousColumnCell");
+        
+        EnterAction ea = new EnterAction(this);
+        registerKeyboardAction(ea, ea.getKeyStroke(), JComponent.WHEN_FOCUSED);
     }
     
     public void setListModel(AbstractListModel listModel) {
@@ -131,12 +136,8 @@ public class TableComponent extends JTable implements ListModelListener {
             addKeyboardAction(editor, KeyEvent.VK_TAB, true);
             addKeyboardAction(editor, KeyEvent.VK_ESCAPE, false);
             
-            InputVerifier verifier = editor.getInputVerifier();
-            editor.putClientProperty(InputVerifier.class, verifier);
-            editor.setInputVerifier(null);
-            editor.setName(dc.getName());
-            
             UIInput input = (UIInput) editor;
+            editor.setName(dc.getName());
             input.setBinding(itemBinding);
             itemBinding.register(input);
             
@@ -348,7 +349,13 @@ public class TableComponent extends JTable implements ListModelListener {
             return;
         }
         
-        editor.setInputVerifier( (InputVerifier) editor.getClientProperty(InputVerifier.class));
+        InputVerifier verifier = (InputVerifier) editor.getClientProperty(InputVerifier.class);
+        if ( verifier == null ) {
+            verifier = editor.getInputVerifier();
+            editor.putClientProperty(InputVerifier.class, verifier);
+        }
+        
+        editor.setInputVerifier( verifier );
         editor.setVisible(true);
         editor.grabFocus();
         editingMode = true;
@@ -484,4 +491,30 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  EnterAction (class)  ">
+    private class EnterAction implements ActionListener {
+        
+        private KeyStroke ks;
+        private JComponent component;
+        private ActionListener origAction;
+        
+        EnterAction(JComponent component) {
+            this.component = component;
+            ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+            origAction = component.getActionForKeyStroke(ks);
+        }
+        
+        public KeyStroke getKeyStroke() { return ks; }
+        
+        public void actionPerformed(ActionEvent e) {
+            JRootPane rp = component.getRootPane();
+            if (rp != null && rp.getDefaultButton() != null ) {
+                JButton btn = rp.getDefaultButton();
+                btn.doClick();
+            } else {
+                origAction.actionPerformed(e);
+            }
+        }
+    }
+    //</editor-fold>
 }

@@ -26,7 +26,6 @@ public class LoginPage extends javax.swing.JPanel {
         jPanel1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createTitledBorder(null, "User Login", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 11), new java.awt.Color(0, 0, 153)), javax.swing.BorderFactory.createEtchedBorder()));
 
         formPanel1.setCaptionWidth(100);
-        xTextField1.setText("xTextField1");
         xTextField1.setCaption("Username");
         xTextField1.setName("username");
         xTextField1.setPreferredSize(new java.awt.Dimension(150, 19));

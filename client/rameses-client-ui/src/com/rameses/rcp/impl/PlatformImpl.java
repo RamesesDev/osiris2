@@ -3,6 +3,9 @@ package com.rameses.rcp.impl;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.util.ValueUtil;
+import java.awt.Container;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
@@ -34,17 +37,26 @@ public class PlatformImpl implements Platform {
         if ( ValueUtil.isEmpty(title) ) title = id;
         String canClose = (String) properties.get("canclose");
         
-        JDialog d = new JDialog(mainWindow.getComponent());
+        JDialog parent = mainWindow.getComponent();
+        if ( actionSource != null ) {
+            parent = getParentDialog(actionSource);
+        }
+        
+        JDialog d = new JDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
         
-        if ( "false".equals(canClose) )
+        if ( "false".equals(canClose) ) {
             d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        else
+        } else {
             d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        }
         
         d.pack();
+        d.addWindowListener( new XWindowListener(id) );
+        d.setLocationRelativeTo(parent);
         d.setVisible(true);
+        
         windows.put(id, d);
     }
     
@@ -89,5 +101,32 @@ public class PlatformImpl implements Platform {
             d.toFront();
         }
     }
+    
+    private JDialog getParentDialog(JComponent actionSource) {
+        Container parent = actionSource.getParent();
+        while( parent != null ) {
+            if ( parent instanceof JDialog )
+                return (JDialog) parent;
+            
+            parent = parent.getParent();
+        }
+        return null;
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  XWindowListener (class)  ">
+    private class XWindowListener extends WindowAdapter {
+        
+        private String windowId;
+        
+        XWindowListener(String id) {
+            this.windowId = id;
+        }
+        
+        public void windowClosed(WindowEvent e) {
+            windows.remove(windowId);
+        }
+        
+    }
+    //</editor-fold>
     
 }

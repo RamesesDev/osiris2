@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.FocusListener;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -43,6 +44,7 @@ public final class TableManager {
     public static final Color FOCUS_BG = new Color(254, 255, 208);
     
     private static Map<String, Class<?extends JComponent>> editors = new HashMap();
+    private static Map<String, Class> numClass = new HashMap();
     private static Map<String, TableCellRenderer> renderers = new HashMap();
     private static TableCellRenderer headerRenderer = new TableHeaderRenderer();
     
@@ -54,7 +56,8 @@ public final class TableManager {
         editors.put("boolean", XCheckBox.class);
         editors.put("combo", XComboBox.class);
         editors.put("date", XDateField.class);
-        editors.put("number", XNumberField.class);
+        editors.put("double", XNumberField.class);
+        editors.put("integer", XNumberField.class);
         editors.put("decimal", XNumberField.class);
         
         //map of renderers
@@ -68,6 +71,11 @@ public final class TableManager {
         
         renderer = new BooleanRenderer();
         renderers.put("boolean", renderer);
+        
+        //number class types
+        numClass.put("decimal", BigDecimal.class);
+        numClass.put("integer", Integer.class);
+        numClass.put("double", Double.class);
     }
     //</editor-fold>
     
@@ -75,19 +83,7 @@ public final class TableManager {
         JComponent editor = null;
         try {
             editor = editors.get(type).newInstance();
-            editor.setBackground(FOCUS_BG);
-            Font font = (Font) UIManager.get("Table.font");
-            editor.setFont(font);
-            if ( "boolean".equals(type) ) {
-                ((JCheckBox) editor).setHorizontalAlignment(SwingConstants.CENTER);
-            }
-            
-            if ( "combo".equals(type) ) {
-                XComboBox cbox = (XComboBox) editor;
-                cbox.setDynamic(true);
-            } else {
-                editor.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
-            }
+            initEditor(editor, type);
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -111,6 +107,32 @@ public final class TableManager {
         return label;
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  helper  ">
+    private static void initEditor(JComponent editor, String type) {
+        type = type+"";
+        editor.setBackground(FOCUS_BG);
+        Font font = (Font) UIManager.get("Table.font");
+        editor.setFont(font);
+        
+        //remove all focus listeners (we don't need it in the table)
+        for (FocusListener l: editor.getFocusListeners() ) {
+            editor.removeFocusListener(l);
+        }
+        
+        if ( "boolean".equals(type) ) {
+            ((JCheckBox) editor).setHorizontalAlignment(SwingConstants.CENTER);
+        } else if ( editor instanceof XNumberField ) {
+            ((XNumberField) editor).setFieldType(numClass.get(type));
+        }
+        
+        if ( "combo".equals(type) ) {
+            XComboBox cbox = (XComboBox) editor;
+            cbox.setDynamic(true);
+        } else {
+            editor.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
+        }
+    }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  TableHeaderRenderer (class)  ">
     private static class TableHeaderRenderer implements TableCellRenderer {

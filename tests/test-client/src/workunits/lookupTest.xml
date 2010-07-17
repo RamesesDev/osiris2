@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Lookup Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class LookupTestController  {
+        
+            def item;
+            def handler = new Opener(name: 'test-client:sampleLookup');
+            
+            def orderList = [];
+            
+            void addToCart() {
+                orderList.add(item);
+                listHandler.load();
+                item = null;
+            }
+        
+            def listHandler = [
+                
+                fetchList: { orderList },
+                getColumns: {
+                    [
+                        new Column(name: 'item.code', caption: 'Item Code'),
+                        new Column(name: 'item.name', caption: 'Description')
+                    ]
+                },
+                onRemoveItem: { orderList.remove(it) }
+                
+            ] as SubListModel;
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.lookup.TestPage"/>
+    </pages>
+</workunit>

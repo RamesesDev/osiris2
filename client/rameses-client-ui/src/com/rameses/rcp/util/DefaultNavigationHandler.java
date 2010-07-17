@@ -6,6 +6,7 @@ import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.common.Opener;
+import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.rcp.framework.UIController;
@@ -20,11 +21,12 @@ import javax.swing.JComponent;
  * @author jaycverg
  */
 public class DefaultNavigationHandler implements NavigationHandler {
-
+    
     
     public void navigate(NavigatablePanel panel, UICommand source, Object outcome) {
         if ( panel == null ) return;
         
+        JComponent sourceComp = (JComponent) source;
         ClientContext ctx = ClientContext.getCurrentContext();
         Platform platform = ctx.getPlatform();
         
@@ -50,16 +52,17 @@ public class DefaultNavigationHandler implements NavigationHandler {
                 
                 if ( self ) {
                     conStack.push(controller);
+                    
                 } else {
                     UIControllerPanel uic = new UIControllerPanel(controller);
                     controller.setId( id );
-                    controller.setTitle( ValueUtil.isEmpty(caption)? id: caption );                    
+                    controller.setTitle( ValueUtil.isEmpty(caption)? id: caption );
+                    ControlSupport.setProperties(controller.getCodeBean(), opener.getParams());
                     
                     Map props = new HashMap();
                     props.put("id", controller.getId());
                     props.put("title", controller.getTitle());
                     
-                    JComponent sourceComp = (JComponent) source;
                     if ( "_popup".equals(opener.getTarget()) ) {
                         platform.showPopup(sourceComp, uic, props);
                     } else {
@@ -76,10 +79,6 @@ public class DefaultNavigationHandler implements NavigationHandler {
                         } else {
                             String conId = curController.getId();
                             platform.closeWindow(conId);
-                            boolean exists = platform.isWindowExists(conId);
-                            if ( !exists ) {
-                                conStack.pop(); //remove if successfully closed.
-                            }
                         }
                     }
                 } else {

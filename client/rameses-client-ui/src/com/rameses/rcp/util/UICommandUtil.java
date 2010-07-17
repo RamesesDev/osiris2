@@ -50,7 +50,7 @@ public class UICommandUtil {
                 }
             }
         } catch(Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
         }
     }
@@ -58,7 +58,7 @@ public class UICommandUtil {
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private static NavigatablePanel getParentPanel(UICommand command, String target) {
         JComponent comp = (JComponent) command;
-        NavigatablePanel panel = (NavigatablePanel) comp.getClientProperty(NavigatablePanel.class.getName());
+        NavigatablePanel panel = null; //(NavigatablePanel) comp.getClientProperty(NavigatablePanel.class);
         if ( panel == null ) {
             Container parent = comp.getParent();
             while( parent != null ) {
@@ -71,7 +71,7 @@ public class UICommandUtil {
                 parent = parent.getParent();
             }
             if ( panel != null ) {
-                comp.putClientProperty(NavigatablePanel.class.getName(), panel);
+                comp.putClientProperty(NavigatablePanel.class, panel);
             }
         }
         return panel;

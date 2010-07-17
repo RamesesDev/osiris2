@@ -87,8 +87,7 @@ public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel
     }
     
     public int compareTo(Object o) {
-        if ( o == null || !(o instanceof UIControl) ) return 0;
-        return this.index - ((UIControl) o).getIndex();
+        return UIControlUtil.compare(this, o);
     }
     
     public Stack<UIController> getControllers() {

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class SamplLookupController extends LookupModel {
+                
+            Column[] getColumns() {
+                return [
+                    new Column(name: 'item.code', caption: 'Item Code'),
+                    new Column(name: 'item.name', caption: 'Description')
+                ];
+            }
+            
+            List fetchList(Map params) {
+                return [
+                    [code: '1234', name: 'Pencil'],
+                    [code: '1235', name: 'Ballpen'],
+                    [code: '1236', name: 'Paper'],
+                    [code: '1237', name: 'Writing Notebook']
+                ];
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.lookup.LookupPage"/>
+    </pages>
+</workunit>

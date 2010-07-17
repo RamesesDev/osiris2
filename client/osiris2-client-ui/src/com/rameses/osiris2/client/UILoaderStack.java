@@ -56,8 +56,11 @@ public class UILoaderStack extends Stack {
                 ClientContext ctx = ClientContext.getCurrentContext();
                 
                 //check permission
-//                ClientSecurityProvider sp = ctx.getSecurityProvider();
-//                if ( sp.checkPermission(i.getPermission()) )
+                OsirisSessionContext sessCtx = (OsirisSessionContext) OsirisContext.getSession();
+                if ( !sessCtx.checkPermission(i.getWorkunitid(), i.getPermission()) ) {
+                    loaders.remove(0);
+                    continue;
+                }
                 
                 ControllerProvider cp = ctx.getControllerProvider();
                 UIController c = cp.getController( i.getWorkunitid() );
@@ -74,6 +77,12 @@ public class UILoaderStack extends Stack {
                     c.initialize();
                     c.init( null, action );
                     peek = c;
+                    
+                    //if size is 1, this is the last loader usually the home page
+                    //reload the menus/folders
+                    if ( loaders.size() <= 1 ) {
+                        sessCtx.reload();
+                    } 
                 }
             }
         }

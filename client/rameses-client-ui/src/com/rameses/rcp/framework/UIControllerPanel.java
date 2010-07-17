@@ -1,10 +1,15 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.rcp.control.XButton;
 import java.awt.BorderLayout;
 import java.awt.LayoutManager;
 import java.util.Stack;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
  *
@@ -13,10 +18,25 @@ import javax.swing.SwingUtilities;
 public class UIControllerPanel extends JPanel implements NavigatablePanel {
     
     private Stack controllers = new ControllerStack();
-    
+    private boolean defaultBtnAdded;
+    private XButton defaultBtn;
     
     public UIControllerPanel() {
         super.setLayout(new BorderLayout());
+        addAncestorListener(new AncestorListener() {
+            public void ancestorAdded(AncestorEvent event) {
+                if ( defaultBtn != null && !defaultBtnAdded ) {
+                    JComponent comp = event.getComponent();
+                    JRootPane rp = comp.getRootPane();
+                    if ( rp != null ) {
+                        rp.setDefaultButton(defaultBtn);
+                        defaultBtnAdded = true;
+                    }
+                }
+            }
+            public void ancestorMoved(AncestorEvent event) {}
+            public void ancestorRemoved(AncestorEvent event) {}
+        });
     }
     
     public UIControllerPanel(UIController controller) {
@@ -30,6 +50,9 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel {
         removeAll();
         if ( current != null ) {
             UIViewPanel p = current.getCurrentView();
+            defaultBtn = p.getBinding().getDefaultButton();
+            if ( defaultBtn != null ) defaultBtnAdded = false;
+            
             add( p );
             p.refresh();
         }
