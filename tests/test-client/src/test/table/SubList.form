@@ -13,16 +13,16 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="314" max="32767" attributes="0"/>
+              <EmptySpace pref="422" max="32767" attributes="0"/>
               <Component id="xButton1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
-          <Component id="xTable1" alignment="0" pref="427" max="32767" attributes="0"/>
+          <Component id="xTable1" alignment="0" pref="535" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" pref="69" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xLabel1" pref="328" max="32767" attributes="0"/>
+              <Component id="xLabel1" pref="436" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -36,7 +36,7 @@
                   <Component id="xLabel1" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xTable1" pref="258" max="32767" attributes="0"/>
+              <Component id="xTable1" pref="253" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xButton1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -71,7 +71,6 @@
             </CompundBorder>
           </Border>
         </Property>
-        <Property name="text" type="java.lang.String" value="xLabel1"/>
         <Property name="depends" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
           <StringArray count="1">
             <StringItem index="0" value="selectedItem"/>

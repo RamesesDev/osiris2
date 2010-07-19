@@ -27,7 +27,6 @@ import java.awt.LayoutManager;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -42,6 +41,7 @@ import com.rameses.rcp.control.table.TableHeaderBorder;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -70,9 +70,9 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         JScrollPane jsp = new JScrollPane(table);
         jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jsp.setBorder(BorderFactory.createEmptyBorder());
         jsp.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
         jsp.setRowHeaderView(rowHeaderView);
+        jsp.setBorder(BorderFactory.createEmptyBorder());
         
         super.setLayout(new BorderLayout());
         add(jsp, BorderLayout.CENTER);
@@ -254,13 +254,12 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     
     //<editor-fold defaultstate="collapsed" desc="  TableBorder (class)  ">
-    private static class TableBorder extends AbstractBorder implements UIResource {
+    public static class TableBorder extends AbstractBorder {
         
         private static final Insets insets = new Insets(1, 1, 2, 2);
         
         public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-            
-            
+                        
             g.translate( x, y);
             
             g.setColor( MetalLookAndFeel.getControlDarkShadow() );

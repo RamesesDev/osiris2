@@ -37,7 +37,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     
     public XLookupField() {
         super("com/rameses/rcp/icons/search.png");
-        setOrientation("RIGHT");
+        setOrientation( super.ICON_ON_RIGHT );
         addFocusListener( support );
         addKeyListener( support );
     }
@@ -60,9 +60,15 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     
     public void load() {
         super.load();
+        setInputVerifier(null);
         if ( ValueUtil.isEmpty(handler) ) return;
         
-        Object o = UIControlUtil.getBeanValue(this, handler);
+        Object o = null;
+        if ( handler.matches(".+:.+") ) //handler is a module:workunit name
+            o = new Opener(handler);
+        else
+            o = UIControlUtil.getBeanValue(this, handler);
+        
         if( o instanceof LookupModel ) {
             lookupModel = (LookupModel) o;
             
@@ -93,6 +99,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         }
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  lookup dialog support  ">
     private void fireLookup() {
         try {
             lookupModel.setSelector(this);
@@ -101,13 +108,17 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 UIController c = lookupController;
                 if ( c == null ) return; //should use a default lookup handler
                 
+                Platform platform = ClientContext.getCurrentContext().getPlatform();
+                String conId = c.getId();
+                if ( conId == null ) conId = getName() + handler;
+                if ( platform.isWindowExists(conId) ) return;
+                
                 UIControllerPanel uip = new UIControllerPanel(c);
                 
                 Map props = new HashMap();
-                props.put("id", c.getId());
+                props.put("id", conId);
                 props.put("title", c.getTitle());
                 
-                Platform platform = ClientContext.getCurrentContext().getPlatform();
                 platform.showPopup(this, uip, props);
             }
         } catch(Exception e) {
@@ -133,12 +144,22 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         this.refresh();
         support.setDirty(false);
         this.requestFocus();
+        selectedValue = value;
     }
-    
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public Object getValue() {
         return selectedValue;
+    }
+    
+    public void setValue(Object value) {
+        if ( value instanceof KeyEvent ) return;
+        
+        if ( value != null )
+            setText(value.toString());
+        else
+            setText("");
     }
     
     public String getHandler() {
@@ -172,12 +193,10 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         
         private boolean dirty;
         
-        public void focusGained(FocusEvent e) {
-            dirty = false;
-        }
+        public void focusGained(FocusEvent e) {}
         
         public void focusLost(FocusEvent e) {
-            if ( dirty ) {
+            if ( dirty && !e.isTemporary() ) {
                 refresh();
                 dirty = false;
             }

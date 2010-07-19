@@ -25,6 +25,9 @@ public class PlatformImpl implements Platform {
     }
     
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
+        if ( properties == null ) properties = new HashMap();
+        properties.put("modal", "false");
+        
         showPopup(actionSource, comp, properties);
     }
     
@@ -33,9 +36,13 @@ public class PlatformImpl implements Platform {
         if ( ValueUtil.isEmpty(id) )
             throw new IllegalStateException("id is required for a page.");
         
+        if ( windows.containsKey(id) ) return;
+        
         String title = (String) properties.get("title");
         if ( ValueUtil.isEmpty(title) ) title = id;
+        
         String canClose = (String) properties.get("canclose");
+        String modal = (String) properties.get("modal");
         
         JDialog parent = mainWindow.getComponent();
         if ( actionSource != null ) {
@@ -52,6 +59,7 @@ public class PlatformImpl implements Platform {
             d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         }
         
+        d.setModal( "true".equals(modal) );
         d.pack();
         d.addWindowListener( new XWindowListener(id) );
         d.setLocationRelativeTo(parent);
@@ -98,7 +106,7 @@ public class PlatformImpl implements Platform {
     public void activateWindow(String id) {
         if ( windows.containsKey(id) ) {
             JDialog d = (JDialog) windows.get(id);
-            d.toFront();
+            d.requestFocus();
         }
     }
     

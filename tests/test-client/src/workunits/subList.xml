@@ -2,7 +2,7 @@
 <workunit>
     <invokers>
         <invoker folderid="/menu/file" caption="SubList"/>
-        <invoker type="toolbar" caption="SubList 1"/>
+        <invoker type="toolbar" caption="SubList 1" permission="checkMcAddr"/>
     </invokers>
     
     <code>
@@ -10,6 +10,7 @@
         
         import com.rameses.common.annotations.*;
         import com.rameses.rcp.common.*;
+        import test.model.*;
                 
         public class SubListTestController  {
         
@@ -20,7 +21,7 @@
             }
         
             def handler = [
-                createItem: { [:] },
+                createItem: { [empType: EmployeeType.CASUAL] },
                 fetchList: { data },
                 onAddItem: { data.add(it) },
 
@@ -31,25 +32,26 @@
 
                 getColumns: {
                     return [
-                        new Column(name: "rownum", primary: true),
+                        new Column(name: "rownum", primary: true, width: 30),
                         new Column(name: "item.name", caption: "Name", editable: true, required: true),
                         new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
-                        new Column(name: "item.address", caption: "Address", editable: true, required: true),
-                        new Column(name: "item.date", caption: "Date", format: "MMMM dd, yyyy", type: "date", editable: true)
+                        new Column(name: "item.address", caption: "Address", editable: true, required: true, type: "lookup", handler: "test-client:addressLookup"),
+                        new Column(name: "item.date", caption: "Date", format: "MMMM dd, yyyy", type: "date", editable: true),
+                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, required: true)
                     ];
                 }
 
             ] as SubListModel;
 
             def data = [
-                [ name:"11", address:"cebu city", date: new Date(), balance: 500.50], 
-                [name:"12", address:"cebu city", date: new Date(), balance: 1000], 
-                [name:"13", address:"cebu city", date: new Date(), balance: 500.50],
-                [name:"14", address:"cebu city", date: new Date(), balance: 1520],
-                [ name:"21", address:"cebu city", date: new Date(), balance: 500.50],
-                [name:"22", address:"cebu city", date: new Date(), balance: 2500], 
-                [name:"23", address:"cebu city", date: new Date(), balance: 500.50],
-                [name:"24", address:"cebu city", date: new Date(), balance: 700]
+                [ name:"11", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL], 
+                [name:"12", address:"cebu city", date: new Date(), balance: 1000, empType: EmployeeType.CASUAL], 
+                [name:"13", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL],
+                [name:"14", address:"cebu city", date: new Date(), balance: 1520, empType: EmployeeType.CASUAL],
+                [ name:"21", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL],
+                [name:"22", address:"cebu city", date: new Date(), balance: 2500, empType: EmployeeType.CASUAL], 
+                [name:"23", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL],
+                [name:"24", address:"cebu city", date: new Date(), balance: 700, empType: EmployeeType.CASUAL]
 
             ];
             

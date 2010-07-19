@@ -12,6 +12,7 @@ import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
 import com.rameses.rcp.control.XDateField;
+import com.rameses.rcp.control.XLookupField;
 import com.rameses.rcp.control.XNumberField;
 import com.rameses.rcp.control.XTextField;
 import com.rameses.util.ValueUtil;
@@ -42,6 +43,7 @@ public final class TableManager {
     
     public static final Insets CELL_MARGIN = new Insets(1, 3, 1, 1);
     public static final Color FOCUS_BG = new Color(254, 255, 208);
+    public static final String HIDE_ON_ENTER = "hide.on.enter";
     
     private static Map<String, Class<?extends JComponent>> editors = new HashMap();
     private static Map<String, Class> numClass = new HashMap();
@@ -59,6 +61,7 @@ public final class TableManager {
         editors.put("double", XNumberField.class);
         editors.put("integer", XNumberField.class);
         editors.put("decimal", XNumberField.class);
+        editors.put("lookup", XLookupField.class);
         
         //map of renderers
         TableCellRenderer renderer = new StringRenderer();
@@ -79,11 +82,12 @@ public final class TableManager {
     }
     //</editor-fold>
     
-    public static JComponent createCellEditor(String type) {
+    public static JComponent createCellEditor(Column col) {
+        String type = col.getType()+"";
         JComponent editor = null;
         try {
             editor = editors.get(type).newInstance();
-            initEditor(editor, type);
+            customize(editor, col);
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -107,9 +111,14 @@ public final class TableManager {
         return label;
     }
     
+    public static boolean hideOnEnter(JComponent editor) {
+        String hide = editor.getClientProperty(HIDE_ON_ENTER)+"";
+        return !"false".equals(hide);
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  helper  ">
-    private static void initEditor(JComponent editor, String type) {
-        type = type+"";
+    private static void customize(JComponent editor, Column col) {
+        String type = col.getType()+"";
         editor.setBackground(FOCUS_BG);
         Font font = (Font) UIManager.get("Table.font");
         editor.setFont(font);
@@ -123,11 +132,21 @@ public final class TableManager {
             ((JCheckBox) editor).setHorizontalAlignment(SwingConstants.CENTER);
         } else if ( editor instanceof XNumberField ) {
             ((XNumberField) editor).setFieldType(numClass.get(type));
+        } else if ( "lookup".equals(type) ) {
+            XLookupField lookup = (XLookupField) editor;
+            lookup.setHandler( col.getHandler() );
+            lookup.setTranserFocusOnSelect(false);
+            lookup.putClientProperty(HIDE_ON_ENTER, false);
         }
         
         if ( "combo".equals(type) ) {
             XComboBox cbox = (XComboBox) editor;
-            cbox.setDynamic(true);
+            if ( col.getItems() != null ) {
+                cbox.setItems( col.getItems() );
+            }
+            if ( col.isRequired() ) {
+                cbox.setAllowNull(false);
+            }
         } else {
             editor.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
         }
@@ -241,6 +260,9 @@ public final class TableManager {
                 
             } else {
                 label.setHorizontalAlignment( SwingConstants.LEFT );
+                if ( value != null && c.isHtmlDisplay() ) {
+                    value = "<html>" + value + "</html>";
+                }
                 label.setText((value == null ? "" : value.toString()));
             }
         }

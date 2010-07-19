@@ -13,73 +13,71 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingConstants;
 
-public class NBHeaderBar extends JLayeredPane  
-{
+public class NBHeaderBar extends JLayeredPane {
     private Logo logo;
     private Layout layout;
     
-    public NBHeaderBar() 
-    {
+    public NBHeaderBar() {
         layout = new Layout();
         setLayout(layout);
         
-        logo = new Logo();    
-        add(logo, PALETTE_LAYER); 
-        layout.jcLogo = logo; 
+        logo = new Logo();
+        add(logo, PALETTE_LAYER);
+        layout.jcLogo = logo;
     }
     
-    public void setTopView(JComponent top)
-    {
+    public void setTopView(JComponent top) {
+        if ( layout.jcHeader != null ) {
+            remove(layout.jcHeader);
+        }
         add(top, DEFAULT_LAYER);
         layout.jcHeader = top;
     }
     
-    public void setBottomView(JComponent bottom)
-    {
+    public void setBottomView(JComponent bottom) {
+        if ( layout.jcFooter != null ) {
+            remove(layout.jcFooter);
+        }
         add(bottom, DEFAULT_LAYER);
-        layout.jcFooter = bottom; 
-    }    
+        layout.jcFooter = bottom;
+    }
     
     public void setLogoIcon(ImageIcon logoIcon) {
-        logo.setIcon(logoIcon); 
+        logo.setIcon(logoIcon);
     }
     
     
     //<editor-fold defaultstate="collapsed" desc=" Logo (Class) ">
-    private class Logo extends JLabel
-    {
-        Logo()
-        {
-            setVerticalAlignment(SwingConstants.TOP); 
+    private class Logo extends JLabel {
+        Logo() {
+            setVerticalAlignment(SwingConstants.TOP);
             addMouseListener(new MouseListener() {
-               public void mouseClicked(MouseEvent e) {
-                   e.consume();
-               }
-               public void mouseEntered(MouseEvent e) {
-                   e.consume();
-               }
-               public void mouseExited(MouseEvent e) {
-               }
-               public void mousePressed(MouseEvent e) {
-                   e.consume();
-               }
-               public void mouseReleased(MouseEvent e) {
-                   e.consume();
-               }
+                public void mouseClicked(MouseEvent e) {
+                    e.consume();
+                }
+                public void mouseEntered(MouseEvent e) {
+                    e.consume();
+                }
+                public void mouseExited(MouseEvent e) {
+                }
+                public void mousePressed(MouseEvent e) {
+                    e.consume();
+                }
+                public void mouseReleased(MouseEvent e) {
+                    e.consume();
+                }
             });
         }
     }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" Layout (Class) ">
-    private class Layout implements LayoutManager
-    {
+    private class Layout implements LayoutManager {
         private Component jcHeader = null;
         private Component jcFooter = null;
         private Component jcLogo = null;
         
-        public void addLayoutComponent(String name, Component comp) 
-        {
+        public void addLayoutComponent(String name, Component comp) {
             if ("header".equals(name))
                 this.jcHeader = comp;
             else if ("footer".equals(name))
@@ -88,80 +86,68 @@ public class NBHeaderBar extends JLayeredPane
                 this.jcLogo = comp;
         }
         
-        public void removeLayoutComponent(Component comp) 
-        {
+        public void removeLayoutComponent(Component comp) {
             if (jcHeader == comp) jcHeader = null;
             else if (jcFooter == comp) jcFooter = null;
             else if (jcLogo == comp) jcLogo = null;
         }
-
+        
         public Dimension preferredLayoutSize(Container parent) {
             return getLayoutSize(parent);
         }
-
+        
         public Dimension minimumLayoutSize(Container parent) {
             return getLayoutSize(parent);
         }
-
-        public void layoutContainer(Container parent) 
-        {
-            synchronized (parent.getTreeLock())
-            {
+        
+        public void layoutContainer(Container parent) {
+            synchronized (parent.getTreeLock()) {
                 Insets margin = parent.getInsets();
                 int x = margin.left;
                 int y = margin.top;
                 int w = parent.getWidth() - (margin.left + margin.right);
-                int h = parent.getHeight() - (margin.top + margin.bottom);  
-                    
-                if (jcLogo != null)
-                {
-                    Dimension dim = jcLogo.getPreferredSize();
-                    jcLogo.setBounds(w-dim.width, y, dim.width, dim.height); 
-                } 
+                int h = parent.getHeight() - (margin.top + margin.bottom);
                 
-                if (jcHeader != null)
-                {
+                if (jcLogo != null) {
+                    Dimension dim = jcLogo.getPreferredSize();
+                    jcLogo.setBounds(w-dim.width, y, dim.width, dim.height);
+                }
+                
+                if (jcHeader != null) {
                     Dimension dim = jcHeader.getPreferredSize();
                     jcHeader.setBounds(x, y, w, dim.height);
                     y += dim.height;
                 }
                 
-                if (jcFooter != null)
-                {
+                if (jcFooter != null) {
                     Dimension dim = jcFooter.getPreferredSize();
-                    jcFooter.setBounds(x, y, w, dim.height); 
-                }                  
+                    jcFooter.setBounds(x, y, w, dim.height);
+                }
             }
         }
-
-        public Dimension getLayoutSize(Container parent) 
-        {
-            synchronized (parent.getTreeLock())
-            {
+        
+        public Dimension getLayoutSize(Container parent) {
+            synchronized (parent.getTreeLock()) {
                 int w=0, h=0;
-                if (jcHeader != null)
-                {
+                if (jcHeader != null) {
                     Dimension dim = jcHeader.getPreferredSize();
                     w = dim.width;
                     h = dim.height;
                 }
                 
-                if (jcFooter != null)
-                {
+                if (jcFooter != null) {
                     Dimension dim = jcFooter.getPreferredSize();
                     if (w == 0)
                         w = dim.width;
                     else
                         w = Math.min(w, dim.width);
-
+                    
                     h += dim.height;
                 }
                 
-                if (jcLogo != null) 
-                {
+                if (jcLogo != null) {
                     Dimension dim = jcLogo.getPreferredSize();
-                    if (w == 0 && h == 0)
-                    {
+                    if (w == 0 && h == 0) {
                         w = dim.width;
                         h = dim.height;
                     }
@@ -174,6 +160,6 @@ public class NBHeaderBar extends JLayeredPane
             }
         }
     }
-    //</editor-fold>        
+    //</editor-fold>
     
 }

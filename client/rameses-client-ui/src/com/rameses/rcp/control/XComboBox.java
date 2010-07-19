@@ -86,7 +86,15 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             }
         } else {
             type = UIControlUtil.getValueType(this, getName());
-            if ( type.isEnum()) {
+            //if type is null, happens when the source is a Map key
+            //so try to use the classtype of the value if it is not null
+            if ( type == null ) {
+                Object value = UIControlUtil.getBeanValue(this);
+                if ( value != null ) {
+                    type = value.getClass();
+                }
+            }
+            if ( type != null && type.isEnum()) {
                 list = Arrays.asList(type.getEnumConstants());
                 isEnum = true;
             }

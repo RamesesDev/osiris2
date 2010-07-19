@@ -19,6 +19,7 @@
             def orderList = [];
             
             void addToCart() {
+                if ( !item ) return;
                 orderList.add(item);
                 listHandler.load();
                 item = null;

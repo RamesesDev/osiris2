@@ -26,14 +26,14 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     private boolean defaultCommand;
     
     
-    public XButton() {}
+    public XButton() {
+        addActionListener(this);
+    }
     
     
     public void refresh() {}
     
-    public void load() {
-        addActionListener(this);
-    }
+    public void load() {}
     
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);

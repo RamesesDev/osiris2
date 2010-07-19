@@ -9,9 +9,11 @@ package com.rameses.osiris2.netbeans;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.platform.interfaces.SubWindow;
 import java.util.Hashtable;
 import java.util.Map;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class NBPlatform implements Platform {
@@ -61,8 +63,9 @@ public class NBPlatform implements Platform {
     
     public void activateWindow(String id) {
         if ( windows.containsKey(id) ) {
-            NBSubWindow win = (NBSubWindow) windows.get(id);
-            win.requestActive();
+            SubWindow win = (SubWindow) windows.get(id);
+            if ( win instanceof NBSubWindow )
+                ((NBSubWindow) win).requestActive();
         }
     }
     
@@ -71,6 +74,29 @@ public class NBPlatform implements Platform {
     }
     
     public void showPopup(JComponent actionSource, JComponent comp, Map properties) {
+        String id = (String) properties.get("id");
+        if ( id == null || id.trim().length() == 0 )
+            throw new IllegalStateException("Id is required when showing a window.");
+        
+        NBPopup popup = null;
+        if (!windows.containsKey(id)) {
+            JFrame parent = (JFrame) mainWindow.getComponent();
+            popup = new NBPopup(this, parent, id);
+            popup.setContentPane(comp);
+            
+            String title = (String) properties.get("title");
+            if (title == null || title.trim().length() == 0) title = id;
+            
+            popup.setTitle(title);
+            windows.put(id, popup);
+            
+            popup.pack();
+            popup.setLocationRelativeTo(parent);
+            popup.setVisible(true);
+        } else {
+            popup = (NBPopup) windows.get(id);
+            popup.requestFocus();
+        }
     }
     
     public void showError(JComponent actionSource, Exception e) {
@@ -100,7 +126,7 @@ public class NBPlatform implements Platform {
     
     public void closeWindow(String id) {
         if ( windows.containsKey(id) ) {
-            NBSubWindow win = (NBSubWindow) windows.get(id);
+            SubWindow win = (SubWindow) windows.get(id);
             win.closeWindow();
         }
     }

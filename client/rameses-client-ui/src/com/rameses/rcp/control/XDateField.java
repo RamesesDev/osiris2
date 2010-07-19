@@ -44,7 +44,9 @@ public class XDateField extends XTextField {
             KeyEvent ke = (KeyEvent) value;
             setText( ke.getKeyChar()+"" );
         } else {
-            value = outputFormatter.format(value);
+            if ( value != null ) {
+                value = outputFormatter.format(value);
+            }
             setText( value==null? "" : value.toString() );
         }
     }
@@ -125,6 +127,8 @@ public class XDateField extends XTextField {
         }
         
         public void focusLost(FocusEvent e) {
+            if ( e.isTemporary() ) return;
+            
             showFormattedValue(true);
         }
         

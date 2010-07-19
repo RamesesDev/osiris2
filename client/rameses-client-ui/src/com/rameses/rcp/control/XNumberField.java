@@ -177,6 +177,8 @@ public class XNumberField extends XTextField {
         }
         
         public void focusLost(FocusEvent e) {
+            if ( e.isTemporary() ) return;
+            
             showFormattedValue(true);
         }
         

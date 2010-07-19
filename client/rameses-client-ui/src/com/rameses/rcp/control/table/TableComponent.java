@@ -15,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -31,8 +30,10 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import com.rameses.rcp.control.XTable;
+import java.awt.event.FocusListener;
 import javax.swing.JButton;
 import javax.swing.JRootPane;
 
@@ -73,7 +74,7 @@ public class TableComponent extends JTable implements ListModelListener {
             }
         });
         
-        int cond = JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+        int cond = super.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
         KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0);
         getInputMap(cond).put(enter, "selectNextColumnCell");
         
@@ -81,7 +82,9 @@ public class TableComponent extends JTable implements ListModelListener {
         getInputMap(cond).put(shiftEnter, "selectPreviousColumnCell");
         
         EnterAction ea = new EnterAction(this);
-        registerKeyboardAction(ea, ea.getKeyStroke(), JComponent.WHEN_FOCUSED);
+        registerKeyboardAction(ea, ea.keyStroke, JComponent.WHEN_FOCUSED);
+        
+        setAutoResizeMode(super.AUTO_RESIZE_LAST_COLUMN);
     }
     
     public void setListModel(AbstractListModel listModel) {
@@ -116,35 +119,41 @@ public class TableComponent extends JTable implements ListModelListener {
         int length = tableModel.getColumnCount();
         
         for ( int i=0; i<length; i++ ) {
-            Column dc = tableModel.getColumn(i);
-            TableCellRenderer cellRenderer = TableManager.getCellRenderer(dc.getType());
-            getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+            Column col = tableModel.getColumn(i);
+            TableCellRenderer cellRenderer = TableManager.getCellRenderer(col.getType());
+            TableColumn tableCol = getColumnModel().getColumn(i);
+            tableCol.setCellRenderer(cellRenderer);
+            applyColumnProperties(tableCol, col);
             
             if ( !(listModel instanceof SubListModel) ) {
-                dc.setEditable(false);
+                col.setEditable(false);
                 continue;
             }
             
-            if ( !dc.isEditable() ) continue;
+            if ( !col.isEditable() ) continue;
             if ( editors.containsKey(i) ) continue;
             
-            JComponent editor = TableManager.createCellEditor(dc.getType());
+            JComponent editor = TableManager.createCellEditor(col);
             editor.setVisible(false);
             editor.setBounds(-10, -10, 10, 10);
-            addFocusLostAction(editor);
-            addKeyboardAction(editor, KeyEvent.VK_ENTER, true);
+            editor.addFocusListener( new EditorFocusSupport() );
+            
+            if ( TableManager.hideOnEnter(editor) ) {
+                addKeyboardAction(editor, KeyEvent.VK_ENTER, true);
+            }
+            
             addKeyboardAction(editor, KeyEvent.VK_TAB, true);
             addKeyboardAction(editor, KeyEvent.VK_ESCAPE, false);
             
             UIInput input = (UIInput) editor;
-            editor.setName(dc.getName());
+            editor.setName(col.getName());
             input.setBinding(itemBinding);
             itemBinding.register(input);
             
             if ( input instanceof Validatable ) {
                 Validatable vi = ((Validatable) input);
-                vi.setRequired(dc.isRequired());
-                vi.setCaption(dc.getCaption());
+                vi.setRequired(col.isRequired());
+                vi.setCaption(col.getCaption());
                 
                 if ( vi.isRequired() ) required = true;
             }
@@ -153,6 +162,18 @@ public class TableComponent extends JTable implements ListModelListener {
             add(editor);
         }
         itemBinding.init(); //initialize item binding
+    }
+    
+    private void applyColumnProperties(TableColumn tc, Column c) {
+        if ( c.getMaxWidth() > 0 ) tc.setMaxWidth( c.getMaxWidth() );
+        if ( c.getMinWidth() > 0 ) tc.setMinWidth( c.getMinWidth() );
+        
+        if ( c.getWidth() > 0 ) {
+            tc.setWidth( c.getWidth() );
+            tc.setPreferredWidth( c.getWidth() );
+        }
+        
+        tc.setResizable( c.isResizable() );
     }
     //</editor-fold>
     
@@ -249,16 +270,8 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     private void addKeyboardAction(JComponent comp, int key, boolean commit) {
-        KeyStroke ks = KeyStroke.getKeyStroke(key, 0);
-        comp.registerKeyboardAction( new KeyBoardAction(commit), ks, JComponent.WHEN_FOCUSED);
-    }
-    
-    private void addFocusLostAction(JComponent editor) {
-        editor.addFocusListener( new FocusAdapter() {
-            public void focusLost(FocusEvent e) {
-                hideEditor(true);
-            }
-        });
+        KeyBoardAction kba = new KeyBoardAction(comp, key, commit);
+        comp.registerKeyboardAction(kba, kba.keyStroke, JComponent.WHEN_FOCUSED);
     }
     
     private void focusNextCellFrom(int rowIndex, int colIndex) {
@@ -434,6 +447,20 @@ public class TableComponent extends JTable implements ListModelListener {
     
     
     
+    //<editor-fold defaultstate="collapsed" desc="  EditorFocusSupport (class)  ">
+    private class EditorFocusSupport implements FocusListener {
+        
+        public void focusGained(FocusEvent e) {}
+        
+        public void focusLost(FocusEvent e) {
+            if ( !e.isTemporary() ) {
+                hideEditor(true);
+            }
+        }
+        
+    }
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="  TableKeyAdapter (class)  ">
     private static class TableKeyAdapter extends KeyAdapter {
         
@@ -472,20 +499,28 @@ public class TableComponent extends JTable implements ListModelListener {
     //<editor-fold defaultstate="collapsed" desc="  KeyBoardAction (class) ">
     private class KeyBoardAction implements ActionListener {
         
+        KeyStroke keyStroke;
         private boolean commit;
+        private ActionListener origAction;
         
-        KeyBoardAction(boolean commit) {
+        KeyBoardAction(JComponent comp, int key, boolean commit) {
             this.commit = commit;
+            this.keyStroke = KeyStroke.getKeyStroke(key, 0);
+            origAction = comp.getActionForKeyStroke(keyStroke);
         }
         
         public void actionPerformed(ActionEvent e) {
             JComponent comp = (JComponent) e.getSource();
             Point point = (Point) comp.getClientProperty(COLUMN_POINT);
             
-            hideEditor(comp, point.y, point.x, commit);
+            if ( origAction != null ) origAction.actionPerformed(e);
+            
             if ( commit ) {
                 focusNextCellFrom( point.y, point.x );
+            } else {
+                hideEditor(comp, point.y, point.x, false);
             }
+            
         }
         
     }
@@ -494,17 +529,15 @@ public class TableComponent extends JTable implements ListModelListener {
     //<editor-fold defaultstate="collapsed" desc="  EnterAction (class)  ">
     private class EnterAction implements ActionListener {
         
-        private KeyStroke ks;
+        KeyStroke keyStroke;
         private JComponent component;
         private ActionListener origAction;
         
         EnterAction(JComponent component) {
             this.component = component;
-            ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
-            origAction = component.getActionForKeyStroke(ks);
+            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+            origAction = component.getActionForKeyStroke(keyStroke);
         }
-        
-        public KeyStroke getKeyStroke() { return ks; }
         
         public void actionPerformed(ActionEvent e) {
             JRootPane rp = component.getRootPane();
