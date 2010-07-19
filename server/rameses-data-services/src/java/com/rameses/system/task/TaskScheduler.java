@@ -28,14 +28,14 @@ import javax.persistence.Query;
 @Local(TaskSchedulerLocal.class)
 public class TaskScheduler implements TaskSchedulerLocal {
     
-    @PersistenceContext(unitName="schedulerPU" )
+    @PersistenceContext(unitName="systemPU" )
     private EntityManager em;
     
     @Resource
     private SessionContext ctx;
     
-    @Resource(mappedName="TaskSchedulerMgmt")
-    private TaskSchedulerMgmtMBean taskMgmt;
+    //@Resource(mappedName="TaskSchedulerMgmt")
+    //private TaskSchedulerMgmtMBean taskMgmt;
     
     //to manually start the timer
     public void startTimer(long delay) {
@@ -52,6 +52,7 @@ public class TaskScheduler implements TaskSchedulerLocal {
     
     @Timeout
     public void timeout(Timer t) {
+        TaskSchedulerMgmtMBean taskMgmt = getTaskMgmt();
         
         //do not process if it is still processing so that there will be no overlapping tasks
         if( taskMgmt.isProcessing() ) return;
@@ -158,6 +159,7 @@ public class TaskScheduler implements TaskSchedulerLocal {
     }
     
     public void suspend(Long t) {
+        TaskSchedulerMgmtMBean taskMgmt = getTaskMgmt();
         TaskBean tb = em.find(TaskBean.class, t);
         em.persist(new SuspendedTask(tb));
         synchronized(taskMgmt.getBusyTasks()) {
@@ -166,10 +168,18 @@ public class TaskScheduler implements TaskSchedulerLocal {
     }
     
     public void resume(Long t) {
+        TaskSchedulerMgmtMBean taskMgmt = getTaskMgmt();
         SuspendedTask st = em.find(SuspendedTask.class, t);
         if( st != null ) em.remove(st);
         synchronized(taskMgmt.getBusyTasks()) {
             taskMgmt.getBusyTasks().remove( t );
         }
     }
+    
+    private TaskSchedulerMgmtMBean getTaskMgmt() {
+        TaskSchedulerMgmtMBean taskMgmt = (TaskSchedulerMgmtMBean)ctx.lookup("TaskSchedulerMgmt");
+        System.out.println("task management is " + taskMgmt);
+        return taskMgmt;
+    }
+    
 }

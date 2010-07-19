@@ -1,10 +1,9 @@
+package test.async;
 /*
  * TestPage.java
  *
  * Created on June 19, 2010, 10:32 AM
  */
-
-package test.table;
 
 /**
  *
@@ -25,8 +24,12 @@ public class TestPage extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         jLabel1 = new javax.swing.JLabel();
+        xButton1 = new com.rameses.rcp.control.XButton();
 
         jLabel1.setText("ASYNC TEST");
+
+        xButton1.setText("Async Local");
+        xButton1.setName("asyncLocal");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -34,7 +37,9 @@ public class TestPage extends javax.swing.JPanel {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(33, 33, 33)
-                .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 274, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 274, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(97, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -42,13 +47,16 @@ public class TestPage extends javax.swing.JPanel {
             .add(layout.createSequentialGroup()
                 .add(38, 38, 38)
                 .add(jLabel1)
-                .addContainerGap(288, Short.MAX_VALUE))
+                .add(30, 30, 30)
+                .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(235, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private com.rameses.rcp.control.XButton xButton1;
     // End of variables declaration//GEN-END:variables
     
 }

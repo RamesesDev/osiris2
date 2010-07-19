@@ -93,7 +93,7 @@ public class TaskThread extends Thread {
             InitialContext ctx = new InitialContext();
             System.out.println("about to invoke script service " + scriptName );
             ScriptServiceLocal scriptService = (ScriptServiceLocal)ctx.lookup("ScriptService/local");
-            Object result = scriptService.invoke( scriptName, method, new Object[]{task} );
+            Object result = scriptService.invoke( scriptName, method, new Object[]{task}, null );
             boolean success = true;
             if(result!=null) {
                 try {
