@@ -2,6 +2,11 @@ package com.rameses.interfaces;
 
 import java.io.InputStream;
 
+
+/***
+ * This interface is used by db script local
+ * 
+ */
 public interface ResourceProvider {
     
     public final static String SERVICE = "service";
