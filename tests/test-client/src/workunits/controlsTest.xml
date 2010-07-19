@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Controls Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class ControlsTestController  {
+        
+            Date date = new Date();
+            int intNum;
+            double doubleNum;
+            BigDecimal decimalNum = 10.1;
+            
+            def checkBox1;
+            def checkBox2;
+            def memo;
+            
+            def item = [name:"Minglanilla"];
+            def item2;
+            def item3;
+            def itemList = [[name:"Cebu City"], [name:"Minglanilla"], [name:"Naga"]];
+            
+            void showInput() {
+                MsgBox.alert("""
+                    date = $date
+                    intNum = $intNum
+                    doubleNum = $doubleNum
+                    decimalNum = $decimalNum
+                    item = $item
+                    item2 = $item2
+                    item3 = $item3
+                    checkBox1 = $checkBox1
+                    checkBox2 = $checkBox2
+                    memo = $memo
+                """);
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.ControlsTestPage"/>
+    </pages>
+</workunit>

@@ -24,31 +24,60 @@ public class TestPage extends javax.swing.JPanel {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
+        formPanel1 = new com.rameses.rcp.util.FormPanel();
+        xNumberField1 = new com.rameses.rcp.control.XNumberField();
+        xTextField1 = new com.rameses.rcp.control.XTextField();
+        xTextField2 = new com.rameses.rcp.control.XTextField();
+        xDateField1 = new com.rameses.rcp.control.XDateField();
+        xComboBox1 = new com.rameses.rcp.control.XComboBox();
+        xPasswordField1 = new com.rameses.rcp.control.XPasswordField();
 
-        jLabel1.setText("ASYNC TEST");
+        xNumberField1.setText("xNumberField1");
+        formPanel1.add(xNumberField1);
+
+        xTextField1.setText("xTextField1");
+        formPanel1.add(xTextField1);
+
+        xTextField2.setText("xTextField2");
+        formPanel1.add(xTextField2);
+
+        xDateField1.setText("xDateField1");
+        formPanel1.add(xDateField1);
+
+        xComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        xComboBox1.setPreferredSize(new java.awt.Dimension(150, 24));
+        formPanel1.add(xComboBox1);
+
+        xPasswordField1.setText("xPasswordField1");
+        formPanel1.add(xPasswordField1);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(33, 33, 33)
-                .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 274, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(97, Short.MAX_VALUE))
+                .addContainerGap()
+                .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(38, 38, 38)
-                .add(jLabel1)
-                .addContainerGap(288, Short.MAX_VALUE))
+                .addContainerGap()
+                .add(formPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 209, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(119, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private com.rameses.rcp.util.FormPanel formPanel1;
+    private com.rameses.rcp.control.XComboBox xComboBox1;
+    private com.rameses.rcp.control.XDateField xDateField1;
+    private com.rameses.rcp.control.XNumberField xNumberField1;
+    private com.rameses.rcp.control.XPasswordField xPasswordField1;
+    private com.rameses.rcp.control.XTextField xTextField1;
+    private com.rameses.rcp.control.XTextField xTextField2;
     // End of variables declaration//GEN-END:variables
     
 }

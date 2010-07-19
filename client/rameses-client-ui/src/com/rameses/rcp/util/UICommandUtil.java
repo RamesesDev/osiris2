@@ -27,7 +27,7 @@ public class UICommandUtil {
             String target = ValueUtil.isEmpty(command.getTarget())? "parent": command.getTarget();
             NavigatablePanel navPanel = getParentPanel(command, target);
             if ( "root".equals(target) ) {
-                UIController rootCon = navPanel.getControllers().peek();
+                UIController rootCon = (UIController) navPanel.getControllers().peek();
                 Binding rootBinding = rootCon.getCurrentView().getBinding();
                 validate(command, rootBinding);
             }
@@ -50,6 +50,7 @@ public class UICommandUtil {
                 }
             }
         } catch(Exception e) {
+            e.printStackTrace();
             ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
         }
     }
@@ -57,7 +58,7 @@ public class UICommandUtil {
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private static NavigatablePanel getParentPanel(UICommand command, String target) {
         JComponent comp = (JComponent) command;
-        NavigatablePanel panel = (NavigatablePanel) comp.getClientProperty(NavigatablePanel.class.getName());
+        NavigatablePanel panel = null; //(NavigatablePanel) comp.getClientProperty(NavigatablePanel.class);
         if ( panel == null ) {
             Container parent = comp.getParent();
             while( parent != null ) {
@@ -70,7 +71,7 @@ public class UICommandUtil {
                 parent = parent.getParent();
             }
             if ( panel != null ) {
-                comp.putClientProperty(NavigatablePanel.class.getName(), panel);
+                comp.putClientProperty(NavigatablePanel.class, panel);
             }
         }
         return panel;

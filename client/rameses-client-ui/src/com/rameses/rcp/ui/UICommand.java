@@ -4,11 +4,9 @@ package com.rameses.rcp.ui;
  *
  * @author jaycverg
  */
-public interface UICommand extends UIControl {
+public interface UICommand extends UIActionSource {
     
     boolean isUpdate();
-    boolean isImmediate();
-    String getTarget();
-    String getActionName();
+    boolean isDefaultCommand();
     
 }

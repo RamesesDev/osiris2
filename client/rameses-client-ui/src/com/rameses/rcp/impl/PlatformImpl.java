@@ -2,6 +2,11 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.util.ValueUtil;
+import java.awt.Container;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -13,23 +18,54 @@ import javax.swing.JOptionPane;
  */
 public class PlatformImpl implements Platform {
     
-    private MainWindow mainWindow;
-    
+    private MainDialog mainWindow = new MainDialog(); //default impl
+    private Map windows = new HashMap();
     
     public PlatformImpl() {
     }
     
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
+        if ( properties == null ) properties = new HashMap();
+        properties.put("modal", "false");
+        
         showPopup(actionSource, comp, properties);
     }
     
     public void showPopup(JComponent actionSource, JComponent comp, Map properties) {
-        JDialog d = new JDialog();
+        String id = (String) properties.get("id");
+        if ( ValueUtil.isEmpty(id) )
+            throw new IllegalStateException("id is required for a page.");
+        
+        if ( windows.containsKey(id) ) return;
+        
+        String title = (String) properties.get("title");
+        if ( ValueUtil.isEmpty(title) ) title = id;
+        
+        String canClose = (String) properties.get("canclose");
+        String modal = (String) properties.get("modal");
+        
+        JDialog parent = mainWindow.getComponent();
+        if ( actionSource != null ) {
+            parent = getParentDialog(actionSource);
+        }
+        
+        JDialog d = new JDialog(parent);
+        d.setTitle(title);
         d.setContentPane(comp);
-        d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        
+        if ( "false".equals(canClose) ) {
+            d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        } else {
+            d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        }
+        
+        d.setModal( "true".equals(modal) );
         d.pack();
-        d.setModal(true);
+        d.addWindowListener( new XWindowListener(id) );
+        d.setLocationRelativeTo(parent);
         d.setVisible(true);
+        
+        windows.put(id, d);
     }
     
     public void showError(JComponent actionSource, Exception e) {
@@ -56,8 +92,49 @@ public class PlatformImpl implements Platform {
         return mainWindow;
     }
     
-    public void setMainWindow(MainWindow mw) {
-        this.mainWindow = mw;
+    public boolean isWindowExists(String id) {
+        return windows.containsKey(id);
     }
+    
+    public void closeWindow(String id) {
+        if ( windows.containsKey(id) ) {
+            JDialog d = (JDialog) windows.remove(id);
+            d.dispose();
+        }
+    }
+    
+    public void activateWindow(String id) {
+        if ( windows.containsKey(id) ) {
+            JDialog d = (JDialog) windows.get(id);
+            d.requestFocus();
+        }
+    }
+    
+    private JDialog getParentDialog(JComponent actionSource) {
+        Container parent = actionSource.getParent();
+        while( parent != null ) {
+            if ( parent instanceof JDialog )
+                return (JDialog) parent;
+            
+            parent = parent.getParent();
+        }
+        return null;
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  XWindowListener (class)  ">
+    private class XWindowListener extends WindowAdapter {
+        
+        private String windowId;
+        
+        XWindowListener(String id) {
+            this.windowId = id;
+        }
+        
+        public void windowClosed(WindowEvent e) {
+            windows.remove(windowId);
+        }
+        
+    }
+    //</editor-fold>
     
 }

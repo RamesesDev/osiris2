@@ -32,6 +32,10 @@ public class OsirisSessionContext extends SessionContext {
     }
     
     public void load() {
+        reload();
+    }
+    
+    public void reload() {
         super.invokers.clear();
         super.folderIndex.clear();
         MainWindow m = ClientContext.getCurrentContext().getPlatform().getMainWindow();
@@ -40,10 +44,6 @@ public class OsirisSessionContext extends SessionContext {
         m.setTitle( (String) super.getEnv().get("app.title") );
         m.setComponent(ToolbarUtil.getToolBar(), MainWindow.TOOLBAR);
     }
-    
-    
-    
-    
     
     public List getPermissions() {
         return ((OsirisSecurityProvider)getSecurityProvider()).getPermissions();

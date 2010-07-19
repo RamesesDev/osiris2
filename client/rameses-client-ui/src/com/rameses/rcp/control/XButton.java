@@ -5,7 +5,7 @@ import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.util.UICommandUtil;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UICommand;
-import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.util.UIControlUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -23,11 +23,27 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     private boolean update;
     private ControlProperty property = new ControlProperty();
     private String target;
+    private boolean defaultCommand;
+    
     
     public XButton() {
         addActionListener(this);
     }
     
+    
+    public void refresh() {}
+    
+    public void load() {}
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        UICommandUtil.processAction(this);
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String[] getDepends() {
         return depends;
     }
@@ -46,23 +62,6 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     
     public Binding getBinding() {
         return binding;
-    }
-    
-    public void refresh() {
-        
-    }
-    
-    public void load() {
-        
-    }
-    
-    public int compareTo(Object o) {
-        if ( o == null || !(o instanceof UIControl) ) return 0;
-        return this.index - ((UIControl) o).getIndex();
-    }
-    
-    public void actionPerformed(ActionEvent e) {
-        UICommandUtil.processAction(this);
     }
     
     public String getActionName() {
@@ -96,5 +95,14 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     public void setUpdate(boolean update) {
         this.update = update;
     }
+    
+    public boolean isDefaultCommand() {
+        return defaultCommand;
+    }
+    
+    public void setDefaultCommand(boolean defaultCommand) {
+        this.defaultCommand = defaultCommand;
+    }
+    //</editor-fold>
     
 }
