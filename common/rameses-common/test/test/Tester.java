@@ -45,8 +45,8 @@ public class Tester extends TestCase {
     public void testMessageFormatter() {
         Object[] arr = new Object[]{ "windhell", "jayrome"};
         System.out.println(MessageFormat.format("{0} needs help from {1}, di ba {0}?", arr));
-        
-        
     }
+
+   
     
 }

@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.util;
+package com.rameses.io;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
