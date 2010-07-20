@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -55,8 +56,6 @@ public class TableComponent extends JTable implements ListModelListener {
     private boolean editingMode;
     private boolean editorBeanLoaded;
     private boolean rowCommited = true;
-    private Point lastPoint;
-    private boolean fromEditorAction;
     private JComponent currentEditor;
     private KeyEvent currentKeyEvent;
     
@@ -71,7 +70,6 @@ public class TableComponent extends JTable implements ListModelListener {
         getTableHeader().setReorderingAllowed(false);
         getTableHeader().setDefaultRenderer(TableManager.getHeaderRenderer());
         addKeyListener(KEY_LISTENER);
-        addFocusListener(new TableFocusAdapter());
         
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -331,6 +329,10 @@ public class TableComponent extends JTable implements ListModelListener {
     private void hideEditor(JComponent editor, int rowIndex, int colIndex, boolean commit) {
         if ( !commit ) {
             editor.setInputVerifier(null);
+            ListItem item = listModel.getItemList().get(rowIndex);
+            if ( item.getItem() != null ) {
+                ((UIInput) editor).refresh();
+            }
         }
         
         editor.setVisible(false);
@@ -339,7 +341,6 @@ public class TableComponent extends JTable implements ListModelListener {
         editor.setInputVerifier(null);
         
         tableModel.fireTableRowsUpdated(rowIndex, rowIndex);
-        if ( lastPoint != null ) fromEditorAction = true;
         grabFocus();
     }
     
@@ -396,8 +397,8 @@ public class TableComponent extends JTable implements ListModelListener {
     
     //<editor-fold defaultstate="collapsed" desc="  list model listener methods  ">
     public void refreshList() {
-        if ( !rowCommited ) rowChanged();
         if ( editingMode ) hideEditor(false);
+        if ( !rowCommited ) rowChanged();
         
         ListItem item = listModel.getSelectedItem();
         int col = getSelectedColumn();
@@ -448,7 +449,7 @@ public class TableComponent extends JTable implements ListModelListener {
     
     public void rowChanged() {
         if ( !rowCommited ) {
-            ListItem item = listModel.getSelectedItem();
+            ListItem item = (ListItem) itemBinding.getBean();
             int oldRowIndex = item.getIndex();
             if ( validateRow(oldRowIndex) && item.getState() == 0 ) {
                 listModel.addCreatedItem();
@@ -467,9 +468,23 @@ public class TableComponent extends JTable implements ListModelListener {
     //<editor-fold defaultstate="collapsed" desc="  EditorFocusSupport (class)  ">
     private class EditorFocusSupport implements FocusListener {
         
-        public void focusGained(FocusEvent e) {}
+        private boolean fromTempFocus;
+        
+        public void focusGained(FocusEvent e) {
+            if ( fromTempFocus ) {
+                if ( editingMode ) {
+                    hideEditor(true);
+                    JComponent comp = (JComponent) e.getSource();
+                    Point point = (Point) comp.getClientProperty(COLUMN_POINT);
+                    focusNextCellFrom(point.y, point.x);
+                }
+                fromTempFocus = false;
+            }
+        }
         
         public void focusLost(FocusEvent e) {
+            fromTempFocus = e.isTemporary();
+            
             if ( !e.isTemporary() ) {
                 hideEditor(true);
             }
@@ -483,32 +498,34 @@ public class TableComponent extends JTable implements ListModelListener {
         
         KeyStroke keyStroke;
         private boolean commit;
-        private ActionListener origAction;
+        private ActionListener[] listeners;
         
         EditorKeyBoardAction(JComponent comp, int key, boolean commit) {
             this.commit = commit;
             this.keyStroke = KeyStroke.getKeyStroke(key, 0);
             
             //hold only action on enter key
-            //this is usually used by lookup 
-            if ( key == KeyEvent.VK_ENTER ) {
-                origAction = comp.getActionForKeyStroke(keyStroke);
+            //this is usually used by lookup
+            if ( key == KeyEvent.VK_ENTER && comp instanceof JTextField ) {
+                JTextField jtf = (JTextField) comp;
+                listeners = jtf.getActionListeners();
             }
         }
         
         public void actionPerformed(ActionEvent e) {
-            JComponent comp = (JComponent) e.getSource();
-            Point point = (Point) comp.getClientProperty(COLUMN_POINT);
-            
-            if ( origAction != null ) {
-                origAction.actionPerformed(e);
-                lastPoint = point;
-            }
-            
-            if ( commit ) {
-                focusNextCellFrom( point.y, point.x );
+            if ( listeners != null && listeners.length > 0 ) {
+                for ( ActionListener l: listeners) {
+                    l.actionPerformed(e);
+                }
+                
             } else {
-                hideEditor(comp, point.y, point.x, false);
+                JComponent comp = (JComponent) e.getSource();
+                Point point = (Point) comp.getClientProperty(COLUMN_POINT);
+                if ( commit ) {
+                    focusNextCellFrom( point.y, point.x );
+                } else {
+                    hideEditor(comp, point.y, point.x, false);
+                }
             }
         }
         
@@ -575,19 +592,4 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  TableFocusAdapter (class)  ">
-    private class TableFocusAdapter implements FocusListener {
-        
-        public void focusGained(FocusEvent e) {
-            if ( fromEditorAction ) {
-                fromEditorAction = false;
-            } else if ( lastPoint != null ) {
-                tableModel.fireTableCellUpdated(lastPoint.y, lastPoint.x);
-                lastPoint = null;
-            }
-        }
-        
-        public void focusLost(FocusEvent e) {}
-    }
-    //</editor-fold>
 }

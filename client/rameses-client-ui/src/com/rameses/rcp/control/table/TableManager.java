@@ -115,16 +115,12 @@ public final class TableManager {
     
     //<editor-fold defaultstate="collapsed" desc="  editor customizer method  ">
     private static void customize(JComponent editor, Column col) {
-        String type = col.getType()+"";
-        editor.setBackground(FOCUS_BG);
-        Font font = (Font) UIManager.get("Table.font");
-        editor.setFont(font);
-        
         //remove all focus listeners (we don't need it in the table)
         for (FocusListener l: editor.getFocusListeners() ) {
             editor.removeFocusListener(l);
         }
         
+        String type = col.getType()+"";
         if ( editor instanceof JCheckBox ) {
             ((JCheckBox) editor).setHorizontalAlignment(SwingConstants.CENTER);
             
@@ -149,6 +145,11 @@ public final class TableManager {
             }
         }
         
+        
+        editor.setBackground(FOCUS_BG);
+        Font font = (Font) UIManager.get("Table.font");
+        editor.setFont(font);
+        
         if ( editor instanceof XComboBox ) {
             XComboBox cbox = (XComboBox) editor;
             if ( col.getItems() != null ) {
@@ -162,7 +163,8 @@ public final class TableManager {
             }
             
         } else {
-            editor.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
+            Border b = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right);
+            editor.setBorder( b );
         }
     }
     //</editor-fold>

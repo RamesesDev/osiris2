@@ -1,3 +1,4 @@
+import javax.swing.UIManager;
 import junit.framework.*;
 
 /*
@@ -18,7 +19,10 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-        
+        for ( Object o: UIManager.getLookAndFeel().getDefaults().entrySet()) {
+            //if ( o.toString().contains("table") )
+                System.out.println(o);
+        }
     }
     
 }
