@@ -50,26 +50,23 @@ public class FormPanel extends JPanel {
     public int getCaptionVAlignment() { return captionVAlignment; }
     public void setCaptionVAlignment(int captionVAlignment) { this.captionVAlignment = captionVAlignment; }
     
-    public Color getErrorCaptionColor() {
-        return errorCaptionColor;
-    }
-    
-    public void setErrorCaptionColor(Color color) {
-        this.errorCaptionColor = color;
-    }
+    public Color getErrorCaptionColor() { return errorCaptionColor; }
+    public void setErrorCaptionColor(Color color) { this.errorCaptionColor = color; }
     
     protected void addImpl(Component comp, Object constraints, int index) {
+        ItemPanel p = null;
         //check if it is a containable component
         if ( comp instanceof Containable ) {
-            ItemPanel p = new ItemPanel(comp);
-            super.addImpl(p, constraints, index);
+            p = new ItemPanel(comp);
         } else if ( comp instanceof JScrollPane ) {
             Component view = ((JScrollPane) comp).getViewport().getView();
             if ( view instanceof Containable ) {
-                ItemPanel p = new ItemPanel(view, comp);
-                super.addImpl(p, constraints, index);
+                p = new ItemPanel(view, comp);
             }
         }
+        
+        if ( p != null )
+            super.addImpl(p, constraints, index);
     }
     
     public void remove(Component comp) {
@@ -102,6 +99,7 @@ public class FormPanel extends JPanel {
             if (c instanceof ItemPanel) {
                 ItemPanel p = (ItemPanel) c;
                 if (p.getEditorComponent() == comp) return p;
+                if (p.getEditorWrapper() == comp) return p;
             }
         }
         return null;
@@ -111,6 +109,7 @@ public class FormPanel extends JPanel {
     //<editor-fold defaultstate="collapsed" desc=" ItemPanel (Class) ">
     private class ItemPanel extends JPanel {
         
+        private Component editorWrapper;
         private Component editor;
         private JLabel label;
         private ControlProperty property;
@@ -121,6 +120,7 @@ public class FormPanel extends JPanel {
         
         public ItemPanel(Component editor, Component container) {
             this.editor = editor;
+            this.editorWrapper = container;
             Containable con = (Containable) editor;
             property = con.getControlProperty();
             
@@ -151,6 +151,7 @@ public class FormPanel extends JPanel {
         }
         
         public Component getEditorComponent() { return editor; }
+        public Component getEditorWrapper() { return editorWrapper; }
         public JLabel getLabelComponent() { return label; }
         public ControlProperty getControlProperty() { return property; }
         

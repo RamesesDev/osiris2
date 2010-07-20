@@ -32,7 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.border.AbstractBorder;
-import javax.swing.plaf.UIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
@@ -41,6 +40,8 @@ import com.rameses.rcp.control.table.TableHeaderBorder;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
@@ -48,7 +49,7 @@ import javax.swing.SwingUtilities;
 
 public class XTable extends JPanel implements UIInput, TableListener, Validatable {
     
-    private TableComponent table = new TableComponent(this);
+    private TableComponent table = new TableComponent();
     private ListScrollBar scrollBar = new ListScrollBar();
     private RowHeaderView rowHeaderView = new RowHeaderView();
     
@@ -59,6 +60,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     private String handler;
     private ActionMessage actionMessage = new ActionMessage();
     private boolean dynamic;
+    private String onAfterUpdate;
     
     
     public XTable() {
@@ -73,6 +75,18 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         jsp.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
         jsp.setRowHeaderView(rowHeaderView);
         jsp.setBorder(BorderFactory.createEmptyBorder());
+        
+        jsp.addMouseWheelListener(new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                int rotation = e.getWheelRotation();
+                if ( rotation == 0 ) return;
+                
+                if ( rotation < 0 )
+                    listModel.moveBackRecord();
+                else
+                    listModel.moveNextRecord();
+            }
+        });
         
         super.setLayout(new BorderLayout());
         add(jsp, BorderLayout.CENTER);
@@ -123,6 +137,22 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public boolean isShowVerticalLines() {
         return table.getShowVerticalLines();
+    }
+    
+    public void setAutoResize(boolean autoResize) {
+        table.setAutoResize(autoResize);
+    }
+    
+    public boolean isAutoResize() {
+        return table.isAutoResize();
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
     }
     //</editor-fold>
     
@@ -259,7 +289,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         private static final Insets insets = new Insets(1, 1, 2, 2);
         
         public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-                        
+            
             g.translate( x, y);
             
             g.setColor( MetalLookAndFeel.getControlDarkShadow() );

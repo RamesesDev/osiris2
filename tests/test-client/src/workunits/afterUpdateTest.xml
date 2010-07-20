@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    
+    <invokers>
+        <invoker folderid="/menu/file" caption="After Update Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class AfterUpdateTestController {
+                
+            def name;
+            def address;
+            def jobTitle;
+            
+            void search() {
+                println "firing test....";
+                if ( name == "JAYROME" ) {
+                    address = "LAHUG, CC";
+                    jobTitle = "SOFTWARE DEVLOPER";
+                }
+                else if ( name == "ALVIN" ) {
+                    address = "TALAMBAN, CC";
+                    jobTitle = "SOFTWARE DEVLOPER";
+                }
+                else {
+                    address = "<NO RECORD FOUND>";
+                    jobTitle = "<NO RECORD FOUND>";
+                }
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.AfterUpdateTest"/>
+    </pages>
+</workunit>

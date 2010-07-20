@@ -92,6 +92,15 @@ public class XNumberField extends XTextField {
         return convertValue();
     }
     
+    public void setValue(Object value) {
+        if ( value instanceof KeyEvent ) {
+            String text = ((KeyEvent) value).getKeyChar()+"";
+            if ( text.matches("[^\\d|\\.]")) return;
+        }
+        
+        super.setValue(value);
+    }
+    
     private Class getFieldType() {
         if( fieldType == null ) {
             fieldType = UIControlUtil.getValueType(this, getName());

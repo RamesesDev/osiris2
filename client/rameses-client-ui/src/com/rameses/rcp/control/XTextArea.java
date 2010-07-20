@@ -27,6 +27,7 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
     private String[] depends;
     private ControlProperty controlProperty = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
+    private String onAfterUpdate;
     
     private TextDocument textDocument = new TextDocument();
     
@@ -132,6 +133,14 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
     
     public void setTextCase(TextCase textCase) {
         textDocument.setTextCase(textCase);
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
     }
     //</editor-fold>
     

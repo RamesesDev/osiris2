@@ -26,6 +26,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
     private boolean nullWhenEmpty = true;
+    private String onAfterUpdate;
     
     private TextDocument document = new TextDocument();
     
@@ -158,6 +159,22 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     
     public void setTextCase(TextCase textCase) {
         document.setTextCase(textCase);
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public int getMaxLength() {
+        return document.getMaxlength();
+    }
+    
+    public void setMaxLength(int length) {
+        document.setMaxlength(length);
     }
     //</editor-fold>
     

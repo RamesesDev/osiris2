@@ -25,7 +25,8 @@ public class Column implements Serializable {
     private boolean htmlDisplay;
     private String format;
     private boolean required;
-
+    private Class fieldType;
+    
     
     private Map properties = new HashMap();
     
@@ -228,5 +229,14 @@ public class Column implements Serializable {
     public void setItems(String items) {
         this.items = items;
     }
+    
+    public Class getFieldType() {
+        return fieldType;
+    }
+    
+    public void setFieldType(Class fieldType) {
+        this.fieldType = fieldType;
+    }
     //</editor-fold>
+    
 }

@@ -1,6 +1,4 @@
-import javax.swing.JDialog;
 import junit.framework.*;
-import test.TestPage;
 
 /*
  * Test.java
@@ -19,8 +17,8 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    public void testHello() {        
-        System.out.println( "sample-one:workunit2".matches(".+:.+") );
+    public void testHello() {
+        
     }
     
 }

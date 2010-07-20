@@ -41,7 +41,8 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private boolean allowNull = true;
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
-    
+    private String onAfterUpdate;
+    private Class fieldType;
     
     private DefaultComboBoxModel model;
     
@@ -85,9 +86,13 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
                 list = (Collection) beanItems;
             }
         } else {
-            type = UIControlUtil.getValueType(this, getName());
-            //if type is null, happens when the source is a Map key
-            //so try to use the classtype of the value if it is not null
+            if ( fieldType != null )
+                type = fieldType;
+            else
+                type = UIControlUtil.getValueType(this, getName());
+            
+            //if type is null, happens when the source is a Map key and no fieldType supplied
+            //try to use the classtype of the value if it is not null
             if ( type == null ) {
                 Object value = UIControlUtil.getBeanValue(this);
                 if ( value != null ) {
@@ -255,6 +260,22 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public ControlProperty getControlProperty() {
         return property;
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public Class getFieldType() {
+        return fieldType;
+    }
+    
+    public void setFieldType(Class fieldType) {
+        this.fieldType = fieldType;
     }
     //</editor-fold>
     
