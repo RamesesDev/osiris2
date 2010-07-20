@@ -8,15 +8,14 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.Beans;
 import java.net.URL;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
+import javax.swing.border.Border;
 
 /**
  *
@@ -42,9 +41,7 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         IconedTextFieldSupport support = new IconedTextFieldSupport();
         addMouseListener(support);
         addMouseMotionListener(support);
-        
-        KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-        registerKeyboardAction(this, ks, JComponent.WHEN_FOCUSED);
+        addActionListener(this);
     }
     
     public AbstractIconedTextField(String iconPath) {
@@ -57,7 +54,9 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         setIcon(new ImageIcon(url));
     }
     
+    
     public abstract void actionPerformed();
+    
     
     public void actionPerformed(ActionEvent e) {
         actionPerformed();
@@ -76,16 +75,34 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         g2.dispose();
     }
     
+    public void setBorder(Border border) {
+        Border inner = null;
+        if( ICON_ON_LEFT.equals( orientation ) ) {
+            inner = BorderFactory.createEmptyBorder(0, imgWidth + MARGIN_PAD, 0, 0);
+        } else {
+            inner = BorderFactory.createEmptyBorder(0, 0, 0, imgWidth + MARGIN_PAD);
+        }
+        
+        Border newBorder = null;
+        if ( border != null )
+            newBorder = BorderFactory.createCompoundBorder(border, inner);
+        else
+            newBorder = inner;
+        
+        super.setBorder(newBorder);
+    }
+    
     public void setOrientation(String orient) {
         this.orientation = orient;
         Insets insets = super.getMargin();
-        
-        Insets leftOrientationInset = new Insets(insets.top,  imgWidth + MARGIN_PAD, insets.bottom, 0);
-        Insets rightOrientationInset = new Insets(insets.top,  insets.right, insets.bottom, imgWidth + MARGIN_PAD);
-        if( ICON_ON_LEFT.equals( orientation ) )
-            super.setMargin(leftOrientationInset);
-        else
-            super.setMargin(rightOrientationInset);
+        Insets actualInsets = null;
+        if( ICON_ON_LEFT.equals( orientation ) ) {
+            actualInsets = new Insets(insets.top,  imgWidth + MARGIN_PAD, insets.bottom, 0);
+            super.setMargin(actualInsets);
+        } else {
+            actualInsets = new Insets(insets.top,  insets.right, insets.bottom, imgWidth + MARGIN_PAD);
+            super.setMargin(actualInsets);
+        }
     }
     
     public ImageIcon getIcon() {

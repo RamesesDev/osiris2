@@ -21,7 +21,7 @@
             }
         
             def handler = [
-                createItem: { [empType: EmployeeType.CASUAL] },
+                createItem: { [:] },
                 fetchList: { data },
                 onAddItem: { data.add(it) },
 
@@ -36,22 +36,23 @@
                         new Column(name: "item.name", caption: "Name", editable: true, required: true),
                         new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
                         new Column(name: "item.address", caption: "Address", editable: true, required: true, type: "lookup", handler: "test-client:addressLookup"),
-                        new Column(name: "item.date", caption: "Date", format: "MMMM dd, yyyy", type: "date", editable: true),
-                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, required: true)
+                        new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date", editable: true),
+                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, fieldType: EmployeeType.class),
+                        new Column(name: "item.single", caption: "Single", type: "checkbox", editable: true)
                     ];
                 }
 
             ] as SubListModel;
 
             def data = [
-                [ name:"11", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL], 
-                [name:"12", address:"cebu city", date: new Date(), balance: 1000, empType: EmployeeType.CASUAL], 
-                [name:"13", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL],
-                [name:"14", address:"cebu city", date: new Date(), balance: 1520, empType: EmployeeType.CASUAL],
-                [ name:"21", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL],
-                [name:"22", address:"cebu city", date: new Date(), balance: 2500, empType: EmployeeType.CASUAL], 
-                [name:"23", address:"cebu city", date: new Date(), balance: 500.50, empType: EmployeeType.CASUAL],
-                [name:"24", address:"cebu city", date: new Date(), balance: 700, empType: EmployeeType.CASUAL]
+                [name:"11", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50], 
+                [name:"12", address:"CEBU CITY", single: null, date: new Date(), balance: 1000], 
+                [name:"13", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520],
+                [name:"21", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"22", address:"CEBU CITY", single: null, date: new Date(), balance: 2500], 
+                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700]
 
             ];
             

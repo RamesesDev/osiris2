@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class NBPlatform implements Platform {
     
@@ -78,10 +79,10 @@ public class NBPlatform implements Platform {
         if ( id == null || id.trim().length() == 0 )
             throw new IllegalStateException("Id is required when showing a window.");
         
-        NBPopup popup = null;
         if (!windows.containsKey(id)) {
             JFrame parent = (JFrame) mainWindow.getComponent();
-            popup = new NBPopup(this, parent, id);
+            
+            final NBPopup popup = new NBPopup(this, parent, id);
             popup.setContentPane(comp);
             
             String title = (String) properties.get("title");
@@ -92,10 +93,14 @@ public class NBPlatform implements Platform {
             
             popup.pack();
             popup.setLocationRelativeTo(parent);
-            popup.setVisible(true);
+            popup.setModal(true);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    popup.setVisible(true);
+                }
+            });
         } else {
-            popup = (NBPopup) windows.get(id);
-            popup.requestFocus();
+            ((NBPopup) windows.get(id)).requestFocus();
         }
     }
     

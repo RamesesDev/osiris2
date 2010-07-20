@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -49,7 +50,7 @@ public class PlatformImpl implements Platform {
             parent = getParentDialog(actionSource);
         }
         
-        JDialog d = new JDialog(parent);
+        final JDialog d = new JDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
         
@@ -59,11 +60,15 @@ public class PlatformImpl implements Platform {
             d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         }
         
-        d.setModal( "true".equals(modal) );
+        d.setModal( !"false".equals(modal) );
         d.pack();
         d.addWindowListener( new XWindowListener(id) );
         d.setLocationRelativeTo(parent);
-        d.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                d.setVisible(true);
+            }
+        });
         
         windows.put(id, d);
     }

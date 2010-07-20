@@ -46,6 +46,7 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     private char passwordChar = '*';
     private ActionMessage actionMessage = new ActionMessage();
     private ControlProperty controlProperty = new ControlProperty();
+    private String onAfterUpdate;
     
     
     public XPasswordField() {}
@@ -208,6 +209,14 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     
     public ControlProperty getControlProperty() {
         return controlProperty;
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
     }
     //</editor-fold>
     

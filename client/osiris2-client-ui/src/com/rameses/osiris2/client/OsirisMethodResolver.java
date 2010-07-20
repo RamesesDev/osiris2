@@ -120,6 +120,7 @@ public class OsirisMethodResolver implements MethodResolver {
                 if ( (o != null) && (o instanceof String) && (o.toString().startsWith("ASYNC:"))) {
                     AsyncPollTask apt = new AsyncPollTask(bean, responseHandler, o.toString(), host);
                     ClientContext.getCurrentContext().getTaskManager().addTask(apt);
+                    retVal = true;
                 } 
                 else if ( responseHandler != null ) {
                     invokeMethod(bean, responseHandler, new Object[]{ o }, new Class[]{ Object.class });
@@ -163,11 +164,14 @@ public class OsirisMethodResolver implements MethodResolver {
             try {
                 Map env = OsirisContext.getSession().getEnv();
                 HttpInvokerClient client = HttpClientManager.getInstance().getService(host, env);
-                List result = (List) client.invoke("ResponseService.getResponseData", new Object[]{ reqId });
-                if ( result != null && result.size() > 0 ) {
-                    counter = 0;
-                    for ( Object o: result) {
-                        invokeMethod(bean, respHandler, new Object[]{ o }, null);
+                while(true) {
+                    Object obj = client.invoke("ResponseService.getResponseData", new Object[]{ reqId });
+                    if ( obj != null ) {
+                        counter = 0;
+                        invokeMethod(bean, respHandler, new Object[]{ obj }, null);
+                    }
+                    else {
+                        break;
                     }
                 }
             }catch(Exception e) {

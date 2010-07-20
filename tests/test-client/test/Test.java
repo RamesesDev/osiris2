@@ -1,6 +1,5 @@
-import javax.swing.JDialog;
+import javax.swing.UIManager;
 import junit.framework.*;
-import test.TestPage;
 
 /*
  * Test.java
@@ -19,8 +18,11 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    public void testHello() {        
-        System.out.println( "sample-one:workunit2".matches(".+:.+") );
+    public void testHello() {
+        for ( Object o: UIManager.getLookAndFeel().getDefaults().entrySet()) {
+            //if ( o.toString().contains("table") )
+                System.out.println(o);
+        }
     }
     
 }

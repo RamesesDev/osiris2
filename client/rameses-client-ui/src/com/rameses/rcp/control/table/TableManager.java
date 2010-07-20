@@ -56,6 +56,7 @@ public final class TableManager {
         //map of editors
         editors.put("string", XTextField.class);
         editors.put("boolean", XCheckBox.class);
+        editors.put("checkbox", XCheckBox.class);
         editors.put("combo", XComboBox.class);
         editors.put("date", XDateField.class);
         editors.put("double", XNumberField.class);
@@ -74,6 +75,7 @@ public final class TableManager {
         
         renderer = new BooleanRenderer();
         renderers.put("boolean", renderer);
+        renderers.put("checkbox", renderer);
         
         //number class types
         numClass.put("decimal", BigDecimal.class);
@@ -111,35 +113,44 @@ public final class TableManager {
         return label;
     }
     
-    public static boolean hideOnEnter(JComponent editor) {
-        String hide = editor.getClientProperty(HIDE_ON_ENTER)+"";
-        return !"false".equals(hide);
-    }
-    
-    //<editor-fold defaultstate="collapsed" desc="  helper  ">
+    //<editor-fold defaultstate="collapsed" desc="  editor customizer method  ">
     private static void customize(JComponent editor, Column col) {
-        String type = col.getType()+"";
-        editor.setBackground(FOCUS_BG);
-        Font font = (Font) UIManager.get("Table.font");
-        editor.setFont(font);
-        
         //remove all focus listeners (we don't need it in the table)
         for (FocusListener l: editor.getFocusListeners() ) {
             editor.removeFocusListener(l);
         }
         
-        if ( "boolean".equals(type) ) {
+        String type = col.getType()+"";
+        if ( editor instanceof JCheckBox ) {
             ((JCheckBox) editor).setHorizontalAlignment(SwingConstants.CENTER);
+            
         } else if ( editor instanceof XNumberField ) {
-            ((XNumberField) editor).setFieldType(numClass.get(type));
-        } else if ( "lookup".equals(type) ) {
-            XLookupField lookup = (XLookupField) editor;
-            lookup.setHandler( col.getHandler() );
-            lookup.setTranserFocusOnSelect(false);
-            lookup.putClientProperty(HIDE_ON_ENTER, false);
+            XNumberField xnf = (XNumberField) editor;
+            xnf.setFieldType(numClass.get(type));
+            if ( !ValueUtil.isEmpty(col.getFormat()) ) {
+                xnf.setPattern( col.getFormat() );
+            }
+            
+        } else if ( editor instanceof XLookupField ) {
+            XLookupField xlf = (XLookupField) editor;
+            xlf.setHandler( col.getHandler() );
+            xlf.setTranserFocusOnSelect(false);
+            
+        } else if ( editor instanceof XDateField ) {
+            XDateField xdf = (XDateField) editor;
+            xdf.setHorizontalAlignment(SwingConstants.CENTER);
+            if ( !ValueUtil.isEmpty(col.getFormat()) ) {
+                xdf.setInputFormat( col.getFormat() );
+                xdf.setOutputFormat( col.getFormat() );
+            }
         }
         
-        if ( "combo".equals(type) ) {
+        
+        editor.setBackground(FOCUS_BG);
+        Font font = (Font) UIManager.get("Table.font");
+        editor.setFont(font);
+        
+        if ( editor instanceof XComboBox ) {
             XComboBox cbox = (XComboBox) editor;
             if ( col.getItems() != null ) {
                 cbox.setItems( col.getItems() );
@@ -147,8 +158,13 @@ public final class TableManager {
             if ( col.isRequired() ) {
                 cbox.setAllowNull(false);
             }
+            if ( col.getFieldType() != null ) {
+                cbox.setFieldType( col.getFieldType() );
+            }
+            
         } else {
-            editor.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
+            Border b = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right);
+            editor.setBorder( b );
         }
     }
     //</editor-fold>
