@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class SamplLookupController extends LookupModel {
+                
+            Column[] getColumns() {
+                return [
+                    new Column(name: 'item', caption: 'Address')
+                ];
+            }
+            
+            List fetchList(Map params) {
+                return [
+                    "LAHUG, CC",
+                    "APAS, CC",
+                    "BASAK, CC",
+                    "TALAMBAN, CC",
+                    "SAN NICOLAS, CC",
+                    "MAMBALING, CC",
+                    "LABANGON, CC",
+                    "GUADALUPE, CC",
+                ];
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.lookup.LookupPage"/>
+    </pages>
+</workunit>

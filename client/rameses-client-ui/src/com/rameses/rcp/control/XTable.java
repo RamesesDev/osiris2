@@ -9,10 +9,9 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
-import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.SubListModel;
+import com.rameses.rcp.control.table.TableManager;
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
@@ -28,24 +27,30 @@ import java.awt.LayoutManager;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.TableComponent;
 import com.rameses.rcp.control.table.TableHeaderBorder;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Font;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class XTable extends JPanel implements UIInput, TableListener, Validatable {
     
     private TableComponent table = new TableComponent(this);
     private ListScrollBar scrollBar = new ListScrollBar();
+    private RowHeaderView rowHeaderView = new RowHeaderView();
     
     private AbstractListModel listModel;
     private String[] depends;
@@ -65,6 +70,8 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         JScrollPane jsp = new JScrollPane(table);
         jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jsp.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
+        jsp.setRowHeaderView(rowHeaderView);
         jsp.setBorder(BorderFactory.createEmptyBorder());
         
         super.setLayout(new BorderLayout());
@@ -73,6 +80,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         setBorder(new TableBorder());
         
         if ( Beans.isDesignTime() ) {
+            rowHeaderView.setRowCount(1);
             setPreferredSize(new Dimension(200,80));
             table.setModel(new javax.swing.table.DefaultTableModel(
                     new Object [][] { {null, null} },
@@ -82,7 +90,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     //</editor-fold>
     
-    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setLayout(LayoutManager mgr) {;}
     
     public String getHandler() {
@@ -101,7 +109,24 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         this.dynamic = dynamic;
     }
     
-    //<editor-fold defaultstate="collapsed" desc="  UIInput impl  ">
+    public void setShowHorizontalLines(boolean show) {
+        table.setShowHorizontalLines(show);
+    }
+    
+    public boolean isShowHorizontalLines() {
+        return table.getShowHorizontalLines();
+    }
+    
+    public void setShowVerticalLines(boolean show) {
+        table.setShowVerticalLines(show);
+    }
+    
+    public boolean isShowVerticalLines() {
+        return table.getShowVerticalLines();
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  UIInput properties  ">
     public String[] getDepends() {
         return depends;
     }
@@ -143,29 +168,30 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                 table.setListModel(listModel);
                 table.setListener(this);
                 scrollBar.setListModel(listModel);
+                rowHeaderView.setRowCount( listModel.getRows() );
             }
             
         }
     }
     
     public Object getValue() {
+        if ( Beans.isDesignTime() ) return null;
+        
         return listModel.getSelectedItem();
     }
     
-    public void setValue(Object value) {
-    }
+    public void setValue(Object value) {}
     
     public boolean isNullWhenEmpty() {
         return true;
     }
     
     public int compareTo(Object o) {
-        if ( o == null || !(o instanceof UIControl) ) return 0;
-        return this.index = ((UIControl) o).getIndex();
+        return UIControlUtil.compare(this, o);
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  grid handler impl  ">
+    //<editor-fold defaultstate="collapsed" desc="  grid handler methods  ">
     public void refreshList() {
         scrollBar.adjustValues();
         rowChanged();
@@ -175,9 +201,9 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         ListItem selectedItem = listModel.getSelectedItem();
         if( selectedItem!=null && selectedItem.getItem()!=null) {
             try {
-                System.out.println("selected item is " + selectedItem.getItem());
+                //fire open item here
             } catch(Exception ex){
-                MsgBox.err(ex);
+                throw new IllegalStateException("XTable::openItem", ex);
             }
         }
     }
@@ -185,7 +211,12 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public void rowChanged() {
         if ( !ValueUtil.isEmpty(getName()) ) {
             UIInputUtil.updateBeanValue(this);
+            rowHeaderView.clearEditing();
         }
+    }
+    
+    public void editCellAt(int rowIndex, int colIndex) {
+        rowHeaderView.editRow(rowIndex);
     }
     //</editor-fold>
     
@@ -220,14 +251,15 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     //</editor-fold>
     
+    
+    
     //<editor-fold defaultstate="collapsed" desc="  TableBorder (class)  ">
-    private static class TableBorder extends AbstractBorder implements UIResource {
+    public static class TableBorder extends AbstractBorder {
         
         private static final Insets insets = new Insets(1, 1, 2, 2);
         
         public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-            
-            
+                        
             g.translate( x, y);
             
             g.setColor( MetalLookAndFeel.getControlDarkShadow() );
@@ -259,12 +291,6 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
             setPreferredSize(ps);
             setLayout(new BorderLayout());
             
-            JLabel label = new JLabel(" ");
-            
-            Border bb = new TableHeaderBorder();
-            Border eb = BorderFactory.createEmptyBorder(2,5,2,1);
-            label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
-            
             scrollBar.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent evt) {
                     String propName = evt.getPropertyName();
@@ -276,11 +302,130 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
             });
             
             setVisible( scrollBar.isVisible() );
-            add(label, BorderLayout.NORTH);
+            add(TableManager.getTableCornerComponent(), BorderLayout.NORTH);
             add(scrollBar, BorderLayout.CENTER);
         }
         
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  RowHeaderView (class)  ">
+    private class RowHeaderView extends JPanel {
+        
+        private int rowCount;
+        private int currentRow = -1;
+        
+        RowHeaderView() {
+            setLayout(new RowHeaderLayout());
+        }
+        
+        public void setRowCount(int rowCount) {
+            if ( this.rowCount == rowCount ) return;
+            this.rowCount = rowCount;
+            
+            removeAll();
+            JComponent label = null;
+            for (int i = 0; i < rowCount; ++i) {
+                add(new RowHeader());
+            }
+            SwingUtilities.updateComponentTreeUI(this);
+        }
+        
+        public void clearEditing() {
+            if ( currentRow != -1 ) {
+                RowHeader rh = (RowHeader) getComponent(currentRow);
+                rh.edit(false);
+            }
+            currentRow = -1;
+        }
+        
+        public void editRow(int row) {
+            if ( currentRow != row ) {
+                clearEditing();
+            }
+            RowHeader rh = (RowHeader) getComponent(row);
+            rh.edit(true);
+            currentRow = row;
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  RowHeaderLayout (Class) ">
+    private class RowHeaderLayout implements LayoutManager {
+        
+        public void addLayoutComponent(String name, Component comp) {;}
+        public void removeLayoutComponent(Component comp) {;}
+        
+        public Dimension preferredLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+        
+        public Dimension minimumLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+        
+        public void layoutContainer(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                Insets margin = parent.getInsets();
+                int x = margin.left;
+                int y = margin.top;
+                int w = parent.getWidth() - (margin.left + margin.right);
+                int h = parent.getHeight() - (margin.top + margin.bottom);
+                
+                Component[] comps = parent.getComponents();
+                for (int i=0; i<comps.length; i++) {
+                    if (!(comps[i] instanceof RowHeader)) continue;
+                    
+                    int rh = XTable.this.table.getRowHeight(i);
+                    comps[i].setBounds(x, y, w, rh);
+                    y += rh;
+                }
+            }
+        }
+        
+        private Dimension getLayoutSize(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                int w = 0;
+                int h = 0;
+                Component[] comps = parent.getComponents();
+                for (int i=0; i<comps.length; i++) {
+                    if (!(comps[i] instanceof RowHeader)) continue;
+                    
+                    Dimension dim = comps[i].getPreferredSize();
+                    w = Math.max(w, dim.width);
+                    h += XTable.this.table.getRowHeight(i);
+                }
+                
+                Insets margin = parent.getInsets();
+                w += (margin.left + margin.right);
+                h += (margin.top + margin.bottom);
+                return new Dimension(w,h);
+            }
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  RowHeader (class)  ">
+    private class RowHeader extends JLabel {
+        
+        public RowHeader() {
+            setOpaque(true);
+            setBorder(new TableHeaderBorder(new Insets(2,0,0,0)));
+            setPreferredSize(new Dimension(23,23));
+            setHorizontalAlignment(SwingConstants.CENTER);
+            setForeground(Color.BLUE);
+            setFont(new Font("Courier", Font.PLAIN, 11));
+            //edit(true);
+        }
+        
+        public void setText(String text) {;}
+        
+        public void edit(boolean b) {
+            if (b)
+                super.setText("<html><b>*</b></html>");
+            else
+                super.setText("");
+        }
+    }
+    //</editor-fold>
 }

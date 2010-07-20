@@ -23,6 +23,8 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="formPanel1" alignment="0" pref="390" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
+                      <Component id="xButton4" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton2" min="-2" max="-2" attributes="0"/>
@@ -44,6 +46,7 @@
                   <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="xButton4" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -101,6 +104,12 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="launch"/>
         <Property name="name" type="java.lang.String" value="launch"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XButton" name="xButton4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="launch 2"/>
+        <Property name="name" type="java.lang.String" value="launch2"/>
       </Properties>
     </Component>
   </SubComponents>

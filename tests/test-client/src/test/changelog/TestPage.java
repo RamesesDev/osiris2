@@ -32,19 +32,18 @@ public class TestPage extends javax.swing.JPanel {
 
         formPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         formPanel1.setCaptionWidth(100);
-        xTextField1.setText("xTextField1");
         xTextField1.setCaption("Name");
         xTextField1.setName("entity.name");
         xTextField1.setPreferredSize(new java.awt.Dimension(0, 19));
         formPanel1.add(xTextField1);
 
-        xTextField2.setText("xTextField2");
         xTextField2.setCaption("Address");
         xTextField2.setName("entity.address");
         xTextField2.setPreferredSize(new java.awt.Dimension(0, 19));
         formPanel1.add(xTextField2);
 
         xButton1.setText("Save");
+        xButton1.setDefaultCommand(true);
         xButton1.setName("save");
 
         xButton2.setText("Undo");

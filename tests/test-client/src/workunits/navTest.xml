@@ -25,9 +25,14 @@
             }
 
             public Object launch() {
-                return new Opener("rameses-client-ui2-test-impl:navTest2");
+                return new WindowOpener(name: "test-client:navTest2");
             }
 
+            public Object launch2() {
+                return new Opener(name: "test-client:navTest2");
+            }
+
+            
             public String back() {
                 return "default";
             }

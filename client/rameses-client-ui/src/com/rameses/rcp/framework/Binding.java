@@ -3,6 +3,7 @@ package com.rameses.rcp.framework;
 
 import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDefUtil;
+import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
@@ -31,6 +32,7 @@ public class Binding {
     private List<Validatable> validatables = new ArrayList();
     private List<BindingListener> listeners = new ArrayList();
     private ChangeLog changeLog = new ChangeLog();
+    private XButton defaultButton;
     
     private List<UIControl> _depends = new ArrayList();
     private boolean _initialized = false;
@@ -46,6 +48,11 @@ public class Binding {
         }
         if( control instanceof Validatable ) {
             validatables.add( (Validatable)control );
+        }
+        if( control instanceof XButton && defaultButton == null ) {
+            XButton btn = (XButton) control;
+            if ( btn.isDefaultCommand() )
+                defaultButton = btn;
         }
     }
     
@@ -160,6 +167,14 @@ public class Binding {
     
     public void setChangeLog(ChangeLog changeLog) {
         this.changeLog = changeLog;
+    }
+    
+    public XButton getDefaultButton() {
+        return defaultButton;
+    }
+    
+    public void setDefaultButton(XButton defaultButton) {
+        this.defaultButton = defaultButton;
     }
     //</editor-fold>
     

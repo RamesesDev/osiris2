@@ -49,6 +49,8 @@ public class MainDialog implements MainWindow {
         });
     }
     
+    public JDialog getComponent() { return dialog; }
+    
     public void show() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

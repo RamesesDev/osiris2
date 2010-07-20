@@ -1,12 +1,15 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.rcp.control.XButton;
 import java.awt.BorderLayout;
 import java.awt.LayoutManager;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.Stack;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
  *
@@ -14,11 +17,26 @@ import javax.swing.SwingUtilities;
  */
 public class UIControllerPanel extends JPanel implements NavigatablePanel {
     
-    private Stack<UIController> controllers = new ControllerStack();
-    
+    private Stack controllers = new ControllerStack();
+    private boolean defaultBtnAdded;
+    private XButton defaultBtn;
     
     public UIControllerPanel() {
         super.setLayout(new BorderLayout());
+        addAncestorListener(new AncestorListener() {
+            public void ancestorAdded(AncestorEvent event) {
+                if ( defaultBtn != null && !defaultBtnAdded ) {
+                    JComponent comp = event.getComponent();
+                    JRootPane rp = comp.getRootPane();
+                    if ( rp != null ) {
+                        rp.setDefaultButton(defaultBtn);
+                        defaultBtnAdded = true;
+                    }
+                }
+            }
+            public void ancestorMoved(AncestorEvent event) {}
+            public void ancestorRemoved(AncestorEvent event) {}
+        });
     }
     
     public UIControllerPanel(UIController controller) {
@@ -28,25 +46,35 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel {
     }
     
     private void _build() {
-        UIViewPanel p = getCurrentController().getCurrentView();
+        UIController current = getCurrentController();
         removeAll();
+        if ( current != null ) {
+            UIViewPanel p = current.getCurrentView();
+            defaultBtn = p.getBinding().getDefaultButton();
+            if ( defaultBtn != null ) defaultBtnAdded = false;
+            
+            add( p );
+            p.refresh();
+        }
         SwingUtilities.updateComponentTreeUI(this);
-        add( p );
-        p.refresh();
-        
     }
     
     public void setLayout(LayoutManager mgr) {;}
     
-    public Stack<UIController> getControllers() {
+    public Stack getControllers() {
         return controllers;
+    }
+    
+    public void setControllers(Stack controllers) {
+        this.controllers = controllers;
+        _build();
     }
     
     public UIController getCurrentController() {
         if ( !controllers.empty() ) {
-            return controllers.peek();
+            return (UIController) controllers.peek();
         }
-        throw new IllegalStateException("No controller found.");
+        return null;
     }
     
     public void renderView() {
