@@ -9,11 +9,13 @@
 
 package com.rameses.io;
 
+import java.io.IOException;
+
 /**
  *
  * @author ms
  */
-public class TransferFileModifiedException extends Exception {
+public class TransferFileModifiedException extends IOException {
     
     public TransferFileModifiedException() {
         super();
@@ -24,3 +26,4 @@ public class TransferFileModifiedException extends Exception {
     }
     
 }
+

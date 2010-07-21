@@ -11,6 +11,7 @@ import com.rameses.util.CipherUtil;
 import com.rameses.util.MachineInfo;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import junit.framework.*;
 
 /**
@@ -47,6 +48,11 @@ public class Tester extends TestCase {
         System.out.println(MessageFormat.format("{0} needs help from {1}, di ba {0}?", arr));
     }
 
+    public void testDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(Long.parseLong("1279617122363") );
+        System.out.println(cal.getTime()); 
+    }
    
     
 }
