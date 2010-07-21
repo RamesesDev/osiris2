@@ -7,9 +7,11 @@
 
 package test;
 
+import com.rameses.io.FileTransferException;
 import com.rameses.io.FileTransferInfo;
 import com.rameses.io.FileTransferInputStream;
 import com.rameses.io.FileTransferOutputStream;
+import com.rameses.io.TargetFileExistsException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import javax.swing.JOptionPane;
@@ -50,7 +52,7 @@ public class IOTest extends TestCase {
                 }
             }
             bytes = baos.toByteArray();
-            sis.saveRestorePoint();
+            //sis.saveRestorePoint();
             fileInfo = sis.getFileTransferInfo();
         } 
         catch(Exception e) {
@@ -62,27 +64,32 @@ public class IOTest extends TestCase {
         //transfer output
         FileTransferOutputStream fos = null;
         try {
-            fos = new FileTransferOutputStream(fileInfo, "e:/myelmotest.txt");
+            fos = new FileTransferOutputStream(fileInfo, "e:/mytest_target.txt");
             fos.write( bytes );
         }
+        catch(TargetFileExistsException tfe ) {
+            fileInfo.delete();
+        }
+        catch(FileTransferException fe) {
+            try { 
+                JOptionPane.showMessageDialog(null,fe.getMessage());
+                long restorePoint = fe.getCurrentPos();
+                fileInfo.setBytesRead( restorePoint );
+                fileInfo.save();
+            }
+            catch(Exception e) {
+               
+            }
+        }
         catch(Exception e) {
+            System.out.println(e.getMessage());
             throw e;
         }
         finally {
             try {fos.close(); } catch(Exception ign){;}
         }
         
-        
-        
     }
     
-    public void XtestOut() throws Exception {
-        //File f = new File("e:/testOutput.txt");
-        //System.out.println("absolute path " + f.getAbsolutePath());
-        //System.out.println("canonical path " + f.getCanonicalPath());
-        //System.out.println("name " + f.getName());
-        //System.out.println("path " + f.getPath());
-        System.getProperties().list(System.out);
-    }
     
 }

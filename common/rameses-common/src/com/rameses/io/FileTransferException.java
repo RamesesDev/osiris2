@@ -22,7 +22,7 @@ public class FileTransferException extends IOException {
     private long currentPos;
     
     public FileTransferException(long currentPos) {
-        super();
+        super("Unsynchronized Position in target file. Target file not updated. Pos in target file is " + currentPos );
         this.currentPos = currentPos;
     }
 
