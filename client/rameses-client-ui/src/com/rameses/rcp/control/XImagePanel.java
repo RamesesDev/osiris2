@@ -125,26 +125,8 @@ public class XImagePanel extends JScrollPane implements UIControl{
         }
     }
     
-    public int compareTo(Object o) {
-        if(o == null || !(o instanceof UIControl) )
-            return 0;
-        
-        UIControl u = (UIControl)o;
-        return this.index - u.getIndex();
-    }
-    
-    public String checkFileExt(String fileName) {
-        String result = "";
-        int periodIndex = 0;
-        boolean indexFound = false;
-        for(int c = fileName.length() ; c > 0 ; c--) {
-            if(fileName.charAt(c) == '.' && indexFound == false) {
-                periodIndex = c;
-                indexFound = true;
-            }
-        }
-        
-        return fileName.substring(c, fileName.length());
+    public int compareTo(Object o) {        
+        return UIControlUtil.compare(this, o);
     }
     
     
