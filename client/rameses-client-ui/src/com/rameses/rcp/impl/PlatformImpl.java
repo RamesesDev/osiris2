@@ -26,10 +26,36 @@ public class PlatformImpl implements Platform {
     }
     
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
-        if ( properties == null ) properties = new HashMap();
-        properties.put("modal", "false");
+        String id = (String) properties.get("id");
+        if ( ValueUtil.isEmpty(id) )
+            throw new IllegalStateException("id is required for a page.");
         
-        showPopup(actionSource, comp, properties);
+        if ( windows.containsKey(id) ) return;
+        
+        String title = (String) properties.get("title");
+        if ( ValueUtil.isEmpty(title) ) title = id;
+        
+        String canClose = (String) properties.get("canclose");
+        String modal = (String) properties.get("modal");
+        
+        JDialog parent = mainWindow.getComponent();
+        JDialog d = new JDialog(parent);
+        d.setTitle(title);
+        d.setContentPane(comp);
+        
+        if ( "false".equals(canClose) ) {
+            d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        } else {
+            d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        }
+        
+        d.setModal(false);
+        d.pack();
+        d.addWindowListener( new XWindowListener(id) );
+        d.setLocationRelativeTo(parent);
+        d.setVisible(true);
+        
+        windows.put(id, d);
     }
     
     public void showPopup(JComponent actionSource, JComponent comp, Map properties) {
@@ -53,14 +79,8 @@ public class PlatformImpl implements Platform {
         final JDialog d = new JDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
-        
-        if ( "false".equals(canClose) ) {
-            d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        } else {
-            d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        }
-        
-        d.setModal( !"false".equals(modal) );
+        d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        d.setModal(true);
         d.pack();
         d.addWindowListener( new XWindowListener(id) );
         d.setLocationRelativeTo(parent);

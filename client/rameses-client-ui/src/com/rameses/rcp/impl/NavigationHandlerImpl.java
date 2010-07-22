@@ -1,4 +1,4 @@
-package com.rameses.rcp.util;
+package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.framework.ClientContext;
@@ -8,8 +8,8 @@ import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.UIControllerPanel;
-import com.rameses.rcp.ui.UICommand;
 import com.rameses.rcp.framework.UIController;
+import com.rameses.rcp.ui.UIControl;
 import com.rameses.util.ValueUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,10 +20,10 @@ import javax.swing.JComponent;
  *
  * @author jaycverg
  */
-public class DefaultNavigationHandler implements NavigationHandler {
+public class NavigationHandlerImpl implements NavigationHandler {
     
     
-    public void navigate(NavigatablePanel panel, UICommand source, Object outcome) {
+    public void navigate(NavigatablePanel panel, UIControl source, Object outcome) {
         if ( panel == null ) return;
         
         JComponent sourceComp = (JComponent) source;
@@ -49,6 +49,7 @@ public class DefaultNavigationHandler implements NavigationHandler {
                 
                 ControllerProvider provider = ctx.getControllerProvider();
                 UIController controller = provider.getController(opener.getName());
+                controller.init(opener.getParams(), opener.getAction());
                 
                 if ( self ) {
                     conStack.push(controller);

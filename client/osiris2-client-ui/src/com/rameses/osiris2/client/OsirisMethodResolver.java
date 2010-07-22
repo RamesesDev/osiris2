@@ -17,9 +17,9 @@ import com.rameses.rcp.common.AsyncEvent;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.util.MethodResolver;
 import com.rameses.util.PropertyResolver;
+import com.rameses.util.ValueUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 import org.apache.commons.beanutils.MethodUtils;
 
@@ -93,24 +93,26 @@ public class OsirisMethodResolver implements MethodResolver {
         public void execute() {
             if(!loop) {
                 executeMethod();
-            }
-            else {
+            } else {
                 //if there is a loop var, check bean if there is a variable named loopVar
                 AsyncEvent ae = new AsyncEvent();
                 while(true) {
-                    ClientContext.getCurrentContext().getPropertyResolver().setProperty(bean, eventVar,ae);
+                    if ( !ValueUtil.isEmpty(eventVar) ) {
+                        PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+                        res.setProperty(bean, eventVar,ae);
+                    }
                     boolean _end = executeMethod();
                     if(_end) {
                         ae.flagLast();
                         break;
-                    } 
+                    }
                     ae.nextLoop();
                 }
             }
             setEnded(true);
         }
-
-        //returns true if return value is null. This signals calling method to end loop 
+        
+        //returns true if return value is null. This signals calling method to end loop
         private boolean executeMethod() {
             boolean retVal = false;
             try {
@@ -121,12 +123,12 @@ public class OsirisMethodResolver implements MethodResolver {
                     AsyncPollTask apt = new AsyncPollTask(bean, responseHandler, o.toString(), host);
                     ClientContext.getCurrentContext().getTaskManager().addTask(apt);
                     retVal = true;
-                } 
-                else if ( responseHandler != null ) {
+                } else if ( !ValueUtil.isEmpty(responseHandler) ) {
                     invokeMethod(bean, responseHandler, new Object[]{ o }, new Class[]{ Object.class });
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
+                retVal = true; //end if an exception is thrown
             }
             return retVal;
         }
@@ -169,8 +171,7 @@ public class OsirisMethodResolver implements MethodResolver {
                     if ( obj != null ) {
                         counter = 0;
                         invokeMethod(bean, respHandler, new Object[]{ obj }, null);
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 }

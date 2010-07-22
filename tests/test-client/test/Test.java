@@ -18,10 +18,11 @@ public class Test extends TestCase {
         super(testName);
     }
     
+    private String[] args;
+    
     public void testHello() {
-        for ( Object o: UIManager.getLookAndFeel().getDefaults().entrySet()) {
-            //if ( o.toString().contains("table") )
-                System.out.println(o);
+        for ( String s: args ) {
+            System.out.println( s );
         }
     }
     

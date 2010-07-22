@@ -25,11 +25,15 @@
             }
 
             public Object launch() {
-                return new WindowOpener(name: "test-client:navTest2");
+                return new WindowOpener(name: "test-client:navTest2", params: [
+                    firstname: firstname, lastname: lastname
+                ]);
             }
 
             public Object launch2() {
-                return new Opener(name: "test-client:navTest2");
+                return new Opener(name: "test-client:navTest2", params: [
+                    firstname: firstname, lastname: lastname
+                ]);
             }
 
             
@@ -46,6 +50,16 @@
             public String getFullname() {
                 return (firstname == null? "" : firstname + " ") + (lastname == null? "": lastname);
             }
+            
+            def listHandler = [
+            
+                fetchList: { [ 'ARNEL RETIZA', 'DANDEE ALEJANDRINO', 'ALVIN MAGALONA'] },
+                getColumns: { [ new Column(name: 'item', caption: 'Customers') ] },
+                onOpenItem: { obj, colName ->
+                    new WindowOpener(name: 'test-client:navTest3', params: [ name: listHandler.selectedItem?.item ]) 
+                }
+            
+            ] as SubListModel;
         }
         
         ]]>

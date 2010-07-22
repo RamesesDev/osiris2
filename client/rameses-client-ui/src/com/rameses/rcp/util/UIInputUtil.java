@@ -48,6 +48,10 @@ public class UIInputUtil {
     }
     
     public static synchronized void updateBeanValue(UIInput control) {
+        updateBeanValue(control, true);
+    }
+    
+    public static synchronized void updateBeanValue(UIInput control, boolean addLog) {
         try {
             Binding binding = control.getBinding();
             if ( binding == null ) return;
@@ -61,7 +65,10 @@ public class UIInputUtil {
             Object inputValue = control.getValue();
             Object beanValue = resolver.getProperty(bean, name);
             resolver.setProperty(bean, name, inputValue);
-            binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
+            
+            if ( addLog ) {
+                binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
+            }
             
             String method = control.getOnAfterUpdate();
             if ( !ValueUtil.isEmpty(method) ) {

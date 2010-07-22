@@ -4,8 +4,11 @@ import com.rameses.rcp.ui.Containable;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.util.UICommandUtil;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.rcp.util.UIControlUtil;
+import com.rameses.util.ExpressionResolver;
+import com.rameses.util.ValueUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -17,13 +20,14 @@ import javax.swing.JButton;
 public class XButton extends JButton implements UICommand, ActionListener, Containable {
     
     private int index;
-    private String[] depends = new String[]{};
+    private String[] depends;
     private Binding binding;
     private boolean immediate;
     private boolean update;
     private ControlProperty property = new ControlProperty();
     private String target;
     private boolean defaultCommand;
+    private String expression;
     
     
     public XButton() {
@@ -31,7 +35,13 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     }
     
     
-    public void refresh() {}
+    public void refresh() {
+        if ( !ValueUtil.isEmpty(expression) ) {
+            ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+            Object value = er.evaluate(binding.getBean(), expression);
+            setText( value+"" );
+        }
+    }
     
     public void load() {}
     
@@ -46,6 +56,10 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String[] getDepends() {
         return depends;
+    }
+    
+    public void setDepends(String[] depends) {
+        this.depends = depends;
     }
     
     public int getIndex() {
@@ -102,6 +116,14 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     
     public void setDefaultCommand(boolean defaultCommand) {
         this.defaultCommand = defaultCommand;
+    }
+    
+    public String getExpression() {
+        return expression;
+    }
+    
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
     //</editor-fold>
     

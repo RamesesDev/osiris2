@@ -8,20 +8,16 @@
         import com.rameses.rcp.common.*;
         import test.model.EmployeeType;
                 
-        public class TestNav2Controller  {
+        public class TestNav3Controller  {
+
+            def name;
         
-            def firstname;
-            def lastname;
-        
-            public String close() {
-                return "_close";
-            }
         }
         
         ]]>
     </code>
     
     <pages>
-        <page template="test.client.SecondControllerPage"/>
+        <page template="test.client.CustomerPage"/>
     </pages>
 </workunit>

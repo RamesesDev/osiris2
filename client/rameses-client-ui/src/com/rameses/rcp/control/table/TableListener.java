@@ -14,5 +14,6 @@ public interface TableListener {
     void openItem();
     void rowChanged();
     void editCellAt(int rowIndex, int colIndex);
+    void cancelRowEdit();
     
 }

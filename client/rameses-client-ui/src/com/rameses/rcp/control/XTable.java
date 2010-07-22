@@ -12,6 +12,8 @@ import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.table.TableManager;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.NavigatablePanel;
+import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
@@ -37,6 +39,7 @@ import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.TableComponent;
 import com.rameses.rcp.control.table.TableHeaderBorder;
+import com.rameses.rcp.framework.ClientContext;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
@@ -221,7 +224,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  grid handler methods  ">
+    //<editor-fold defaultstate="collapsed" desc="  table listener methods  ">
     public void refreshList() {
         scrollBar.adjustValues();
         rowChanged();
@@ -231,7 +234,11 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         ListItem selectedItem = listModel.getSelectedItem();
         if( selectedItem!=null && selectedItem.getItem()!=null) {
             try {
-                //fire open item here
+                Object outcome = listModel.openSelectedItem();
+                NavigationHandler nh = ClientContext.getCurrentContext().getNavigationHandler();
+                NavigatablePanel navPanel = UIControlUtil.getParentPanel(this, null);
+                nh.navigate(navPanel, this, outcome);
+                
             } catch(Exception ex){
                 throw new IllegalStateException("XTable::openItem", ex);
             }
@@ -240,13 +247,17 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public void rowChanged() {
         if ( !ValueUtil.isEmpty(getName()) ) {
-            UIInputUtil.updateBeanValue(this);
+            UIInputUtil.updateBeanValue(this, false); //we don't need to add entry to change log
             rowHeaderView.clearEditing();
         }
     }
     
     public void editCellAt(int rowIndex, int colIndex) {
         rowHeaderView.editRow(rowIndex);
+    }
+    
+    public void cancelRowEdit() {
+        rowHeaderView.clearEditing();
     }
     //</editor-fold>
     

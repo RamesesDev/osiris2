@@ -5,7 +5,6 @@ import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.util.MethodResolver;
 import com.rameses.util.ValueUtil;
-import java.awt.Container;
 import java.beans.Beans;
 import javax.swing.JComponent;
 
@@ -25,7 +24,7 @@ public class UICommandUtil {
             validate(command, binding);
             
             String target = ValueUtil.isEmpty(command.getTarget())? "parent": command.getTarget();
-            NavigatablePanel navPanel = getParentPanel(command, target);
+            NavigatablePanel navPanel = UIControlUtil.getParentPanel(command, target);
             if ( "root".equals(target) ) {
                 UIController rootCon = (UIController) navPanel.getControllers().peek();
                 Binding rootBinding = rootCon.getCurrentView().getBinding();
@@ -55,28 +54,6 @@ public class UICommandUtil {
         }
     }
     
-    //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
-    private static NavigatablePanel getParentPanel(UICommand command, String target) {
-        JComponent comp = (JComponent) command;
-        NavigatablePanel panel = null; //(NavigatablePanel) comp.getClientProperty(NavigatablePanel.class);
-        if ( panel == null ) {
-            Container parent = comp.getParent();
-            while( parent != null ) {
-                if ( parent instanceof NavigatablePanel ) {
-                    panel = (NavigatablePanel) parent;
-                }
-                if ( (panel != null && "parent".equals(target)) || parent instanceof UIControllerPanel ) {
-                    break;
-                }
-                parent = parent.getParent();
-            }
-            if ( panel != null ) {
-                comp.putClientProperty(NavigatablePanel.class, panel);
-            }
-        }
-        return panel;
-    }
-    
     private static void validate(UICommand command, Binding binding) {
         if ( binding == null ) return;
         if ( command.isImmediate() ) return;
@@ -87,5 +64,4 @@ public class UICommandUtil {
             throw new IllegalStateException(am.toString());
         }
     }
-    //</editor-fold>
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="File Transfer Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.io.*;
+        
+                
+        public class FileTransferTestController  {
+        
+            @Service('UploadService')
+            def svc;
+            
+            @Binding
+            def binding;
+        
+            def sourceFile;
+            def message;
+            def canceled = null;
+            
+            @Async( loop=true )
+            public Object startUpload() {
+                def ftis = null;
+                def fileInfo = null;
+                def bytes;
+                try {
+                    ftis = new FileTransferInputStream(sourceFile);
+                    ftis.setByteSize(1024*32);
+                    bytes = ftis.readNext();
+                    fileInfo = ftis.getFileTransferInfo();
+
+                }
+                catch(e) {
+                    e.printStackTrace();
+                    return null;
+                }
+                finally {
+                    ftis.close();
+                }
+
+                svc.upload( bytes, fileInfo );
+                fileInfo.save();
+                                
+                message = "uploading: $fileInfo.bytesRead bytes.";
+                Object retVal = true;
+                if ( fileInfo.eof ) {
+                    fileInfo.delete();
+                    message = "successfully uploaded.";
+                    canceled = null;
+                    retVal = null;
+                }
+                else if ( canceled ) {
+                    canceled = false;
+                    retVal = null;
+                }
+                
+                binding.refresh();
+                
+                return retVal;
+            }
+            
+            void cancel() {
+                canceled = true;
+            }
+            
+            void afterSelect() {
+                canceled = null;
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.filetransfer.TestFileTransfer"/>
+    </pages>
+</workunit>
