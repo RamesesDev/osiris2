@@ -21,11 +21,15 @@
             def binding;
         
             def sourceFile;
-            def message;
             def canceled = null;
+            def closeOnComplete;
+            
+            def progress = new ProgressModel();
             
             @Async( loop=true )
             public Object startUpload() {
+                progress.notifyStart();
+                    
                 def ftis = null;
                 def fileInfo = null;
                 def bytes;
@@ -46,19 +50,19 @@
 
                 svc.upload( bytes, fileInfo );
                 fileInfo.save();
+                progress.setValue( fileInfo.bytesRead );
                                 
-                message = "uploading: $fileInfo.bytesRead bytes.";
                 Object retVal = true;
                 if ( fileInfo.eof ) {
                     fileInfo.delete();
-                    message = "successfully uploaded.";
-                    canceled = null;
                     retVal = null;
                 }
                 else if ( canceled ) {
                     canceled = false;
                     retVal = null;
                 }
+                
+                if ( !retVal ) progress.notifyStop();
                 
                 binding.refresh();
                 
@@ -70,7 +74,15 @@
             }
             
             void afterSelect() {
-                canceled = null;
+                if ( sourceFile ) {
+                    progress.estimatedMaxSize = sourceFile.length();
+                }
+            }
+            
+            def uploadCompleted() {
+                if ( closeOnComplete ) return "_close";
+                
+                return null;
             }
             
         }

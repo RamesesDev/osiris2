@@ -1,3 +1,5 @@
+import com.rameses.io.FileTransferInfo;
+import com.rameses.rcp.common.ProgressModel;
 import javax.swing.UIManager;
 import junit.framework.*;
 
@@ -18,12 +20,8 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    private String[] args;
-    
     public void testHello() {
-        for ( String s: args ) {
-            System.out.println( s );
-        }
+        
     }
     
 }
