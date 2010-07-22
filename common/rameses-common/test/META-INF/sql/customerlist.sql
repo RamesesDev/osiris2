@@ -1,0 +1,1 @@
+select name, taxpayerno from taxpayer order by name desc
