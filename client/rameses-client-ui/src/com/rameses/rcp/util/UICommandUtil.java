@@ -49,7 +49,7 @@ public class UICommandUtil {
                 }
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
         }
     }
