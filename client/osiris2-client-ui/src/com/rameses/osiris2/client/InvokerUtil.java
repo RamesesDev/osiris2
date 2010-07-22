@@ -14,6 +14,7 @@ import com.rameses.osiris2.Folder;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.osiris2.Invoker;
+import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.common.Action;
 import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.UIControllerPanel;
@@ -35,10 +36,20 @@ public final class InvokerUtil {
     
     public static void invoke(Invoker invoker, Map params) {
         try {
-            ControllerProvider cp = ClientContext.getCurrentContext().getControllerProvider();
-            UIController u = cp.getController( invoker.getWorkunitid() );
+            //check if window already exists
+            ClientContext ctx = ClientContext.getCurrentContext();
+            Platform platform = ctx.getPlatform();
+            
+            String wuId = invoker.getWorkunitid();
+            if ( platform.isWindowExists( wuId )) {
+                platform.activateWindow( wuId );
+                return;
+            }
+            
+            ControllerProvider cp = ctx.getControllerProvider();
+            UIController u = cp.getController( wuId );
             String action = invoker.getAction();
-            u.setId(invoker.getWorkunitid());
+            u.setId( wuId );
             u.setTitle( invoker.getCaption());
             String outcome = (String) u.init(params, action);
             String target = (String)invoker.getProperties().get("target");
@@ -47,10 +58,16 @@ public final class InvokerUtil {
                 //do nothing
             } else {
                 UIControllerPanel panel = new UIControllerPanel(u);
-                ClientContext.getCurrentContext().getPlatform().showWindow(null, panel, null);
+                Map winParams = new HashMap();
+                if ( params != null ) {
+                    winParams.putAll(params);
+                }
+                winParams.put("id", u.getId());
+                winParams.put("title", u.getTitle());
+                ClientContext.getCurrentContext().getPlatform().showWindow(null, panel, winParams);
             }
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

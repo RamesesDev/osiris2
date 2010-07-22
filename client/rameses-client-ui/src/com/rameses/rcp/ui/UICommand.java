@@ -6,9 +6,10 @@ package com.rameses.rcp.ui;
  */
 public interface UICommand extends UIControl {
     
-    boolean isUpdate();
-    boolean isImmediate();
     String getTarget();
     String getActionName();
+    boolean isImmediate();
+    boolean isUpdate();
+    boolean isDefaultCommand();
     
 }

@@ -11,11 +11,13 @@ public class Column implements Serializable {
     private String name;
     private String caption;
     private String type = "string";
+    private String handler;
+    private String items;
     private String fieldname;
     private int width;
-    private int minwidth;
-    private int maxwidth;
-    private boolean resizable;
+    private int minWidth;
+    private int maxWidth;
+    private boolean resizable = true;
     private boolean editable;
     private boolean visible = true;
     private int rowheight;
@@ -23,6 +25,8 @@ public class Column implements Serializable {
     private boolean htmlDisplay;
     private String format;
     private boolean required;
+    private Class fieldType;
+    
     
     private Map properties = new HashMap();
     
@@ -58,6 +62,28 @@ public class Column implements Serializable {
     }
     
     
+    /**
+     * Do not remove this. This is used by the client support in the ListColumn Property Editor
+     */
+    public Column clone() {
+        Column col = new Column(getName(), getCaption());
+        col.type = type;
+        col.width = width;
+        col.minWidth = minWidth;
+        col.maxWidth = maxWidth;
+        col.resizable = resizable;
+        col.editable = editable;
+        col.visible = visible;
+        col.properties = properties;
+        col.fieldname = fieldname;
+        col.rowheight = rowheight;
+        col.primary = primary;
+        col.htmlDisplay = htmlDisplay;
+        col.format = format;
+        return col;
+    }
+    
+    
     // <editor-fold defaultstate="collapsed" desc="GETTER/SETTER">
     public String getName() {
         return name;
@@ -83,20 +109,20 @@ public class Column implements Serializable {
         this.width = width;
     }
     
-    public int getMinwidth() {
-        return minwidth;
+    public int getMinWidth() {
+        return minWidth;
     }
     
-    public void setMinwidth(int minwidth) {
-        this.minwidth = minwidth;
+    public void setMinWidth(int minwidth) {
+        this.minWidth = minwidth;
     }
     
-    public int getMaxwidth() {
-        return maxwidth;
+    public int getMaxWidth() {
+        return maxWidth;
     }
     
-    public void setMaxwidth(int maxwidth) {
-        this.maxwidth = maxwidth;
+    public void setMaxWidth(int maxwidth) {
+        this.maxWidth = maxwidth;
     }
     
     public boolean isResizable() {
@@ -129,29 +155,6 @@ public class Column implements Serializable {
     
     public void setProperties(Map properties) {
         this.properties = properties;
-    }
-    //</editor-fold>
-    
-    
-    /**
-     * Do not remove this. This is used by the client support in the ListColumn Property Editor
-     */
-    public Column clone() {
-        Column col = new Column(getName(), getCaption());
-        col.type = type;
-        col.width = width;
-        col.minwidth = minwidth;
-        col.maxwidth = maxwidth;
-        col.resizable = resizable;
-        col.editable = editable;
-        col.visible = visible;
-        col.properties = properties;
-        col.fieldname = fieldname;
-        col.rowheight = rowheight;
-        col.primary = primary;
-        col.htmlDisplay = htmlDisplay;
-        col.format = format;
-        return col;
     }
     
     public int getRowheight() {
@@ -211,5 +214,29 @@ public class Column implements Serializable {
         this.required = required;
     }
     
+    public String getHandler() {
+        return handler;
+    }
+    
+    public void setHandler(String handler) {
+        this.handler = handler;
+    }
+    
+    public String getItems() {
+        return items;
+    }
+    
+    public void setItems(String items) {
+        this.items = items;
+    }
+    
+    public Class getFieldType() {
+        return fieldType;
+    }
+    
+    public void setFieldType(Class fieldType) {
+        this.fieldType = fieldType;
+    }
+    //</editor-fold>
     
 }

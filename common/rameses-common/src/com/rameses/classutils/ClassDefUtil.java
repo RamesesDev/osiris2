@@ -9,6 +9,7 @@
 
 package com.rameses.classutils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.Map;
@@ -78,4 +79,8 @@ public final class ClassDefUtil {
         return map.get(clazz).findMethodByName(methodName);
     }
     
+    public Field findAnnotatedField( Class clazz, Class a) {
+        parseClass(clazz);
+        return map.get(clazz).findAnnotatedField(a);
+    }
 }

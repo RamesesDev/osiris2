@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * this is a package level class created only by 
+ * this is a package level class created only by
  * the ApplicationFactory
  */
 public class Module {
@@ -35,8 +35,10 @@ public class Module {
     private AppContext context;
     
     Module(AppContext ctx, URL u) {
-        this.contextPath = u.toExternalForm().replaceAll("/META-INF/module.conf", "");
-        this.context = ctx;
+        contextPath = u.toExternalForm().replaceAll("/META-INF/module.conf", "");
+        contextPath = contextPath.replaceAll("\\s", "%20"); //escape all spaces
+        
+        context = ctx;
     }
     
     
@@ -44,23 +46,23 @@ public class Module {
     public String getNamespace() {
         return name;
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public void setName(String name) {
         this.name = name;
     }
-
+    
     public String getTitle() {
         return title;
     }
-
+    
     public void setTitle(String title) {
         this.title = title;
     }
-
+    
     public String getContextPath() {
         return contextPath;
     }
@@ -77,8 +79,8 @@ public class Module {
         return invokers;
     }
     //</editor-fold>
-
-    //check first if name ends with extension, use that extension instead. 
+    
+    //check first if name ends with extension, use that extension instead.
     //get the inputstream source. Afterwards, parse it using the defined
     //xml parser. Place the resulting workunit in the hashtable.
     public WorkUnit getWorkunit(String name) {
@@ -88,8 +90,7 @@ public class Module {
     public InputStream getResourceAsStream( String name ) {
         try {
             return getResource(name).openStream();
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -98,34 +99,33 @@ public class Module {
         try {
             if(!name.startsWith("/")) name = "/" + name;
             return new URL( this.contextPath + name );
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             throw new IllegalStateException(ex);
         }
     }
-
+    
     
     // <editor-fold defaultstate="collapsed" desc="For deprecation">
     public String getPlatform() {
         return platform;
     }
-
+    
     public void setPlatform(String platform) {
         this.platform = platform;
     }
-
+    
     public String getChannel() {
         return channel;
     }
-
+    
     public void setChannel(String channel) {
         this.channel = channel;
     }
     //</editor-fold>
-
+    
     public AppContext getAppContext() {
         return context;
     }
-
+    
     
 }

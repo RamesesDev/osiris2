@@ -13,7 +13,9 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
+import com.rameses.util.MethodResolver;
 import com.rameses.util.PropertyResolver;
+import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
@@ -46,19 +48,39 @@ public class UIInputUtil {
     }
     
     public static synchronized void updateBeanValue(UIInput control) {
-        Binding binding = control.getBinding();
-        if ( binding == null ) return;
-        
-        Object bean = binding.getBean();
-        if ( bean == null ) return;
-        
-        PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-        String name = control.getName();
-        Object inputValue = control.getValue();
-        Object beanValue = resolver.getProperty(bean, name);
-        resolver.setProperty(bean, name, inputValue);
-        binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
-        binding.notifyDepends(control);
+        updateBeanValue(control, true);
+    }
+    
+    public static synchronized void updateBeanValue(UIInput control, boolean addLog) {
+        try {
+            Binding binding = control.getBinding();
+            if ( binding == null ) return;
+            
+            Object bean = binding.getBean();
+            if ( bean == null ) return;
+            
+            ClientContext ctx = ClientContext.getCurrentContext();
+            PropertyResolver resolver = ctx.getPropertyResolver();
+            String name = control.getName();
+            Object inputValue = control.getValue();
+            Object beanValue = resolver.getProperty(bean, name);
+            resolver.setProperty(bean, name, inputValue);
+            
+            if ( addLog ) {
+                binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
+            }
+            
+            String method = control.getOnAfterUpdate();
+            if ( !ValueUtil.isEmpty(method) ) {
+                MethodResolver mr = ctx.getMethodResolver();
+                mr.invoke(bean, method, null, null);
+            }
+            
+            binding.notifyDepends(control);
+            
+        } catch(Exception e) {
+            throw new IllegalStateException("UIInputUtil.updateBeanValue: ", e);
+        }
     }
     
 }

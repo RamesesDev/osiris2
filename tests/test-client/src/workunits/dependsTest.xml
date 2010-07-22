@@ -10,10 +10,13 @@
         import com.rameses.common.annotations.*;
         import com.rameses.rcp.common.*;
                 
-        public class TestController  {
+        public class DependsTestController  {
         
             def selectedGroup;
             def selectedMember;
+            
+            def getSelectedGroupName() { return selectedGroup?.item?.name; }
+            def getSelectedMemberName() { return selectedMember?.item?.name; }
         
             def groupHandler = [
 

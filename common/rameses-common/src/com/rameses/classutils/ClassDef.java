@@ -99,6 +99,15 @@ public final class ClassDef {
         return null;
     }
 
+    public Field findAnnotatedField( Class a) {
+        for(AnnotationField field: annotatedFields) {
+            if( field.getAnnotation().annotationType() == a) {
+                return field.getField();
+            }
+        }
+        return null;
+    }
+    
     public void destroy() {
         annotatedFields.clear();
         annotatedMethods.clear();

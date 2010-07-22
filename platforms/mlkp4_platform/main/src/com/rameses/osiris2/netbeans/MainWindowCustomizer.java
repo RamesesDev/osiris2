@@ -19,7 +19,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
-import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 class MainWindowCustomizer 
@@ -67,15 +66,15 @@ class MainWindowCustomizer
             {
                 Container toolbar = (Container) c;
                 toolbar.setLayout(new ToolbarPanelLayout());
+                NBManager.getInstance().setToolbarView(toolbar); 
                 
-                JToolBar tbar = new JToolBar();
-                tbar.setLayout(new ToolbarLayout());                
-                tbar.setName("toolbarpanel");
-                tbar.setFloatable(false);
-                tbar.setRollover(true);
-                toolbar.add(tbar);
-                
-                NBManager.getInstance().setToolbarView(tbar);
+//                JToolBar tbar = new JToolBar();
+//                tbar.setLayout(new ToolbarLayout());                
+//                tbar.setName("toolbarpanel");
+//                tbar.setFloatable(false);
+//                tbar.setRollover(true);
+//                toolbar.add(tbar);
+//                NBManager.getInstance().setToolbarView(tbar);
             }
             else if (c instanceof JPanel)
             {

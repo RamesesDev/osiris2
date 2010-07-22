@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="loader" caption="Loader 1" index="1"
+                 target="process" action="init" permission="checkMcAddr"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                        
+        public class Loader1Controller  {
+        
+            
+            void init() {
+                println "===> (LOADER 1) Checking McAddress ";
+            }
+        
+        }
+        
+        ]]>
+    </code>
+</workunit>

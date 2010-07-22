@@ -2,6 +2,7 @@
 <workunit>
     <invokers>
         <invoker folderid="/menu/file" caption="SubList"/>
+        <invoker type="toolbar" caption="SubList 1" permission="checkMcAddr"/>
     </invokers>
     
     <code>
@@ -9,8 +10,9 @@
         
         import com.rameses.common.annotations.*;
         import com.rameses.rcp.common.*;
+        import test.model.*;
                 
-        public class TestController  {
+        public class SubListTestController  {
         
             def selectedItem;
             
@@ -30,24 +32,27 @@
 
                 getColumns: {
                     return [
-                        new Column(name: "rownum", primary: true),
+                        new Column(name: "rownum", primary: true, width: 30),
                         new Column(name: "item.name", caption: "Name", editable: true, required: true),
-                        new Column(name: "item.address", caption: "Address", editable: true, required: true)
+                        new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
+                        new Column(name: "item.address", caption: "Address", editable: true, required: true, type: "lookup", handler: "test-client:addressLookup"),
+                        new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date", editable: true),
+                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, fieldType: EmployeeType.class),
+                        new Column(name: "item.single", caption: "Single", type: "checkbox", editable: true)
                     ];
                 }
 
             ] as SubListModel;
 
             def data = [
-                [ name:"11", address:"cebu city"], [name:"12", address:"cebu city"], [name:"13", address:"cebu city"], [name:"14", address:"cebu city"],
-                [ name:"21", address:"cebu city"], [name:"22", address:"cebu city"], [name:"23", address:"cebu city"], [name:"24", address:"cebu city"]
-
-                /*
-                [ name:"31", address:"cebu city"], [name:"32", address:"cebu city"], [name:"33", address:"cebu city"], [name:"34", address:"cebu city"],
-                [ name:"41", address:"cebu city"], [name:"42", address:"cebu city"], [name:"43", address:"cebu city"], [name:"44", address:"cebu city"],
-                [ name:"51", address:"cebu city"], [name:"52", address:"cebu city"], [name:"53", address:"cebu city"], [name:"54", address:"cebu city"],
-                [ name:"61", address:"cebu city"], [name:"62", address:"cebu city"], [name:"63", address:"cebu city"], [name:"64", address:"cebu city"]
-                */
+                [name:"11", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50], 
+                [name:"12", address:"CEBU CITY", single: null, date: new Date(), balance: 1000], 
+                [name:"13", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520],
+                [name:"21", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"22", address:"CEBU CITY", single: null, date: new Date(), balance: 2500], 
+                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700]
 
             ];
             

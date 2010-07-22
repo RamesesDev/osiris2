@@ -10,11 +10,27 @@
         import com.rameses.common.annotations.*;
         import com.rameses.rcp.common.*;
                 
-        public class TestController  {
+        public class AsyncTestController  {
         
             @Service('TestService')
             def svc;
         
+            @AsyncEvent    
+            def evt;
+            
+            public Object asyncLocal() {
+                svc.myTest( "hello ok test!");
+            }
+            
+            @Async( loop = true, responseHandler="resp1" )
+            public Object xasyncLocal() {
+                if(evt.loop>5) return null;
+                return "value " + evt.loop;
+            }
+            
+            public void resp1( Object o ) {
+                System.out.println( "resulting " + o );
+            }
             
             /** @Async(responseHandler="respHandler") */
             public void test() {
@@ -31,6 +47,6 @@
     </code>
     
     <pages>
-        <page template="test.table.TestPage4"/>
+        <page template="test.async.TestPage"/>
     </pages>
 </workunit>

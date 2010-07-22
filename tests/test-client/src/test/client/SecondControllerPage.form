@@ -12,11 +12,19 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" pref="292" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="xButton1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jLabel1" pref="292" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xButton1" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                      <Component id="xLabel2" alignment="0" max="32767" attributes="1"/>
+                      <Component id="xLabel1" alignment="0" pref="214" max="32767" attributes="1"/>
+                  </Group>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -29,7 +37,11 @@
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="258" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xLabel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xLabel2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="216" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -44,6 +56,16 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Close"/>
         <Property name="name" type="java.lang.String" value="close"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XLabel" name="xLabel1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="firstname"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XLabel" name="xLabel2">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="lastname"/>
       </Properties>
     </Component>
   </SubComponents>

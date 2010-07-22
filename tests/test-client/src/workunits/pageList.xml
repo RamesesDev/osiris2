@@ -10,7 +10,7 @@
         import com.rameses.common.annotations.*;
         import com.rameses.rcp.common.*;
                 
-        public class TestController  {
+        public class PageListTestController  {
         
             @Service('TestService')
             def svc;

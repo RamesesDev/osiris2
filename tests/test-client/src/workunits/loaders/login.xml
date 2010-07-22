@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="loader" caption="Login" index="0"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.osiris2.client.*;
+                
+        public class LoginController  {
+        
+            def username;
+            def password;
+        
+            public def doLogin() {
+                def sp = OsirisContext.session.securityProvider;
+                if ( username == "ELMO" ) {
+                    sp.permissions = [ '.*' ];
+                } else if ( username == "JAYROME" ) {
+                    sp.permissions = [ 'test-client:.*.checkMcAddr' ];
+                }
+            
+                return "_close";
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.LoginPage"/>
+    </pages>
+</workunit>

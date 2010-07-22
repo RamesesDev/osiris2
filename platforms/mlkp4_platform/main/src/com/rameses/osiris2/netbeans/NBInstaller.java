@@ -1,8 +1,8 @@
 package com.rameses.osiris2.netbeans;
 
 import com.rameses.client.updates.UpdateCenter;
-import com.rameses.rcp.interfaces.AppLoader;
-import com.rameses.rcp.interfaces.MainWindow;
+import com.rameses.platform.interfaces.AppLoader;
+import com.rameses.platform.interfaces.MainWindow;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -35,6 +35,7 @@ public class NBInstaller extends ModuleInstall {
     private Container origPanel;
     private JFrame mainWindow;
     private NBMainWindow nbMainWindow;
+    private NBPlatform nbPlatform;
     
     private AppLoader appLoader;
     private ClassLoader classLoader;
@@ -136,12 +137,12 @@ public class NBInstaller extends ModuleInstall {
         NBManager.getInstance().setMainWindow(mainWindow);
         MainWindowCustomizer.customize(mainWindow);
         
-        
         System.getProperties().put("StartupModuleDispatched", "false");
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
                     startBootProcess2();
+                    
                 } catch(Exception ex) {
                     alert(ex.getMessage());
                     ex.printStackTrace();
@@ -165,8 +166,9 @@ public class NBInstaller extends ModuleInstall {
         } catch(Exception ign){;}
         
         nbMainWindow = new NBMainWindow(mainWindow);
+        nbPlatform = new NBPlatform(nbMainWindow);
         mainWindow.getRootPane().putClientProperty(MainWindow.class, nbMainWindow);
-        appLoader.load(classLoader, env, nbMainWindow);
+        appLoader.load(classLoader, env, nbPlatform);
         //setting application icon
         try {
             File fileIcon = new File(System.getProperty("user.dir") + "/icon.gif");

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.EmployeeType;
+                
+        public class TestNav3Controller  {
+
+            def name;
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.CustomerPage"/>
+    </pages>
+</workunit>

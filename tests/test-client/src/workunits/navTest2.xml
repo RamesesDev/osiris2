@@ -8,7 +8,10 @@
         import com.rameses.rcp.common.*;
         import test.model.EmployeeType;
                 
-        public class TestController  {
+        public class TestNav2Controller  {
+        
+            def firstname;
+            def lastname;
         
             public String close() {
                 return "_close";

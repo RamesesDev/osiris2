@@ -129,7 +129,7 @@ public abstract class PageListModel extends AbstractListModel {
         onRemoveItem( item );
         forceLoad = true;
         refresh();
-        if(getSelectedItem().getIndex()>=0 && getSelectedItem().getState()==0) {
+        if(getSelectedItem().getIndex()>0 && getSelectedItem().getState()==0) {
             setSelectedItem( items.get(getSelectedItem().getIndex()-1) );
         }
     }

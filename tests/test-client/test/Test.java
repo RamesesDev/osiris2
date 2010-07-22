@@ -1,5 +1,5 @@
-import java.util.Iterator;
-import java.util.Map;
+import com.rameses.io.FileTransferInfo;
+import com.rameses.rcp.common.ProgressModel;
 import javax.swing.UIManager;
 import junit.framework.*;
 
@@ -22,14 +22,6 @@ public class Test extends TestCase {
     
     public void testHello() {
         
-        Iterator itr = UIManager.getLookAndFeel().getDefaults().entrySet().iterator();
-        while (itr.hasNext()) {
-            Object item = itr.next();
-            Map.Entry entry = (Map.Entry) item;
-            String name = entry.getKey().toString();
-            if (name.toLowerCase().indexOf("table") >= 0)
-                System.out.println(entry);
-        }
     }
     
 }

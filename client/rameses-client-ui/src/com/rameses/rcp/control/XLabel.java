@@ -5,6 +5,7 @@ import com.rameses.rcp.ui.Containable;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
+import com.rameses.util.ValueUtil;
 import javax.swing.JLabel;
 
 /**
@@ -17,6 +18,30 @@ public class XLabel extends JLabel implements UIControl, Containable {
     private String[] depends = new String[]{};
     private Binding binding;
     private ControlProperty property = new ControlProperty();
+    private String expression;
+    
+    
+    public void refresh() {
+        Object value = null;
+        if ( !ValueUtil.isEmpty(expression)) {
+            value = UIControlUtil.evaluateExpr(binding.getBean(), expression);
+        } else {
+            value = UIControlUtil.getBeanValue(this);
+        }
+        setText(( value != null? value+"" : ""));
+    }
+    
+    public void load() {}
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setName(String name) {
+        super.setName(name);
+        setText(name);
+    }
     
     public String[] getDepends() {
         return depends;
@@ -25,7 +50,7 @@ public class XLabel extends JLabel implements UIControl, Containable {
     public void setDepends(String[] depends) {
         this.depends = depends;
     }
-
+    
     public int getIndex() {
         return index;
     }
@@ -33,31 +58,26 @@ public class XLabel extends JLabel implements UIControl, Containable {
     public void setIndex(int idx) {
         index = idx;
     }
-
+    
     public void setBinding(Binding binding) {
         this.binding = binding;
     }
-
+    
     public Binding getBinding() {
         return binding;
     }
-
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setText(( value != null? value+"" : ""));
-    }
     
-    public void load() {
-    
-    }
-
-    public int compareTo(Object o) {
-        if ( o == null || !(o instanceof UIControl)) return 0;
-        return this.index - ((UIControl) o).getIndex();
-    }
-
     public ControlProperty getControlProperty() {
         return property;
     }
+    
+    public String getExpression() {
+        return expression;
+    }
+    
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+    //</editor-fold>
     
 }

@@ -3,13 +3,13 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.Containable;
 import com.rameses.rcp.ui.ControlProperty;
-import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.beans.Beans;
 import javax.swing.JCheckBox;
 
 /**
@@ -21,10 +21,20 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
     private Binding binding;
     private String[] depends;
     private int index;
+    private Object checkValue = true;
+    private Object uncheckValue = false;
     private ControlProperty property = new ControlProperty();
+    private String onAfterUpdate;
     
-    public XCheckBox() {
-        
+    
+    public XCheckBox() {}
+    
+    public void refresh() {
+        Object value = UIControlUtil.getBeanValue(this);
+        setValue(value);
+    }
+    
+    public void load() {
         addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 UIInputUtil.updateBeanValue(XCheckBox.this);
@@ -32,8 +42,13 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
         });
     }
     
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public Object getValue() {
-        return isSelected();
+        return isSelected()? getCheckValue() : getUncheckValue();
     }
     
     public void setValue(Object value) {
@@ -41,8 +56,25 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
             refresh();
             setSelected(!isSelected());
         } else {
-            setSelected("true".equals(value+""));
+            boolean isCheck = getCheckValue().equals(value);
+            boolean isUncheck = getUncheckValue().equals(value);
+            if ( !isCheck ) {
+                setSelected(false);
+                if ( !isUncheck ) {
+                    UIInputUtil.updateBeanValue(this);
+                }
+            } else {
+                setSelected(true);
+            }
         }
+    }
+    
+    public String getCaption() {
+        return property.getCaption();
+    }
+    
+    public void setCaption(String caption) {
+        property.setCaption(caption);
     }
     
     public boolean isNullWhenEmpty() {
@@ -73,21 +105,45 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
         return binding;
     }
     
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setSelected(Boolean.parseBoolean(value+""));
-    }
-    
-    public void load() {
-    }
-    
-    public int compareTo(Object o) {
-        if ( o ==  null || !(o instanceof UIControl) ) return 0;
-        return this.index - ((UIControl) o).getIndex();
-    }
-    
     public ControlProperty getControlProperty() {
         return property;
     }
+    
+    public Object getCheckValue() {
+        return checkValue;
+    }
+    
+    public void setCheckValue(Object checkValue) {
+        if ( !Beans.isDesignTime() && isExpression(checkValue) ) {
+            checkValue = UIControlUtil.evaluateExpr(binding.getBean(), checkValue+"");
+        }
+        this.checkValue = checkValue;
+    }
+    
+    public Object getUncheckValue() {
+        return uncheckValue;
+    }
+    
+    public void setUncheckValue(Object uncheckValue) {
+        if ( !Beans.isDesignTime() && isExpression(uncheckValue) ) {
+            uncheckValue = UIControlUtil.evaluateExpr(binding.getBean(), uncheckValue+"");
+        }
+        this.uncheckValue = uncheckValue;
+    }
+    
+    private boolean isExpression(Object exp) {
+        if ( exp == null || !(exp instanceof String) ) return false;
+        String expr = exp.toString();
+        return expr.matches(".*#\\{[^\\{\\}]+\\}.*");
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
+    }
+    //</editor-fold>
     
 }

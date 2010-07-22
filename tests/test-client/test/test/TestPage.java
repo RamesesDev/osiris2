@@ -1,6 +1,7 @@
 package test;
 
-import javax.swing.JDialog;
+import com.rameses.rcp.control.XTable.TableBorder;
+
 /*
  * TestPage.java
  *
@@ -13,11 +14,15 @@ public class TestPage extends javax.swing.JPanel {
     
     public TestPage() {
         initComponents();
+        jPanel1.setBorder(new TableBorder());
     }
     
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        testGrid1 = new test.control.TestGrid();
+        jTextField1 = new javax.swing.JTextField();
+
+        jTextField1.setText("jTextField1");
+        jTextField1.setMargin(new java.awt.Insets(0, 0, 0, 15));
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -25,21 +30,21 @@ public class TestPage extends javax.swing.JPanel {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(testGrid1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
-                .addContainerGap())
+                .add(jTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 189, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(236, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(testGrid1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
-                .addContainerGap())
+                .add(jTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(196, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private test.control.TestGrid testGrid1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
     
 }

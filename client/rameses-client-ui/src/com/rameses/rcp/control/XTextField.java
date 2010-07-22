@@ -1,9 +1,10 @@
 package com.rameses.rcp.control;
 
+import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.support.TextDocument;
 import com.rameses.rcp.ui.Containable;
 import com.rameses.rcp.ui.ControlProperty;
-import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
@@ -25,17 +26,51 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
     private boolean nullWhenEmpty = true;
+    private String onAfterUpdate;
     
-    public XTextField() {
+    private TextDocument document = new TextDocument();
+    
+    
+    public XTextField() {}
+    
+    public void refresh() {
+        Object value = UIControlUtil.getBeanValue(this);
+        setValue(value);
+    }
+    
+    public void load() {
         setInputVerifier(UIInputUtil.VERIFIER);
+        document.setTextCase(TextCase.UPPER);
+        setDocument(document);
+    }
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
+    public void validateInput() {
+        actionMessage.clearMessages();
+        property.setErrorMessage(null);
+        if ( isRequired() && ValueUtil.isEmpty(getValue()) ) {
+            actionMessage.clearMessages();
+            actionMessage.addMessage("1001", "{0} is required.", new Object[] {getCaption()});
+            property.setErrorMessage(actionMessage.toString());
+        }
+    }
+    
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setName(String name) {
+        super.setName(name);
+        setText(name);
     }
     
     public Object getValue() {
         String txtValue = getText();
-        if ( txtValue != null ) return txtValue;
-        else if ( nullWhenEmpty ) return null;
+        if ( ValueUtil.isEmpty(txtValue) && nullWhenEmpty )
+            return null;
         
-        return "";
+        return txtValue;
     }
     
     public void setValue(Object value) {
@@ -68,30 +103,6 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     
     public Binding getBinding() {
         return binding;
-    }
-    
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
-    }
-    
-    public void load() {
-        
-    }
-    
-    public int compareTo(Object o) {
-        if ( o == null || !(o instanceof UIControl) ) return 0;
-        return this.index - ((UIControl) o).getIndex();
-    }
-    
-    public void validateInput() {
-        actionMessage.clearMessages();
-        property.setErrorMessage(null);
-        if ( isRequired() && ValueUtil.isEmpty(getValue()) ) {
-            actionMessage.clearMessages();
-            actionMessage.addMessage("1001", "{0} is required.", new Object[] {getCaption()});
-            property.setErrorMessage(actionMessage.toString());
-        }
     }
     
     public ActionMessage getActionMessage() {
@@ -141,4 +152,30 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     public ControlProperty getControlProperty() {
         return property;
     }
+    
+    public TextCase getTextCase() {
+        return document.getTextCase();
+    }
+    
+    public void setTextCase(TextCase textCase) {
+        document.setTextCase(textCase);
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public int getMaxLength() {
+        return document.getMaxlength();
+    }
+    
+    public void setMaxLength(int length) {
+        document.setMaxlength(length);
+    }
+    //</editor-fold>
+    
 }
