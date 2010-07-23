@@ -35,6 +35,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     
     private XLookupSupport support = new XLookupSupport();
     
+    
     public XLookupField() {
         super("com/rameses/rcp/icons/search.png");
         setOrientation( super.ICON_ON_RIGHT );
@@ -46,6 +47,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         fireLookup();
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  refresh/load  ">
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
         if ( value != null ) {
@@ -98,6 +100,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
             lookupModel = (LookupModel) lookupController.getCodeBean();
         }
     }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  lookup dialog support  ">
     private void fireLookup() {
@@ -113,13 +116,13 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 if ( conId == null ) conId = getName() + handler;
                 if ( platform.isWindowExists(conId) ) return;
                 
-                UIControllerPanel uip = new UIControllerPanel(c);
+                UIControllerPanel lookupPanel = new UIControllerPanel(c);
                 
                 Map props = new HashMap();
                 props.put("id", conId);
                 props.put("title", c.getTitle());
                 
-                platform.showPopup(this, uip, props);
+                platform.showPopup(this, lookupPanel, props);
             }
         } catch(Exception e) {
             e.printStackTrace();

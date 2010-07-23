@@ -24,6 +24,9 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
     private Object checkValue = true;
     private Object uncheckValue = false;
     private ControlProperty property = new ControlProperty();
+    private String onAfterUpdate;
+    private boolean readonly;
+    
     
     public XCheckBox() {}
     
@@ -133,6 +136,24 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
         if ( exp == null || !(exp instanceof String) ) return false;
         String expr = exp.toString();
         return expr.matches(".*#\\{[^\\{\\}]+\\}.*");
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+        setEnabled(!readonly);
+        setFocusable(!readonly);
+    }
+    
+    public boolean isReadonly() {
+        return readonly;
     }
     //</editor-fold>
     

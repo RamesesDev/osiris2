@@ -8,36 +8,61 @@
 package com.rameses.rcp.util;
 
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.framework.NavigatablePanel;
+import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.util.ExpressionResolver;
 import com.rameses.util.PropertyResolver;
+import java.awt.Container;
+import javax.swing.JComponent;
 
 
 public class UIControlUtil {
     
-    public static synchronized Object getBeanValue(UIControl control) {
+    public static Object getBeanValue(UIControl control) {
         return getBeanValue(control, control.getName());
     }
     
-    public static synchronized  Object getBeanValue(UIControl control, String property) {
+    public static  Object getBeanValue(UIControl control, String property) {
         PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
         Object bean = control.getBinding().getBean();
         return resolver.getProperty(bean, property);
     }
     
-    public static synchronized Class getValueType(UIControl control, String property) {
+    public static Class getValueType(UIControl control, String property) {
         PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
         Object bean = control.getBinding().getBean();
         return resolver.getPropertyType(bean, property);
     }
     
-    public static synchronized Object evaluateExpr(Object bean, String expression) {
+    public static Object evaluateExpr(Object bean, String expression) {
         ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
         return er.evaluate(bean, expression);
     }
     
-    public static synchronized  int compare(UIControl control, Object control2) {
+    public static int compare(UIControl control, Object control2) {
         if ( control2 == null || !(control2 instanceof UIControl)) return 0;
         return control.getIndex() - ((UIControl) control2).getIndex();
+    }
+    
+    public static NavigatablePanel getParentPanel(UIControl control, String target) {
+        JComponent comp = (JComponent) control;
+        NavigatablePanel panel = null; //(NavigatablePanel) comp.getClientProperty(NavigatablePanel.class);
+        if ( panel == null ) {
+            Container parent = comp.getParent();
+            while( parent != null ) {
+                if ( parent instanceof NavigatablePanel ) {
+                    panel = (NavigatablePanel) parent;
+                }
+                if ( (panel != null && "parent".equals(target)) || parent instanceof UIControllerPanel ) {
+                    break;
+                }
+                parent = parent.getParent();
+            }
+            if ( panel != null ) {
+                comp.putClientProperty(NavigatablePanel.class, panel);
+            }
+        }
+        return panel;
     }
 }

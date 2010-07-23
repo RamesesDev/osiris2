@@ -6,6 +6,7 @@ import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.ListModelListener;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ChangeLog;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
@@ -18,7 +19,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.EventObject;
@@ -27,12 +27,12 @@ import java.util.Map;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
-import com.rameses.rcp.control.XTable;
 import java.awt.event.FocusListener;
 import javax.swing.JButton;
 import javax.swing.JRootPane;
@@ -44,30 +44,33 @@ import javax.swing.JRootPane;
 public class TableComponent extends JTable implements ListModelListener {
     
     private static final String COLUMN_POINT = "COLUMN_POINT";
-    private static final KeyListener KEY_LISTENER = new TableKeyAdapter();
     
     private DefaultTableModel tableModel;
     private Map<Integer, JComponent> editors = new HashMap();
     private Binding itemBinding = new Binding();
-    private TableListener listener;
+    private TableListener tableListener;
     private AbstractListModel listModel;
     
-    private boolean required = false;
-    private boolean editingMode = false;
-    private boolean editorBeanLoaded = false;
+    private boolean readonly;
+    private boolean required;
+    private boolean editingMode;
+    private boolean editorBeanLoaded;
     private boolean rowCommited = true;
     private JComponent currentEditor;
     private KeyEvent currentKeyEvent;
     
-    private XTable grid;
     
+    public TableComponent() {
+        initComponents();
+    }
     
-    public TableComponent(XTable grid) {
-        this.grid = grid;
+    //<editor-fold defaultstate="collapsed" desc="  initComponents  ">
+    private void initComponents() {
         tableModel = new DefaultTableModel();
         getTableHeader().setReorderingAllowed(false);
         getTableHeader().setDefaultRenderer(TableManager.getHeaderRenderer());
-        addKeyListener(KEY_LISTENER);
+        addKeyListener(new TableKeyAdapter());
+        
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 hideEditor(false);
@@ -81,18 +84,42 @@ public class TableComponent extends JTable implements ListModelListener {
         KeyStroke shiftEnter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 1);
         getInputMap(cond).put(shiftEnter, "selectPreviousColumnCell");
         
-        EnterAction ea = new EnterAction(this);
+        TableEnterAction ea = new TableEnterAction(this);
         registerKeyboardAction(ea, ea.keyStroke, JComponent.WHEN_FOCUSED);
         
-        setAutoResizeMode(super.AUTO_RESIZE_LAST_COLUMN);
+        //row editing ctrl+Z support
+        KeyStroke ctrlZ = KeyStroke.getKeyStroke("ctrl Z");
+        registerKeyboardAction(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+                if ( !rowCommited ) {
+                    int row = getSelectedRow();
+                    ChangeLog log = itemBinding.getChangeLog();
+                    if ( log.hasChanges() ) {
+                        log.undo();
+                        tableModel.fireTableRowsUpdated(row, row);
+                    }
+                    //clear row editing flag of everything is undone
+                    if ( !log.hasChanges() ) {
+                        rowCommited = true;
+                        tableListener.cancelRowEdit();
+                    }
+                }
+            }
+            
+        }, ctrlZ, JComponent.WHEN_FOCUSED);
+        
+        setAutoResize(true);
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setListModel(AbstractListModel listModel) {
         this.listModel = listModel;
         listModel.setListener(this);
         tableModel.setListModel(listModel);
         setModel(tableModel);
-        initTable();
+        buildColumns();
     }
     
     public AbstractListModel getListModel() {
@@ -100,7 +127,7 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     public void setListener(TableListener listener) {
-        this.listener = listener;
+        this.tableListener = listener;
     }
     
     public boolean isRequired() {
@@ -111,8 +138,29 @@ public class TableComponent extends JTable implements ListModelListener {
         return editingMode;
     }
     
-    //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
-    private void initTable() {
+    public boolean isAutoResize() {
+        return getAutoResizeMode() != super.AUTO_RESIZE_OFF;
+    }
+    
+    public void setAutoResize(boolean autoResize) {
+        if ( autoResize )
+            setAutoResizeMode(super.AUTO_RESIZE_LAST_COLUMN);
+        else
+            setAutoResizeMode(super.AUTO_RESIZE_OFF);
+        
+    }
+    
+    public boolean isReadonly() {
+        return readonly;
+    }
+    
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  buildColumns  ">
+    private void buildColumns() {
         removeAll(); //remove all editors
         editors.clear(); //clear column editors map
         required = false; //reset flag to false
@@ -138,10 +186,7 @@ public class TableComponent extends JTable implements ListModelListener {
             editor.setBounds(-10, -10, 10, 10);
             editor.addFocusListener( new EditorFocusSupport() );
             
-            if ( TableManager.hideOnEnter(editor) ) {
-                addKeyboardAction(editor, KeyEvent.VK_ENTER, true);
-            }
-            
+            addKeyboardAction(editor, KeyEvent.VK_ENTER, true);
             addKeyboardAction(editor, KeyEvent.VK_TAB, true);
             addKeyboardAction(editor, KeyEvent.VK_ESCAPE, false);
             
@@ -164,6 +209,11 @@ public class TableComponent extends JTable implements ListModelListener {
         itemBinding.init(); //initialize item binding
     }
     
+    private void addKeyboardAction(JComponent comp, int key, boolean commit) {
+        EditorKeyBoardAction kba = new EditorKeyBoardAction(comp, key, commit);
+        comp.registerKeyboardAction(kba, kba.keyStroke, JComponent.WHEN_FOCUSED);
+    }
+    
     private void applyColumnProperties(TableColumn tc, Column c) {
         if ( c.getMaxWidth() > 0 ) tc.setMaxWidth( c.getMaxWidth() );
         if ( c.getMinWidth() > 0 ) tc.setMinWidth( c.getMinWidth() );
@@ -177,7 +227,6 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     //</editor-fold>
     
-    
     //<editor-fold defaultstate="collapsed" desc="  JTable properties  ">
     public void setTableHeader(JTableHeader tableHeader) {
         super.setTableHeader(tableHeader);
@@ -188,18 +237,32 @@ public class TableComponent extends JTable implements ListModelListener {
         });
     }
     
+    protected void processMouseEvent(MouseEvent me) {
+        if ( me.getClickCount() == 2 ) {
+            Point p = new Point(me.getX(), me.getY());
+            int colIndex = columnAtPoint(p);
+            Column dc = tableModel.getColumn(colIndex);
+            if ( dc != null && !dc.isEditable() && me.getID() == MouseEvent.MOUSE_PRESSED ) {
+                me.consume();
+                openItem();
+                return;
+            }
+        }
+        
+        super.processMouseEvent(me);
+    }
+    
     public boolean editCellAt(int rowIndex, int colIndex, EventObject e) {
+        if ( readonly ) return false;
+        
+        MouseEvent me = null;
         if (e instanceof MouseEvent) {
-            MouseEvent me = (MouseEvent) e;
+            me = (MouseEvent) e;
             if (me.getClickCount() != 2) return false;
         }
         
         Column dc = tableModel.getColumn(colIndex);
         if (dc == null) return false;
-        if (!dc.isEditable()) {
-            if ( e instanceof MouseEvent) openItem();
-            return false;
-        }
         
         ListItem item = listModel.getSelectedItem();
         if ( item.getItem() == null ) return false;
@@ -207,7 +270,6 @@ public class TableComponent extends JTable implements ListModelListener {
         JComponent editor = editors.get(colIndex);
         if ( editor == null ) return false;
         
-        listener.editCellAt(rowIndex, colIndex);
         showEditor(editor, rowIndex, colIndex, e);
         return false;
     }
@@ -236,7 +298,11 @@ public class TableComponent extends JTable implements ListModelListener {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void openItem() {
-        if ( listener != null ) listener.openItem();
+        if ( readonly ) return;
+        
+        if ( tableListener != null ) {
+            tableListener.openItem();
+        }
     }
     
     private boolean isPrintableKey() {
@@ -265,13 +331,9 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     private void highLight(JComponent comp) {
-        if ( comp instanceof JTextComponent )
+        if ( comp instanceof JTextComponent ) {
             ((JTextComponent) comp).selectAll();
-    }
-    
-    private void addKeyboardAction(JComponent comp, int key, boolean commit) {
-        KeyBoardAction kba = new KeyBoardAction(comp, key, commit);
-        comp.registerKeyboardAction(kba, kba.keyStroke, JComponent.WHEN_FOCUSED);
+        }
     }
     
     private void focusNextCellFrom(int rowIndex, int colIndex) {
@@ -281,8 +343,10 @@ public class TableComponent extends JTable implements ListModelListener {
         
         if ( nextCol >= 0 ) {
             this.changeSelection(rowIndex, nextCol, false, false);
+            
         } else if (rowIndex+1 < tableModel.getRowCount()) {
             this.changeSelection(rowIndex+1, firstEditable, false, false);
+            
         } else {
             ListItem item = slm.getSelectedItem();
             boolean lastRow = !(rowIndex + slm.getTopRow() < slm.getMaxRows());
@@ -300,7 +364,7 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     private int findNextEditableColFrom(int colIndex) {
-        for (int i = colIndex + 1; i < tableModel.getColumnCount(); i++ ) {
+        for (int i = colIndex+1; i < tableModel.getColumnCount(); i++ ) {
             if ( editors.get(i) != null ) return i;
         }
         return -1;
@@ -315,12 +379,16 @@ public class TableComponent extends JTable implements ListModelListener {
     private void hideEditor(JComponent editor, int rowIndex, int colIndex, boolean commit) {
         if ( !commit ) {
             editor.setInputVerifier(null);
+            ListItem item = listModel.getItemList().get(rowIndex);
+            if ( item.getItem() != null ) {
+                ((UIInput) editor).refresh();
+            }
         }
         
         editor.setVisible(false);
+        editor.setInputVerifier(null);
         editingMode = false;
         currentEditor = null;
-        editor.setInputVerifier(null);
         
         tableModel.fireTableRowsUpdated(rowIndex, rowIndex);
         grabFocus();
@@ -347,20 +415,26 @@ public class TableComponent extends JTable implements ListModelListener {
         UIInput input = (UIInput) editor;
         boolean refreshed = false;
         if ( !editorBeanLoaded ) {
+            itemBinding.update(); //clear change log
             Object bean = listModel.getSelectedItem();
             itemBinding.setBean(bean);
             itemBinding.refresh();
             refreshed = true;
+            editorBeanLoaded = true;
         }
         
         if ( e instanceof MouseEvent || isEditKey() ) {
-            if ( !refreshed ) input.refresh();
+            if ( !refreshed ) {
+                input.refresh();
+            }
             highLight(editor);
         } else if ( isPrintableKey() ) {
             input.setValue( currentKeyEvent );
         } else {
             return;
         }
+        
+        tableListener.editCellAt(rowIndex, colIndex);
         
         InputVerifier verifier = (InputVerifier) editor.getClientProperty(InputVerifier.class);
         if ( verifier == null ) {
@@ -379,8 +453,11 @@ public class TableComponent extends JTable implements ListModelListener {
     
     //<editor-fold defaultstate="collapsed" desc="  list model listener methods  ">
     public void refreshList() {
-        if ( !rowCommited ) rowChanged();
         if ( editingMode ) hideEditor(false);
+        if ( !rowCommited ) {
+            cancelRowEdit();
+            rowChanged();
+        }
         
         ListItem item = listModel.getSelectedItem();
         int col = getSelectedColumn();
@@ -390,8 +467,8 @@ public class TableComponent extends JTable implements ListModelListener {
             if ( col >= 0 ) super.setColumnSelectionInterval(col, col);
             
         }
-        if ( listener != null ) {
-            listener.refreshList();
+        if ( tableListener != null ) {
+            tableListener.refreshList();
         }
         
         editorBeanLoaded = false;
@@ -431,7 +508,7 @@ public class TableComponent extends JTable implements ListModelListener {
     
     public void rowChanged() {
         if ( !rowCommited ) {
-            ListItem item = listModel.getSelectedItem();
+            ListItem item = (ListItem) itemBinding.getBean();
             int oldRowIndex = item.getIndex();
             if ( validateRow(oldRowIndex) && item.getState() == 0 ) {
                 listModel.addCreatedItem();
@@ -441,7 +518,17 @@ public class TableComponent extends JTable implements ListModelListener {
         listModel.setSelectedItem(getSelectedRow());
         editorBeanLoaded = false;
         rowCommited = true;
-        listener.rowChanged();
+        tableListener.rowChanged();
+    }
+    
+    public void cancelRowEdit() {
+        if ( !rowCommited ) {
+            itemBinding.getChangeLog().undoAll();
+            rowCommited = true;
+            int row = getSelectedRow();
+            tableModel.fireTableRowsUpdated(row, row);
+            tableListener.cancelRowEdit();
+        }
     }
     //</editor-fold>
     
@@ -450,9 +537,23 @@ public class TableComponent extends JTable implements ListModelListener {
     //<editor-fold defaultstate="collapsed" desc="  EditorFocusSupport (class)  ">
     private class EditorFocusSupport implements FocusListener {
         
-        public void focusGained(FocusEvent e) {}
+        private boolean fromTempFocus;
+        
+        public void focusGained(FocusEvent e) {
+            if ( fromTempFocus ) {
+                if ( editingMode ) {
+                    hideEditor(true);
+                    JComponent comp = (JComponent) e.getSource();
+                    Point point = (Point) comp.getClientProperty(COLUMN_POINT);
+                    focusNextCellFrom(point.y, point.x);
+                }
+                fromTempFocus = false;
+            }
+        }
         
         public void focusLost(FocusEvent e) {
+            fromTempFocus = e.isTemporary();
+            
             if ( !e.isTemporary() ) {
                 hideEditor(true);
             }
@@ -461,79 +562,87 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  TableKeyAdapter (class)  ">
-    private static class TableKeyAdapter extends KeyAdapter {
-        
-        public void keyPressed(KeyEvent e) {
-            if ( !(e.getSource() instanceof TableComponent) ) return;
-            TableComponent table = (TableComponent) e.getSource();
-            AbstractListModel model = table.getListModel();
-            
-            switch( e.getKeyCode() ) {
-                case KeyEvent.VK_DOWN:
-                    table.moveNextRecord();
-                    break;
-                case KeyEvent.VK_UP:
-                    table.movePrevRecord();
-                    break;
-                case KeyEvent.VK_PAGE_DOWN:
-                    model.moveNextPage();
-                    break;
-                case KeyEvent.VK_PAGE_UP:
-                    model.moveBackPage();
-                    break;
-                case KeyEvent.VK_DELETE:
-                    model.removeSelectedItem();
-                    break;
-                case KeyEvent.VK_ENTER:
-                    if ( e.isControlDown() ) table.openItem();
-                    break;
-                case KeyEvent.VK_HOME:
-                    if ( e.isControlDown() ) model.moveFirstPage();
-            }
-        }
-        
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  KeyBoardAction (class) ">
-    private class KeyBoardAction implements ActionListener {
+    //<editor-fold defaultstate="collapsed" desc="  EditorKeyBoardAction (class) ">
+    private class EditorKeyBoardAction implements ActionListener {
         
         KeyStroke keyStroke;
         private boolean commit;
-        private ActionListener origAction;
+        private ActionListener[] listeners;
         
-        KeyBoardAction(JComponent comp, int key, boolean commit) {
+        EditorKeyBoardAction(JComponent comp, int key, boolean commit) {
             this.commit = commit;
             this.keyStroke = KeyStroke.getKeyStroke(key, 0);
-            origAction = comp.getActionForKeyStroke(keyStroke);
+            
+            //hold only action on enter key
+            //this is usually used by lookup
+            if ( key == KeyEvent.VK_ENTER && comp instanceof JTextField ) {
+                JTextField jtf = (JTextField) comp;
+                listeners = jtf.getActionListeners();
+            }
         }
         
         public void actionPerformed(ActionEvent e) {
-            JComponent comp = (JComponent) e.getSource();
-            Point point = (Point) comp.getClientProperty(COLUMN_POINT);
-            
-            if ( origAction != null ) origAction.actionPerformed(e);
-            
-            if ( commit ) {
-                focusNextCellFrom( point.y, point.x );
+            if ( listeners != null && listeners.length > 0 ) {
+                for ( ActionListener l: listeners) {
+                    l.actionPerformed(e);
+                }
+                
             } else {
-                hideEditor(comp, point.y, point.x, false);
+                JComponent comp = (JComponent) e.getSource();
+                Point point = (Point) comp.getClientProperty(COLUMN_POINT);
+                if ( commit ) {
+                    focusNextCellFrom( point.y, point.x );
+                } else {
+                    hideEditor(comp, point.y, point.x, false);
+                }
             }
-            
         }
         
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  EnterAction (class)  ">
-    private class EnterAction implements ActionListener {
+    //<editor-fold defaultstate="collapsed" desc="  TableKeyAdapter (class)  ">
+    private class TableKeyAdapter extends KeyAdapter {
+        
+        public void keyPressed(KeyEvent e) {
+            switch( e.getKeyCode() ) {
+                case KeyEvent.VK_DOWN:
+                    moveNextRecord();
+                    break;
+                case KeyEvent.VK_UP:
+                    movePrevRecord();
+                    break;
+                case KeyEvent.VK_PAGE_DOWN:
+                    listModel.moveNextPage();
+                    break;
+                case KeyEvent.VK_PAGE_UP:
+                    listModel.moveBackPage();
+                    break;
+                case KeyEvent.VK_DELETE:
+                    listModel.removeSelectedItem();
+                    break;
+                case KeyEvent.VK_ENTER:
+                    if ( e.isControlDown() ) openItem();
+                    break;
+                case KeyEvent.VK_HOME:
+                    if ( e.isControlDown() ) listModel.moveFirstPage();
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    cancelRowEdit();
+            }
+        }
+        
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  TableEnterAction (class)  ">
+    private class TableEnterAction implements ActionListener {
         
         KeyStroke keyStroke;
         private JComponent component;
         private ActionListener origAction;
         
-        EnterAction(JComponent component) {
+        TableEnterAction(JComponent component) {
             this.component = component;
             keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
             origAction = component.getActionForKeyStroke(keyStroke);
@@ -550,4 +659,5 @@ public class TableComponent extends JTable implements ListModelListener {
         }
     }
     //</editor-fold>
+    
 }

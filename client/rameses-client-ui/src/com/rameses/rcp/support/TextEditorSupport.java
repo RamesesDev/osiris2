@@ -29,7 +29,7 @@ public class TextEditorSupport implements FocusListener, KeyListener {
             JComponent jc = (JComponent)keyEvent.getComponent();
             if( jc == null || !(jc instanceof UIInput) ) return;
             UIInput ui = (UIInput) jc;
-            String name = ui.getName();
+            ui.refresh();
         }
     }
     

@@ -26,6 +26,8 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
     private boolean nullWhenEmpty = true;
+    private String onAfterUpdate;
+    private boolean readonly;
     
     private TextDocument document = new TextDocument();
     
@@ -51,7 +53,6 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
         actionMessage.clearMessages();
         property.setErrorMessage(null);
         if ( isRequired() && ValueUtil.isEmpty(getValue()) ) {
-            actionMessage.clearMessages();
             actionMessage.addMessage("1001", "{0} is required.", new Object[] {getCaption()});
             property.setErrorMessage(actionMessage.toString());
         }
@@ -158,6 +159,32 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     
     public void setTextCase(TextCase textCase) {
         document.setTextCase(textCase);
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public int getMaxLength() {
+        return document.getMaxlength();
+    }
+    
+    public void setMaxLength(int length) {
+        document.setMaxlength(length);
+    }
+    
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+        setEditable(!readonly);
+        setFocusable(!readonly);
+    }
+    
+    public boolean isReadonly() {
+        return readonly;
     }
     //</editor-fold>
     

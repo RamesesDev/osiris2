@@ -19,16 +19,19 @@ import java.util.List;
 public class ProgressModel {
     
     private int minSize = 0;
-    private int estimatedMaxSize;
-    private int totalFetchedSize;
+    private long estimatedMaxSize;
+    private long totalFetchedSize;
+    private boolean started;
     
     private ProgressInfo progressInfo;
-
+    
+    
+    public ProgressModel() {}
+    
     public ProgressModel(ProgressInfo info) {
         this.progressInfo = info;
     }
-    
-    
+        
     private List<ProgressListener> listeners = new ArrayList<ProgressListener>();
     
     public void addListener( ProgressListener listener ) {
@@ -40,51 +43,78 @@ public class ProgressModel {
     }
     
     public void notifyStart() {
+        if ( started ) return;
+        
         totalFetchedSize = 0;
-        estimatedMaxSize = progressInfo.getEstimatedMaxSize();
+        estimatedMaxSize = getEstimatedMaxSize();
         for(ProgressListener l: listeners) {
-            l.onStart(minSize, estimatedMaxSize );
+            l.onStart(minSize, 100 );
         }
+        started = true;
     }
     
     public void notifySuspend() {
         for(ProgressListener l: listeners) {
             l.onSuspend();
         }
+        started = false;
     }
     
     public void notifyStop() {
+        if ( !started ) return;
+        
         for(ProgressListener l: listeners) {
             l.onStop();
         }
+        started = false;
     }
 
-    public void addCompleted(int newSize) {
+    public void addCompleted(long newSize) {
         totalFetchedSize += newSize;
         if( totalFetchedSize >= estimatedMaxSize) {
-            estimatedMaxSize = progressInfo.getEstimatedMaxSize();
+            estimatedMaxSize = getEstimatedMaxSize();
         }
         for(ProgressListener l: listeners) {
-            l.onProgress(totalFetchedSize, estimatedMaxSize);
+            l.onProgress(getComputedValue(), 100);
         }
     }
 
-    public void setValue(int sz) {
+    public void setValue(long sz) {
         totalFetchedSize = sz;
         if( totalFetchedSize >= estimatedMaxSize) {
-            estimatedMaxSize = progressInfo.getEstimatedMaxSize();
+            estimatedMaxSize = getEstimatedMaxSize();
         }
         for(ProgressListener l: listeners) {
-            l.onProgress(totalFetchedSize, estimatedMaxSize);
+            l.onProgress(getComputedValue(), 100);
         }
     }
     
-    public int getTotalFetchedSize() {
+    private int getComputedValue() {
+        int count = (int) ((totalFetchedSize / (double) getEstimatedMaxSize()) * 100);
+        return count;
+    }
+    
+    public long getTotalFetchedSize() {
         return totalFetchedSize;
     }
     
     public boolean isCompleted() {
         return   totalFetchedSize>=estimatedMaxSize ;
+    }
+
+    public long getEstimatedMaxSize() {
+        if ( progressInfo != null )
+            return progressInfo.getEstimatedMaxSize();
+        
+        return estimatedMaxSize;
+    }
+
+    public void setEstimatedMaxSize(long estimatedMaxSize) {
+        this.estimatedMaxSize = estimatedMaxSize;
+    }
+
+    public boolean isStarted() {
+        return started;
     }
     
 }

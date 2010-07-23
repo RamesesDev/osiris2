@@ -1,6 +1,6 @@
 package com.rameses.rcp.framework;
 
-import com.rameses.rcp.ui.UICommand;
+import com.rameses.rcp.ui.UIControl;
 
 /**
  *
@@ -8,6 +8,6 @@ import com.rameses.rcp.ui.UICommand;
  */
 public interface NavigationHandler {
     
-    void navigate(NavigatablePanel panel, UICommand source, Object outcome);
+    void navigate(NavigatablePanel panel, UIControl source, Object outcome);
     
 }

@@ -1,12 +1,9 @@
 package com.rameses.rcp.framework;
 
-import com.rameses.rcp.common.StyleRule;
 import com.rameses.util.PropertyResolver;
 import java.awt.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javax.swing.ImageIcon;
 
@@ -15,39 +12,43 @@ import javax.swing.ImageIcon;
 public final class ControlSupport {
     
     
+//    public static StyleRule[] getApplicableStyles( Object bean, StyleRule[] styleRules) {
+//        List<StyleRule> list = new ArrayList<StyleRule>();
+//        if( styleRules != null ) {
+//            for(StyleRule r: styleRules) {
+//
+//                String rule = r.getExpression();
+//                boolean test = true;
+//                if( rule!=null){
+//                    Object o = ClientContext.getCurrentContext().getExpressionResolver().evaluate(bean, rule);
+//                    if( o instanceof Boolean ) {
+//                        test = ((Boolean)o).booleanValue();
+//                    }
+//                }
+//                if( test ) list.add(r);
+//            }
+//        }
+//        return (StyleRule[])list.toArray(new StyleRule[]{});
+//    }
+    
+//    public static void applyControlStyle( StyleRule[] styleRules, Component component  ) {
+//        for(StyleRule r: styleRules) {
+//            String pattern = r.getPattern();
+//            String name = component.getName();
+//            if( name != null && name.matches(pattern) ) {
+//                setStyles(r.getProperties(), component );
+//            }
+//        }
+//    }
+    
     public static void setStyles(Map props, Component component) {
+        PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
         for(Object o : props.entrySet()) {
-            Map.Entry me = (Map.Entry)o;
-            ClientContext.getCurrentContext().getValueResolver().setValue( component, me.getKey()+"", me.getValue() );
-        }
-    }
-    
-    public static StyleRule[] getApplicableStyles( Object bean, StyleRule[] styleRules) {
-        List<StyleRule> list = new ArrayList<StyleRule>();
-        if( styleRules != null ) {
-            for(StyleRule r: styleRules) {
+            try {
+                Map.Entry me = (Map.Entry)o;
+                resolver.setProperty(component, me.getKey()+"", me.getValue() );
                 
-                String rule = r.getExpression();
-                boolean test = true;
-                if( rule!=null){
-                    Object o = ClientContext.getCurrentContext().getExpressionResolver().evaluate(bean, rule);
-                    if( o instanceof Boolean ) {
-                        test = ((Boolean)o).booleanValue();
-                    }
-                }
-                if( test ) list.add(r);
-            }
-        }
-        return (StyleRule[])list.toArray(new StyleRule[]{});
-    }
-    
-    public static void applyControlStyle( StyleRule[] styleRules, Component component  ) {
-        for(StyleRule r: styleRules) {
-            String pattern = r.getPattern();
-            String name = component.getName();
-            if( name != null && name.matches(pattern) ) {
-                setStyles(r.getProperties(), component );
-            }
+            } catch(Exception ign) {;}
         }
     }
     

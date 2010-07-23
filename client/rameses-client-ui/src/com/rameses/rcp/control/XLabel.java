@@ -77,6 +77,7 @@ public class XLabel extends JLabel implements UIControl, Containable {
     
     public void setExpression(String expression) {
         this.expression = expression;
+        setText(expression);
     }
     //</editor-fold>
     

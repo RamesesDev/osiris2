@@ -41,8 +41,10 @@ public class XDateField extends XTextField {
     
     public void setValue(Object value) {
         if ( value instanceof KeyEvent ) {
-            KeyEvent ke = (KeyEvent) value;
-            setText( ke.getKeyChar()+"" );
+            String text = ((KeyEvent) value).getKeyChar()+"";
+            if ( text.matches("[\\d]")) {
+                setText( text );
+            }
         } else {
             if ( value != null ) {
                 value = outputFormatter.format(value);
@@ -101,11 +103,8 @@ public class XDateField extends XTextField {
     public void validateInput() {
         ActionMessage actionMessage = getActionMessage();
         ControlProperty controlProperty = getControlProperty();
-        actionMessage.clearMessages();
-        controlProperty.setErrorMessage(null);
-        if( isRequired() && ValueUtil.isEmpty(getText()) ) {
-            actionMessage.addMessage("", "{0} is required", new Object[] {getCaption()});
-        }
+        super.validateInput();
+        
         try {
             formattedDate = inputFormatter.parse(getText());
         } catch(Exception e) {

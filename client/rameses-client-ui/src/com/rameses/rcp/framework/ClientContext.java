@@ -12,7 +12,7 @@ package com.rameses.rcp.framework;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.impl.ClientContextImpl;
 import com.rameses.rcp.impl.ControllerProviderImpl;
-import com.rameses.rcp.util.DefaultNavigationHandler;
+import com.rameses.rcp.impl.NavigationHandlerImpl;
 import com.rameses.util.ExpressionResolver;
 import com.rameses.util.MethodResolver;
 import com.rameses.util.PropertyResolver;
@@ -29,7 +29,7 @@ public abstract class ClientContext {
     
     private static ClientContext currentContext;
     private TaskManager taskManager;
-    private NavigationHandler navigationHandler = new DefaultNavigationHandler();
+    private NavigationHandler navigationHandler = new NavigationHandlerImpl();
     private ControllerProvider controllerProvider;
     
     
@@ -59,7 +59,6 @@ public abstract class ClientContext {
             if ( itr.hasNext() ) {
                 controllerProvider = (ControllerProvider) itr.next();
             } else {
-                System.out.print("No. ControllerProvider found. Using default ControllerProviderImpl");
                 controllerProvider = new ControllerProviderImpl();
             }
         }
@@ -76,7 +75,6 @@ public abstract class ClientContext {
             if ( itr.hasNext() ) {
                 currentContext = (ClientContext) itr.next();
             } else {
-                System.out.println("No. clientContext found. Using default ClientContextImpl");
                 currentContext = new ClientContextImpl();
             }
             currentContext.taskManager = new TaskManager();

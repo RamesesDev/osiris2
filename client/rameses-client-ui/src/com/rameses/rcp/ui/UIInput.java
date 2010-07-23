@@ -1,15 +1,15 @@
 package com.rameses.rcp.ui;
 
-import com.rameses.rcp.framework.*;
-
 /**
  *
  * @author jaycverg
  */
-public interface UIInput extends UIControl {
+public interface UIInput extends UIOutput {
     
-    Object getValue();
     void setValue(Object value);
     boolean isNullWhenEmpty();
+    String getOnAfterUpdate();
+    void setReadonly(boolean readonly);
+    boolean isReadonly();
     
 }
