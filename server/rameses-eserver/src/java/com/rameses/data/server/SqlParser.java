@@ -103,7 +103,7 @@ public class SqlParser {
             SqlObject o = new SqlObject();
             SAXParser p = SAXParserFactory.newInstance().newSAXParser();
             p.parse( is, new SqlObjectParser(o) );
-            
+            String s = null;
             SqlCacheBean sqle = new SqlCacheBean();
             sqle.setDatasource( o.getDatasource() );
             sqle.setMethod( o.getMethod() );

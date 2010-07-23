@@ -10,13 +10,12 @@
 package com.rameses.scripting;
 
 import com.rameses.classutils.AnnotationFieldHandler;
-import com.rameses.eserver.TransactionManager;
-import com.rameses.eserver.TransactionalSqlManager;
 import com.rameses.interfaces.ScriptServiceLocal;
 import com.rameses.annotations.Env;
 import com.rameses.annotations.Resource;
 import com.rameses.annotations.Service;
 import com.rameses.annotations.SqlContext;
+import com.rameses.sql.SqlManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -38,12 +37,11 @@ public class InjectionHandler implements AnnotationFieldHandler {
     private Map<String, Object> map = new Hashtable<String, Object>();
     private javax.ejb.SessionContext ctx;
     private Map env;
-    private TransactionManager transactionManager;
+    
    
-    public InjectionHandler(javax.ejb.SessionContext ctx, Map env, TransactionManager tm) {
+    public InjectionHandler(javax.ejb.SessionContext ctx, Map env) {
         this.ctx = ctx;
         this.env = env;
-        this.transactionManager = tm;
     }
     
     
@@ -99,10 +97,7 @@ public class InjectionHandler implements AnnotationFieldHandler {
         else if(annotation instanceof com.rameses.annotations.SqlContext) {
             String dsName = correctValue(((SqlContext)annotation).value());
             DataSource ds = (DataSource)lookup(dsName,null);
-            TransactionalSqlManager ts = new TransactionalSqlManager(ds);
-            //register this in TransactionManager.
-            transactionManager.register(ts);
-            return ts;
+            return new SqlManager(ds);
         }
         return null;
     }

@@ -10,7 +10,6 @@
 package com.rameses.scripting;
 
 import com.rameses.classutils.ClassDef;
-import com.rameses.eserver.TransactionManager;
 import com.rameses.interfaces.ScriptServiceLocal;
 
 import com.rameses.annotations.After;
@@ -69,9 +68,8 @@ public class ScriptService implements ScriptServiceLocal {
             boolean async = (!bypassAsync && actionMethod.isAnnotationPresent(Async.class));
             if(!async) {
                 
-                //inject the resources
-                TransactionManager txnManager = new TransactionManager();
-                injectionHandler = new InjectionHandler(context,env,txnManager);
+                
+                injectionHandler = new InjectionHandler(context,env);
                 classDef.injectFields( target, injectionHandler );
                 
                 
@@ -89,7 +87,6 @@ public class ScriptService implements ScriptServiceLocal {
                     ScriptEval se = null;
                     try {
                         //start transaction
-                        txnManager.begin();                        
                         ae = new ActionEvent( imeta.getName(), actionMethod.getName(), params);
                         se = new ScriptEval(ae);
                         ScriptServiceLocal  scriptService = (ScriptServiceLocal)context.lookup("ScriptService/local");
@@ -101,15 +98,12 @@ public class ScriptService implements ScriptServiceLocal {
                         for(String b: scriptMgmt.findAfterInterceptors(fullName)) {
                             executeInterceptor(b, ae, se, scriptService, env);    
                         }
-                        txnManager.commit();
                         return retval;
                     }
                     catch(Exception e) {
-                        txnManager.rollBack();
                         throw e;
                     }
                     finally {
-                        try { txnManager.close(); } catch(Exception ign){;}
                         if(se!=null) se.destroy();
                         if(ae!=null) ae.destroy();
                     }
@@ -117,17 +111,10 @@ public class ScriptService implements ScriptServiceLocal {
                 else {
                     //invoke the actual method
                     try {
-                        txnManager.begin();
-                        Object retval = actionMethod.invoke( target, params );
-                        txnManager.commit();
-                        return retval;
+                        return actionMethod.invoke( target, params );
                     }
                     catch(Exception ex) {
-                        txnManager.rollBack();
                         throw ex;
-                    }
-                    finally {
-                        try { txnManager.close(); } catch(Exception ign){;}
                     }
                 }    
             } 
