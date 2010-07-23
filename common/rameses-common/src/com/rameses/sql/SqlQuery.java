@@ -15,7 +15,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
 
 /**
  *
@@ -23,7 +22,7 @@ import javax.sql.DataSource;
  */
 public class SqlQuery {
     
-    private DataSource ds;
+    private SqlManager sqlManager;
     protected String statement;
     protected List<String> parameterNames;
     protected List parameterValues;
@@ -39,9 +38,9 @@ public class SqlQuery {
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlQuery(DataSource ds, String statement, List parameterNames) {
+    SqlQuery(SqlManager sm, String statement, List parameterNames) {
         this.statement = statement;
-        this.ds = ds;
+        this.sqlManager = sm;
         this.parameterNames = parameterNames;
         parameterValues = new ArrayList();
     }
@@ -66,7 +65,7 @@ public class SqlQuery {
             if(connection!=null)
                 conn = connection;
             else
-                conn = ds.getConnection();
+                conn = sqlManager.getConnection();
             
             if(fetchHandler==null)
                 fetchHandler = new MapFetchHandler();
@@ -222,6 +221,53 @@ public class SqlQuery {
 
     public int getRowsFetched() {
         return rowsFetched;
+    }
+    
+    
+    public Object getSingleResult() throws Exception {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            if(connection!=null)
+                conn = connection;
+            else
+                conn = sqlManager.getConnection();
+            
+            if(fetchHandler==null)
+                fetchHandler = new MapFetchHandler();
+            
+            if(parameterHandler==null)
+                parameterHandler = new BasicParameterHandler();
+            
+            //get the results
+            ps = conn.prepareStatement( getFixedSqlStatement() );
+            fillParameters(ps);
+            
+            //do paging here.
+            rs = ps.executeQuery();
+            
+            fetchHandler.start();
+            if(!rs.next()) 
+                return null;
+            Object val = fetchHandler.getObject(rs);
+            fetchHandler.end();
+            return val;
+            
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new IllegalStateException(ex.getMessage());
+        } finally {
+            try {rs.close();} catch(Exception ign){;}
+            try {ps.close();} catch(Exception ign){;}
+            try {
+                //close if connection is not manually injected.
+                if(connection==null) {
+                    conn.close();
+                }
+            } catch(Exception ign){;}
+            clear();
+        }
     }
     
 }

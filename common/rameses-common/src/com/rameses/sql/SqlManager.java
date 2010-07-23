@@ -9,6 +9,7 @@
 
 package com.rameses.sql;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -19,15 +20,15 @@ import javax.sql.DataSource;
  * The sql manager ideally is unique per datasource.
  * however this behavior can be changed
  */
-public abstract class SqlManager {
+public class SqlManager {
     
-    protected SqlDialect sqlDialect;
     protected DataSource dataSource;
     private Map<String,Object[]> parsedQueries = new Hashtable();
     private NamedQueryProvider namedQueryProvider = new BasicNamedQueryProvider();
     
     /** Creates a new instance of SQLManager */
-    public SqlManager() {
+    public SqlManager(DataSource ds) {
+        this.dataSource = ds;
     }
     
     //a statement example could come in this form:
@@ -49,27 +50,43 @@ public abstract class SqlManager {
         }
     }
     
+    private Connection txnconn;
+    
+    public Connection getConnection() throws Exception {
+        if(dataSource==null)
+            throw new IllegalStateException("Datasource is null");
+
+        if(txnconn==null) txnconn = dataSource.getConnection();
+        if(txnconn.isClosed()) txnconn = dataSource.getConnection();
+        return txnconn;
+    }
+    
     
     public SqlQuery createQuery(String statement) {
         Object[] arr = getParsedSql(statement);
         String parsedStatement = (String)arr[0];
         List paramNames = (List)arr[1];
-        return new SqlQuery(dataSource,parsedStatement,paramNames);
+        return new SqlQuery(this,parsedStatement,paramNames);
     }
     
-    public SqlExecutor createExecutor(String statement) {
-        Object[] arr = getParsedSql(statement);
-        String parsedStatement = (String)arr[0];
-        List paramNames = (List)arr[1];
-        return new SqlExecutor(dataSource,parsedStatement,paramNames);
-    }
-
     public SqlQuery createNamedQuery(String name) {
         if(namedQueryProvider==null)
             throw new IllegalStateException("NamedQueryProvider must be provided");
         return createQuery( namedQueryProvider.getStatement(name));
     }
 
+    public SqlExecutor createExecutor(String statement) {
+        Object[] arr = getParsedSql(statement);
+        String parsedStatement = (String)arr[0];
+        List paramNames = (List)arr[1];
+        return new SqlExecutor(this,parsedStatement,paramNames);
+    }
+
+    public SqlExecutor createNamedExecutor( String name ) {
+        if(namedQueryProvider==null)
+            throw new IllegalStateException("NamedQueryProvider must be provided");
+        return createExecutor( namedQueryProvider.getStatement(name));    
+    }
     
     public NamedQueryProvider getNamedQueryProvider() {
         return namedQueryProvider;
@@ -78,4 +95,9 @@ public abstract class SqlManager {
     public void setNamedQueryProvider(NamedQueryProvider namedQueryProvider) {
         this.namedQueryProvider = namedQueryProvider;
     }
+    
+    public QueryExecutor createQueryExecutor(SqlQuery q, SqlExecutor e) {
+        return new QueryExecutor(q,e);
+    }
+    
 }
