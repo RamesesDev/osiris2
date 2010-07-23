@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="File Browser Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.EmployeeType;
+        
+                
+        public class NavigationTestController  {
+        
+            def file = [
+                new File('/home/rameses/Desktop/FileTransterSample.txt'),
+                new File('/home/rameses/Desktop/myetracsdb.sql'),
+                new File('/home/rameses/Desktop/jms-ds.xml')
+            ] as File[];
+            
+            def file2;
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.xfilebrowser.TestPage"/>
+    </pages>
+</workunit>

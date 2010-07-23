@@ -227,15 +227,12 @@ is divided into following sections:
     </target>
     <target name="library-inclusion-in-archive" depends="compile">
         <copy file="${reference.rameses-common.jar}" todir="${build.classes.dir}"/>
-        <copy file="${reference.rameses-interfaces.jar}" todir="${build.classes.dir}"/>
     </target>
     <target name="library-inclusion-in-manifest" depends="compile">
         <basename property="included.lib.reference.rameses-common.jar" file="${reference.rameses-common.jar}"/>
         <copy file="${reference.rameses-common.jar}" todir="${dist.ear.dir}"/>
-        <basename property="included.lib.reference.rameses-interfaces.jar" file="${reference.rameses-interfaces.jar}"/>
-        <copy file="${reference.rameses-interfaces.jar}" todir="${dist.ear.dir}"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.reference.rameses-common.jar} ${included.lib.reference.rameses-interfaces.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.reference.rameses-common.jar} "/>
         </manifest>
     </target>
     <target name="-copy-meta-inf">

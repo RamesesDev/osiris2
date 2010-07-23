@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Async Test (Normal Service)"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class NormalAsyncTestController  {
+        
+            @Binding
+            def binding;
+            
+            @Service('AsyncListTest')
+            def svc;
+            
+            @AsyncEvent
+            def evt;
+            
+            def items = [];
+            boolean _cancel;
+        
+            
+            @Async( loop=true, responseHandler="onResponse" )
+            public Object fetchData() {
+                return svc.getList( [:] );
+            }
+            
+            public void onResponse( Object o ) {
+                if ( o ) {
+                    items.addAll( o );
+                    listHandler.load();
+                    binding.refresh();
+                }
+            }
+            
+            def listHandler = [
+                getRows: { 20 },
+                getColumns: { [ new Column(name: 'item.name', caption: 'Customer Name') ] },
+                fetchList: { items  }
+            ] as SubListModel;
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.async.Normal"/>
+    </pages>
+</workunit>

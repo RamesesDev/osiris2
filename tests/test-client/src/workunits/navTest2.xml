@@ -10,6 +10,9 @@
                 
         public class TestNav2Controller  {
         
+            def firstname;
+            def lastname;
+        
             public String close() {
                 return "_close";
             }

@@ -1,6 +1,7 @@
-import javax.swing.JDialog;
+import com.rameses.io.FileTransferInfo;
+import com.rameses.rcp.common.ProgressModel;
+import javax.swing.UIManager;
 import junit.framework.*;
-import test.TestPage;
 
 /*
  * Test.java
@@ -19,8 +20,8 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    public void testHello() {        
-        System.out.println( "sample-one:workunit2".matches(".+:.+") );
+    public void testHello() {
+        System.out.println( "btnasdfasdfShow".matches("^[^(?:btn)].+") );
     }
     
 }

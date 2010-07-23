@@ -6,7 +6,7 @@
             <name>rameses-data-services</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <included-library files="1">reference.rameses-common.jar</included-library>
-            <included-library files="1">reference.rameses-interfaces.jar</included-library>
+            <included-library>reference.rameses-interfaces.jar</included-library>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>

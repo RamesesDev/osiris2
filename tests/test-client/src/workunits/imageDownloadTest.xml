@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="File Download Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.io.*;
+        
+        
+        
+        public class FileDownloadTestController  {
+        
+            @Service('DownloadService')
+            def svc;
+            
+            @AsyncEvent
+            def evt;
+        
+            def fileId;
+            def bytes;
+            def dwdData = new ByteArrayOutputStream();
+                        
+            @Async( loop=true )
+            public Object startDownload() {
+                def file = svc.download( fileId, evt.loop );
+                if ( file ) {
+                    dwdData.write( file.data );
+                }
+                
+                if ( file == null ) {
+                    MsgBox.alert('Done.');
+                    bytes = dwdData.toByteArray();
+                    dwdData.close();
+                }
+                
+                return file;
+            }
+
+            def next() {
+                return "page2";
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.filetransfer.FileDownload"/>
+        <page name="page2" template="test.filetransfer.ImagePage"/>
+    </pages>
+</workunit>

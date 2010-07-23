@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="File Upload Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.io.*;
+        
+        
+        
+        public class FileUploadTestController  {
+        
+            @Service('UploadService')
+            def svc;
+            
+            @AsyncEvent
+            def evt;
+        
+            def sourceFile;
+            def canceled = null;
+            def closeOnComplete;
+            
+            def progress = new ProgressModel();
+            
+            @Async( loop=true )
+            public Object startUpload() {
+                progress.notifyStart();
+                    
+                def ftis;
+                def fileInfo;
+                def bytes;
+                
+                try {
+                    ftis = new FileTransferInputStream(sourceFile);
+                    ftis.setByteSize(1024*60);
+                    bytes = ftis.readNext();
+                    fileInfo = ftis.getFileTransferInfo();
+
+                }
+                catch(e) { 
+                    throw e; 
+                }
+                finally {  ftis.close(); }
+
+                svc.upload( evt.loop, bytes, fileInfo );
+                fileInfo.save();
+                progress.setValue( fileInfo.bytesRead );
+               
+                
+                Object retVal = true;
+                if ( fileInfo.eof ) {
+                    fileInfo.delete();
+                    retVal = null;
+                }
+                else if ( canceled ) {
+                    canceled = false;
+                    retVal = null;
+                }
+                
+                if ( !retVal ) progress.notifyStop();
+                                
+                return retVal;
+            }
+            
+            void cancel() {
+                canceled = true;
+            }
+            
+            void afterSelect() {
+                if ( sourceFile ) {
+                    progress.estimatedMaxSize = sourceFile.length();
+                }
+            }
+            
+            def uploadCompleted() {
+                if ( closeOnComplete ) return "_close";
+                
+                return null;
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.filetransfer.TestFileTransfer"/>
+    </pages>
+</workunit>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="xProgressBar1" alignment="0" pref="389" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xFileBrowser1" pref="308" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="xCheckBox1" min="-2" pref="157" max="-2" attributes="0"/>
+                      <EmptySpace pref="73" max="32767" attributes="0"/>
+                      <Component id="xButton1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xButton2" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel1" min="-2" max="-2" attributes="1"/>
+                  <Component id="xFileBrowser1" min="-2" max="-2" attributes="1"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xProgressBar1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="23" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="xCheckBox1" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Select File: "/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XFileBrowser" name="xFileBrowser1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="sourceFile"/>
+        <Property name="onAfterUpdate" type="java.lang.String" value="afterSelect"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XButton" name="xButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Upload"/>
+        <Property name="depends" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="1">
+            <StringItem index="0" value="sourceFile"/>
+          </StringArray>
+        </Property>
+        <Property name="name" type="java.lang.String" value="startUpload"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XButton" name="xButton2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Cancel"/>
+        <Property name="name" type="java.lang.String" value="cancel"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XProgressBar" name="xProgressBar1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="progress"/>
+        <Property name="onComplete" type="java.lang.String" value="uploadCompleted"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XCheckBox" name="xCheckBox1">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+            <EmptyBorder bottom="0" left="0" right="0" top="0"/>
+          </Border>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Close on complete"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[0, 0, 0, 0]"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="closeOnComplete"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>
