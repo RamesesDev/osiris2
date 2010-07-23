@@ -3,11 +3,14 @@ package com.rameses.rcp.framework;
 
 import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDefUtil;
+import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.util.ValueUtil;
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.annotation.Annotation;
@@ -33,6 +36,7 @@ public class Binding {
     private List<BindingListener> listeners = new ArrayList();
     private ChangeLog changeLog = new ChangeLog();
     private XButton defaultButton;
+    private StyleRule[] styleRules;
     
     private List<UIControl> _depends = new ArrayList();
     private boolean _initialized = false;
@@ -106,6 +110,7 @@ public class Binding {
     private void _refresh( UIControl u, Set refreshed ) {
         if( refreshed.add(u) ) {
             u.refresh();
+            applyStyle(u);
             String name = u.getName();
             if( !ValueUtil.isEmpty(name) && depends.containsKey(name) ) {
                 for( UIControl uu : depends.get( u.getName() )) {
@@ -117,6 +122,11 @@ public class Binding {
     
     public void validate(ActionMessage actionMessage) {
         for ( Validatable vc: validatables ) {
+            if ( vc instanceof UIInput ) {
+                UIInput uii = (UIInput) vc;
+                if ( uii.isReadonly() ) continue; //do not validate readonly fields.
+            }
+            
             vc.validateInput();
             ActionMessage ac = vc.getActionMessage();
             if ( ac.hasMessages() ) actionMessage.addMessage(ac);
@@ -138,6 +148,34 @@ public class Binding {
     
     public void removeListener(BindingListener listener) {
         listeners.remove(listener);
+    }
+    
+    public final void applyStyle(UIControl u) {
+        if ( styleRules == null ) return;
+        
+        //apply style rules
+        for(StyleRule r : styleRules) {
+            String pattern = r.getPattern();
+            String rule = r.getExpression();
+            
+            //test expression
+            boolean applyStyles = false;
+            if ( rule!=null ){
+                try {
+                    Object o = ClientContext.getCurrentContext().getExpressionResolver().evaluate(getBean(), rule);
+                    applyStyles = Boolean.valueOf(o+"");
+                } catch (Exception ign){
+                    System.out.println("STYLE RULE ERROR: " + ign.getMessage());
+                }
+            }
+            if ( applyStyles ) {
+                String name = u.getName();
+                if( name == null ) name = "_any_name";
+                if( name.matches(pattern) ) {
+                    ControlSupport.setStyles( r.getProperties(), (Component) u );
+                }
+            }
+        }
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
@@ -175,6 +213,14 @@ public class Binding {
     
     public void setDefaultButton(XButton defaultButton) {
         this.defaultButton = defaultButton;
+    }
+    
+    public StyleRule[] getStyleRules() {
+        return styleRules;
+    }
+    
+    public void setStyleRules(StyleRule[] styleRules) {
+        this.styleRules = styleRules;
     }
     //</editor-fold>
     

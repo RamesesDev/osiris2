@@ -8,7 +8,11 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
+import com.rameses.rcp.ui.Validatable;
+import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
@@ -26,7 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 
-public class XFileBrowser extends JPanel implements UIInput, ActionListener {
+public class XFileBrowser extends JPanel implements UIInput, Validatable, Containable, ActionListener {
     
     private Binding binding;
     private String[] depends;
@@ -40,6 +44,9 @@ public class XFileBrowser extends JPanel implements UIInput, ActionListener {
     private boolean selectFilesOnly = true;
     private String fileNamePattern = ".*";
     private String dialogType = "open";
+    private boolean readonly;
+    private ControlProperty property = new ControlProperty();
+    private ActionMessage actionMessage = new ActionMessage();
     
     private JTextField txtField;
     private JButton btnBrowse;
@@ -132,8 +139,14 @@ public class XFileBrowser extends JPanel implements UIInput, ActionListener {
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
     }
-    
+
+  
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setName(String name) {
+        super.setName(name);
+        txtField.setText(name);
+    }
+
     public String[] getDepends() {
         return depends;
     }
@@ -225,6 +238,50 @@ public class XFileBrowser extends JPanel implements UIInput, ActionListener {
     
     public void setDialogType(String dialogType) {
         this.dialogType = dialogType;
+    }
+
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+        btnBrowse.setEnabled(!readonly);
+        btnBrowse.setFocusable(!readonly);
+        txtField.setFocusable(!readonly);
+    }
+
+    public boolean isReadonly() {
+        return readonly;
+    }
+
+    public String getCaption() {
+        return property.getCaption();
+    }
+
+    public void setCaption(String caption) {
+        property.setCaption(caption);
+    }
+
+    public boolean isRequired() {
+        return property.isRequired();
+    }
+
+    public void setRequired(boolean required) {
+        property.setRequired(required);
+    }
+
+    public void validateInput() {
+        actionMessage.clearMessages();
+        property.setErrorMessage(null);
+        if ( isRequired() && ValueUtil.isEmpty(getValue()) ) {
+            actionMessage.addMessage("1001", "${0} is required", new Object[]{ getCaption() });
+            property.setErrorMessage( actionMessage.toString() );
+        }
+    }
+
+    public ActionMessage getActionMessage() {
+        return actionMessage;
+    }
+
+    public ControlProperty getControlProperty() {
+        return property;
     }
     //</editor-fold>
     

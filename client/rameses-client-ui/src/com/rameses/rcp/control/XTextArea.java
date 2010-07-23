@@ -11,7 +11,6 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.beans.Beans;
 import javax.swing.JTextArea;
 
 /**
@@ -28,6 +27,7 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
     private ControlProperty controlProperty = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
     private String onAfterUpdate;
+    private boolean readonly;
     
     private TextDocument textDocument = new TextDocument();
     
@@ -58,7 +58,13 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
         }
     }
     
+    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setName(String name) {
+        super.setName(name);
+        setText(name);
+    }
+    
     public Object getValue() {
         String text = getText();
         if ( ValueUtil.isEmpty(text) && nullWhenEmpty )
@@ -141,6 +147,16 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
     
     public void setOnAfterUpdate(String onAfterUpdate) {
         this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+        setEditable(!readonly);
+        setFocusable(!readonly);
+    }
+    
+    public boolean isReadonly() {
+        return readonly;
     }
     //</editor-fold>
     

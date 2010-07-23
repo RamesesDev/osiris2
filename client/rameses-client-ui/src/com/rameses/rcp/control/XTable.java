@@ -290,6 +290,14 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public ActionMessage getActionMessage() {
         return actionMessage;
     }
+
+    public void setReadonly(boolean readonly) {
+        table.setReadonly(readonly);
+    }
+
+    public boolean isReadonly() {
+        return table.isReadonly();
+    }
     //</editor-fold>
     
     

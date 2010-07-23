@@ -17,6 +17,10 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="formPanel1" alignment="0" pref="414" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
+                      <Component id="xStyleRule1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="70" max="32767" attributes="0"/>
+                      <Component id="xButton3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton1" min="-2" max="-2" attributes="0"/>
@@ -32,9 +36,13 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="formPanel1" pref="400" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="xButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="xStyleRule1" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -52,7 +60,7 @@
     <Component class="com.rameses.rcp.control.XButton" name="xButton2">
       <Properties>
         <Property name="text" type="java.lang.String" value="Show Input"/>
-        <Property name="name" type="java.lang.String" value="showInput"/>
+        <Property name="name" type="java.lang.String" value="btnShowInput"/>
       </Properties>
     </Component>
     <Container class="com.rameses.rcp.util.FormPanel" name="formPanel1">
@@ -189,6 +197,11 @@
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+          <Properties>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[225, 80]"/>
+            </Property>
+          </Properties>
           <AuxValues>
             <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
           </AuxValues>
@@ -201,6 +214,7 @@
                 <Property name="rows" type="int" value="5"/>
                 <Property name="caption" type="java.lang.String" value="Memo"/>
                 <Property name="name" type="java.lang.String" value="memo"/>
+                <Property name="required" type="boolean" value="true"/>
                 <Property name="textCase" type="com.rameses.rcp.constant.TextCase" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="TextCase.UPPER" type="code"/>
                 </Property>
@@ -208,7 +222,42 @@
             </Component>
           </SubComponents>
         </Container>
+        <Component class="com.rameses.rcp.control.XFileBrowser" name="xFileBrowser1">
+          <Properties>
+            <Property name="caption" type="java.lang.String" value="File"/>
+            <Property name="name" type="java.lang.String" value="file"/>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[250, 19]"/>
+            </Property>
+            <Property name="required" type="boolean" value="true"/>
+          </Properties>
+        </Component>
       </SubComponents>
+    </Container>
+    <Component class="com.rameses.rcp.control.XButton" name="xButton3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Toggle Readonly"/>
+        <Property name="immediate" type="boolean" value="true"/>
+        <Property name="name" type="java.lang.String" value="btnToggle"/>
+      </Properties>
+    </Component>
+    <Container class="com.rameses.rcp.control.XStyleRule" name="xStyleRule1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="styles"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="20" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="20" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
     </Container>
   </SubComponents>
 </Form>

@@ -14,7 +14,7 @@ public class PropertyResolverImpl implements PropertyResolver  {
         try {
             PropertyUtils.setNestedProperty(bean, propertyName, value);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            throw new IllegalStateException(ex);
         }
     }
     

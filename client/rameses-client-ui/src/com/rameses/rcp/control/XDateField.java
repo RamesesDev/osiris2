@@ -103,11 +103,8 @@ public class XDateField extends XTextField {
     public void validateInput() {
         ActionMessage actionMessage = getActionMessage();
         ControlProperty controlProperty = getControlProperty();
-        actionMessage.clearMessages();
-        controlProperty.setErrorMessage(null);
-        if( isRequired() && ValueUtil.isEmpty(getText()) ) {
-            actionMessage.addMessage("", "{0} is required", new Object[] {getCaption()});
-        }
+        super.validateInput();
+        
         try {
             formattedDate = inputFormatter.parse(getText());
         } catch(Exception e) {

@@ -51,6 +51,7 @@ public class TableComponent extends JTable implements ListModelListener {
     private TableListener tableListener;
     private AbstractListModel listModel;
     
+    private boolean readonly;
     private boolean required;
     private boolean editingMode;
     private boolean editorBeanLoaded;
@@ -148,6 +149,14 @@ public class TableComponent extends JTable implements ListModelListener {
             setAutoResizeMode(super.AUTO_RESIZE_OFF);
         
     }
+    
+    public boolean isReadonly() {
+        return readonly;
+    }
+    
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  buildColumns  ">
@@ -244,6 +253,8 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     public boolean editCellAt(int rowIndex, int colIndex, EventObject e) {
+        if ( readonly ) return false;
+        
         MouseEvent me = null;
         if (e instanceof MouseEvent) {
             me = (MouseEvent) e;
@@ -287,6 +298,8 @@ public class TableComponent extends JTable implements ListModelListener {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void openItem() {
+        if ( readonly ) return;
+        
         if ( tableListener != null ) {
             tableListener.openItem();
         }

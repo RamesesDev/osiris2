@@ -21,7 +21,7 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-
+        System.out.println( "btnasdfasdfShow".matches("^[^(?:btn)].+") );
     }
     
 }

@@ -47,6 +47,7 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     private ActionMessage actionMessage = new ActionMessage();
     private ControlProperty controlProperty = new ControlProperty();
     private String onAfterUpdate;
+    private boolean readonly;
     
     
     public XPasswordField() {}
@@ -217,6 +218,16 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     
     public void setOnAfterUpdate(String onAfterUpdate) {
         this.onAfterUpdate = onAfterUpdate;
+    }
+
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+        setEditable(!readonly);
+        setFocusable(!readonly);
+    }
+
+    public boolean isReadonly() {
+        return readonly;
     }
     //</editor-fold>
     

@@ -25,6 +25,7 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
     private Object uncheckValue = false;
     private ControlProperty property = new ControlProperty();
     private String onAfterUpdate;
+    private boolean readonly;
     
     
     public XCheckBox() {}
@@ -143,6 +144,16 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
     
     public void setOnAfterUpdate(String onAfterUpdate) {
         this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+        setEnabled(!readonly);
+        setFocusable(!readonly);
+    }
+    
+    public boolean isReadonly() {
+        return readonly;
     }
     //</editor-fold>
     

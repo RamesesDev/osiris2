@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Style Rule Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.EmployeeType;
+        
+                
+        public class StyleRuleTestController  {
+        
+            def item;
+            
+            void cancel() {
+                item = null;
+            }
+            
+            void save() {
+                
+            }
+            
+            def styles = [
+                new StyleRule('item', '#{item != null}', [readonly: true]),
+                new StyleRule('item', '#{item == null}', [readonly: false])
+            ];
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.stylerule.Test1"/>
+    </pages>
+</workunit>

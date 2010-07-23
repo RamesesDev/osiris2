@@ -43,7 +43,8 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private ActionMessage actionMessage = new ActionMessage();
     private String onAfterUpdate;
     private Class fieldType;
-    
+    private boolean readonly;
+        
     private DefaultComboBoxModel model;
     
     
@@ -276,6 +277,16 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void setFieldType(Class fieldType) {
         this.fieldType = fieldType;
+    }
+
+    public void setReadonly(boolean readonly) {
+        this.readonly = readonly;
+        setEnabled(!readonly);
+        setFocusable(!readonly);
+    }
+
+    public boolean isReadonly() {
+        return readonly;
     }
     //</editor-fold>
     

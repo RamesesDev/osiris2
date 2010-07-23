@@ -27,7 +27,9 @@
             def item3;
             def itemList = [[name:"Cebu City"], [name:"Minglanilla"], [name:"Naga"]];
             
-            void showInput() {
+            def file;
+            
+            void btnShowInput() {
                 MsgBox.alert("""
                     date = $date
                     intNum = $intNum
@@ -42,6 +44,16 @@
                 """);
             }
         
+            boolean readonly;
+            
+            void btnToggle() {
+                readonly = !readonly;
+            }
+            
+            def styles = [
+                new StyleRule("^[^(?:btn)].+", "#{readonly}", [ readonly: true ]),
+                new StyleRule("^[^(?:btn)].+", "#{!readonly}", [ readonly: false ])
+            ];
         }
         
         ]]>
