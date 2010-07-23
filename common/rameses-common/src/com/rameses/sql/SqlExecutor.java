@@ -28,6 +28,8 @@ public class SqlExecutor {
     private ParameterHandler parameterHandler;
     private Connection connection;
     
+    private String origStatement;
+    
     //contains list of parameterValues
     private List<List> batchData;
     
@@ -38,6 +40,7 @@ public class SqlExecutor {
      */
     SqlExecutor(SqlManager sm, String statement, List parameterNames) {
         this.statement = statement;
+        this.origStatement = statement;
         this.sqlManager = sm;
         this.parameterNames = parameterNames;
         parameterValues = new ArrayList();
@@ -184,5 +187,11 @@ public class SqlExecutor {
         return parameterNames;
     }
     
-    
+    /**
+     * used when setting variables to a statement
+     */
+    public SqlExecutor setVars( Map map ) {
+        this.statement = SqlUtil.substituteValues( this.origStatement, map );
+        return this;
+    }
 }

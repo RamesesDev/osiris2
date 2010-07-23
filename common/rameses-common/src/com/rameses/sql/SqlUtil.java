@@ -10,6 +10,7 @@
 package com.rameses.sql;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,7 +55,7 @@ public final class SqlUtil {
         return sb.toString();
     }
     
-    /*
+    
     public static String substituteValues( String sql, Map values ) {
         String ss = sql;
         if( values != null ) {
@@ -68,18 +69,5 @@ public final class SqlUtil {
         return  ss;
     }
     
-    public static void parseStatement( String sql, StringBuffer sb, List params ) {
-        Matcher m = pattern.matcher(sql);
-        int start = 0;
-        while(m.find()) {
-            int end = m.start();
-            sb.append( sql.substring(start, end ) + "?" );
-            String name = m.group().replaceAll( "\\$P\\{|\\}", "").trim();
-            params.add( name );
-            start = end + m.group().length();
-        }
-        sb.append( sql.substring(start) );
-    }
-     */
     
 }

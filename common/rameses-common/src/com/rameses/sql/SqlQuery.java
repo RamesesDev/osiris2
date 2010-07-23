@@ -24,6 +24,7 @@ public class SqlQuery {
     
     private SqlManager sqlManager;
     protected String statement;
+    
     protected List<String> parameterNames;
     protected List parameterValues;
     private FetchHandler fetchHandler;
@@ -33,6 +34,9 @@ public class SqlQuery {
     private int maxResults;
     private int rowsFetched = 0;
     
+    
+    private String origStatement;
+    
     /***
      * By default, DataSource is passed by the SqlManager
      * however connection can be manually overridden by setting
@@ -40,6 +44,7 @@ public class SqlQuery {
      */
     SqlQuery(SqlManager sm, String statement, List parameterNames) {
         this.statement = statement;
+        this.origStatement = statement;
         this.sqlManager = sm;
         this.parameterNames = parameterNames;
         parameterValues = new ArrayList();
@@ -269,5 +274,14 @@ public class SqlQuery {
             clear();
         }
     }
+    
+    /**
+     * used when setting variables to a statement
+     */
+    public SqlQuery setVars( Map map ) {
+        this.statement = SqlUtil.substituteValues( this.origStatement, map );
+        return this;
+    }
+    
     
 }
