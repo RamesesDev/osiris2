@@ -7,7 +7,7 @@
 
 package test.sql;
 
-import com.rameses.sql.QueryExecutorChain;
+import com.rameses.sql.QueryExecutor;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlQuery;
@@ -33,7 +33,7 @@ public class QueryExecutorChainTest extends TestCase {
         SqlManager sm = new TestSqlManager();
         SqlQuery sq = sm.createQuery( "select * from taxpayer order by name asc");
         SqlExecutor se = sm.createExecutor("insert into sample (id,name) values ($P{taxpayerno},$P{name})");
-        QueryExecutorChain c = new QueryExecutorChain(sq, se);
+        QueryExecutor c = new QueryExecutor(sq, se);
         c.setBatchSize(10);
         c.execute();
         System.out.println("processed rows:" + c.getRowsProcessed());

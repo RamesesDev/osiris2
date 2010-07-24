@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
 
 /**
  *
@@ -22,15 +21,14 @@ import javax.sql.DataSource;
  */
 public class SqlExecutor {
     
-    public SqlExecutor() {
-    }
-    
-    private DataSource ds;
+    private SqlManager sqlManager;
     protected String statement;
     private List<String> parameterNames;
     protected List parameterValues;
     private ParameterHandler parameterHandler;
     private Connection connection;
+    
+    private String origStatement;
     
     //contains list of parameterValues
     private List<List> batchData;
@@ -40,9 +38,10 @@ public class SqlExecutor {
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlExecutor(DataSource ds, String statement, List parameterNames) {
+    SqlExecutor(SqlManager sm, String statement, List parameterNames) {
         this.statement = statement;
-        this.ds = ds;
+        this.origStatement = statement;
+        this.sqlManager = sm;
         this.parameterNames = parameterNames;
         parameterValues = new ArrayList();
     }
@@ -63,8 +62,7 @@ public class SqlExecutor {
             if(connection!=null)
                 conn = connection;
             else
-                conn = ds.getConnection();
-            
+                conn = sqlManager.getConnection();
             if(parameterHandler==null) 
                 parameterHandler = new BasicParameterHandler();
             
@@ -189,5 +187,11 @@ public class SqlExecutor {
         return parameterNames;
     }
     
-    
+    /**
+     * used when setting variables to a statement
+     */
+    public SqlExecutor setVars( Map map ) {
+        this.statement = SqlUtil.substituteValues( this.origStatement, map );
+        return this;
+    }
 }

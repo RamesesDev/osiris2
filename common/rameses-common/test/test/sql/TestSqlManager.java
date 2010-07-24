@@ -11,7 +11,6 @@ package test.sql;
 
 import com.rameses.sql.SimpleDataSource;
 import com.rameses.sql.SqlManager;
-import com.rameses.sql.SqlQuery;
 
 /**
  *
@@ -20,9 +19,8 @@ import com.rameses.sql.SqlQuery;
 public class TestSqlManager extends SqlManager {
     
     public TestSqlManager() {
-        dataSource = new SimpleDataSource("com.mysql.jdbc.Driver", 
-                    "jdbc:mysql://localhost/taxpayerdb","root",null);
-        
+        super( new SimpleDataSource("com.mysql.jdbc.Driver", 
+                    "jdbc:mysql://localhost/taxpayerdb","root",null));
     }
 
 
