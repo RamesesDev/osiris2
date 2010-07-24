@@ -9,7 +9,7 @@
 
 package com.rameses.templates;
 
-import com.rameses.resource.ResourceProvider;
+import com.rameses.eserver.ResourceProvider;
 import java.io.InputStream;
 
 /**

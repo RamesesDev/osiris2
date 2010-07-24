@@ -7,9 +7,9 @@
  * and open the template in the editor.
  */
 
-package com.rameses.deployer;
+package com.rameses.scripting;
 
-public interface DeployerServiceMBean {
+public interface ScriptDeployerMBean {
 
     void start() throws Exception;
     void stop();

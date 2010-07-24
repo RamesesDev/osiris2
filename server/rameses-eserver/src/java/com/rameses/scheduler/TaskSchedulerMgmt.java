@@ -1,6 +1,6 @@
 package com.rameses.scheduler;
 
-import com.rameses.jndi.JndiUtil;
+import com.rameses.eserver.JndiUtil;
 import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
@@ -21,6 +21,13 @@ public class TaskSchedulerMgmt implements TaskSchedulerMgmtMBean, Serializable {
         System.out.println("STARTING SCHEDULED TASK SERVICES");
         System.out.println("*******************************");
         JndiUtil.bind(new InitialContext(), jndiName, this );
+        
+        
+        System.out.println("STARTING TASK SCHEDULER...");
+        InitialContext ctx = new InitialContext();
+        TaskSchedulerLocal taskService = (TaskSchedulerLocal)ctx.lookup("TaskScheduler/local");
+        taskService.cleanUp();
+        taskService.startTimer(5000);
     }
     
    

@@ -10,6 +10,7 @@
 package com.rameses.scripting;
 
 import com.rameses.classutils.ClassDef;
+import com.rameses.eserver.InjectionHandler;
 import com.rameses.interfaces.ScriptServiceLocal;
 
 import com.rameses.annotations.After;

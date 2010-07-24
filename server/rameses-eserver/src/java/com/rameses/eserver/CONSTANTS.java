@@ -13,10 +13,13 @@ package com.rameses.eserver;
  *
  * @author elmo
  */
-public class CONSTANTS {
+public interface CONSTANTS {
     
-    /** Creates a new instance of CONSTANTS */
-    public CONSTANTS() {
-    }
+    public final static String CACHE_SERVICE = "CacheService";
+    public final static String RESOURCE_SERVICE = "ResourceService";
+    
+    
+    public final static String SCRIPT_MGMT = "ScriptMgmt";
+    public final static String SQLMGMT = "SqlMgmt";
     
 }

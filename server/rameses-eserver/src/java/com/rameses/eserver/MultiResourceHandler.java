@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.resource;
+package com.rameses.eserver;
 
 import java.io.InputStream;
 

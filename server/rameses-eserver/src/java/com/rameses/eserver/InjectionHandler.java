@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.scripting;
+package com.rameses.eserver;
 
 import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.interfaces.ScriptServiceLocal;
@@ -15,6 +15,7 @@ import com.rameses.annotations.Env;
 import com.rameses.annotations.Resource;
 import com.rameses.annotations.Service;
 import com.rameses.annotations.SqlContext;
+import com.rameses.scripting.*;
 import com.rameses.sql.SqlManager;
 
 import java.lang.annotation.Annotation;

@@ -9,8 +9,8 @@
 
 package com.rameses.auth.server;
 
-import com.rameses.resource.ResourceProvider;
-import com.rameses.jndi.JndiUtil;
+import com.rameses.eserver.ResourceProvider;
+import com.rameses.eserver.JndiUtil;
 import com.sun.jmx.remote.util.Service;
 import java.io.Serializable;
 import java.util.Hashtable;

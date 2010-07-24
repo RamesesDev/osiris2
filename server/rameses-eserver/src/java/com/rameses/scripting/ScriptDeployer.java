@@ -1,14 +1,14 @@
-package com.rameses.deployer;
+package com.rameses.scripting;
 
 import com.rameses.interfaces.ScriptServiceLocal;
-import com.rameses.resource.MultiResourceHandler;
-import com.rameses.resource.ResourceServiceMBean;
+import com.rameses.eserver.MultiResourceHandler;
+import com.rameses.eserver.ResourceServiceMBean;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import javax.naming.InitialContext;
 
-public class DeployerService implements DeployerServiceMBean {
+public class ScriptDeployer implements ScriptDeployerMBean {
     
     private final static String SCRIPT_PREFIX = "script";
     private final static String DEPLOYERS = "deployers";

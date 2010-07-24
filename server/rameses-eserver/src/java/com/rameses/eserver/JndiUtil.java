@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.jndi;
+package com.rameses.eserver;
 
 import java.util.logging.Logger;
 import javax.naming.Context;

@@ -7,10 +7,11 @@
  * and open the template in the editor.
  */
 
-package com.rameses.eserver;
+package com.rameses.scripting;
 
-import com.rameses.resource.MultiResourceHandler;
-import com.rameses.resource.ResourceProvider;
+import com.rameses.eserver.*;
+import com.rameses.eserver.MultiResourceHandler;
+import com.rameses.eserver.ResourceProvider;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
@@ -19,7 +20,7 @@ import java.util.Enumeration;
  *
  * @author elmo
  */
-public class DefaultResourceProvider extends ResourceProvider {
+public class ScriptResourceProvider extends ResourceProvider {
     
     public String getName() {
         return "script" ;
@@ -34,7 +35,7 @@ public class DefaultResourceProvider extends ResourceProvider {
     }
     
     public InputStream getResource(String name) throws Exception {
-        String fileName = "META-INF/services/" + name;
+        String fileName = "META-INF/scripts/" + name;
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
     }
     

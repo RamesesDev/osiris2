@@ -1,12 +1,13 @@
 package com.rameses.scripting;
 
 import com.rameses.classutils.ClassDef;
-import com.rameses.jndi.JndiUtil;
+import com.rameses.eserver.JndiUtil;
 import com.rameses.annotations.After;
 import com.rameses.annotations.Before;
-import com.rameses.resource.CacheServiceMBean;
-import com.rameses.resource.MultiResourceHandler;
-import com.rameses.resource.ResourceServiceMBean;
+import com.rameses.eserver.CONSTANTS;
+import com.rameses.eserver.CacheServiceMBean;
+import com.rameses.eserver.MultiResourceHandler;
+import com.rameses.eserver.ResourceServiceMBean;
 import groovy.lang.GroovyClassLoader;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -23,7 +24,7 @@ import javax.naming.InitialContext;
 
 public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
-    public final static String JNDI_NAME = "ScriptMgmt";
+    
     private final static String SCRIPT_PREFIX = "script";
     private final static String INTERCEPTORS = "interceptors";
   
@@ -40,16 +41,16 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     public void start() throws Exception {
         System.out.println("STARTING SCRIPT MANAGEMENT");
         InitialContext ctx = new InitialContext();
-        JndiUtil.bind(ctx, JNDI_NAME , this);
+        JndiUtil.bind(ctx, CONSTANTS.SCRIPT_MGMT , this);
         classLoader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
-        cacheService = (CacheServiceMBean)ctx.lookup("CacheService");
-        resourceService = (ResourceServiceMBean)ctx.lookup("ResourceService");
+        cacheService = (CacheServiceMBean)ctx.lookup(CONSTANTS.CACHE_SERVICE);
+        resourceService = (ResourceServiceMBean)ctx.lookup(CONSTANTS.RESOURCE_SERVICE);
         buildInterceptors();
     }
     
     public void stop() throws Exception {
         System.out.println("STOPPING SCRIPT MANAGEMENT");
-        JndiUtil.unbind(new InitialContext(), JNDI_NAME);
+        JndiUtil.unbind(new InitialContext(), CONSTANTS.SCRIPT_MGMT);
         clearAll();
         classLoader = null;
         cacheService = null;

@@ -1,7 +1,7 @@
 /*
- * BasicNamedQueryProvider.java
+ * SqlQueryCache.java
  *
- * Created on July 22, 2010, 3:24 PM
+ * Created on July 24, 2010, 11:03 AM
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -10,35 +10,23 @@
 package com.rameses.sql;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The basic query will locate files under the META-INF/sql folder
- * Files must end with .sql extension.
+ *
+ * @author elmo
  */
-public class BasicNamedQueryProvider implements NamedQueryProvider {
+public abstract class SqlCacheProvider {
     
-    public String getStatement(String name) {
-        String fileName = "META-INF/sql/" + name;
-        if( name.indexOf(".")<0 ) fileName = fileName + ".sql";
-        
-        
-        StringBuffer sb = new StringBuffer();
-        InputStream is = null;
-        try {
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
-            int i = 0;
-            while((i=is.read())!=-1) {
-                sb.append((char)i);
-            }
-            
-            return formatText(fileName, sb.toString());
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
-        } finally {
-            try {is.close();} catch(Exception ign){;}
-        }
+    public abstract SqlCache getSqlCache(String statment) ;
+    public abstract SqlCache getNamedSqlCache(String name) ;
+    
+    protected SqlCache createSqlCache(String statement) {
+        List paramNames = new ArrayList();
+        String parsedStatement = SqlUtil.parseStatement(statement,paramNames);
+        return new SqlCache(parsedStatement, paramNames );
     }
-    
     
     /***
      * .sqlx has a special parsing for insert statements.
@@ -50,7 +38,7 @@ public class BasicNamedQueryProvider implements NamedQueryProvider {
      * insert into table values (firstname=$P{firstname}, lastname=$P{lastname})
      *
      */
-    public String formatText( String name, String sql ) {
+    protected String formatText( String name, String sql ) {
         if(!name.endsWith(".sqlx")) {
             return sql;
         } else {
@@ -87,6 +75,19 @@ public class BasicNamedQueryProvider implements NamedQueryProvider {
         }
     }
     
-    
+    protected String getInputStreamToString( InputStream is ) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            int i = 0;
+            while((i=is.read())!=-1) {
+                sb.append((char)i);
+            }
+            return sb.toString();
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            try {is.close();} catch(Exception ign){;}
+        }
+    }
     
 }

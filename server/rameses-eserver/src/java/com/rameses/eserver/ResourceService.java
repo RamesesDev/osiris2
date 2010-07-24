@@ -6,9 +6,8 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-package com.rameses.resource;
+package com.rameses.eserver;
 
-import com.rameses.jndi.JndiUtil;
 import com.sun.jmx.remote.util.Service;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -26,7 +25,6 @@ import javax.naming.InitialContext;
  */
 public class ResourceService implements ResourceServiceMBean, Serializable {
     
-    private final static String JNDI_NAME = "ResourceService";
     
     private List<ResourceProvider> providers;
     
@@ -43,12 +41,12 @@ public class ResourceService implements ResourceServiceMBean, Serializable {
         for(ResourceProvider rp: providers) {
             System.out.println("     Loading Provider ... " + rp.getDescription());
         }
-        JndiUtil.bind(new InitialContext(),JNDI_NAME,this);
+        JndiUtil.bind(new InitialContext(),CONSTANTS.RESOURCE_SERVICE,this);
     }
     
     public void stop() throws Exception {
         System.out.println("STOPPING RESOURCE SERVICE");
-        JndiUtil.unbind(new InitialContext(),JNDI_NAME);
+        JndiUtil.unbind(new InitialContext(),CONSTANTS.RESOURCE_SERVICE);
         providers.clear();
         providers = null;
     }

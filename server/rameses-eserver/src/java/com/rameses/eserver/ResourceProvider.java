@@ -1,4 +1,4 @@
-package com.rameses.resource;
+package com.rameses.eserver;
 
 import java.io.InputStream;
 import java.io.Serializable;

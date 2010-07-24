@@ -1,6 +1,5 @@
-package com.rameses.resource;
+package com.rameses.eserver;
 
-import com.rameses.jndi.JndiUtil;
 import com.sun.jmx.remote.util.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import javax.naming.InitialContext;
 
 public class CacheService implements CacheServiceMBean, Serializable  {
     
-    private final static String JNDI_NAME = "CacheService";
+    
     
     private Map<String, Map> map;
     
@@ -53,7 +52,7 @@ public class CacheService implements CacheServiceMBean, Serializable  {
     }
     
     public void start() throws Exception {
-        JndiUtil.bind(new InitialContext(),JNDI_NAME, this);
+        JndiUtil.bind(new InitialContext(),CONSTANTS.CACHE_SERVICE, this);
         System.out.println("STARTING CACHE SERVICE");
         map = new Hashtable<String, Map>();
         
@@ -79,7 +78,7 @@ public class CacheService implements CacheServiceMBean, Serializable  {
         map.clear();
         System.out.println("STOPPING CACHE SERVICE");
         map = null;
-        JndiUtil.unbind(new InitialContext(),JNDI_NAME);
+        JndiUtil.unbind(new InitialContext(),CONSTANTS.CACHE_SERVICE);
     }
     
     public void removeContext(String namespace) {

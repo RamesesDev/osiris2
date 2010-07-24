@@ -1,8 +1,8 @@
 package com.rameses.templates;
 
-import com.rameses.jndi.JndiUtil;
-import com.rameses.resource.CacheServiceMBean;
-import com.rameses.resource.ResourceServiceMBean;
+import com.rameses.eserver.JndiUtil;
+import com.rameses.eserver.CacheServiceMBean;
+import com.rameses.eserver.ResourceServiceMBean;
 import com.sun.jmx.remote.util.Service;
 import java.io.InputStream;
 import java.io.Serializable;

@@ -7,7 +7,8 @@
 
 package test.sql;
 
-import com.rameses.sql.BasicNamedQueryProvider;
+import com.rameses.sql.BasicSqlCacheProvider;
+import com.rameses.sql.SqlCache;
 import junit.framework.*;
 
 /**
@@ -28,9 +29,9 @@ public class NamedQueryTest extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testQuery() throws Exception {
-        BasicNamedQueryProvider np = new BasicNamedQueryProvider();
-        String s = np.getStatement("customer_insert.sqlx");
-        System.out.println(s);
+        BasicSqlCacheProvider np = new BasicSqlCacheProvider();
+        SqlCache sq = np.getNamedSqlCache("customer_insert.sqlx");
+        System.out.println(sq.getStatement());
     }
     
     
