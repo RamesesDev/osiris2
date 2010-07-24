@@ -103,14 +103,9 @@ public class Action implements Comparable {
     public int compareTo(Object o) {
         if( o == null ) return 0;
         if(!(o instanceof Action)) return 0;
-        Action a = (Action)o;
-        if( index > a.getIndex())
-            return 1;
-        else if( index < a.getIndex())
-            return -1;
-        else
-            return 0;
         
+        Action a = (Action)o;
+        return index - a.index;        
     }
     
     public String getCategory() {
@@ -120,19 +115,7 @@ public class Action implements Comparable {
     public void setCategory(String category) {
         this.category = category;
     }
-    
-    /*
-    public Object doAction(Object context) {
-        try {
-            MethodResolver mr = ClientContext.getCurrentContext().getMethodResolver();
-            Object outcome = mr.invoke(context, name, null);
-            return outcome;
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-     */
-    
+
     public String getPath() {
         //path will be the name of the category plus its name.
         return category + "/" + name;
@@ -188,6 +171,7 @@ public class Action implements Comparable {
                 return name;
             else
                 return caption;
+        
         return tooltip;
     }
 

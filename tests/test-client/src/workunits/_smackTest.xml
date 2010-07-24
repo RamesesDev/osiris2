@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    
+    <invokers>
+        <invoker folderid="/menu/smack" caption="Client 1" action="init"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.messaging.*;
+        import test.smack.*;
+        
+                
+        public class SmackTest1 {
+            
+            @Binding
+            def binding;
+        
+            def message;
+            def messageList = new StringBuffer();
+            
+            def con = SmackDelegate.getConnection("jay", "12345");
+            
+            void init() {
+                con.open();
+                con.addListener( listener );
+            }
+            
+            void send() {
+                def m = con.createMessage(null);
+                
+                println "sending " + message;
+                
+                m.setText(message);
+                m.setRecepient("paadmin@etracs.org");
+
+                con.sendMessage(m);
+                message = "";
+            }
+            
+            def listener =[
+                onMessage: { m ->
+                    messageList.append( m.getBody() + "\n" );
+                    binding.refresh();
+                }
+            ] as MessageListener;
+
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.smack.Page"/>
+    </pages>
+</workunit>

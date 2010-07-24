@@ -6,6 +6,7 @@ import com.rameses.io.FileTransferOutputStream;
 import com.rameses.io.TargetFileExistsException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import javax.swing.JOptionPane;
 /*
  * FTUtil.java

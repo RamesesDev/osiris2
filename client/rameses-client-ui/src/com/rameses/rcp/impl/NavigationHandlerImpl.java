@@ -6,7 +6,6 @@ import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.common.Opener;
-import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.ui.UIControl;
@@ -58,7 +57,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     UIControllerPanel uic = new UIControllerPanel(controller);
                     controller.setId( id );
                     controller.setTitle( ValueUtil.isEmpty(caption)? id: caption );
-                    ControlSupport.setProperties(controller.getCodeBean(), opener.getParams());
+                    controller.init( opener.getParams(), opener.getAction() );
                     
                     Map props = new HashMap();
                     props.put("id", controller.getId());
@@ -85,6 +84,9 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 } else {
                     if ( oc.startsWith("_") ) oc = oc.substring(1);
                     curController.setCurrentView( oc );
+                    
+                    //update binding injections based on current view
+                    curController.getCurrentView().getBinding().reinjectAnnotations();
                 }
             }
             panel.renderView();

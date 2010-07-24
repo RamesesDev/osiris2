@@ -1,12 +1,15 @@
-package com.rameses.common.annotations;
+package com.rameses.rcp.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value=ElementType.FIELD)
-public @interface AsyncEvent {
+public @interface ChangeLog {
+    
+    String[] prefix() default {"."};
     
 }

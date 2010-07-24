@@ -17,8 +17,6 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="formPanel1" alignment="0" pref="414" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="xStyleRule1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="70" max="32767" attributes="0"/>
                       <Component id="xButton3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton2" min="-2" max="-2" attributes="0"/>
@@ -36,13 +34,10 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="formPanel1" pref="400" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="xButton3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="xStyleRule1" alignment="1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="xButton3" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -241,23 +236,5 @@
         <Property name="name" type="java.lang.String" value="btnToggle"/>
       </Properties>
     </Component>
-    <Container class="com.rameses.rcp.control.XStyleRule" name="xStyleRule1">
-      <Properties>
-        <Property name="name" type="java.lang.String" value="styles"/>
-      </Properties>
-
-      <Layout>
-        <DimensionLayout dim="0">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="20" max="32767" attributes="0"/>
-          </Group>
-        </DimensionLayout>
-        <DimensionLayout dim="1">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="20" max="32767" attributes="0"/>
-          </Group>
-        </DimensionLayout>
-      </Layout>
-    </Container>
   </SubComponents>
 </Form>

@@ -3,7 +3,7 @@ package com.rameses.osiris2.client;
 import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDefUtil;
 import com.rameses.osiris2.CodeProvider;
-import com.rameses.common.annotations.Service;
+import com.rameses.rcp.annotations.Service;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;

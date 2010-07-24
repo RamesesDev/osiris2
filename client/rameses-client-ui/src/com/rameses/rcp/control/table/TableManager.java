@@ -45,7 +45,7 @@ public final class TableManager {
     public static final Color FOCUS_BG = new Color(254, 255, 208);
     public static final String HIDE_ON_ENTER = "hide.on.enter";
     
-    private static Map<String, Class<?extends JComponent>> editors = new HashMap();
+    private static Map<String, Class<? extends JComponent>> editors = new HashMap();
     private static Map<String, Class> numClass = new HashMap();
     private static Map<String, TableCellRenderer> renderers = new HashMap();
     private static TableCellRenderer headerRenderer = new TableHeaderRenderer();

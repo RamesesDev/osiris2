@@ -12,7 +12,7 @@ import com.rameses.invoker.client.HttpClientManager;
 import com.rameses.invoker.client.HttpInvokerClient;
 import com.rameses.rcp.common.ScheduledTask;
 import com.rameses.rcp.common.Task;
-import com.rameses.common.annotations.Async;
+import com.rameses.rcp.annotations.Async;
 import com.rameses.rcp.common.AsyncEvent;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.util.MethodResolver;
@@ -49,13 +49,15 @@ public class OsirisMethodResolver implements MethodResolver {
             Async async = (Async) m.getAnnotation(Async.class);
             String resp = async.responseHandler();
             String host = async.host();
+            String connection = async.connection();
             
             String eventVar = null;
-            Field f = util.findAnnotatedField(  xbean.getClass(), com.rameses.common.annotations.AsyncEvent.class );
+            Field f = util.findAnnotatedField(  xbean.getClass(), com.rameses.rcp.annotations.AsyncEvent.class );
             if(f!=null) eventVar = f.getName();
             
             AsyncAction aa = new AsyncAction(xbean, xaction, paramTypes, args, resp, host, async.loop(), eventVar );
             ClientContext.getCurrentContext().getTaskManager().addTask(aa);
+            
             return null;
         }
         

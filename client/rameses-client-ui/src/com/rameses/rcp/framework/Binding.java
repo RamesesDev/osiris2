@@ -5,6 +5,7 @@ import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDefUtil;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XButton;
+import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -87,7 +88,7 @@ public class Binding {
         Set<UIControl> refreshed = new HashSet();
         if ( !ValueUtil.isEmpty(u.getName()) && depends.containsKey(u.getName()) ) {
             for( UIControl uu : depends.get(u.getName() ) ) {
-                _refresh( uu, refreshed );
+                _doRefresh( uu, refreshed );
             }
         }
         refreshed.clear();
@@ -99,22 +100,43 @@ public class Binding {
     }
     
     public void refresh() {
+        refresh(null);
+    }
+    
+    /**
+     *@description
+     *  accepts list of filednames
+     *  sample usage: refresh("field1|field2")
+     */
+    public void refresh(String fieldRegEx) {
         Set<UIControl> refreshed = new HashSet();
         for( UIControl uu : controls ) {
-            _refresh( uu, refreshed );
+            if ( fieldRegEx != null && !uu.getName().matches(fieldRegEx) ){
+                continue;
+            }
+            
+            _doRefresh( uu, refreshed );
         }
         refreshed.clear();
         refreshed = null;
     }
     
-    private void _refresh( UIControl u, Set refreshed ) {
+    private void _doRefresh( UIControl u, Set refreshed ) {
         if( refreshed.add(u) ) {
+            if ( u instanceof UIComposite ) {
+                UIComposite comp = (UIComposite)u;
+                for (UIControl uic: comp.getControls()) {
+                    applyStyle(uic);
+                }
+            } else {
+                applyStyle(u);
+            }
+            
             u.refresh();
-            applyStyle(u);
             String name = u.getName();
             if( !ValueUtil.isEmpty(name) && depends.containsKey(name) ) {
                 for( UIControl uu : depends.get( u.getName() )) {
-                    _refresh( uu, refreshed );
+                    _doRefresh( uu, refreshed );
                 }
             }
         }
@@ -193,6 +215,10 @@ public class Binding {
         _load();
     }
     
+    public void reinjectAnnotations() {
+        ClassDefUtil.getInstance().injectFields(bean, fieldInjector);
+    }
+    
     private void _load() {
         for ( UIControl c: controls ) {
             c.load();
@@ -230,9 +256,9 @@ public class Binding {
         
         public Object getResource(Field f, Annotation a) throws Exception {
             Class type = a.annotationType();
-            if ( type == com.rameses.common.annotations.Binding.class ) {
+            if ( type == com.rameses.rcp.annotations.Binding.class ) {
                 return Binding.this;
-            } else if (type == com.rameses.common.annotations.ChangeLog.class ) {
+            } else if (type == com.rameses.rcp.annotations.ChangeLog.class ) {
                 return Binding.this.getChangeLog();
             }
             return null;

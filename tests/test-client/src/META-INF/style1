@@ -1,0 +1,9 @@
+
+"^[^(?:btn)].+" [readonly]  { 
+    readonly: true; 
+}
+
+"^[^(?:btn)].+" [!readonly] { 
+    readonly: false; 
+}
+

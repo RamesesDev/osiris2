@@ -1,0 +1,17 @@
+
+"edit|print" [readonly]  { 
+    enabled: false;
+}
+
+"edit|print" [!readonly] { 
+    enabled: true;
+}
+
+"edit" [readonly]  { 
+    visible: false;
+}
+
+"edit" [!readonly] { 
+    visible: true;
+}
+

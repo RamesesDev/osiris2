@@ -30,9 +30,77 @@ public class XProgressBar extends JProgressBar implements UIControl, ProgressLis
     private ProgressModel model;
     
     
-    public XProgressBar() {
+    public XProgressBar() {}
+    
+    public void refresh() {
     }
     
+    public void load() {
+        Object value = UIControlUtil.getBeanValue(this);
+        if ( value instanceof ProgressModel ) {
+            model = (ProgressModel) value;
+            model.addListener(this);
+        }
+    }
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
+    public void onStart(int min, int max) {
+        if ( model.isIndeterminate() ) {
+            setIndeterminate( true );
+        } else {
+            setMinimum(min);
+            setMaximum(max);
+            setStringPainted(true);
+        }
+        binding.notifyDepends(this);
+    }
+    
+    public void onProgress(int totalFetched, int maxSize) {
+        if ( model.isIndeterminate() ) return;
+        
+        setMaximum(maxSize);
+        setValue(totalFetched);
+        binding.notifyDepends(this);
+    }
+    
+    public void onStop() {
+        if ( model.isIndeterminate() ) {
+            setIndeterminate( false );
+        }
+        
+        binding.notifyDepends(this);
+        if( model.isCompleted() ) {
+            fireAction();
+        }
+    }
+    
+    public void onSuspend() {
+        binding.notifyDepends(this);
+    }
+    
+    private void fireAction() {
+        if ( ValueUtil.isEmpty(onComplete) ) return;
+        
+        try {
+            ClientContext ctx = ClientContext.getCurrentContext();
+            MethodResolver mr = ctx.getMethodResolver();
+            Object outcome = mr.invoke(binding.getBean(), onComplete, null, null);
+            
+            NavigationHandler nh = ctx.getNavigationHandler();
+            NavigatablePanel panel = UIControlUtil.getParentPanel(this, null);
+            
+            nh.navigate(panel, this, outcome);
+            
+        } catch(Exception e) {
+            throw new IllegalStateException("XProgressBar::fireAction", e);
+        }
+    }
+    
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String[] getDepends() {
         return depends;
     }
@@ -64,61 +132,6 @@ public class XProgressBar extends JProgressBar implements UIControl, ProgressLis
     public void setOnComplete(String onComplete) {
         this.onComplete = onComplete;
     }
+    //</editor-fold>
     
-    public void refresh() {
-    }
-    
-    public void load() {
-        Object value = UIControlUtil.getBeanValue(this);
-        if ( value instanceof ProgressModel ) {
-            model = (ProgressModel) value;
-            model.addListener(this);
-        }
-    }
-    
-    public int compareTo(Object o) {
-        return UIControlUtil.compare(this, o);
-    }
-    
-    public void onStart(int min, int max) {
-        setMinimum(min);
-        setMaximum(max);
-        setStringPainted(true);
-        binding.notifyDepends(this);
-    }
-    
-    public void onProgress(int totalFetched, int maxSize) {
-        setMaximum(maxSize);
-        setValue(totalFetched);
-        binding.notifyDepends(this);
-    }
-    
-    public void onStop() {
-        binding.notifyDepends(this);
-        if( model.isCompleted() ) {
-            fireAction();
-        }
-    }
-    
-    public void onSuspend() {
-        binding.notifyDepends(this);
-    }
-    
-    private void fireAction() {
-        if ( ValueUtil.isEmpty(onComplete) ) return;
-        
-        try {
-            ClientContext ctx = ClientContext.getCurrentContext();
-            MethodResolver mr = ctx.getMethodResolver();
-            Object outcome = mr.invoke(binding.getBean(), onComplete, null, null);
-            
-            NavigationHandler nh = ctx.getNavigationHandler();
-            NavigatablePanel panel = UIControlUtil.getParentPanel(this, null);
-            
-            nh.navigate(panel, this, outcome);
-            
-        } catch(Exception e) {
-            throw new IllegalStateException("XProgressBar::fireAction", e);
-        }
-    }
 }

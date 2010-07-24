@@ -22,6 +22,7 @@ public class ProgressModel {
     private long estimatedMaxSize;
     private long totalFetchedSize;
     private boolean started;
+    private boolean indeterminate;
     
     private ProgressInfo progressInfo;
     
@@ -31,7 +32,7 @@ public class ProgressModel {
     public ProgressModel(ProgressInfo info) {
         this.progressInfo = info;
     }
-        
+    
     private List<ProgressListener> listeners = new ArrayList<ProgressListener>();
     
     public void addListener( ProgressListener listener ) {
@@ -68,7 +69,7 @@ public class ProgressModel {
         }
         started = false;
     }
-
+    
     public void addCompleted(long newSize) {
         totalFetchedSize += newSize;
         if( totalFetchedSize >= estimatedMaxSize) {
@@ -78,7 +79,7 @@ public class ProgressModel {
             l.onProgress(getComputedValue(), 100);
         }
     }
-
+    
     public void setValue(long sz) {
         totalFetchedSize = sz;
         if( totalFetchedSize >= estimatedMaxSize) {
@@ -99,22 +100,39 @@ public class ProgressModel {
     }
     
     public boolean isCompleted() {
-        return   totalFetchedSize>=estimatedMaxSize ;
+        return  totalFetchedSize >= getEstimatedMaxSize();
     }
-
+    
+    //can be called when using indeterminate progress bar
+    public void completed() {
+        if ( indeterminate ) {
+            totalFetchedSize = 0;
+            progressInfo = null;
+            estimatedMaxSize = 0;
+        }
+    }
+    
     public long getEstimatedMaxSize() {
         if ( progressInfo != null )
             return progressInfo.getEstimatedMaxSize();
         
         return estimatedMaxSize;
     }
-
+    
     public void setEstimatedMaxSize(long estimatedMaxSize) {
         this.estimatedMaxSize = estimatedMaxSize;
     }
-
+    
     public boolean isStarted() {
         return started;
+    }
+    
+    public boolean isIndeterminate() {
+        return indeterminate;
+    }
+    
+    public void setIndeterminate(boolean indeterminate) {
+        this.indeterminate = indeterminate;
     }
     
 }

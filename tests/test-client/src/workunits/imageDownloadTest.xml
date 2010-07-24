@@ -7,7 +7,7 @@
     <code>
         <![CDATA[
         
-        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
         import com.rameses.io.*;
         
@@ -22,20 +22,26 @@
             def evt;
         
             def fileId;
-            def bytes;
-            def dwdData = new ByteArrayOutputStream();
+            def file;
+            
+            def progress = new ProgressModel( indeterminate: true );
                         
             @Async( loop=true )
             public Object startDownload() {
+                if ( !progress.started ) {
+                    progress.notifyStart();
+                    file = new File('/home/rameses/Desktop/' + fileId);
+                    if ( file.exists() ) file.delete();
+                }
+            
                 def file = svc.download( fileId, evt.loop );
                 if ( file ) {
-                    dwdData.write( file.data );
+                    writeData( file.data );
                 }
                 
                 if ( file == null ) {
-                    MsgBox.alert('Done.');
-                    bytes = dwdData.toByteArray();
-                    dwdData.close();
+                    progress.completed();
+                    progress.notifyStop();
                 }
                 
                 return file;
@@ -43,6 +49,18 @@
 
             def next() {
                 return "page2";
+            }
+            
+            void writeData( data ) {
+                    def fos = null;
+                    try {
+                        fos = new FileOutputStream(file, true);
+                        fos.write( data );
+                    } catch(Exception e) {
+                        System.out.println(e.getMessage());
+                    } finally {
+                        try { fos.close(); } catch (Exception ign){;}
+                    }
             }
             
         }

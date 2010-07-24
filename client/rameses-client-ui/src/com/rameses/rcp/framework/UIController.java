@@ -1,9 +1,18 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.rcp.common.StyleRule;
+import com.rameses.rcp.support.StyleRuleParser;
+import com.rameses.rcp.support.StyleRuleParser.DefaultParseHandler;
+import com.rameses.rcp.ui.annotations.StyleSheet;
+import com.rameses.rcp.ui.annotations.Template;
 import com.rameses.util.ValueUtil;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 
 public abstract class UIController {
@@ -64,7 +73,8 @@ public abstract class UIController {
         this.title = title;
     }
     
-    // <editor-fold defaultstate="collapsed" desc=" View Class">
+    
+    //<editor-fold defaultstate="collapsed" desc="  View (class)  ">
     public class View {
         
         private String name;
@@ -97,15 +107,73 @@ public abstract class UIController {
                         throw new Exception("Template " + template + " should not be an instance of UIViewPanel.");
                     
                     viewPanel = new UIViewPanel();
-                    viewPanel.add(panel);
                     Binding binding = viewPanel.getBinding();
+                    
+                    Class pageClass = panel.getClass();
+                    JPanel master = null;
+                    if( pageClass.isAnnotationPresent(Template.class) ) {
+                        Template t = (Template)pageClass.getAnnotation(Template.class);
+                        Class mClass = (Class) t.value()[0];
+                        master = (JPanel) mClass.newInstance();
+                        if(master instanceof UIViewPanel)
+                            throw new Exception("Master template " + mClass.getName() + " must not extend a UIViewPanel" );
+                        
+                        loadStyleRules(mClass, binding);
+                    }
+                    
+                    loadStyleRules(pageClass, binding);
+                    
+                    if ( master != null ) {
+                        master.add(panel);
+                        viewPanel.add(master);
+                    } else {
+                        viewPanel.add(panel);
+                    }
                     binding.init();
                     binding.setBean(getCodeBean());
+                    
                 } catch(Exception e) {
                     throw new IllegalStateException(e);
                 }
             }
             return viewPanel;
+        }
+        
+        private void loadStyleRules(Class pageClass, Binding binding) {
+            if ( !pageClass.isAnnotationPresent(StyleSheet.class) ) return;
+            
+            StyleSheet ss = (StyleSheet) pageClass.getAnnotation(StyleSheet.class);
+            String source = ss.value();
+            
+            ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
+            InputStream is = null;
+            
+            try {
+                is = loader.getResourceAsStream(source);
+                
+                StyleRuleParser parser = new StyleRuleParser();
+                DefaultParseHandler handler = new DefaultParseHandler();
+                parser.parse(is, handler);
+                
+                List<StyleRule> newRules = handler.getList();
+                if ( newRules.size() == 0 ) return;
+                
+                StyleRule[] oldRules = binding.getStyleRules();
+                List list = new ArrayList();
+                if(oldRules!=null) {
+                    for(StyleRule s : oldRules) {
+                        list.add(s);
+                    }
+                }
+                for(Object s: newRules) {
+                    list.add((StyleRule)s);
+                }
+                StyleRule[] sr =(StyleRule[]) list.toArray(new StyleRule[]{});
+                binding.setStyleRules(sr);
+                
+            } catch (Exception ign) {;} finally {
+                try { is.close(); } catch(Exception ign){;}
+            }
         }
         
     }

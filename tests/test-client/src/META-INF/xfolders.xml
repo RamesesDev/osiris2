@@ -2,5 +2,6 @@
 <folders>
     <folder id="menu">
         <folder id="file" caption="File" />
+        <folder id="smack" caption="Smack" />
     </folder>
 </folders>

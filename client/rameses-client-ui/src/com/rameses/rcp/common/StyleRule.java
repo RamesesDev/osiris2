@@ -11,7 +11,7 @@ public class StyleRule implements Serializable {
     private String pattern;
     private Map properties = new HashMap();
     private String expression;
-
+    
     public StyleRule() {
         
     }
@@ -59,5 +59,10 @@ public class StyleRule implements Serializable {
         return this;
     }
     
+    public String toString() {
+        return "{pattern: \"" + pattern + "\", " +
+                "expression: \"" + expression + "\", " +
+                "properties: " + properties + "}";
+    }
     
 }

@@ -40,12 +40,57 @@ public class XImagePanel extends JScrollPane implements UIControl{
     private int height;
     private JSlider slider;
     private TitledBorder sliderBorder;
-    private PaintSupportPanel paintSupport;
+    private ImageCanvas imageCanvas;
     private JPanel columnHeader;
     
     
-    public XImagePanel() {}
+    public XImagePanel() {
+        imageCanvas = new ImageCanvas();
+        setViewportView(imageCanvas);
+    }
     
+    //<editor-fold defaultstate="collapsed" desc="  attachZoom  ">
+    private void attachZoom() {
+        if( advanced ) {
+            columnHeader = new JPanel();
+            columnHeader.setBorder(BorderFactory.createEtchedBorder());
+            columnHeader.setLayout( new FlowLayout(FlowLayout.LEFT, 1, 1) );
+            
+            getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+                public void adjustmentValueChanged(AdjustmentEvent e) {
+                    columnHeader.revalidate();
+                }
+            });
+            getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+                public void adjustmentValueChanged(AdjustmentEvent e) {
+                    columnHeader.revalidate();
+                }
+            });
+            
+            slider = new JSlider(10,200,100);
+            sliderBorder = BorderFactory.createTitledBorder("Zoom: " + (zoomLevel * 100) + "%");
+            slider.setBorder(sliderBorder);
+            slider.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    
+                    zoomLevel = slider.getValue()/100.00;
+                    width = (int) (image.getWidth(null) * zoomLevel);
+                    height = (int) (image.getHeight(null) * zoomLevel);
+                    sliderBorder.setTitle("Zoom: " + (zoomLevel * 100) + "%");
+                    imageCanvas.repaint();
+                    imageCanvas.revalidate();
+                    
+                }
+            });
+            columnHeader.add(slider);
+            setColumnHeaderView(columnHeader);
+        } else {
+            setColumnHeaderView(null);
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String[] getDepends() {
         return depends;
     }
@@ -76,7 +121,9 @@ public class XImagePanel extends JScrollPane implements UIControl{
     
     public void setAdvanced(boolean advanced) {
         this.advanced = advanced;
+        attachZoom();
     }
+    //</editor-fold>
     
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
@@ -105,53 +152,15 @@ public class XImagePanel extends JScrollPane implements UIControl{
         }
     }
     
-    public void load() {
-        paintSupport = new PaintSupportPanel();
-        setViewportView(paintSupport);
-        
-        if( advanced ) {
-            columnHeader = new JPanel();
-            columnHeader.setBorder(BorderFactory.createEtchedBorder());
-            columnHeader.setLayout( new FlowLayout(FlowLayout.LEFT, 1, 1) );
-            
-            getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-                public void adjustmentValueChanged(AdjustmentEvent e) {
-                    columnHeader.revalidate();
-                }
-            });
-            getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-                public void adjustmentValueChanged(AdjustmentEvent e) {
-                    columnHeader.revalidate();
-                }
-            });
-            
-            slider = new JSlider(10,200,100);
-            sliderBorder = BorderFactory.createTitledBorder("Zoom: " + (zoomLevel * 100) + "%");
-            slider.setBorder(sliderBorder);
-            slider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e) {
-                    
-                    zoomLevel = slider.getValue()/100.00;
-                    width = (int) (image.getWidth(null) * zoomLevel);
-                    height = (int) (image.getHeight(null) * zoomLevel);
-                    sliderBorder.setTitle("Zoom: " + (zoomLevel * 100) + "%");
-                    paintSupport.revalidate();
-                    paintSupport.repaint();
-                    
-                }
-            });
-            columnHeader.add(slider);
-            setColumnHeaderView(columnHeader);
-        }
-    }
+    public void load() {}
     
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
     }
     
     
-    //<editor-fold defaultstate="collapsed" desc="  PaintSupportPanel (class)  ">
-    private class PaintSupportPanel extends JPanel {
+    //<editor-fold defaultstate="collapsed" desc="  ImageCanvas (class)  ">
+    private class ImageCanvas extends JPanel {
         
         public void paintComponent(Graphics g) {
             super.paintComponent(g);

@@ -7,12 +7,12 @@
     <code>
         <![CDATA[
         
-        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
         
                 
         public class ControlsTestController  {
-        
+                
             Date date = new Date();
             int intNum;
             double doubleNum;
@@ -50,10 +50,13 @@
                 readonly = !readonly;
             }
             
-            def styles = [
-                new StyleRule("^[^(?:btn)].+", "#{readonly}", [ readonly: true ]),
-                new StyleRule("^[^(?:btn)].+", "#{!readonly}", [ readonly: false ])
+            def actions = [
+                new Action(name: '_close', caption: 'Close', immediate: true),
+                new Action(name: 'edit', caption: 'Edit'),
+                new Action(name: 'print', caption: 'Print'),
+                new Action(name: 'btnToggle', caption: 'Toggle', immediate: true)
             ];
+           
         }
         
         ]]>

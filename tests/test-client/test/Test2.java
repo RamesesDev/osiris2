@@ -1,6 +1,6 @@
 import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDef;
-import com.rameses.common.annotations.Service;
+import com.rameses.rcp.annotations.Service;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import junit.framework.*;
