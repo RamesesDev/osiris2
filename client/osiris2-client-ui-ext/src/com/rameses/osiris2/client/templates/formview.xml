@@ -1,0 +1,28 @@
+<workunit>
+    
+    <!-- notes:
+        Form page must inject Template annotation in the page.
+        @com.rameses.common.annotations.Template(com.rameses.rcp.common.ui.FormViewTemplate)
+    
+        <code>
+            import com.rameses.common.annotations.*;
+            import com.rameses.rcp.common.*;
+            import com.rameses.rcp.common.ui.*;
+
+            public class FormSampleCode extends FormViewController {
+
+                public void saveNew() {
+                
+                }
+                
+                public void saveUpdate() {
+                
+                }
+                
+                public Object createEntity();
+                
+            }
+        </code>
+    -->
+    
+</workunit>

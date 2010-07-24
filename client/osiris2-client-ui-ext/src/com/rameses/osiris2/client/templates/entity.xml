@@ -1,0 +1,52 @@
+<workunit>
+    
+    <invokers>
+       <invoker folderid="/menu/file" caption="Manage Entity"/>
+    </invokers>
+    
+    <code>
+        import com.rameses.common.annotations.*;
+        import com.rameses.osiris2.crud.*;
+        import com.rameses.rcp.common.*;
+        
+        public class EntityController extends CRUDModel1  {
+            
+            public String getEntityClassname() {
+                return "{className}";
+            }
+            
+            public Column[] getColumns() {
+                return [
+                    new Column(name:"item.id", caption:"", width:100)
+                ];
+            }
+            
+            public String getEntityId() {
+                return "{place entity primary key}";
+            }
+            
+            public String getEntityCaption() {
+                return "{place title}"
+            }
+            
+            public List getDocumentActions() {
+                return super.getDocumentActions();
+            }
+            
+            public List getListActions() {
+                return super.getListActions();
+            }
+
+       }
+    </code>
+    
+    <pages>
+        <page name="default" template="com.rameses.osiris2.crud.ui.ListViewPage"/>
+        <page name="new" template="{place new form}"/>
+        <page name="read" template="{place read form}"/>
+        <!--
+        <page name="query" template="{place query entry form}"/>
+        -->
+    </pages>
+    
+</workunit>

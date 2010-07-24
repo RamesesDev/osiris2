@@ -1,0 +1,28 @@
+<workunit>
+    
+    <!-- copy this code
+        <code>
+            import com.rameses.common.annotations.*;
+            import com.rameses.rcp.common.*;
+            import com.rameses.osiris2.templates.*;
+
+            public class ListViewSampleCode extends ListViewController {
+
+                public Column[] getColumns() {
+                    return [
+                        new Column(name:"", caption:"")
+                    ];
+                }
+                
+                public List fetchList(Map map) {
+                    return null;
+                }
+            }
+        </code>
+    -->
+    
+    <pages>
+        <page template="com.rameses.osiris2.client.templates.ListViewPage"/>
+    </pages>
+    
+</workunit>

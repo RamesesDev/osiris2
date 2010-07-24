@@ -1,0 +1,138 @@
+import com.rameses.scripting.annotations.*;
+import org.apache.commons.beanutils.*;
+
+public class CRUDService 
+{
+    @Resource("defaultPU")
+    def em;
+   
+
+    @ProxyMethod
+    public List getList( String ejbql, Map params, Map options ) {    		
+    	def qry = em.createQuery( ejbql );
+    	if ( !params ) params = [:];
+		for( o in params.entrySet() ) {
+			if( !o.key.startsWith("_") ) {
+				qry.setParameter( o.key, o.value ); 	
+			}		
+		}
+		if ( params._start )
+			qry.setFirstResult( params._start );
+		if ( params._rowsize )
+			qry.setMaxResults( params._rowsize );
+			
+		return qry.resultList;
+    }
+    
+    @ProxyMethod
+    public Object read( String entityClass, String objid, Map options ) {
+    	def o = em.find( loadClass( entityClass ), objid );
+    	if ( o && options && options.loadProperties )
+    		loadProperties( o, options.loadProperties );
+
+    	return o;
+    }
+    
+    @ProxyMethod
+    public Object create( String className, Object objid, Object entity, Map options ) {
+    	def clazz = loadClass( className );    		
+    	def o = em.find( clazz, objid );
+    	if ( o ) 
+			throw new Exception("Entity $className already exists.");		
+			
+		if ( entity instanceof Map ) {
+			o = clazz.newInstance();
+    		BeanUtils.copyProperties( o, entity );
+    		entity = o;
+    	}
+    	
+    	if ( options && options.uniqueFields )
+    		checkUniqueField( entity, entity, options.uniqueFields );
+		
+		try {
+		em.persist( entity );
+		if ( options && options.loadProperties )
+    		loadProperties( entity, options.loadProperties );
+		}
+		catch(e) { e.printStackTrace(); }
+		return entity;
+    }
+    
+    @ProxyMethod
+    public Object update( String className, Object objid, Object entity, Map options ) {
+    	def clazz = loadClass( className );    	
+    	def o = em.find( clazz, objid );
+    	if ( !o )
+    		throw new Exception("Entity $className does not exist.");
+    		
+    	if ( options && options.uniqueFields )
+    		checkUniqueField( o, entity, options.uniqueFields );
+    		    	
+    	if ( entity instanceof Map ) {
+    		BeanUtils.copyProperties( o, entity );
+    		entity = o;
+    	}
+
+    	o = em.merge( entity );
+    	if ( options && options.loadProperties )
+    		loadProperties( o, options.loadProperties );
+
+		return o;        
+    }
+    
+    @ProxyMethod
+    public Object delete( String className, Object objid, Object entity, Map options ) {
+    	def o = em.find( loadClass( className ), objid );
+    	if ( !o )
+    		throw new Exception("Entity $className does not exist.");
+    	em.remove( o );
+		return o;
+    }
+    
+    // ---- utitlity ------
+    
+    private Class loadClass( String className ) {
+    	return Thread.currentThread().contextClassLoader.loadClass( className );
+    }
+    
+    private def checkUniqueField( def target, def entity, def fields ) {
+    	fields.each { field ->
+    		def o = findEntities( target, entity, field );
+			if ( o && o.size() > 0 )
+				throw new Exception("${entity[field]} already exists.");
+    	};
+    }
+ 
+ 	private def findEntities( def target, def entity, def field ) {
+		try {
+			return em.createQuery("select o from ${target.class.name} o where o != :target and ${field} = :value".toString())
+			         .setParameter('value', entity[ field ])
+			         .setParameter('target', target)
+			         .setFirstResult(0)
+			         .setMaxResults(1)
+			         .resultList;
+		}
+		catch(e) {;}
+		return null;
+ 	}   
+    
+    private void loadProperties( def entity, def properties ) {
+    	properties.each { field ->
+    		if ( field.contains('.') ) {
+    			def f = field.substring(0, field.indexOf('.'))
+    			if ( entity[f] instanceof List ) {
+    				entity[f].size();
+    				entity[f].each {
+    					loadProperties( it, [ field.substring(field.indexOf('.') + 1) ] );
+    				};
+    			}
+    			else {
+    				loadProperties( entity[f], [ field.substring(field.indexOf('.') + 1) ] );
+    			}
+    		}
+    		else if ( entity[field] instanceof List ) {
+    			entity[field].size();
+    		}
+    	};
+    }
+}
