@@ -74,6 +74,7 @@ public class SqlExecutor {
                 return ps.executeUpdate();
             }
             else {
+                int i = 0;
                 for(List o: batchData)  {
                     parameterValues = o;
                     fillParameters(ps);

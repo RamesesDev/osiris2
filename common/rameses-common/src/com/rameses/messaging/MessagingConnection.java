@@ -14,7 +14,7 @@ import java.util.Map;
 public abstract class MessagingConnection {
     
     protected List<MessageListener> messageListeners = new ArrayList();
-    protected List<ConnectionListener> connectionListener = new ArrayList();
+    protected List<ConnectionListener> connectionListeners = new ArrayList();
     
     private String host;
     private int port;
@@ -43,13 +43,13 @@ public abstract class MessagingConnection {
     }
     
     public void addListener(ConnectionListener listener) {
-        if ( !connectionListener.contains(listener) ) {
-            connectionListener.add(listener);
+        if ( !connectionListeners.contains(listener) ) {
+            connectionListeners.add(listener);
         }
     }
     
     public void removeListener(ConnectionListener listener) {
-        connectionListener.remove(listener);
+        connectionListeners.remove(listener);
     }
     
     public String getHost() {

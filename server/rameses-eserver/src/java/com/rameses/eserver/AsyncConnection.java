@@ -1,6 +1,5 @@
 package com.rameses.eserver;
 
-import com.rameses.eserver.JndiUtil;
 import com.rameses.messaging.ConnectionManager;
 import com.rameses.messaging.MessageListener;
 import com.rameses.messaging.MessagingConnection;
@@ -31,8 +30,7 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
     }
     
     public void start() throws Exception {
-        System.out.println("binding ConnectionTest: " + jndiName);
-        
+        System.out.println("STARTING ASYNC CONNECTION: " + jndiName);
         InitialContext ctx = new InitialContext();        
         JndiUtil.bind(ctx, jndiName, this);
 
@@ -42,10 +40,10 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
     }
     
     public void stop() throws Exception {
+        System.out.println("STOPPING ASYNC CONNECTION: " + jndiName);
+        con.close();
         InitialContext ctx = new InitialContext();
         JndiUtil.unbind(ctx, jndiName);
-        
-        con.close();
     }
     
     public Map getConf() {
@@ -53,7 +51,7 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
         m.put("host", host);
         m.put("port", port);
         m.put("driverClass", driverClass);
-        
+        m.put("user", username);
         return m;
     }
     
@@ -62,7 +60,7 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
     }
 
     public void onMessage(Object message) {
-        System.out.println("receiving message....." + message);
+        //System.out.println("receiving message....." + message);
     }
 
     public String getJndiName() {

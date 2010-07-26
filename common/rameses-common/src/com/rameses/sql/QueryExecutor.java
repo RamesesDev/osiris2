@@ -21,10 +21,11 @@ public class QueryExecutor {
     private SqlQuery qry;
     private SqlExecutor executor;
     private FetchHandler handler;
-    private int rowsProcessed;
-    private int batchSize = 25;
+    private long rowsProcessed;
+    private int batchSize = 0;
     
     private long delay = 0;
+    
     
     /** Creates a new instance of QueryExecutorChain */
     public QueryExecutor(SqlQuery qry, SqlExecutor exec) {
@@ -50,7 +51,16 @@ public class QueryExecutor {
         execute();
     }
     
-    public void execute() throws Exception {
+    /***
+     * This method gets reult list from the query and for each 
+     * record read, it is feed to the sql executor. The query
+     * result list must contain fields with same name as the executor's
+     * parameters.
+     * 
+     * @return  number of records processed
+     */
+    
+    public long execute() throws Exception {
         if(qry==null)
             throw new Exception("Sql Query must not be null");
         if(executor==null)
@@ -63,16 +73,15 @@ public class QueryExecutor {
                 handler = new UnnamedParamFetchHandler();
         }
         qry.setFetchHandler(handler);
-        qry.setMaxResults(batchSize);
+        if(batchSize>0) qry.setMaxResults(batchSize);
         rowsProcessed = 0;
         int startRow = 0;
         while(true) {
             try {
-                qry.setFirstResult(startRow);
+                if(batchSize>0) qry.setFirstResult(startRow);
                 qry.getResultList();
                 int rowsFetched = qry.getRowsFetched(); 
-                rowsProcessed += rowsFetched;
-                if(rowsFetched==0 || rowsFetched<batchSize) {
+                if(batchSize==0 || rowsFetched<batchSize) {
                     //we have reached the end
                     break;
                 } 
@@ -85,18 +94,20 @@ public class QueryExecutor {
                 throw e;
             }
         }
-        
         //this starts the processor.
+        return rowsProcessed;
     }
     
     // <editor-fold defaultstate="collapsed" desc="FETCH HANDLER USED FOR UNNAMED COLUMNS">
     private abstract class AbstractFetchHandler implements FetchHandler {
         public void start() {
-            
+            executor.clear();
         }
         public void end() {
             try {
-                executor.execute();
+                if(rowsProcessed>0) {
+                    executor.execute();
+                }
             }
             catch(Exception e) {
                 throw new IllegalStateException(e);
@@ -107,6 +118,7 @@ public class QueryExecutor {
     
     private class UnnamedParamFetchHandler extends AbstractFetchHandler {
         public Object getObject(ResultSet rs) throws Exception {
+            rowsProcessed = rowsProcessed + 1;
             ResultSetMetaData meta = rs.getMetaData();
             int columnCount = meta.getColumnCount();
             for (int i=0; i<columnCount; i++) {
@@ -120,6 +132,7 @@ public class QueryExecutor {
     
     private class NamedParamFetchHandler extends AbstractFetchHandler {
         public Object getObject(ResultSet rs) throws Exception {
+            rowsProcessed = rowsProcessed + 1;            
             ResultSetMetaData meta = rs.getMetaData();
             for(String name: executor.getParameterNames()) {
                 executor.setParameter( name, rs.getObject( name ) );
@@ -131,7 +144,7 @@ public class QueryExecutor {
     }
     //</editor-fold>
     
-    public int getRowsProcessed() {
+    public long getRowsProcessed() {
         return rowsProcessed;
     }
 
@@ -143,5 +156,6 @@ public class QueryExecutor {
         this.batchSize = batchSize;
         return this;
     }
+
     
 }
