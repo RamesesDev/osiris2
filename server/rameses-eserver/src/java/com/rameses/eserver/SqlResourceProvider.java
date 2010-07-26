@@ -7,9 +7,8 @@
  * and open the template in the editor.
  */
 
-package com.rameses.data.server;
+package com.rameses.eserver;
 
-import com.rameses.eserver.ResourceProvider;
 import java.io.InputStream;
 
 /**

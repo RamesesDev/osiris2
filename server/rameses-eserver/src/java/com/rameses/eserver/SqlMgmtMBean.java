@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.data.server;
+package com.rameses.eserver;
 
 import com.rameses.sql.SqlManager;
 import javax.sql.DataSource;
@@ -22,7 +22,7 @@ public interface SqlMgmtMBean {
     void stop() throws Exception;
     SqlManager createSqlManager(String dataSource);
     SqlManager createSqlManager(DataSource dataSource);
-    
+    SqlManager createSqlManager();
     void flushAll();
     
 }

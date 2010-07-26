@@ -16,7 +16,6 @@ import com.rameses.annotations.Resource;
 import com.rameses.annotations.Service;
 import com.rameses.annotations.SqlContext;
 import com.rameses.scripting.*;
-import com.rameses.sql.SqlManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -27,7 +26,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.naming.InitialContext;
-import javax.sql.DataSource;
 
 /**
  *
@@ -96,9 +94,12 @@ public class InjectionHandler implements AnnotationFieldHandler {
             return ctx;
         }
         else if(annotation instanceof com.rameses.annotations.SqlContext) {
+            SqlMgmtMBean sql = (SqlMgmtMBean)lookup(CONSTANTS.SQLMGMT,null);
             String dsName = correctValue(((SqlContext)annotation).value());
-            DataSource ds = (DataSource)lookup(dsName,null);
-            return new SqlManager(ds);
+            if(dsName!=null)
+                return sql.createSqlManager( dsName );
+            else
+                return sql.createSqlManager();
         }
         return null;
     }

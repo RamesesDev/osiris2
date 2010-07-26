@@ -32,7 +32,30 @@ public class QueryExecutor {
         this.executor = exec;
     }
     
+    public QueryExecutor() {
+        
+    }
+    
+    public void setQuery(SqlQuery q) {
+        this.qry = q;
+    }
+    
+    public void setExecutor(SqlExecutor e) {
+        this.executor = e;
+    }
+    
+    public void execute(SqlQuery q, SqlExecutor e) throws Exception {
+        this.qry = q;
+        this.executor = e;
+        execute();
+    }
+    
     public void execute() throws Exception {
+        if(qry==null)
+            throw new Exception("Sql Query must not be null");
+        if(executor==null)
+            throw new Exception("Query Executor must not be null");
+
         if(handler==null) {
             if(executor.getParameterNames()!=null && executor.getParameterNames().size()>0) 
                 handler = new NamedParamFetchHandler();
@@ -71,7 +94,6 @@ public class QueryExecutor {
         public void start() {
             
         }
-        
         public void end() {
             try {
                 executor.execute();

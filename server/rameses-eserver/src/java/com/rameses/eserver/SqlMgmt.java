@@ -7,12 +7,8 @@
  * and open the template in the editor.
  */
 
-package com.rameses.data.server;
+package com.rameses.eserver;
 
-import com.rameses.eserver.CONSTANTS;
-import com.rameses.eserver.JndiUtil;
-import com.rameses.eserver.CacheServiceMBean;
-import com.rameses.eserver.ResourceServiceMBean;
 import com.rameses.sql.SqlCache;
 import com.rameses.sql.SqlCacheProvider;
 import com.rameses.sql.SqlManager;
@@ -64,6 +60,12 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
         SqlManager sql = new SqlManager(ds);
         sql.setSqlCacheProvider(sqlCacheProvider);
         return sql;
+    }
+    
+    public SqlManager createSqlManager() {
+        SqlManager sql = new SqlManager();
+        sql.setSqlCacheProvider(sqlCacheProvider);
+        return sql;        
     }
     
     public void flushAll() {
