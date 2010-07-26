@@ -26,6 +26,13 @@ public class SqlManager {
         this.dataSource = ds;
     }
     
+    public SqlManager() {
+        
+    }
+
+    public void setDataSource(DataSource ds) {
+        this.dataSource = ds;
+    }
     
     private Connection txnconn;
     
@@ -71,6 +78,10 @@ public class SqlManager {
         return new QueryExecutor(q,e);
     }
 
+    public QueryExecutor createQueryExecutor() {
+        return new QueryExecutor();
+    }
+    
     public void setSqlCacheProvider(SqlCacheProvider sq) {
         this.sqlCacheProvider = sq;
     }
