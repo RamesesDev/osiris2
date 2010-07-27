@@ -158,6 +158,10 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
     public boolean isReadonly() {
         return readonly;
     }
+    
+    public void setRequestFocus(boolean focus) {
+        if ( focus ) requestFocus();
+    }
     //</editor-fold>
     
 }

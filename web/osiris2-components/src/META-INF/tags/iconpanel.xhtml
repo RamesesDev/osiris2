@@ -27,7 +27,7 @@
                 <table cellpadding="0" cellspacing="0">
                     <c:forEach items="#{invList}" step="#{_cols}" varStatus="idx">
                         <tr>
-                            <c:forEach items="#{invList}" var="inv">
+                            <c:forEach begin="#{idx.index}" end="#{idx.index-1+_cols}" items="#{invList}" var="inv">
                                 <td valign="bottom" align="center" width="130px" class="icon">
                                     <a href="#{inv:invokerPath(inv)}">
                                         <div>

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workunit>
+<workunit extends="com/rameses/osiris2/client/templates/lookup.xml">
     
     <code>
         <![CDATA[
         
         import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
+        import com.rameses.osiris2.client.ui.ext.*;
         
                 
-        public class SamplLookupController extends LookupModel {
+        public class SamplLookupController extends SimpleLookup {
                 
             Column[] getColumns() {
                 return [
@@ -31,7 +32,9 @@
         ]]>
     </code>
     
+    <!--
     <pages>
         <page template="test.lookup.LookupPage"/>
     </pages>
+    -->
 </workunit>

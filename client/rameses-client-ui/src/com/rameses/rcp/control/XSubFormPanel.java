@@ -3,6 +3,7 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.BindingConnector;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.common.Opener;
@@ -10,8 +11,11 @@ import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIViewPanel;
 import com.rameses.rcp.util.UIControlUtil;
+import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.LayoutManager;
+import java.beans.Beans;
 import java.util.List;
 import java.util.Stack;
 import javax.swing.JPanel;
@@ -32,10 +36,22 @@ public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel
     
     public XSubFormPanel() {
         super.setLayout(new BorderLayout());
+        if ( Beans.isDesignTime() ) {
+            setPreferredSize( new Dimension(100,100) );
+        }
     }
     
     public void setLayout(LayoutManager mgr) {;}
-    
+
+    public Dimension getPreferredSize() {
+        if ( getComponentCount() > 0 ) {
+            return getComponent(0).getPreferredSize();
+        }
+        else {
+            return super.getPreferredSize();
+        } 
+    }
+            
     public String getHandler() {
         return handler;
     }
@@ -80,8 +96,26 @@ public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel
             throw new IllegalStateException("handler should be an instanceof " + Opener.class.getName());
         
         Opener opener = (Opener) obj;
+        opener = ControlSupport.initOpener( opener, binding.getController() );
+        String opnrOutcome = opener.getOutcome();
+        
         ControllerProvider provider = ClientContext.getCurrentContext().getControllerProvider();
         UIController controller = provider.getController(opener.getName());
+        if ( controller == null )
+            throw new IllegalStateException("SubForm controller must not be null.");
+        
+        controller.setName( opener.getName() );
+        controller.setId( opener.getId() );
+        Object o = controller.init( opener.getParams(), opener.getAction() );
+        
+        if ( o != null && o instanceof String ) {
+            opnrOutcome = (String) o;
+        }
+        
+        if ( !ValueUtil.isEmpty(opnrOutcome) ) {
+            controller.setCurrentView( opnrOutcome );
+        }
+        
         controllers.push(controller);
         renderView();
     }

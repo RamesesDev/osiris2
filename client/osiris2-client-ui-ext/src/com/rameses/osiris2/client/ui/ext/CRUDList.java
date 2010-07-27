@@ -11,7 +11,8 @@ import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.framework.ValueResolver;
+import com.rameses.util.PropertyResolver;
+import com.rameses.util.ValueUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,24 +90,25 @@ public class CRUDList extends ListViewController {
             }
         }
         if(keyField!=null) {
-            ValueResolver vr = ClientContext.getCurrentContext().getValueResolver();
-            return vr.getValue(item, keyField);
+            PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+            return res.getProperty(item, keyField);
         }
         return null;
     }
     
     private Opener createOpener(String target, Object id, String controllerName) {
         Opener opener = new Opener();
-        if ( controllerName == null || controllerName.trim().length() == 0 )
+        if ( ValueUtil.isEmpty( controllerName )) {
             controllerName = getController().getName();
-        if(!target.equals("_popup") ) {
-            String _id = controllerName;
-            if( id !=null ) {
-                _id = _id + "_" + id;
-            }
-            opener.setName( controllerName );
-            opener.setId( _id );
         }
+        
+        String _id = controllerName;
+        if( id !=null ) {
+            _id = _id + "_" + id;
+        }
+        opener.setName( controllerName );
+        opener.setId( _id );
+        
         opener.setTarget(target);
         return opener;
     }
@@ -139,6 +141,7 @@ public class CRUDList extends ListViewController {
         String type = getOpenerType();
         if ( type == null )
             return "form";
+        
         Opener opener = createOpener(type, "new", getCreateItemController());
         opener.setAction("create");
         opener.setCaption( getCreateTitle() );
@@ -147,7 +150,7 @@ public class CRUDList extends ListViewController {
     
     
     public String getOpenerType() {
-        return "_popup";
+        return "_window";
     }
     
     public String getOpenItemController() {
@@ -157,9 +160,4 @@ public class CRUDList extends ListViewController {
     public String getCreateItemController() {
         return null;
     }
-    
-    public Object onOpenItem(Object o, String columnName) {
-        return open();
-    }
-
 }

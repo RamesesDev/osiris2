@@ -11,5 +11,6 @@ public interface UICommand extends UIControl {
     boolean isImmediate();
     boolean isUpdate();
     boolean isDefaultCommand();
+    String getPermission();
     
 }

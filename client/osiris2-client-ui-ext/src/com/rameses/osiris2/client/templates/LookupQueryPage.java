@@ -34,12 +34,12 @@ public class LookupQueryPage extends javax.swing.JPanel {
         xTextField1.setCaptionWidth(80);
         xTextField1.setName("handler.search");
         add(xTextField1);
-        xTextField1.setBounds(6, 6, 336, 20);
+        xTextField1.setBounds(6, 6, 336, 19);
 
+        xButton1.setText("Search");
         xButton1.setName("handler.doSearch");
-        xButton1.setCaption("Go");
         add(xButton1);
-        xButton1.setBounds(345, 0, 48, 30);
+        xButton1.setBounds(342, 5, 74, 20);
 
     }// </editor-fold>//GEN-END:initComponents
     

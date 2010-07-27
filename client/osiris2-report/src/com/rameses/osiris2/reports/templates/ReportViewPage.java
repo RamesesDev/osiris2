@@ -16,42 +16,31 @@ public class ReportViewPage extends JPanel {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
         xActionBar1 = new com.rameses.rcp.control.XActionBar();
-        reportPanel1 = new com.rameses.osiris2.reports.ui.ReportPanel();
+        xReportPanel1 = new com.rameses.osiris2.reports.ui.XReportPanel();
 
         setLayout(new java.awt.BorderLayout());
 
         setPreferredSize(new java.awt.Dimension(449, 261));
-        jPanel1.setLayout(new java.awt.BorderLayout());
-
-        add(jPanel1, java.awt.BorderLayout.SOUTH);
-
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jPanel4.setLayout(new java.awt.BorderLayout());
-
-        jPanel2.add(jPanel4, java.awt.BorderLayout.SOUTH);
-
+        xActionBar1.setDynamic(true);
         xActionBar1.setName("reportActions");
-        jPanel2.add(xActionBar1, java.awt.BorderLayout.NORTH);
+        jPanel2.add(xActionBar1, java.awt.BorderLayout.CENTER);
 
         add(jPanel2, java.awt.BorderLayout.NORTH);
 
-        reportPanel1.setName("report");
-        add(reportPanel1, java.awt.BorderLayout.CENTER);
+        xReportPanel1.setName("report");
+        add(xReportPanel1, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel4;
-    private com.rameses.osiris2.reports.ui.ReportPanel reportPanel1;
     private com.rameses.rcp.control.XActionBar xActionBar1;
+    private com.rameses.osiris2.reports.ui.XReportPanel xReportPanel1;
     // End of variables declaration//GEN-END:variables
     
 }

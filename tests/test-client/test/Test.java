@@ -21,7 +21,7 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-        System.out.println( "btnasdfasdfShow".matches("^[^(?:btn)].+") );
+        System.out.println("dande1234312eee   ".replaceAll("(\\d+).*(\\s+)", ""));
     }
     
 }

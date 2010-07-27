@@ -11,8 +11,8 @@ package com.rameses.osiris2.client.ui.ext;
 
 import com.rameses.rcp.common.Action;
 import com.rameses.rcp.common.StyleRule;
-import com.rameses.rcp.common.UIController;
-import com.rameses.rcp.common.UIView;
+import com.rameses.rcp.framework.UIController;
+import com.rameses.rcp.framework.UIController.View;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,17 +27,19 @@ public final class CommonUtil {
     private static Map crudButtons = new HashMap();
     private static Map crudListButtons = new HashMap();
     
+    
+    //<editor-fold defaultstate="collapsed" desc="  initialize buttons  ">
     static {
         //--- CRUD form buttons ---
-        Action close = new Action("close", "Close", "com/rameses/osiris2/images/close.png", 'c');
+        Action close = new Action("close", "Close", "images/common/16/cancel.gif", 'c');
         close.setImmediate(true);
         crudButtons.put("x", close);
         
-        Action addNew =new Action("addNew", "New", "com/rameses/osiris2/images/document.gif", 'n');
+        Action addNew =new Action("addNew", "New", "com/rameses/osiris2/images/document.gif", 'n', "create");
         addNew.setVisibleWhen( "#{editmode == 'read'}" );
         crudButtons.put("a", addNew);
         
-        Action save =new Action("save", "Save", "com/rameses/osiris2/images/save.gif", 's');
+        Action save =new Action("save", "Save", "com/rameses/osiris2/images/save.gif", 's', "save");
         save.setVisibleWhen( "#{editmode != 'read'}" );
         crudButtons.put("s", save);
         
@@ -46,21 +48,23 @@ public final class CommonUtil {
         cancelEdit.setImmediate(true);
         crudButtons.put("c", cancelEdit);
         
-        Action edit =new Action("edit", "Edit", "com/rameses/osiris2/images/edit.gif", 'e');
+        Action edit =new Action("edit", "Edit", "com/rameses/osiris2/images/edit.gif", 'e', "edit");
         edit.setVisibleWhen( "#{editmode == 'read'}" );
         crudButtons.put("e", edit);
         
-        Action delete =new Action("delete", "Delete", "images/common/16/cancel.gif", 'd');
+        Action delete =new Action("delete", "Delete", "images/common/16/delete.png", 'd', "delete");
         delete.setVisibleWhen( "#{editmode == 'read'}" );
         crudButtons.put("d", delete);
         
         //--- CRUDList buttons
-        crudListButtons.put("x", new Action("_close", "Close", "com/rameses/osiris2/images/close.png", 'c'));
+        crudListButtons.put("x", new Action("_close", "Close", "images/common/16/cancel.gif", 'c'));
         crudListButtons.put("n", new Action("listHandler.create", "New", "com/rameses/osiris2/images/document.gif", 'n'));
         crudListButtons.put("o", new Action("listHandler.open", "Open", "com/rameses/osiris2/images/open.gif", 'o'));
     }
-        
-    public static List PAGE_ACTIONS() {
+    //</editor-fold>
+    
+    
+    public static List getPageActions() {
         List list = new ArrayList();
         list.add( new Action("listHandler.moveFirstPage", null, "com/rameses/osiris2/images/arrowup.gif"));
         list.add( new Action("listHandler.moveBackPage", null, "com/rameses/osiris2/images/arrowleft.gif"));
@@ -68,13 +72,13 @@ public final class CommonUtil {
         return list;
     }
     
-    public static List CLOSE_BUTTON() {
+    public static List getCloseButton() {
         List list = new ArrayList();
         list.add( new Action("_close", "Close", "com/rameses/osiris2/images/close.png", 'c'));
         return list;
     }
     
-    public static List OK_CANCEL() {
+    public static List getOkCancelButtons() {
         List list = new ArrayList();
         list.add( new Action("cancel", "Cancel", null));
         list.add( new Action("select", "OK", null));
@@ -82,16 +86,16 @@ public final class CommonUtil {
     }
     
     //pass the contextName used for permissions
-    public static List LIST_ACTIONS(String contextName) {
+    public static List getListActions(String contextName) {
         return getCRUDListButtons(null);
     }
     
-    public static List FORM_ACTIONS(String contextName) {
+    public static List getFormActions(String contextName) {
         return getCRUDButtons("xasec");
     }
     
     public static boolean isViewExist(UIController controller, String name ) {
-        for(UIView uv: controller.getViews()) {
+        for(View uv: controller.getViews()) {
             if(uv.getName()!=null && uv.getName().equals(name)) {
                 return  true;
             }
@@ -146,5 +150,5 @@ public final class CommonUtil {
         }
         return btns;
     }
-
+    
 }

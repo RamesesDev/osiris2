@@ -89,6 +89,10 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
         return depends;
     }
     
+    public void setDepends(String[] depends) {
+        this.depends = depends;
+    }
+    
     public int getIndex() {
         return index;
     }
@@ -185,6 +189,10 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     
     public boolean isReadonly() {
         return readonly;
+    }
+    
+    public void setRequestFocus(boolean focus) {
+        if ( focus ) requestFocus();
     }
     //</editor-fold>
     

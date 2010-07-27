@@ -1,5 +1,5 @@
 /*
- * ReportPanel.java
+ * XReportPanel.java
  *
  * Created on November 25, 2009, 3:34 PM
  *
@@ -10,11 +10,15 @@
 package com.rameses.osiris2.reports.ui;
 
 import com.rameses.osiris2.reports.ReportModel;
-import com.rameses.rcp.framework.AbstractUIControl;
+import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.util.UIControlUtil;
+import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.beans.Beans;
 import java.util.Map;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JRViewer;
@@ -23,49 +27,79 @@ import net.sf.jasperreports.view.JRViewer;
  *
  * @author elmo
  */
-public class ReportPanel extends AbstractUIControl {
+public class XReportPanel extends JPanel implements UIControl {
     
-    /** Creates a new instance of ReportPanel */
-    public ReportPanel() {
+    private Binding binding;
+    private int index;
+    private String[] depends;
+    
+    
+    public XReportPanel() {
         super.setLayout(new BorderLayout());
         if(Beans.isDesignTime()) {
             super.setOpaque(true);
-            super.setBackground(Color.GREEN);
+            super.setBackground(Color.LIGHT_GRAY);
         }
     }
-
-    public void refresh(String callerFieldName) {
-        render();
-    }
-
+    
     private void render() {
-        if( isEmpty(getName())) 
+        if( ValueUtil.isEmpty(getName()) )
             throw new IllegalStateException("Report Panel name must be provided");
-            
-        Object rpt = super.getBeanValue(getName());
+        
+        Object rpt = UIControlUtil.getBeanValue(this);
         JasperPrint jasperPrint = null;
         if( rpt instanceof ReportModel ) {
             jasperPrint = ((ReportModel)rpt).getReport();
-        }
-        else if(rpt instanceof JasperPrint) {
+        } else if(rpt instanceof JasperPrint) {
             jasperPrint = (JasperPrint)rpt;
         }
         if( jasperPrint == null ) {
             throw new IllegalStateException("No report found at " + getName());
         }
         
-        removeAll();
-        
         JRViewer jrv = new JRViewer(jasperPrint);
-        //JComponent jc = (JComponent) jrv.getComponent(0); 
+        
+        removeAll();
         add(jrv);
         SwingUtilities.updateComponentTreeUI(this);
     }
     
     public void setStyle(Map props) {
     }
-
+    
     public void load() {
+    }
+    
+    public String[] getDepends() {
+        return depends;
+    }
+    
+    public void setDepends(String[] depends) {
+        this.depends = depends;
+    }
+    
+    public int getIndex() {
+        return index;
+    }
+    
+    public void setIndex(int index) {
+        this.index = index;
+    }
+    
+    public void setBinding(Binding binding) {
+        this.binding = binding;
+    }
+    
+    public Binding getBinding() {
+        return binding;
+    }
+    
+    public void refresh() {
+        render();
+    }
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
     }
     
 }

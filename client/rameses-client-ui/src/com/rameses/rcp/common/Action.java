@@ -29,10 +29,10 @@ public class Action implements Comparable {
     private Map parameters = new HashMap();
     private boolean update;
     private String tooltip;
-    private String visibleWhen; 
+    private String visibleWhen;
     
     public Action() {
-       
+        
     }
     
     public Action(String name) {
@@ -58,6 +58,15 @@ public class Action implements Comparable {
         this.permission = perm;
     }
     
+    public int compareTo(Object o) {
+        if( o == null ) return 0;
+        if(!(o instanceof Action)) return 0;
+        
+        Action a = (Action)o;
+        return index - a.index;
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String getCaption() {
         return caption;
     }
@@ -99,15 +108,6 @@ public class Action implements Comparable {
         this.index = index;
     }
     
-    
-    public int compareTo(Object o) {
-        if( o == null ) return 0;
-        if(!(o instanceof Action)) return 0;
-        
-        Action a = (Action)o;
-        return index - a.index;        
-    }
-    
     public String getCategory() {
         return category;
     }
@@ -115,7 +115,7 @@ public class Action implements Comparable {
     public void setCategory(String category) {
         this.category = category;
     }
-
+    
     public String getPath() {
         //path will be the name of the category plus its name.
         return category + "/" + name;
@@ -124,67 +124,69 @@ public class Action implements Comparable {
     public Map getProperties() {
         return properties;
     }
-
+    
     public char getMnemonic() {
         return mnemonic;
     }
-
+    
     public void setMnemonic(char mnemonic) {
         this.mnemonic = mnemonic;
     }
-
+    
     public boolean isImmediate() {
         return immediate;
     }
-
+    
     public void setImmediate(boolean immediate) {
         this.immediate = immediate;
     }
-
+    
     public String getPermission() {
         return permission;
     }
-
+    
     public void setPermission(String permission) {
         this.permission = permission;
     }
-
+    
     public Map getParameters() {
         return parameters;
     }
-
+    
     public void setParameters(Map parameters) {
         this.parameters = parameters;
     }
-
+    
     public boolean isUpdate() {
         return update;
     }
-
+    
     public void setUpdate(boolean update) {
         this.update = update;
     }
-
+    
     public String getTooltip() {
-        if(tooltip==null) 
+        if(tooltip==null) {
             if( caption == null )
                 return name;
             else
                 return caption;
+        }
         
         return tooltip;
     }
-
+    
     public void setTooltip(String tooltip) {
         this.tooltip = tooltip;
     }
-
+    
     public String getVisibleWhen() {
         return visibleWhen;
     }
-
+    
     public void setVisibleWhen(String visibleWhen) {
         this.visibleWhen = visibleWhen;
     }
+    //</editor-fold>
     
 }

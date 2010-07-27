@@ -107,58 +107,6 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public void setLayout(LayoutManager mgr) {;}
-    
-    public String getHandler() {
-        return handler;
-    }
-    
-    public void setHandler(String handler) {
-        this.handler = handler;
-    }
-    
-    public boolean isDynamic() {
-        return dynamic;
-    }
-    
-    public void setDynamic(boolean dynamic) {
-        this.dynamic = dynamic;
-    }
-    
-    public void setShowHorizontalLines(boolean show) {
-        table.setShowHorizontalLines(show);
-    }
-    
-    public boolean isShowHorizontalLines() {
-        return table.getShowHorizontalLines();
-    }
-    
-    public void setShowVerticalLines(boolean show) {
-        table.setShowVerticalLines(show);
-    }
-    
-    public boolean isShowVerticalLines() {
-        return table.getShowVerticalLines();
-    }
-    
-    public void setAutoResize(boolean autoResize) {
-        table.setAutoResize(autoResize);
-    }
-    
-    public boolean isAutoResize() {
-        return table.isAutoResize();
-    }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="  UIInput properties  ">
     public String[] getDepends() {
         return depends;
@@ -290,13 +238,69 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public ActionMessage getActionMessage() {
         return actionMessage;
     }
-
+    
     public void setReadonly(boolean readonly) {
         table.setReadonly(readonly);
     }
-
+    
     public boolean isReadonly() {
         return table.isReadonly();
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setLayout(LayoutManager mgr) {;}
+    
+    public String getHandler() {
+        return handler;
+    }
+    
+    public void setHandler(String handler) {
+        this.handler = handler;
+    }
+    
+    public boolean isDynamic() {
+        return dynamic;
+    }
+    
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+    
+    public void setShowHorizontalLines(boolean show) {
+        table.setShowHorizontalLines(show);
+    }
+    
+    public boolean isShowHorizontalLines() {
+        return table.getShowHorizontalLines();
+    }
+    
+    public void setShowVerticalLines(boolean show) {
+        table.setShowVerticalLines(show);
+    }
+    
+    public boolean isShowVerticalLines() {
+        return table.getShowVerticalLines();
+    }
+    
+    public void setAutoResize(boolean autoResize) {
+        table.setAutoResize(autoResize);
+    }
+    
+    public boolean isAutoResize() {
+        return table.isAutoResize();
+    }
+    
+    public String getOnAfterUpdate() {
+        return onAfterUpdate;
+    }
+    
+    public void setOnAfterUpdate(String onAfterUpdate) {
+        this.onAfterUpdate = onAfterUpdate;
+    }
+    
+    public void setRequestFocus(boolean focus) {
+        if ( focus ) requestFocus();
     }
     //</editor-fold>
     

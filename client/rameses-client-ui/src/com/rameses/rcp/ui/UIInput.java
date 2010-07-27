@@ -11,5 +11,6 @@ public interface UIInput extends UIOutput {
     String getOnAfterUpdate();
     void setReadonly(boolean readonly);
     boolean isReadonly();
+    void setRequestFocus(boolean focus);
     
 }

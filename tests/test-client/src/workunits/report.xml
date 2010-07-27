@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit extends="com/rameses/osiris2/reports/templates/reports.xml">
+    <invokers>
+        <invoker folderid="/menu/report" caption="Sample Report"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.rcp.framework.*;
+        import com.rameses.osiris2.client.common.*;
+        import com.rameses.osiris2.reports.ReportModel;
+        
+        public class ReportController extends ReportModel {
+        
+            //@Service('SampleReportService')
+            //def service;
+        
+            String requestedBy;
+            
+            public Object getReportData() {
+                //return service.barangayList;
+                return [
+                    [pin: '1234', formalName: 'SAMPLE'],
+                    [pin: '1235', formalName: 'SAMPLE 2'],
+                    [pin: '1236', formalName: 'SAMPLE 3'],
+                    [pin: '1237', formalName: 'SAMPLE 4']
+                ];
+            }
+
+            public String getReportName() {
+                return "sample/report/sample.jasper";
+            }
+            
+            public Map getParameters() {
+                return [
+                    REQUESTEDBY: requestedBy
+                ];
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="sample.report.ReportPage"/>
+    </pages>
+</workunit>

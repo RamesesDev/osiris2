@@ -1,10 +1,10 @@
 package com.rameses.osiris2.client.ui.ext;
 
 import com.rameses.rcp.annotations.Close;
-import com.rameses.common.annotations.Controller;
+import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.common.MsgBox;
-import com.rameses.rcp.common.UIController;
 import com.rameses.rcp.framework.ChangeLog;
+import com.rameses.rcp.framework.UIController;
 import java.util.List;
 
 public class SimpleForm {
@@ -23,7 +23,7 @@ public class SimpleForm {
     }
     
     public List getFormActions() {
-        return CommonUtil.CLOSE_BUTTON();
+        return CommonUtil.getCloseButton();
     }
     
     @Close

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/report" caption="Sample Report 2"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.rcp.framework.*;
+        import com.rameses.osiris2.client.common.*;
+        import com.rameses.osiris2.reports.ReportModel;
+        
+        public class ReportController extends ReportModel {
+        
+            
+            public Object getReportData() {
+                return [
+                    [pin: '00-001', formalName: 'Lahug'],
+                    [pin: '00-002', formalName: 'Guadalupe'],
+                    [pin: '00-003', formalName: 'Basak'],
+                    [pin: '00-004', formalName: 'Mambaling']
+                ];
+            }
+
+            public String getReportName() {
+                return "sample/report/sample.jasper";
+            }
+            
+            public Map getParameters() {
+                return [
+                    REQUESTEDBY: ''
+                ];
+            }
+            
+            def getHandler() {
+                viewReport();
+                return this;
+            }
+                        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="sample.report.ReportPage2"/>
+    </pages>
+</workunit>

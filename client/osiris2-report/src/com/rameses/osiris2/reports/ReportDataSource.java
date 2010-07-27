@@ -2,7 +2,7 @@
 package com.rameses.osiris2.reports;
 
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.framework.ValueResolver;
+import com.rameses.util.PropertyResolver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,11 +16,11 @@ public class ReportDataSource implements JRDataSource
     protected Iterator iterator;
     private Object source;
     protected Object currentObject;
-    private ValueResolver valueResolver;
+    private PropertyResolver propertyResolver;
 
     public ReportDataSource(Object source) {
         setSource(source);
-        valueResolver = ClientContext.getCurrentContext().getValueResolver();        
+        propertyResolver = ClientContext.getCurrentContext().getPropertyResolver();        
     }
     
     public void setSource(Object src) {
@@ -56,7 +56,7 @@ public class ReportDataSource implements JRDataSource
         try {
             fieldName = jRField.getName();
             //field = PropertyUtils.getNestedProperty( currentObject, fieldName );
-            field = valueResolver.getValue(currentObject, fieldName);
+            field = propertyResolver.getProperty(currentObject, fieldName);
             
             if( jRField.getValueClass().isAssignableFrom( Collection.class) ) {
                 return new ReportDataSource( field );

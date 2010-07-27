@@ -18,13 +18,18 @@
             
             @Binding
             def binding;
+            
+            @Service("MessageService")
+            def service;
         
             def message;
             def messageList = new StringBuffer();
-            
-            def con = SmackDelegate.getConnection("jay", "12345");
+                      
+            def con;
             
             void init() {
+                def conf = service.getConnectionConf("SmackConnection1");
+                con = MessagingDelegate.getConnection(conf, "jay", "12345");
                 con.open();
                 con.addListener( listener );
             }
@@ -47,6 +52,11 @@
                     binding.refresh();
                 }
             ] as MessageListener;
+            
+            @Close
+            def close() {
+                con.close();
+            }
 
         }
         

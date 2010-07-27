@@ -3,5 +3,6 @@
     <folder id="menu">
         <folder id="file" caption="File" />
         <folder id="smack" caption="Smack" />
+        <folder id="report" caption="Reports" />
     </folder>
 </folders>
