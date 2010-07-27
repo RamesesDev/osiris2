@@ -8,12 +8,15 @@ import com.rameses.eserver.CONSTANTS;
 import com.rameses.eserver.CacheServiceMBean;
 import com.rameses.eserver.MultiResourceHandler;
 import com.rameses.eserver.ResourceServiceMBean;
+import com.rameses.interfaces.ScriptServiceLocal;
 import groovy.lang.GroovyClassLoader;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -27,7 +30,7 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
     private final static String SCRIPT_PREFIX = "script";
     private final static String INTERCEPTORS = "interceptors";
-  
+    
     private List<InterceptorDef> beforeInterceptors;
     private List<InterceptorDef> afterInterceptors;
     private Map<String,List<String>> beforeInterceptorsMap = new Hashtable<String,List<String>>();
@@ -37,6 +40,9 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
     private CacheServiceMBean cacheService;
     private ResourceServiceMBean resourceService;
+    
+    private Map<String, Class> remoteInterfaces = new Hashtable();
+    
     
     public void start() throws Exception {
         System.out.println("STARTING SCRIPT MANAGEMENT");
@@ -68,6 +74,7 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         afterInterceptors = null;
         beforeInterceptorsMap.clear();
         afterInterceptorsMap.clear();
+        remoteInterfaces.clear();
     }
     
     public void flushAll() {
@@ -97,7 +104,16 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
             if( !scriptCache.containsKey(name)) {
                 InputStream is = resourceService.getResource(SCRIPT_PREFIX+"://" + name);
                 Class clazz = classLoader.parseClass( is );
-                so = new ScriptObject(clazz, name );
+                
+                String proxyInterface = InterfaceBuilder.getProxyInterfaceScript(name, clazz);
+                Class proxyClass = null;
+                if(proxyInterface!=null) {
+                    proxyClass = classLoader.parseClass( proxyInterface );
+                }
+                
+                //build also the proxy class so it can be done on one pass only.
+                
+                so = new ScriptObject(clazz, name, proxyInterface, proxyClass );
                 scriptCache.put(name, so);
             } else {
                 so = (ScriptObject) scriptCache.get(name);
@@ -119,7 +135,6 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         beforeInterceptors = new ArrayList<InterceptorDef>();
         afterInterceptors = new ArrayList<InterceptorDef>();
         try {
-            System.out.println("LOADING INTERCEPTORS NOW...");
             InterceptorLoader interceptorLoader = new InterceptorLoader();
             resourceService.scanResources(SCRIPT_PREFIX+"://"+INTERCEPTORS, interceptorLoader);
             
@@ -191,5 +206,32 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         return afterInterceptorsMap.get(name);
     }
     
+    public Object createLocalProxy(String name, Map env) {
+        try {
+            ScriptObject o = getScriptObject(name);
+            Class clazz = o.getProxyIntfClass();
+            if(clazz==null)
+                throw new IllegalStateException("Interface class does not exist. Please ensure a @ProxyMethod is defined");
+            InitialContext ctx = new InitialContext();
+            ScriptServiceLocal scriptService = (ScriptServiceLocal)ctx.lookup(CONSTANTS.SCRIPT_SERVICE_LOCAL);
+            ScriptProxyInvocationHandler handler = new ScriptProxyInvocationHandler(scriptService, name, env);
+            return Proxy.newProxyInstance(classLoader, new Class[]{clazz}, handler);
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+    
+    
+    public Object createRemoteProxy(String name, Map env, String hostKey ) {
+        try {
+            ScriptServiceLocal scriptService = RemoteDelegate.getScriptService(hostKey,env);
+            byte[] bytes = scriptService.getScriptInfo(name);
+            Class clazz = classLoader.parseClass( new ByteArrayInputStream(bytes)  );
+            ScriptProxyInvocationHandler handler = new ScriptProxyInvocationHandler(scriptService, name, env);
+            return Proxy.newProxyInstance(classLoader, new Class[]{clazz}, handler);
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
     
 }

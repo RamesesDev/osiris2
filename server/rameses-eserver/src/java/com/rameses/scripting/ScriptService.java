@@ -10,7 +10,6 @@
 package com.rameses.scripting;
 
 import com.rameses.classutils.ClassDef;
-import com.rameses.eserver.InjectionHandler;
 import com.rameses.interfaces.ScriptServiceLocal;
 
 import com.rameses.annotations.After;
@@ -70,7 +69,7 @@ public class ScriptService implements ScriptServiceLocal {
             if(!async) {
                 
                 
-                injectionHandler = new InjectionHandler(context,env);
+                injectionHandler = new InjectionHandler(name, context,env);
                 classDef.injectFields( target, injectionHandler );
                 
                 
@@ -226,9 +225,11 @@ public class ScriptService implements ScriptServiceLocal {
     
     
     public byte[] getScriptInfo(String name) {
-        return scriptMgmt.getScriptObject(name).getProxyInterface();
+        String proxyInterface = scriptMgmt.getScriptObject(name).getProxyIntfScript();
+        if(proxyInterface==null)
+            throw new IllegalStateException("Proxy interface " + name + " not found. Please ensure that there is at least one @ProxyMethod");
+        return proxyInterface.getBytes();
     }
-    
     
     
     

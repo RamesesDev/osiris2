@@ -10,15 +10,16 @@
 package com.rameses.scripting;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ScriptMgmtMBean {
     
     void start() throws Exception;
     void stop() throws Exception;
 
-    //byte[] getScriptIntfBytes(String name);
     ScriptObject getScriptObject(String name);
-    //Class getScriptInfo(String name);
+    Object createLocalProxy( String name, Map env );
+    Object createRemoteProxy(String name, Map env, String hostKey );
     
     void flushAll();
     void flushInterceptors();

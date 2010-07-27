@@ -74,6 +74,7 @@ public class SqlExecutor {
                 return ps.executeUpdate();
             }
             else {
+                int i = 0;
                 for(List o: batchData)  {
                     parameterValues = o;
                     fillParameters(ps);
@@ -193,5 +194,9 @@ public class SqlExecutor {
     public SqlExecutor setVars( Map map ) {
         this.statement = SqlUtil.substituteValues( this.origStatement, map );
         return this;
+    }
+    
+    public String getStatement() {
+        return statement;
     }
 }

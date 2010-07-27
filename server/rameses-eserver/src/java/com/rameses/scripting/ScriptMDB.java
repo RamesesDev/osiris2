@@ -2,8 +2,6 @@ package com.rameses.scripting;
 
 import com.rameses.interfaces.ResponseServiceLocal;
 import com.rameses.interfaces.ScriptServiceLocal;
-import com.rameses.invoker.client.HttpClientManager;
-import com.rameses.invoker.client.HttpInvokerClient;
 
 
 import java.util.HashMap;
@@ -68,6 +66,9 @@ public class ScriptMDB implements MessageListener {
     }
     
     private void executeResponse( String responseHandler, String script,Object result, Map env, String origin, boolean sameServer, String requestId ) throws Exception {
+        Map m = new HashMap();
+        m.put("response.host", origin + ":8080" );
+
         if(responseHandler!=null) {
             String method = null;
             if( responseHandler.contains(".") ) {
@@ -80,19 +81,13 @@ public class ScriptMDB implements MessageListener {
             if(sameServer) {
                 scriptService.invoke(script,method,new Object[]{result},env);
             } else {
-                Map m = new HashMap();
-                m.put("response.host", origin + ":8080" );
-                HttpInvokerClient hc = HttpClientManager.getInstance().getService( "response.host", m );
-                hc.invoke( "ScriptService.invoke", new Object[]{ script, method,  new Object[]{result}, m } );
+                RemoteDelegate.getScriptService("response.host",m).invoke(script,method,new Object[]{result},env);
             }
         } else {
             if(sameServer && result!=null) {
                 responseService.registerData( requestId, result );
             } else {
-                Map m = new HashMap();
-                m.put("response.host", origin + ":8080" );
-                HttpInvokerClient hc = HttpClientManager.getInstance().getService( "response.host", m );
-                hc.invoke( "ResponseService.registerData", new Object[]{ requestId, result } );
+                RemoteDelegate.getResponseService("response.host", m).registerData(requestId, result);
             }
         }
     }

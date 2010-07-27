@@ -7,20 +7,17 @@
  * and open the template in the editor.
  */
 
-package com.rameses.eserver;
+package com.rameses.scripting;
 
 import com.rameses.classutils.AnnotationFieldHandler;
-import com.rameses.interfaces.ScriptServiceLocal;
+import com.rameses.eserver.*;
 import com.rameses.annotations.Env;
 import com.rameses.annotations.Resource;
 import com.rameses.annotations.Service;
 import com.rameses.annotations.SqlContext;
-import com.rameses.scripting.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -36,9 +33,10 @@ public class InjectionHandler implements AnnotationFieldHandler {
     private Map<String, Object> map = new Hashtable<String, Object>();
     private javax.ejb.SessionContext ctx;
     private Map env;
-    
+    private String callerService;
    
-    public InjectionHandler(javax.ejb.SessionContext ctx, Map env) {
+    public InjectionHandler(String callerService, javax.ejb.SessionContext ctx, Map env) {
+        this.callerService = callerService;
         this.ctx = ctx;
         this.env = env;
     }
@@ -73,8 +71,17 @@ public class InjectionHandler implements AnnotationFieldHandler {
             Service asvc = (Service)annotation;
             String scriptname = correctValue(asvc.value());
             String host = correctValue(asvc.host());
+            ScriptMgmtMBean mbean = (ScriptMgmtMBean)lookup(CONSTANTS.SCRIPT_MGMT,null);
             
-            return RemoteHttpInvokerProxy.getInstance().create(scriptname, host);
+            if(host==null || host.trim().length()==0) {
+                if(scriptname==null || scriptname.trim().length()==0) scriptname = callerService;
+                return mbean.createLocalProxy(scriptname, env );
+            }    
+            else {
+                if(scriptname==null || scriptname.trim().length()==0) 
+                    throw new IllegalStateException("Please provide a remote service name value for @Service");
+                return mbean.createRemoteProxy(scriptname, env, host );
+            }
         }
         /*
         else if( annotation instanceof Script ) {
@@ -96,7 +103,7 @@ public class InjectionHandler implements AnnotationFieldHandler {
         else if(annotation instanceof com.rameses.annotations.SqlContext) {
             SqlMgmtMBean sql = (SqlMgmtMBean)lookup(CONSTANTS.SQLMGMT,null);
             String dsName = correctValue(((SqlContext)annotation).value());
-            if(dsName!=null)
+            if(dsName!=null && dsName.trim().length()>0)
                 return sql.createSqlManager( dsName );
             else
                 return sql.createSqlManager();
@@ -108,6 +115,7 @@ public class InjectionHandler implements AnnotationFieldHandler {
     
     private String correctValue(String name) {
         if( name == null ) return null;
+        if(name.trim().length()==0) return "";
         Matcher m = p.matcher(name);
         StringBuffer sb = new StringBuffer();
         int start = 0;
@@ -122,29 +130,11 @@ public class InjectionHandler implements AnnotationFieldHandler {
     }
     
     
-    
-    public class LocalScriptInvocationHandler implements InvocationHandler {
-        
-        private ScriptServiceLocal local;
-        private String scriptName;
-        
-        public LocalScriptInvocationHandler(String scriptName, ScriptServiceLocal local) {
-            this.local = local;
-            this.scriptName = scriptName;
-        }
-        
-        public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-            if( method.getName().equals("toString") ) {
-                return scriptName;
-            }
-            return local.invoke(scriptName, method.getName(), args, env );
-        }
-        
-    }
-    
     public void destroy() {
         map.clear();
         map = null;
         ctx = null;
     }
+     
+    
 }

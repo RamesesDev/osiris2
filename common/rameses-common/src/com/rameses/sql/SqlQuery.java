@@ -84,7 +84,7 @@ public class SqlQuery {
             
             //do paging here.
             rs = ps.executeQuery();
-            
+
             fetchHandler.start();
             List resultList = new ArrayList();
             if( firstResult != 0 ) {
@@ -96,13 +96,14 @@ public class SqlQuery {
             
             rowsFetched = 0;
             while(rs.next()) {
+                rowsFetched = rowsFetched+1;
                 //handle the object and return as object.
                 //if object is null do not store in list.
                 Object val = fetchHandler.getObject(rs);
                 if(val!=null) {
                     resultList.add( val );
                 }
-                if(maxResults>0 && (++rowsFetched)>=maxResults) break;
+                if(maxResults>0 && (rowsFetched>=maxResults)) break;
             }
             fetchHandler.end();
             return resultList;
@@ -283,5 +284,7 @@ public class SqlQuery {
         return this;
     }
     
-    
+    public String getStatement() {
+        return statement;
+    }
 }
