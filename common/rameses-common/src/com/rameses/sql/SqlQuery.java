@@ -284,5 +284,7 @@ public class SqlQuery {
         return this;
     }
     
-    
+    public String getStatement() {
+        return statement;
+    }
 }

@@ -195,4 +195,8 @@ public class SqlExecutor {
         this.statement = SqlUtil.substituteValues( this.origStatement, map );
         return this;
     }
+    
+    public String getStatement() {
+        return statement;
+    }
 }

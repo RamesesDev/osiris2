@@ -23,23 +23,25 @@ public class ScriptObject implements Serializable {
     
     private String name;
     private ClassDef classDef;
-    private byte[] proxyBytes;
-    private Class proxyClass;
+    private String proxyIntfScript;
+    private Class proxyIntfClass;
     
-    //store the method name and 
+    //store the method name and
     private Map<String, List<String>> beforeInterceptors = new Hashtable();
     private Map<String, List<String>> afterInterceptors = new Hashtable();
     
     
-    public ScriptObject(Class cp, String name ) {
+    public ScriptObject(Class cp, String name, String proxyInterface, Class proxyClass  ) {
         this.name = name;
         this.classDef = new ClassDef( cp );
+        this.proxyIntfScript = proxyInterface;
+        this.proxyIntfClass = proxyClass;
     }
     
     public Class getTargetClass() {
         return classDef.getSource();
     }
-
+    
     public String getName() {
         return name;
     }
@@ -48,25 +50,12 @@ public class ScriptObject implements Serializable {
         return classDef;
     }
     
-    public byte[] getProxyInterface() {
-        if(proxyBytes==null) {
-            String intf = InterfaceBuilder.getProxyInterfaceScript(name, classDef.getSource());
-            proxyBytes = intf.getBytes();            
-        }
-        return proxyBytes;
+    public String getProxyIntfScript() {
+        return proxyIntfScript;
     }
     
-    public void buildInterceptors() {
-       
-    }
-    
-    //pass the list of 
-    public List<String> getBeforeInterceptors(String methodName, List<InterceptorDef> beforeInterceptorList) {
-       return null; 
-    }
-    
-    public List<String> getAfterInterceptors(String methodName, List<InterceptorDef> afterInterceptorList) {
-        return null;
+    public Class getProxyIntfClass() {
+        return proxyIntfClass;
     }
     
 }

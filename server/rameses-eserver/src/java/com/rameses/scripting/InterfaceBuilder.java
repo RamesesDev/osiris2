@@ -20,25 +20,30 @@ public final class InterfaceBuilder {
     
     public static String getProxyInterfaceScript( String pkgName, Class sc ) {
         pkgName = pkgName.replaceAll("/", ".");
-        StringBuffer sb = new StringBuffer();
-        sb.append( "package " + pkgName + "; \n");
-        sb.append( "interface " + sc.getSimpleName() + "Intf { \n" );
+        boolean proxyMethodExist = false;
+        StringBuffer sbody = new StringBuffer();
         for( Method m : sc.getDeclaredMethods() ) {
             if( m.isAnnotationPresent(ProxyMethod.class)) {
-                sb.append(m.getReturnType().getName()+ " ");
-                sb.append( m.getName() + "(" );
+                proxyMethodExist = true;
+                sbody.append(m.getReturnType().getName()+ " ");
+                sbody.append( m.getName() + "(" );
                 int i = 0;
                 for( Class c: m.getParameterTypes() ) {
-                    if( i!=0) sb.append(", ");
-                    sb.append(c.getCanonicalName());
-                    sb.append(" p" + i );
+                    if( i!=0) sbody.append(", ");
+                    sbody.append(c.getCanonicalName());
+                    sbody.append(" p" + i );
                     i++;
                 }
-                sb.append(") ; \n");
+                sbody.append(") ; \n");
             }
         }
-        sb.append("}\n");
-        return(sb.toString());
+        if(!proxyMethodExist) return null;
+        StringBuffer nb = new StringBuffer();
+        nb.append( "package " + pkgName + "; \n");
+        nb.append( "interface " + sc.getSimpleName() + "Intf { \n" );
+        nb.append(sbody);
+        nb.append("}\n");
+        return(nb.toString());
     }
     
     public static String createMethodSignature(Method m) {

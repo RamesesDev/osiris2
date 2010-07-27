@@ -45,10 +45,10 @@ public class QueryExecutor {
         this.executor = e;
     }
     
-    public void execute(SqlQuery q, SqlExecutor e) throws Exception {
+    public long execute(SqlQuery q, SqlExecutor e) throws Exception {
         this.qry = q;
         this.executor = e;
-        execute();
+        return execute();
     }
     
     /***

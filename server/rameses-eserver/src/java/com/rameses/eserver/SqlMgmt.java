@@ -79,7 +79,6 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
             Map map = (Map)cacheService.getContext("sqlcache");
             SqlCache sq = (SqlCache)map.get(statement);
             if(sq==null) {
-                System.out.println("parsing first time " + statement);
                 sq = createSqlCache(statement);
                 map.put(statement, sq);
             }
@@ -92,7 +91,6 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
                 Map map = (Map)cacheService.getContext("sqlcache");
                 SqlCache sq = (SqlCache)map.get(name);
                 if(sq==null) {
-                    System.out.println("parsing named sql name " + name);
                     String fileName = name;
                     if( name.indexOf(".")<0 ) fileName = fileName + ".sql";
                     
