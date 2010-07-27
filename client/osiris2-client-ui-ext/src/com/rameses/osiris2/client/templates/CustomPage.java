@@ -30,7 +30,6 @@ public class CustomPage extends javax.swing.JPanel {
         xActionBar1 = new com.rameses.rcp.control.XActionBar();
         xActionBar2 = new com.rameses.rcp.control.XActionBar();
         lblTitle = new com.rameses.rcp.control.XLabel();
-        pnlCenter = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -41,10 +40,9 @@ public class CustomPage extends javax.swing.JPanel {
         pnlHead.setLayout(new java.awt.BorderLayout());
 
         pnlHead.setPreferredSize(new java.awt.Dimension(40, 26));
-
         xActionBar1.setDynamic(true);
         xActionBar1.setName("listHandler.listActions");
-        pnlHead.add(xActionBar1, java.awt.BorderLayout.WEST);
+        pnlHead.add(xActionBar1, java.awt.BorderLayout.CENTER);
 
         xActionBar2.setDynamic(true);
         xActionBar2.setName("listHandler.viewActions");
@@ -63,17 +61,12 @@ public class CustomPage extends javax.swing.JPanel {
 
         add(pnlHeader, java.awt.BorderLayout.NORTH);
 
-        pnlCenter.setLayout(new java.awt.BorderLayout());
-
-        add(pnlCenter, java.awt.BorderLayout.CENTER);
-
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel2;
     private com.rameses.rcp.control.XLabel lblTitle;
-    private javax.swing.JPanel pnlCenter;
     private javax.swing.JPanel pnlHead;
     private javax.swing.JPanel pnlHeader;
     private com.rameses.rcp.control.XActionBar xActionBar1;

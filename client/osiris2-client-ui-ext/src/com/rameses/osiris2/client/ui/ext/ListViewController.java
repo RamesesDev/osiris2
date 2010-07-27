@@ -9,11 +9,12 @@
 
 package com.rameses.osiris2.client.ui.ext;
 
+import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.common.PageListModel;
-import com.rameses.rcp.common.UIController;
+import com.rameses.rcp.framework.UIController;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public abstract class ListViewController extends PageListModel {
     
     //this is only applicable if this is used as the top form,
     //else use the setController method to set this.
-    @com.rameses.common.annotations.Controller
+    @Controller
     private UIController controller;
     
     public UIController getController() {
@@ -40,11 +41,11 @@ public abstract class ListViewController extends PageListModel {
     }
     
     public List getPageActions() {
-        return CommonUtil.PAGE_ACTIONS();
+        return CommonUtil.getPageActions();
     }
     
     public List getListActions() {
-        return CommonUtil.LIST_ACTIONS(controller.getName());
+        return CommonUtil.getListActions(controller.getName());
     }
     
     public List getViewActions() {
@@ -73,6 +74,10 @@ public abstract class ListViewController extends PageListModel {
 
     public void setController(UIController controller) {
         this.controller = controller;
+    }
+
+    public Object onOpenItem(Object o, String columnName) {
+        return open();
     }
     
 }

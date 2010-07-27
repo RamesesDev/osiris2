@@ -7,3 +7,11 @@
     readonly: false; 
 }
 
+"entity.memo" [checkBox2 == 'YES'] {
+    enabled: true;
+    requestFocus: true;
+}
+
+"entity.memo" [checkBox2 == 'NO'] {
+    enabled: false;
+}

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit extends="com/rameses/osiris2/client/templates/listview.xml">
+    <invokers>
+        <invoker folderid="/menu/file" caption="List View form test" index="-3"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+        import com.rameses.osiris2.client.ui.ext.*;
+                
+        public class CRUDListFormController extends CRUDListForm {
+        
+            def entityId = '';
+            String entityClass = '';
+            def service = [:];
+            
+            String getFormTitle() {
+                return entity?.name;
+            }
+            
+            String open() {
+                editmode = 'read';
+                return 'form';
+            }
+            
+            String create() {
+                editmode = 'create';
+                entity = [:];
+                return 'form';
+            }
+            
+            String save() {
+                editmode = 'read';
+                changeLog.clear();
+                return '';
+            }
+        
+            def createListHandler() {
+                return new ListController();
+            }
+            
+        }
+        
+        public class ListController extends CRUDList {
+        
+            public Column[] getColumns() {
+                return [
+                    new Column(name:"item.name", caption:"Name", primary: true),
+                    new Column(name:"item.address", caption:"Address")
+                ];
+            }
+
+            public List fetchList(Map map) {
+                return [
+                    [name: 'Alvin', address: 'Labangon, CC'],
+                    [name: 'Mike', address: 'Labangon, CC'],
+                    [name: 'Jay', address: 'Labangon, CC']
+                ];
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page name="form" template="test.os2clientx.Page"/>
+    </pages>
+</workunit>

@@ -10,6 +10,7 @@
 package com.rameses.rcp.framework;
 
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.impl.ClientContextImpl;
 import com.rameses.rcp.impl.ControllerProviderImpl;
 import com.rameses.rcp.impl.NavigationHandlerImpl;
@@ -18,6 +19,7 @@ import com.rameses.util.MethodResolver;
 import com.rameses.util.PropertyResolver;
 import com.rameses.util.ValueResolver;
 import com.sun.jmx.remote.util.Service;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -61,6 +63,7 @@ public abstract class ClientContext {
             } else {
                 controllerProvider = new ControllerProviderImpl();
             }
+            controllerProvider = new ControllerProviderWrapper( controllerProvider );
         }
         return controllerProvider;
     }
@@ -85,4 +88,45 @@ public abstract class ClientContext {
     public final TaskManager getTaskManager() {
         return taskManager;
     }
+    
+    //<editor-fold defaultstate="collapsed" desc="  ControllerProviderWrapper (class)  ">
+    private class ControllerProviderWrapper implements ControllerProvider {
+        
+        private ControllerProvider orig;
+        
+        ControllerProviderWrapper(ControllerProvider orig) {
+            this.orig = orig;
+        }
+        
+        public UIController getController(String name) {
+            UIController controller = orig.getController(name);
+            Object bean = controller.getCodeBean();
+            injectController( bean, bean.getClass(), controller );
+            
+            return controller;
+        }
+        
+        private void injectController( Object o, Class clazz, UIController u ) {
+            if( o == null) return;
+            for( Field f: clazz.getDeclaredFields() ) {
+                //inject Controller
+                if( f.isAnnotationPresent( Controller.class )) {
+                    boolean accessible = f.isAccessible();
+                    f.setAccessible(true);
+                    try {
+                        f.set(o, u );
+                    } catch(Exception ex) {
+                        System.out.println("ERROR injecting @Controller "  + ex.getMessage() );
+                    }
+                    f.setAccessible(accessible);
+                    return;
+                }
+            }
+            if( clazz.getSuperclass() != null ) {
+                injectController( o, clazz.getSuperclass(), u );
+            }
+        }
+        
+    }
+    //</editor-fold>
 }

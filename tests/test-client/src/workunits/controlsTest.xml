@@ -14,17 +14,16 @@
         public class ControlsTestController  {
                 
             Date date = new Date();
+            def entity = [ civilStat: 'MARRIED' ];
+            
             int intNum;
             double doubleNum;
             BigDecimal decimalNum = 10.1;
             
             def checkBox1;
             def checkBox2;
-            def memo;
             
             def item = [name:"Minglanilla"];
-            def item2;
-            def item3;
             def itemList = [[name:"Cebu City"], [name:"Minglanilla"], [name:"Naga"]];
             
             def file;
@@ -35,12 +34,7 @@
                     intNum = $intNum
                     doubleNum = $doubleNum
                     decimalNum = $decimalNum
-                    item = $item
-                    item2 = $item2
-                    item3 = $item3
-                    checkBox1 = $checkBox1
-                    checkBox2 = $checkBox2
-                    memo = $memo
+                    entity = $entity
                 """);
             }
         
@@ -56,6 +50,11 @@
                 new Action(name: 'print', caption: 'Print'),
                 new Action(name: 'btnToggle', caption: 'Toggle', immediate: true)
             ];
+            
+            @Close
+            def close() {
+                MsgBox.alert('Closing');
+            }
            
         }
         

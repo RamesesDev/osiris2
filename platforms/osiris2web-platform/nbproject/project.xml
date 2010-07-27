@@ -39,11 +39,11 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library files="1">
-                    <file>${reference.rameses-common.jar}</file>
+                    <file>${reference.osiris2-components.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
-                <library files="1">
-                    <file>${reference.osiris2-components.jar}</file>
+                <library>
+                    <file>${libs.rameses-common.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
@@ -82,14 +82,6 @@
             </reference>
             <reference>
                 <foreign-project>osiris2web</foreign-project>
-                <artifact-type>jar</artifact-type>
-                <script>build.xml</script>
-                <target>jar</target>
-                <clean-target>clean</clean-target>
-                <id>jar</id>
-            </reference>
-            <reference>
-                <foreign-project>rameses-common</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

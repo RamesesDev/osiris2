@@ -46,7 +46,7 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Container class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
+        <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
           <Properties>
             <Property name="name" type="java.lang.String" value="actions"/>
           </Properties>
@@ -55,9 +55,7 @@
               <BorderConstraints direction="North"/>
             </Constraint>
           </Constraints>
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
-        </Container>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

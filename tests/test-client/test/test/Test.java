@@ -1,7 +1,5 @@
 package test;
-import com.rameses.io.FileTransferInfo;
-import com.rameses.rcp.common.ProgressModel;
-import javax.swing.UIManager;
+import javax.swing.JDialog;
 import junit.framework.*;
 
 /*
@@ -26,6 +24,7 @@ public class Test extends TestCase {
         d.setContentPane(new TestPage());
         d.setModal(true);
         d.pack();
+        d.setVisible(true);
     }
     
 }

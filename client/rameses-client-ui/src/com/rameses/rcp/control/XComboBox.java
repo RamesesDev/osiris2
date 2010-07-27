@@ -288,6 +288,10 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public boolean isReadonly() {
         return readonly;
     }
+
+    public void setRequestFocus(boolean focus) {
+        if ( focus ) requestFocus();
+    }
     //</editor-fold>
     
     

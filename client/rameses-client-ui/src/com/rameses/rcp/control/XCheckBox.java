@@ -155,6 +155,10 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
     public boolean isReadonly() {
         return readonly;
     }
+    
+    public void setRequestFocus(boolean focus) {
+        if ( focus ) requestFocus();
+    }
     //</editor-fold>
     
 }

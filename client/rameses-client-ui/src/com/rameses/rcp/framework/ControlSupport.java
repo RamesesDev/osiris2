@@ -1,6 +1,8 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.rcp.common.Opener;
 import com.rameses.util.PropertyResolver;
+import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -11,35 +13,6 @@ import javax.swing.ImageIcon;
 
 public final class ControlSupport {
     
-    
-//    public static StyleRule[] getApplicableStyles( Object bean, StyleRule[] styleRules) {
-//        List<StyleRule> list = new ArrayList<StyleRule>();
-//        if( styleRules != null ) {
-//            for(StyleRule r: styleRules) {
-//
-//                String rule = r.getExpression();
-//                boolean test = true;
-//                if( rule!=null){
-//                    Object o = ClientContext.getCurrentContext().getExpressionResolver().evaluate(bean, rule);
-//                    if( o instanceof Boolean ) {
-//                        test = ((Boolean)o).booleanValue();
-//                    }
-//                }
-//                if( test ) list.add(r);
-//            }
-//        }
-//        return (StyleRule[])list.toArray(new StyleRule[]{});
-//    }
-    
-//    public static void applyControlStyle( StyleRule[] styleRules, Component component  ) {
-//        for(StyleRule r: styleRules) {
-//            String pattern = r.getPattern();
-//            String name = component.getName();
-//            if( name != null && name.matches(pattern) ) {
-//                setStyles(r.getProperties(), component );
-//            }
-//        }
-//    }
     
     public static void setStyles(Map props, Component component) {
         PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
@@ -111,6 +84,32 @@ public final class ControlSupport {
             return new ImageIcon( b );
         } else
             return null;
+    }
+    
+    public static Opener initOpener( Opener opener, UIController caller ) {
+        if ( caller == null ) return opener;
+        
+        if ( ValueUtil.isEmpty(opener.getName()) ) {
+            opener.setName( caller.getName() );
+        }
+        if( opener.getCaption()==null ) {
+            opener.setCaption( caller.getName() );
+        }
+        
+        return opener;
+    }
+    
+    public static boolean isPermitted(String permission ) {
+        //check if not permitted, block this
+        if(permission!=null && permission.trim().length()>0) {
+            ClientContext ctx = ClientContext.getCurrentContext();
+            if( ctx.getSecurityProvider()==null ) {
+                return  true;
+            }
+            return ctx.getSecurityProvider().checkPermission(permission);
+        } else {
+            return true;
+        }
     }
     
 }

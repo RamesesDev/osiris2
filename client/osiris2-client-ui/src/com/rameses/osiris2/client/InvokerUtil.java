@@ -50,6 +50,7 @@ public final class InvokerUtil {
             UIController u = cp.getController( wuId );
             String action = invoker.getAction();
             u.setId( wuId );
+            u.setName( wuId );
             u.setTitle( invoker.getCaption());
             String outcome = (String) u.init(params, action);
             String target = (String)invoker.getProperties().get("target");

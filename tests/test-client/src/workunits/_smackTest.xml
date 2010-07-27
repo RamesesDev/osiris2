@@ -52,6 +52,11 @@
                     binding.refresh();
                 }
             ] as MessageListener;
+            
+            @Close
+            def close() {
+                con.close();
+            }
 
         }
         

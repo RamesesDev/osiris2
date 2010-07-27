@@ -15,85 +15,60 @@ public class LookupPage extends JPanel  {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
-        xGrid1 = new com.rameses.rcp.control.XGrid();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        XSubFormPanel1 = new com.rameses.rcp.control.XSubFormPanel();
         jPanel3 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        xButton2 = new com.rameses.rcp.control.XButton();
-        xButton1 = new com.rameses.rcp.control.XButton();
-        jPanel6 = new javax.swing.JPanel();
         xActionBar3 = new com.rameses.rcp.control.XActionBar();
+        jPanel5 = new javax.swing.JPanel();
+        xButton1 = new com.rameses.rcp.control.XButton();
+        xButton2 = new com.rameses.rcp.control.XButton();
+        xSubFormPanel1 = new com.rameses.rcp.control.XSubFormPanel();
+        xTable1 = new com.rameses.rcp.control.XTable();
 
         setLayout(new java.awt.BorderLayout());
 
         setPreferredSize(new java.awt.Dimension(541, 378));
-        jPanel1.setLayout(new java.awt.BorderLayout());
-
-        add(jPanel1, java.awt.BorderLayout.SOUTH);
-
-        xGrid1.setHandler("handler");
-        add(xGrid1, java.awt.BorderLayout.CENTER);
-
-        jPanel2.setLayout(new java.awt.BorderLayout());
-
-        jPanel4.setLayout(new java.awt.BorderLayout());
-
-        XSubFormPanel1.setHandler("queryHandler");
-        jPanel4.add(XSubFormPanel1, java.awt.BorderLayout.SOUTH);
-
-        jPanel2.add(jPanel4, java.awt.BorderLayout.SOUTH);
-
-        add(jPanel2, java.awt.BorderLayout.NORTH);
-
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         jPanel3.setPreferredSize(new java.awt.Dimension(40, 30));
-        jPanel5.setLayout(null);
+        xActionBar3.setName("pageActions");
+        xActionBar3.setUseToolBar(false);
+        jPanel3.add(xActionBar3, java.awt.BorderLayout.CENTER);
+
+        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 1, 1));
 
         jPanel5.setPreferredSize(new java.awt.Dimension(150, 30));
-        xButton2.setCaption("OK");
-        xButton2.setDefaultFocus(true);
-        xButton2.setName("select");
-        jPanel5.add(xButton2);
-        xButton2.setBounds(16, 2, 53, 25);
-
-        xButton1.setCaption("Cancel");
-        xButton1.setName("cancel");
+        xButton1.setText("Ok");
+        xButton1.setDefaultCommand(true);
+        xButton1.setName("select");
         jPanel5.add(xButton1);
-        xButton1.setBounds(70, 2, 75, 25);
+
+        xButton2.setText("Cancel");
+        xButton2.setImmediate(true);
+        xButton2.setName("cancel");
+        jPanel5.add(xButton2);
 
         jPanel3.add(jPanel5, java.awt.BorderLayout.EAST);
 
-        jPanel6.setLayout(null);
-
-        xActionBar3.setName("pageActions");
-        xActionBar3.setPreferredSize(new java.awt.Dimension(54, 30));
-        jPanel6.add(xActionBar3);
-        xActionBar3.setBounds(1, 0, 370, 30);
-
-        jPanel3.add(jPanel6, java.awt.BorderLayout.CENTER);
-
         add(jPanel3, java.awt.BorderLayout.SOUTH);
+
+        xSubFormPanel1.setHandler("queryHandler");
+        xSubFormPanel1.setPreferredSize(new java.awt.Dimension(100, 0));
+        add(xSubFormPanel1, java.awt.BorderLayout.NORTH);
+
+        xTable1.setHandler("handler");
+        add(xTable1, java.awt.BorderLayout.CENTER);
 
     }// </editor-fold>//GEN-END:initComponents
 
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.rameses.rcp.control.XSubFormPanel XSubFormPanel1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private com.rameses.rcp.control.XActionBar xActionBar3;
     private com.rameses.rcp.control.XButton xButton1;
     private com.rameses.rcp.control.XButton xButton2;
-    private com.rameses.rcp.control.XGrid xGrid1;
+    private com.rameses.rcp.control.XSubFormPanel xSubFormPanel1;
+    private com.rameses.rcp.control.XTable xTable1;
     // End of variables declaration//GEN-END:variables
     
 }

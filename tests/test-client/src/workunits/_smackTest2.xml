@@ -44,6 +44,12 @@
                     binding.refresh();
                 }
             ] as MessageListener;
+            
+            @Close
+            def close() {
+                con.close();
+                MsgBox.alert('hello world.');
+            }
 
         }
         

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="CRUD form test" index="-2"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+        import com.rameses.osiris2.client.ui.ext.*;
+                
+        public class CRUDFormTestController extends CRUDForm {
+        
+            String entityClass;
+            Object entityId;
+            
+            def entity = [:];
+            def editmode = 'create';
+            def formTitle = '';
+            
+            String create() {
+                entity = [:];
+                formTitle = 'New';
+                editmode = 'create';
+                return '';
+            }
+            
+            String save() {
+                formTitle = entity.name;
+                editmode = 'read';
+                changeLog.clear();
+                return '';
+            }
+            
+            String edit() {
+                editmode = 'edit';
+                return '';
+            }
+
+            String cancelEdit() {
+                editmode = 'read';
+                changeLog.undoAll();
+                return '';
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page name="form" template="test.os2clientx.Page"/>
+    </pages>
+</workunit>

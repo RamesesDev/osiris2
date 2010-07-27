@@ -3,6 +3,7 @@ package com.rameses.rcp.framework;
 
 import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDefUtil;
+import com.rameses.rcp.annotations.Close;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.ui.UIComposite;
@@ -10,14 +11,17 @@ import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
+import com.rameses.util.MethodResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -31,6 +35,11 @@ import java.util.Set;
 public class Binding {
     
     private Object bean;
+    
+    //this is used when referencing controller properties
+    //such as controller name, id, and title
+    private UIController controller;
+    
     private List<UIControl> controls = new ArrayList();
     private Map<String, Set<UIControl>> depends = new Hashtable();
     private List<Validatable> validatables = new ArrayList();
@@ -44,8 +53,14 @@ public class Binding {
     
     private AnnotationFieldHandler fieldInjector = new BindingAnnotationHandler();
     private KeyListener changeLogKeySupport = new ChangeLogKeySupport();
+    private List<String> closeMethods;
+    
+    //can be used by UIControls to store values 
+    //related to this Binding context
+    private Map properties = new HashMap();
     
     
+    //<editor-fold defaultstate="collapsed" desc="  control binding  ">
     public void register( UIControl control ) {
         controls.add( control );
         if( control.getDepends() != null ) {
@@ -83,7 +98,9 @@ public class Binding {
             
         }
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  control update/refresh  ">
     public void notifyDepends( UIControl u ) {
         Set<UIControl> refreshed = new HashSet();
         if ( !ValueUtil.isEmpty(u.getName()) && depends.containsKey(u.getName()) ) {
@@ -142,36 +159,6 @@ public class Binding {
         }
     }
     
-    public void validate(ActionMessage actionMessage) {
-        for ( Validatable vc: validatables ) {
-            if ( vc instanceof UIInput ) {
-                UIInput uii = (UIInput) vc;
-                if ( uii.isReadonly() ) continue; //do not validate readonly fields.
-            }
-            
-            vc.validateInput();
-            ActionMessage ac = vc.getActionMessage();
-            if ( ac.hasMessages() ) actionMessage.addMessage(ac);
-        }
-        
-        for (BindingListener bl: listeners ) {
-            bl.validate(actionMessage, this);
-        }
-    }
-    
-    public void update() {
-        //clear changeLog
-        if ( changeLog != null ) changeLog.clear();
-    }
-    
-    public void addBindingListener(BindingListener listener) {
-        listeners.add(listener);
-    }
-    
-    public void removeListener(BindingListener listener) {
-        listeners.remove(listener);
-    }
-    
     public final void applyStyle(UIControl u) {
         if ( styleRules == null ) return;
         
@@ -199,10 +186,77 @@ public class Binding {
             }
         }
     }
+    //</editor-fold>
+    
+    public void validate(ActionMessage actionMessage) {
+        for ( Validatable vc: validatables ) {
+            Component comp = (Component) vc;
+            if ( !comp.isFocusable() || !comp.isEnabled() ) {
+                //do not validate non-focusable or disabled fields.
+                continue;
+            }
+            
+            if ( vc instanceof UIInput ) {
+                //do not validate readonly fields
+                if ( ((UIInput)vc).isReadonly() ) continue;
+            }
+            
+            vc.validateInput();
+            ActionMessage ac = vc.getActionMessage();
+            if ( ac.hasMessages() ) actionMessage.addMessage(ac);
+        }
+        
+        for (BindingListener bl: listeners ) {
+            bl.validate(actionMessage, this);
+        }
+    }
+    
+    public void update() {
+        //clear changeLog
+        if ( changeLog != null ) changeLog.clear();
+    }
+    
+    public void addBindingListener(BindingListener listener) {
+        listeners.add(listener);
+    }
+    
+    public void removeListener(BindingListener listener) {
+        listeners.remove(listener);
+    }
+    
+    public boolean close() {
+        if ( closeMethods == null ) return true;
+        
+        try {
+            MethodResolver mr = ClientContext.getCurrentContext().getMethodResolver();
+            for ( String mname: closeMethods ) {
+                Object o = mr.invoke(bean, mname, new Class[]{}, new Object[]{});
+                if ( "false".equals(o+"") ) {
+                    return false;
+                }
+            }
+            
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+        
+        return true;
+    }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public boolean isInitialized() {
         return _initialized;
+    }
+    
+    public UIController getController() {
+        return controller;
+    }
+    
+    public void setController(UIController controller) {
+        this.controller = controller;
+        if ( bean == null ) {
+            setBean( controller.getCodeBean() );
+        }
     }
     
     public Object getBean() {
@@ -211,12 +265,24 @@ public class Binding {
     
     public void setBean(Object bean) {
         this.bean = bean;
-        ClassDefUtil.getInstance().injectFields(bean, fieldInjector);
+        injectAnnotations( bean, bean.getClass() );
+        initAnnotatedMethods();
         _load();
     }
     
+    public void initAnnotatedMethods() {
+        if ( closeMethods != null ) return;
+        
+        closeMethods = new ArrayList();
+        ClassDefUtil cdu = ClassDefUtil.getInstance();
+        Method[] marr = cdu.findAnnotatedMethods(bean.getClass(), Close.class);
+        for (Method m: marr) {
+            closeMethods.add( m.getName() );
+        }
+    }
+    
     public void reinjectAnnotations() {
-        ClassDefUtil.getInstance().injectFields(bean, fieldInjector);
+        injectAnnotations( bean, bean.getClass() );
     }
     
     private void _load() {
@@ -248,8 +314,59 @@ public class Binding {
     public void setStyleRules(StyleRule[] styleRules) {
         this.styleRules = styleRules;
     }
+    
+    public Map getProperties() {
+        return properties;
+    }
+    
+    public void setProperties(Map properties) {
+        this.properties = properties;
+    }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
+    private void injectAnnotations( Object o, Class clazz ) {
+        if( o == null) return ;
+        
+        //check for field annotations
+        for( Field f: clazz.getDeclaredFields() ) {
+            boolean accessible = f.isAccessible();
+            if( f.isAnnotationPresent(com.rameses.rcp.annotations.Binding.class)) {
+                f.setAccessible(true);
+                try {
+                    f.set(o, Binding.this );
+                } catch(Exception ex) {
+                    System.out.println("ERROR injecting @Binding "  + ex.getMessage() );
+                }
+                f.setAccessible(accessible);
+            } else if( f.isAnnotationPresent(com.rameses.rcp.annotations.ChangeLog.class)) {
+                f.setAccessible(true);
+                
+                //check first if the controllers change log is not yet set.
+                //The change log used will be the first one found.
+                try {
+                    com.rameses.rcp.annotations.ChangeLog annot = (com.rameses.rcp.annotations.ChangeLog)f.getAnnotation(com.rameses.rcp.annotations.ChangeLog.class);
+                    String[] prefixes = annot.prefix();
+                    ChangeLog cl = Binding.this.getChangeLog();
+                    if( prefixes!=null) {
+                        for(String s: prefixes) {
+                            cl.getPrefix().add(s);
+                        }
+                    }
+                    f.set(o, cl );
+                } catch(Exception ex) {
+                    System.out.println("ERROR injecting @ChangeLog "  + ex.getMessage() );
+                }
+                f.setAccessible(accessible);
+            }
+        }
+        
+        Class superClass = clazz.getSuperclass();
+        if( superClass != null ) {
+            injectAnnotations( o, superClass );
+        }
+    }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  BindingAnnotationHandler (class)  ">
     private class BindingAnnotationHandler implements AnnotationFieldHandler {
@@ -258,9 +375,8 @@ public class Binding {
             Class type = a.annotationType();
             if ( type == com.rameses.rcp.annotations.Binding.class ) {
                 return Binding.this;
-            } else if (type == com.rameses.rcp.annotations.ChangeLog.class ) {
-                return Binding.this.getChangeLog();
             }
+            
             return null;
         }
         

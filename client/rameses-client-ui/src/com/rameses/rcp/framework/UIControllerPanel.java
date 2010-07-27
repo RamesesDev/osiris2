@@ -1,5 +1,6 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.control.XButton;
 import java.awt.BorderLayout;
 import java.awt.LayoutManager;
@@ -15,7 +16,7 @@ import javax.swing.event.AncestorListener;
  *
  * @author jaycverg
  */
-public class UIControllerPanel extends JPanel implements NavigatablePanel {
+public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewContext {
     
     private Stack controllers = new ControllerStack();
     private boolean defaultBtnAdded;
@@ -79,6 +80,10 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel {
     
     public void renderView() {
         _build();
+    }
+
+    public boolean close() {
+        return getCurrentController().getCurrentView().getBinding().close();
     }
     
     

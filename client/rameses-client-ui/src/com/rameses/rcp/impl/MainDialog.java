@@ -13,8 +13,8 @@ import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
 import com.rameses.rcp.framework.ClientContext;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JMenuBar;
@@ -34,18 +34,11 @@ public class MainDialog implements MainWindow {
         JPanel dummy = new JPanel();
         dummy.setPreferredSize(new Dimension(500,500));
         dialog.setContentPane(dummy);
-        dialog.addWindowListener(new WindowListener() {
-            
+        
+        dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 close();
             }
-            
-            public void windowActivated(WindowEvent e) {}
-            public void windowClosed(WindowEvent e) {}
-            public void windowDeactivated(WindowEvent e) {}
-            public void windowDeiconified(WindowEvent e) {}
-            public void windowIconified(WindowEvent e) {}
-            public void windowOpened(WindowEvent e) {}
         });
     }
     

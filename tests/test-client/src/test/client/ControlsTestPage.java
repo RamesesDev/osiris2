@@ -36,10 +36,14 @@ public class ControlsTestPage extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         xTextArea1 = new com.rameses.rcp.control.XTextArea();
         xFileBrowser1 = new com.rameses.rcp.control.XFileBrowser();
+        xRadio1 = new com.rameses.rcp.control.XRadio();
+        xRadio2 = new com.rameses.rcp.control.XRadio();
+        xRadio3 = new com.rameses.rcp.control.XRadio();
         xButton3 = new com.rameses.rcp.control.XButton();
 
         xButton1.setText("Close");
         xButton1.setDefaultCommand(true);
+        xButton1.setImmediate(true);
         xButton1.setName("_close");
 
         xButton2.setText("Show Input");
@@ -78,7 +82,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xComboBox2.setCaption("Allow Null");
         xComboBox2.setExpression("#{name}");
         xComboBox2.setItems("itemList");
-        xComboBox2.setName("item2");
+        xComboBox2.setName("entity.item2");
         xComboBox2.setPreferredSize(new java.awt.Dimension(150, 24));
         formPanel1.add(xComboBox2);
 
@@ -87,18 +91,20 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xComboBox3.setCaption("Disallow Null");
         xComboBox3.setExpression("#{name}");
         xComboBox3.setItems("itemList");
-        xComboBox3.setName("item3");
+        xComboBox3.setName("entity.item3");
         xComboBox3.setPreferredSize(new java.awt.Dimension(150, 24));
         formPanel1.add(xComboBox3);
 
         xCheckBox1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         xCheckBox1.setText("Default Behavior");
+        xCheckBox1.setCaption("");
         xCheckBox1.setMargin(new java.awt.Insets(0, 0, 0, 0));
         xCheckBox1.setName("checkBox1");
         formPanel1.add(xCheckBox1);
 
         xCheckBox2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         xCheckBox2.setText("Using Check/Uncheck value");
+        xCheckBox2.setCaption("");
         xCheckBox2.setCheckValue("YES");
         xCheckBox2.setMargin(new java.awt.Insets(0, 0, 0, 0));
         xCheckBox2.setName("checkBox2");
@@ -109,7 +115,8 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xTextArea1.setColumns(20);
         xTextArea1.setRows(5);
         xTextArea1.setCaption("Memo");
-        xTextArea1.setName("memo");
+        xTextArea1.setDepends(new String[] {"checkBox2"});
+        xTextArea1.setName("entity.memo");
         xTextArea1.setRequired(true);
         xTextArea1.setTextCase(TextCase.UPPER);
         jScrollPane1.setViewportView(xTextArea1);
@@ -121,6 +128,30 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xFileBrowser1.setPreferredSize(new java.awt.Dimension(250, 19));
         xFileBrowser1.setRequired(true);
         formPanel1.add(xFileBrowser1);
+
+        xRadio1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        xRadio1.setText("Single");
+        xRadio1.setCaption("Civil Status");
+        xRadio1.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        xRadio1.setName("entity.civilStat");
+        xRadio1.setOptionValue("SINGLE");
+        formPanel1.add(xRadio1);
+
+        xRadio2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        xRadio2.setText("Married");
+        xRadio2.setCaption("");
+        xRadio2.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        xRadio2.setName("entity.civilStat");
+        xRadio2.setOptionValue("MARRIED");
+        formPanel1.add(xRadio2);
+
+        xRadio3.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        xRadio3.setText("Widow");
+        xRadio3.setCaption("");
+        xRadio3.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        xRadio3.setName("entity.civilStat");
+        xRadio3.setOptionValue("WIDOW");
+        formPanel1.add(xRadio3);
 
         xButton3.setText("Toggle Readonly");
         xButton3.setImmediate(true);
@@ -146,7 +177,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -173,6 +204,9 @@ public class ControlsTestPage extends javax.swing.JPanel {
     private com.rameses.rcp.control.XNumberField xNumberField1;
     private com.rameses.rcp.control.XNumberField xNumberField2;
     private com.rameses.rcp.control.XNumberField xNumberField3;
+    private com.rameses.rcp.control.XRadio xRadio1;
+    private com.rameses.rcp.control.XRadio xRadio2;
+    private com.rameses.rcp.control.XRadio xRadio3;
     private com.rameses.rcp.control.XTextArea xTextArea1;
     // End of variables declaration//GEN-END:variables
     
