@@ -7,11 +7,9 @@
  * and open the template in the editor.
  */
 
-package com.rameses.util;
+package com.rameses.io;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  *
@@ -25,15 +23,12 @@ public final class StreamUtil {
     }
     
     public static String toString( InputStream is ) {
-        InputStreamReader isr = null;
-        BufferedReader br = null;  
         try {
-            isr = new InputStreamReader(is);
-            br = new BufferedReader(isr);
             StringBuffer out = new StringBuffer();
-            String s = null;
-            while( (s=br.readLine())!=null) {
-                out.append(s + "\n");
+            int i = 0;
+            while( (i=is.read())!=-1) {
+                System.out.println((char)i);
+                out.append((char)i);
             }
             return  out.toString();
         }
@@ -42,8 +37,6 @@ public final class StreamUtil {
         }
         finally {
             try { is.close(); } catch(Exception ign){;}
-            try { isr.close(); } catch(Exception ign){;}
-            try { br.close(); } catch(Exception ign){;}
         }
     }
     
