@@ -281,7 +281,6 @@
         <ant target="jar" inheritall="false" antfile="${project.osiris2-components}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2-framework}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2web}/build.xml"/>
-        <ant target="jar" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.rameses-updates}/build.xml"/>
     </target>
     <target name="deps-ear-jar" depends="init" if="dist.ear.dir" unless="no.deps">
@@ -289,7 +288,6 @@
         <ant target="jar" inheritall="false" antfile="${project.osiris2-components}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2-framework}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2web}/build.xml"/>
-        <ant target="jar" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.rameses-updates}/build.xml"/>
     </target>
     <target name="deps-jar" depends="init, deps-module-jar, deps-ear-jar" unless="no.deps"/>
@@ -430,13 +428,11 @@
         <copy-ear-war file="${reference.commonweb.jar}" propname="included.lib.reference.commonweb.jar.X"/>
         <basename property="included.lib.file.reference.jcaptcha-all-1.0-RC6.jar" file="${file.reference.jcaptcha-all-1.0-RC6.jar}"/>
         <copy-ear-war file="${file.reference.jcaptcha-all-1.0-RC6.jar}" propname="included.lib.file.reference.jcaptcha-all-1.0-RC6.jar.X"/>
-        <basename property="included.lib.reference.rameses-common.jar" file="${reference.rameses-common.jar}"/>
-        <copy-ear-war file="${reference.rameses-common.jar}" propname="included.lib.reference.rameses-common.jar.X"/>
         <basename property="included.lib.reference.osiris2-components.jar" file="${reference.osiris2-components.jar}"/>
         <copy-ear-war file="${reference.osiris2-components.jar}" propname="included.lib.reference.osiris2-components.jar.X"/>
         <mkdir dir="${build.web.dir.real}/META-INF"/>
         <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.libs.facelets-1-1-12.classpath.1.X} ${included.lib.libs.facelets-1-1-12.classpath.2.X} ${included.lib.libs.facelets-1-1-12.classpath.3.X} ${included.lib.reference.osiris2web.jar} ${included.lib.reference.rameses-updates.jar} ${included.lib.reference.osiris2-framework.jar} ${included.lib.libs.ajax4jsf.classpath} ${included.lib.libs.web-fileupload.classpath.1.X} ${included.lib.libs.web-fileupload.classpath.2.X} ${included.lib.reference.commonweb.jar} ${included.lib.file.reference.jcaptcha-all-1.0-RC6.jar} ${included.lib.reference.rameses-common.jar} ${included.lib.reference.osiris2-components.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.libs.facelets-1-1-12.classpath.1.X} ${included.lib.libs.facelets-1-1-12.classpath.2.X} ${included.lib.libs.facelets-1-1-12.classpath.3.X} ${included.lib.reference.osiris2web.jar} ${included.lib.reference.rameses-updates.jar} ${included.lib.reference.osiris2-framework.jar} ${included.lib.libs.ajax4jsf.classpath} ${included.lib.libs.web-fileupload.classpath.1.X} ${included.lib.libs.web-fileupload.classpath.2.X} ${included.lib.reference.commonweb.jar} ${included.lib.file.reference.jcaptcha-all-1.0-RC6.jar} ${included.lib.reference.osiris2-components.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
@@ -452,7 +448,6 @@
         <copy file="${libs.web-fileupload.classpath.libfile.1}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${reference.commonweb.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${file.reference.jcaptcha-all-1.0-RC6.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
-        <copy file="${reference.rameses-common.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${reference.osiris2-components.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
     </target>
     <target name="do-ear-dist" depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest">
@@ -725,7 +720,6 @@
         <ant target="clean" inheritall="false" antfile="${project.osiris2-components}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.osiris2-framework}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.osiris2web}/build.xml"/>
-        <ant target="clean" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.rameses-updates}/build.xml"/>
     </target>
     <target name="do-clean" depends="init">

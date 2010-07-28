@@ -20,12 +20,12 @@ public abstract class UIController {
     protected Map<String, View> viewCache = new Hashtable();
     private UIViewPanel currentView;
     private String id;
+    private String name;
     private String title;
     private boolean initialized = false;
     
-    public UIController() {
-        
-    }
+    
+    public UIController() {}
     
     public void initialize() {
         if ( initialized ) return;
@@ -41,6 +41,8 @@ public abstract class UIController {
     public abstract Object init(Map params, String action);
     
     public void setCurrentView(String name) {
+        if ( !initialized ) initialize();
+        
         if ( !ValueUtil.isEmpty(name) ) {
             currentView = viewCache.get(name).getViewPanel();
         }
@@ -58,6 +60,10 @@ public abstract class UIController {
     }
     
     public String getId() {
+        if ( id == null ) {
+            return name;
+        }
+        
         return id;
     }
     
@@ -73,6 +79,13 @@ public abstract class UIController {
         this.title = title;
     }
     
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
     
     //<editor-fold defaultstate="collapsed" desc="  View (class)  ">
     public class View {
@@ -129,8 +142,9 @@ public abstract class UIController {
                     } else {
                         viewPanel.add(panel);
                     }
+                    
                     binding.init();
-                    binding.setBean(getCodeBean());
+                    binding.setController(UIController.this);
                     
                 } catch(Exception e) {
                     throw new IllegalStateException(e);
@@ -178,5 +192,6 @@ public abstract class UIController {
         
     }
     //</editor-fold>
+    
     
 }

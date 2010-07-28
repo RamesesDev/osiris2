@@ -283,6 +283,10 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Contai
     public ControlProperty getControlProperty() {
         return property;
     }
+
+    public void setRequestFocus(boolean focus) {
+        if ( focus ) btnBrowse.requestFocus();
+    }
     //</editor-fold>
     
     

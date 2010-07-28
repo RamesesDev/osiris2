@@ -8,8 +8,9 @@ package com.rameses.osiris2.client.templates;
 
 /**
  *
- * @author  elmo
+ * @author  jaycverg
  */
+
 public class PageFlowTemplate extends javax.swing.JPanel {
     
     /** Creates new form DocumentMaster */
@@ -28,7 +29,6 @@ public class PageFlowTemplate extends javax.swing.JPanel {
         lblTitle = new com.rameses.rcp.control.XLabel();
         pnlToolbar = new javax.swing.JPanel();
         xActionBar1 = new com.rameses.rcp.control.XActionBar();
-        xStyleRule1 = new com.rameses.rcp.control.XStyleRule();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -47,15 +47,9 @@ public class PageFlowTemplate extends javax.swing.JPanel {
         pnlToolbar.setLayout(new java.awt.BorderLayout());
 
         pnlToolbar.setPreferredSize(new java.awt.Dimension(20, 26));
-
+        xActionBar1.setDynamic(true);
         xActionBar1.setName("formActions");
-        xActionBar1.setPreferredSize(new java.awt.Dimension(200, 26));
         pnlToolbar.add(xActionBar1, java.awt.BorderLayout.CENTER);
-
-        xStyleRule1.setName("formStyleRules");
-        xStyleRule1.setOpaque(false);
-        xStyleRule1.setPreferredSize(new java.awt.Dimension(0, 26));
-        pnlToolbar.add(xStyleRule1, java.awt.BorderLayout.EAST);
 
         pnlHead.add(pnlToolbar, java.awt.BorderLayout.CENTER);
 
@@ -69,8 +63,7 @@ public class PageFlowTemplate extends javax.swing.JPanel {
     private javax.swing.JPanel pnlHead;
     private javax.swing.JPanel pnlToolbar;
     private com.rameses.rcp.control.XActionBar xActionBar1;
-    private com.rameses.rcp.control.XStyleRule xStyleRule1;
     // End of variables declaration//GEN-END:variables
-
+    
     
 }

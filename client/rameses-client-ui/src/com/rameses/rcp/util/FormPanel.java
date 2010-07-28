@@ -160,6 +160,9 @@ public class FormPanel extends JPanel {
         }
         
         public String getCaption(boolean required, String caption, boolean error) {
+            if ( ValueUtil.isEmpty(caption) ) return " ";
+            
+            //required property is only applicable to Validatable controls
             required = required && editor instanceof Validatable;
             
             StringBuffer sb = new StringBuffer("<html>");

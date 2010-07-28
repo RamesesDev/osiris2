@@ -6,6 +6,7 @@ import com.rameses.rcp.common.LookupSelector;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIControllerPanel;
@@ -83,9 +84,10 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 opener = new Opener(handler);
             }
             
-            if(opener ==null)
+            if(opener == null)
                 throw new IllegalStateException("Lookup Handler must reference an Opener object");
             
+            opener = ControlSupport.initOpener( opener, getBinding().getController() );            
             ControllerProvider cp = ClientContext.getCurrentContext().getControllerProvider();
             lookupController = cp.getController( opener.getName() );
             if( lookupController == null ) {
@@ -95,8 +97,10 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
             if( !(lookupController.getCodeBean() instanceof LookupModel) )
                 throw new IllegalStateException("Lookup Handler code bean must be an instanceof LookupListModel");
             
+            
             lookupController.setTitle( opener.getCaption() );
             lookupController.setId( opener.getId() );
+            lookupController.setName( opener.getName() );
             lookupModel = (LookupModel) lookupController.getCodeBean();
         }
     }

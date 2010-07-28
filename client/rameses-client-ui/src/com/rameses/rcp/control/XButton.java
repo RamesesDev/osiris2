@@ -11,6 +11,8 @@ import com.rameses.util.ExpressionResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JButton;
 
 /**
@@ -28,6 +30,8 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     private String target;
     private boolean defaultCommand;
     private String expression;
+    private Map params = new HashMap();
+    private String permission;
     
     
     public XButton() {
@@ -125,6 +129,22 @@ public class XButton extends JButton implements UICommand, ActionListener, Conta
     public void setExpression(String expression) {
         this.expression = expression;
     }
+    
+    public Map getParams() {
+        return params;
+    }
+    
+    public void setParams(Map params) {
+        this.params = params;
+    }
     //</editor-fold>
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
     
 }

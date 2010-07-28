@@ -2,10 +2,9 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.util.ValueUtil;
 import java.awt.Container;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
@@ -39,19 +38,14 @@ public class PlatformImpl implements Platform {
         String modal = (String) properties.get("modal");
         
         JDialog parent = mainWindow.getComponent();
-        JDialog d = new JDialog(parent);
+        PopupDialog d = new PopupDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
-        
-        if ( "false".equals(canClose) ) {
-            d.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        } else {
-            d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        }
-        
+        d.setCanClose( !"false".equals(canClose) );
+        d.setId( id );
+        d.setPlatformImpl(this);
         d.setModal(false);
         d.pack();
-        d.addWindowListener( new XWindowListener(id) );
         d.setLocationRelativeTo(parent);
         d.setVisible(true);
         
@@ -76,14 +70,15 @@ public class PlatformImpl implements Platform {
             parent = getParentDialog(actionSource);
         }
         
-        final JDialog d = new JDialog(parent);
+        final PopupDialog d = new PopupDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
-        d.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        d.setModal(true);
+        d.setId( id );
+        d.setPlatformImpl(this);
+        d.setModal(false);
         d.pack();
-        d.addWindowListener( new XWindowListener(id) );
         d.setLocationRelativeTo(parent);
+        
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 d.setVisible(true);
@@ -123,8 +118,8 @@ public class PlatformImpl implements Platform {
     
     public void closeWindow(String id) {
         if ( windows.containsKey(id) ) {
-            JDialog d = (JDialog) windows.remove(id);
-            d.dispose();
+            PopupDialog d = (PopupDialog) windows.get(id);
+            d.closeWindow();
         }
     }
     
@@ -134,6 +129,8 @@ public class PlatformImpl implements Platform {
             d.requestFocus();
         }
     }
+    
+    public Map getWindows() { return windows; }
     
     private JDialog getParentDialog(JComponent actionSource) {
         Container parent = actionSource.getParent();
@@ -145,21 +142,5 @@ public class PlatformImpl implements Platform {
         }
         return null;
     }
-    
-    //<editor-fold defaultstate="collapsed" desc="  XWindowListener (class)  ">
-    private class XWindowListener extends WindowAdapter {
-        
-        private String windowId;
-        
-        XWindowListener(String id) {
-            this.windowId = id;
-        }
-        
-        public void windowClosed(WindowEvent e) {
-            windows.remove(windowId);
-        }
-        
-    }
-    //</editor-fold>
-    
+
 }

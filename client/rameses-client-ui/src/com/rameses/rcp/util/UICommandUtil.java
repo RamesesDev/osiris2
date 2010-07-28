@@ -1,5 +1,6 @@
 package com.rameses.rcp.util;
 
+import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
@@ -21,6 +22,19 @@ public class UICommandUtil {
             ClientContext ctx = ClientContext.getCurrentContext();
             MethodResolver resolver = ctx.getMethodResolver();
             Binding binding = command.getBinding();
+            String permission = command.getPermission();
+            String controllerName = null;
+            if(binding.getController()!=null) {
+                controllerName = binding.getController().getName();
+            }
+            if(permission!=null && controllerName !=null) {
+                permission = controllerName+"."+permission;
+            }
+            
+            if( !ControlSupport.isPermitted(permission))
+                throw new Exception("There is no sufficient privilege to perform this action.");
+            
+            
             validate(command, binding);
             
             String target = ValueUtil.isEmpty(command.getTarget())? "parent": command.getTarget();
@@ -30,6 +44,10 @@ public class UICommandUtil {
                 Binding rootBinding = rootCon.getCurrentView().getBinding();
                 validate(command, rootBinding);
             }
+            
+            //set parameters
+            XButton btn = (XButton) command;
+            ControlSupport.setProperties( binding.getBean(), btn.getParams());
             
             Object outcome = null;
             String action = command.getActionName();
@@ -51,12 +69,13 @@ public class UICommandUtil {
         } catch(Exception e) {
             //e.printStackTrace();
             ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
+            
         }
     }
     
     private static void validate(UICommand command, Binding binding) {
         if ( binding == null ) return;
-        if ( command.isImmediate() ) return;
+        if ( !command.isUpdate() && command.isImmediate() ) return;
         
         ActionMessage am = new ActionMessage();
         binding.validate(am);

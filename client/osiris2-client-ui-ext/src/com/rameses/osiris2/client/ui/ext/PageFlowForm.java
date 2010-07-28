@@ -9,14 +9,15 @@
 
 package com.rameses.osiris2.client.ui.ext;
 
-import com.rameses.common.annotations.Controller;
 import com.rameses.osiris2.WorkUnitInstance;
 import com.rameses.osiris2.client.WorkUnitUIController;
 import com.rameses.osiris2.flow.SubProcessNode;
 import com.rameses.osiris2.flow.Transition;
+import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.common.Action;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,16 +49,11 @@ public class PageFlowForm {
         List actions = new ArrayList();
         for(Object o : trans ) {
             Transition t = (Transition)o;
-            String renderedExpr = t.getRendered();
-            if ( renderedExpr != null && renderedExpr.trim().length() > 0 ) {
-                renderedExpr = renderedExpr.trim();
-                if ( renderedExpr.toLowerCase().equals("false"))
+            String rendExpr = t.getRendered();
+            if ( !ValueUtil.isEmpty(rendExpr) ) {
+                Object rend = evaluateExpression(this, rendExpr);
+                if ( "false".equals(rend+"") ) {
                     continue;
-                
-                if ( renderedExpr.matches("#\\{.+?\\}")) {
-                    Boolean rendered = (Boolean) evaluateExpression(this, renderedExpr);
-                    if ( !rendered )
-                        continue;
                 }
             }
             Action a = new Action();
@@ -66,22 +62,26 @@ public class PageFlowForm {
             if(caption==null) {
                 caption = t.getName();
             }
+            
             a.setCaption( caption );
             a.getParameters().put( "transition", t );
+            
             String icon = (String)t.getProperties().get("icon");
             if(icon!=null) {
                 a.setIcon(icon);
             }
-            String immediate = (String)t.getProperties().get("immediate");
+            
+            Object immediate = t.getProperties().get("immediate");
             if(immediate!=null) {
-                try {
-                    a.setImmediate( Boolean.parseBoolean(immediate) );
-                } catch(Exception ign){;}
+                a.setImmediate( "true".equals(immediate+"") );
             }
+            
             String mnem = (String) t.getProperties().get("mnemonic");
             if( mnem != null ) {
                 a.setMnemonic(mnem.trim().charAt(0));
             }
+            
+            //add action to action list
             actions.add(a);
         }
         return actions;

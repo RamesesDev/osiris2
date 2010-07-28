@@ -2,6 +2,7 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.framework.NavigationHandler;
@@ -37,9 +38,9 @@ public class NavigationHandlerImpl implements NavigationHandler {
         } else {
             if( outcome instanceof Opener )  {
                 Opener opener = (Opener) outcome;
+                opener = ControlSupport.initOpener( opener, curController );
                 boolean self = ValueUtil.isEmpty(opener.getTarget());
                 String id = opener.getId();
-                String caption = opener.getCaption();
                 
                 if ( !self && platform.isWindowExists( id ) ) {
                     platform.activateWindow( id );
@@ -48,16 +49,25 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 
                 ControllerProvider provider = ctx.getControllerProvider();
                 UIController controller = provider.getController(opener.getName());
-                controller.init(opener.getParams(), opener.getAction());
+                controller.setId( id );
+                controller.setName( opener.getName() );
+                controller.setTitle( opener.getCaption() );
+                
+                String opnrOutcome = opener.getOutcome();
+                Object o = controller.init(opener.getParams(), opener.getAction());
+                if ( o != null && o instanceof String ) {
+                    opnrOutcome = (String) o;
+                }
+                
+                if ( !ValueUtil.isEmpty(opnrOutcome) ) {
+                    controller.setCurrentView( opnrOutcome );
+                }
                 
                 if ( self ) {
                     conStack.push(controller);
                     
                 } else {
                     UIControllerPanel uic = new UIControllerPanel(controller);
-                    controller.setId( id );
-                    controller.setTitle( ValueUtil.isEmpty(caption)? id: caption );
-                    controller.init( opener.getParams(), opener.getAction() );
                     
                     Map props = new HashMap();
                     props.put("id", controller.getId());

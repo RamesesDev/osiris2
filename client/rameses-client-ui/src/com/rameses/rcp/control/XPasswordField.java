@@ -229,6 +229,10 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public boolean isReadonly() {
         return readonly;
     }
+
+    public void setRequestFocus(boolean focus) {
+        if ( focus ) requestFocus();
+    }
     //</editor-fold>
     
     

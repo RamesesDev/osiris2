@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Page Flow form test" index="-1"
+                 action="start"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+        import com.rameses.osiris2.client.ui.ext.*;
+                
+        public class PageFlowFormTestController extends PageFlowForm {
+        
+            def editmode = 'create';
+            def entity = [:];
+            
+            void save() { editmode = 'read' }
+            void edit() { editmode = 'edit' }
+            
+            def launchSecond() {
+                return new WindowOpener(
+                    id: '1324',
+                    caption: 'second opener', action: 'start'
+                );
+            }
+
+        }
+        
+        ]]>
+    </code>
+    
+    <pageflow>
+        <start>
+            <transition to="page1"/>
+        </start>
+        <page name="page1" title="Page 1">
+            <transition name="next" caption="Next" to="page2"/>
+        </page>
+        <page name="page2" title="Page 2 Title">
+            <transition name="back" caption="Back" to="page1"/>
+            <transition name="saveNew" caption="Save New" to="page2" action="save" rendered="#{editmode=='create'}"/>
+            <transition name="save" caption="Save" to="page2" action="save" rendered="#{editmode=='edit'}"/>
+            <transition name="edit" caption="Edit" to="page2" action="edit" rendered="#{editmode=='read'}"/>
+            <transition name="next" caption="Next" to="page3" rendered="#{editmode=='read'}"/>
+        </page>
+        <page name="page3" title="Page 2 Last Page Title">
+            <transition name="back" caption="Back" to="page2"/>
+            <transition name="close" caption="Close" to="end"/>
+        </page>
+        <end/>
+    </pageflow>
+    
+    <pages>
+        <page name="page1" template="test.os2clientx.pageflow.Page1"/>
+        <page name="page2" template="test.os2clientx.pageflow.Page2"/>
+        <page name="page3" template="test.os2clientx.pageflow.Page3"/>
+    </pages>
+</workunit>

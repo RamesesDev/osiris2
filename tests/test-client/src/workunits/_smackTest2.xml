@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
-    
+    <!--
     <invokers>
         <invoker folderid="/menu/smack" caption="Client 2" action="init"/>
     </invokers>
-    
+    -->
     <code>
         <![CDATA[
         
@@ -44,6 +44,12 @@
                     binding.refresh();
                 }
             ] as MessageListener;
+            
+            @Close
+            def close() {
+                con.close();
+                MsgBox.alert('hello world.');
+            }
 
         }
         

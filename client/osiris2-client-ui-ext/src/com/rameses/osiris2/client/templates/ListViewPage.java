@@ -31,10 +31,10 @@ public class ListViewPage extends javax.swing.JPanel {
         xActionBar2 = new com.rameses.rcp.control.XActionBar();
         lblTitle = new com.rameses.rcp.control.XLabel();
         pnlFooter = new javax.swing.JPanel();
-        actionFooter = new com.rameses.rcp.control.XActionBar();
+        xActionBar3 = new com.rameses.rcp.control.XActionBar();
         pnlCenter = new javax.swing.JPanel();
         xSubFormPanel1 = new com.rameses.rcp.control.XSubFormPanel();
-        xGrid1 = new com.rameses.rcp.control.XGrid();
+        xTable1 = new com.rameses.rcp.control.XTable();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -45,10 +45,9 @@ public class ListViewPage extends javax.swing.JPanel {
         pnlHead.setLayout(new java.awt.BorderLayout());
 
         pnlHead.setPreferredSize(new java.awt.Dimension(40, 26));
-
         xActionBar1.setDynamic(true);
         xActionBar1.setName("listHandler.listActions");
-        pnlHead.add(xActionBar1, java.awt.BorderLayout.WEST);
+        pnlHead.add(xActionBar1, java.awt.BorderLayout.CENTER);
 
         xActionBar2.setDynamic(true);
         xActionBar2.setName("listHandler.viewActions");
@@ -70,19 +69,20 @@ public class ListViewPage extends javax.swing.JPanel {
         pnlFooter.setLayout(new java.awt.BorderLayout());
 
         pnlFooter.setPreferredSize(new java.awt.Dimension(30, 30));
-
-        actionFooter.setName("listHandler.pageActions");
-        pnlFooter.add(actionFooter, java.awt.BorderLayout.WEST);
+        xActionBar3.setName("listHandler.pageActions");
+        xActionBar3.setUseToolBar(false);
+        pnlFooter.add(xActionBar3, java.awt.BorderLayout.CENTER);
 
         add(pnlFooter, java.awt.BorderLayout.SOUTH);
 
         pnlCenter.setLayout(new java.awt.BorderLayout());
 
         xSubFormPanel1.setHandler("listHandler.queryHandler");
+        xSubFormPanel1.setPreferredSize(new java.awt.Dimension(200, 0));
         pnlCenter.add(xSubFormPanel1, java.awt.BorderLayout.NORTH);
 
-        xGrid1.setHandler("listHandler");
-        pnlCenter.add(xGrid1, java.awt.BorderLayout.CENTER);
+        xTable1.setHandler("listHandler");
+        pnlCenter.add(xTable1, java.awt.BorderLayout.CENTER);
 
         add(pnlCenter, java.awt.BorderLayout.CENTER);
 
@@ -90,7 +90,6 @@ public class ListViewPage extends javax.swing.JPanel {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.rameses.rcp.control.XActionBar actionFooter;
     private javax.swing.JPanel jPanel2;
     private com.rameses.rcp.control.XLabel lblTitle;
     private javax.swing.JPanel pnlCenter;
@@ -99,8 +98,9 @@ public class ListViewPage extends javax.swing.JPanel {
     private javax.swing.JPanel pnlHeader;
     private com.rameses.rcp.control.XActionBar xActionBar1;
     private com.rameses.rcp.control.XActionBar xActionBar2;
-    private com.rameses.rcp.control.XGrid xGrid1;
+    private com.rameses.rcp.control.XActionBar xActionBar3;
     private com.rameses.rcp.control.XSubFormPanel xSubFormPanel1;
+    private com.rameses.rcp.control.XTable xTable1;
     // End of variables declaration//GEN-END:variables
     
 }

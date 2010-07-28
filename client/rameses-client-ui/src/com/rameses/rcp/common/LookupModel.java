@@ -1,5 +1,8 @@
 package com.rameses.rcp.common;
 
+import com.rameses.rcp.annotations.Controller;
+import com.rameses.rcp.framework.UIController;
+
 //import com.rameses.common.annotations.Controller;
 
 /**
@@ -10,8 +13,8 @@ package com.rameses.rcp.common;
  */
 public abstract class LookupModel extends PageListModel {
     
-//    @Controller
-//    protected UIController controller;
+    @Controller
+    protected UIController controller;
     
     private LookupSelector selector;
     
