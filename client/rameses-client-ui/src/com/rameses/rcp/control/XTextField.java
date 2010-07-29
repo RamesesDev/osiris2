@@ -194,6 +194,10 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     public void setRequestFocus(boolean focus) {
         if ( focus ) requestFocus();
     }
+    
+    public boolean isImmediate() {
+        return false;
+    }
     //</editor-fold>
     
 }

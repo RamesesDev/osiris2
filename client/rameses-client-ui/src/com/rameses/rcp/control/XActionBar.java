@@ -43,7 +43,7 @@ public class XActionBar extends JPanel implements UIComposite {
     
     private JToolBar toolBar = new JToolBar();
     private List<XButton> buttons = new ArrayList();
-    
+    private FlowLayout panelLayout = new FlowLayout(FlowLayout.LEFT, 1, 1);
     
     
     public XActionBar() {
@@ -205,7 +205,7 @@ public class XActionBar extends JPanel implements UIComposite {
             super.add( toolBar, BorderLayout.CENTER );
         } else {
             super.removeAll();
-            super.setLayout( new FlowLayout( FlowLayout.LEFT, 1, 1) );
+            super.setLayout( panelLayout );
         }
         
         if ( Beans.isDesignTime() ) {
@@ -225,6 +225,14 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
+    }
+    
+    public int getHorizontalAlignment() {
+        return panelLayout.getAlignment();
+    }
+    
+    public void setHorizontalAlignment(int horizontalAlignment) {
+        panelLayout.setAlignment( horizontalAlignment );
     }
     //</editor-fold>
     

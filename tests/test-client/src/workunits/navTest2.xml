@@ -10,11 +10,18 @@
                 
         public class TestNav2Controller  {
         
+            def caller;
+        
             def firstname;
             def lastname;
         
             public String close() {
                 return "_close";
+            }
+            
+            @Close
+            void formClosing() {
+                caller?.binding?.fireAction('launch2');
             }
         }
         

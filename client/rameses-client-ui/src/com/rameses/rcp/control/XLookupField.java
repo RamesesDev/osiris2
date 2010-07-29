@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  *
- * @author Windhel
+ * @author jaycverg
  */
 
 public class XLookupField extends AbstractIconedTextField implements LookupSelector {
@@ -87,7 +87,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
             if(opener == null)
                 throw new IllegalStateException("Lookup Handler must reference an Opener object");
             
-            opener = ControlSupport.initOpener( opener, getBinding().getController() );            
+            opener = ControlSupport.initOpener( opener, getBinding().getController() );
             ControllerProvider cp = ClientContext.getCurrentContext().getControllerProvider();
             lookupController = cp.getController( opener.getName() );
             if( lookupController == null ) {
@@ -204,7 +204,14 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         
         public void focusLost(FocusEvent e) {
             if ( dirty && !e.isTemporary() ) {
-                refresh();
+                if ( ValueUtil.isEmpty(getText()) ) {
+                    setText("");
+                    selectedValue = null;
+                    UIInputUtil.updateBeanValue(XLookupField.this);
+                }
+                else {
+                    refresh();
+                }
                 dirty = false;
             }
         }

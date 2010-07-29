@@ -40,7 +40,7 @@
                 println "sending " + message;
                 
                 m.setText(message);
-                m.setRecepient("paadmin@etracs.org");
+                m.setRecipient("paadmin@etracs.org");
 
                 con.sendMessage(m);
                 message = "";

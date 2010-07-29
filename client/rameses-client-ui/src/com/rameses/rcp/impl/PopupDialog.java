@@ -17,7 +17,7 @@ import javax.swing.JDialog;
 
 public class PopupDialog extends JDialog implements SubWindow, WindowListener {
     
-    private ViewContext ctx;
+    private ViewContext viewContext;
     private boolean canClose = true;
     private PlatformImpl platformImpl;
     private String id;
@@ -40,13 +40,13 @@ public class PopupDialog extends JDialog implements SubWindow, WindowListener {
     public void setContentPane(Container contentPane) {
         super.setContentPane(contentPane);
         if ( contentPane instanceof ViewContext ) {
-            ctx = (ViewContext) contentPane;
+            viewContext = (ViewContext) contentPane;
         }
     }
     
     public void closeWindow() {
         if ( !canClose ) return;
-        if ( ctx != null && !ctx.close() ) return;
+        if ( viewContext != null && !viewContext.close() ) return;
         
         super.dispose();
         platformImpl.getWindows().remove(id);
@@ -80,7 +80,12 @@ public class PopupDialog extends JDialog implements SubWindow, WindowListener {
         closeWindow();
     }
     
-    public void windowOpened(WindowEvent e) {}
+    public void windowOpened(WindowEvent e) {
+        if ( viewContext != null ) {
+            viewContext.display();
+        }
+    }
+    
     public void windowClosed(WindowEvent e) {}
     public void windowIconified(WindowEvent e) {}
     public void windowDeiconified(WindowEvent e) {}

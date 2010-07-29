@@ -24,6 +24,8 @@
                 listHandler.load();
                 item = null;
             }
+            
+            def getDescription() { return item?.name; }
         
             def listHandler = [
                 

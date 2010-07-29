@@ -14,8 +14,11 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" pref="290" max="-2" attributes="0"/>
-              <EmptySpace pref="98" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="xTextField1" alignment="0" pref="376" max="32767" attributes="0"/>
+                  <Component id="jLabel1" alignment="0" min="-2" pref="290" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -24,7 +27,9 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="273" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xTextField1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="248" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -32,7 +37,12 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Page 3"/>
+        <Property name="text" type="java.lang.String" value="Approved By:"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="entity.approvedBy"/>
       </Properties>
     </Component>
   </SubComponents>

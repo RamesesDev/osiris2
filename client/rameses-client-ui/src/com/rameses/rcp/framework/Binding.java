@@ -9,8 +9,11 @@ import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
+import com.rameses.rcp.ui.UISubControl;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
+import com.rameses.rcp.util.UIControlUtil;
+import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.MethodResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
@@ -36,9 +39,18 @@ public class Binding {
     
     private Object bean;
     
-    //this is used when referencing controller properties
-    //such as controller name, id, and title
+    /**
+     * this is used when referencing controller properties
+     * such as controller name, id, and title
+     */
     private UIController controller;
+    
+    /**
+     * 1. reference of all controls that can aquire default focus
+     *    when the window is showed or during page navigation
+     * 2. this reference contains UIInput and UISubControl only
+     */
+    private List<UIControl> focusableControls = new ArrayList();
     
     private List<UIControl> controls = new ArrayList();
     private Map<String, Set<UIControl>> depends = new Hashtable();
@@ -48,6 +60,7 @@ public class Binding {
     private XButton defaultButton;
     private StyleRule[] styleRules;
     
+    //flags
     private List<UIControl> _depends = new ArrayList();
     private boolean _initialized = false;
     
@@ -55,8 +68,10 @@ public class Binding {
     private KeyListener changeLogKeySupport = new ChangeLogKeySupport();
     private List<String> closeMethods;
     
-    //can be used by UIControls to store values 
-    //related to this Binding context
+    /**
+     * can be used by UIControls to store values
+     * related to this Binding context
+     */
     private Map properties = new HashMap();
     
     
@@ -84,6 +99,11 @@ public class Binding {
         Collections.sort( controls );
         Collections.sort( validatables );
         for( UIControl u : controls ) {
+            //index all default focusable controls
+            if ( u instanceof UIInput || u instanceof UISubControl ) {
+                focusableControls.add( u );
+            }
+            
             String n = u.getName();
             if( n==null || n.trim().length() == 0 ) continue;
             for( UIControl c: _depends ) {
@@ -188,7 +208,9 @@ public class Binding {
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  utility methods  ">
     public void validate(ActionMessage actionMessage) {
+        boolean first = true;
         for ( Validatable vc: validatables ) {
             Component comp = (Component) vc;
             if ( !comp.isFocusable() || !comp.isEnabled() ) {
@@ -203,11 +225,33 @@ public class Binding {
             
             vc.validateInput();
             ActionMessage ac = vc.getActionMessage();
-            if ( ac.hasMessages() ) actionMessage.addMessage(ac);
+            if ( ac.hasMessages() ) {
+                if ( first ) {
+                    first = false;
+                    ((Component) vc).requestFocus();
+                }
+                actionMessage.addMessage(ac);
+            }
         }
         
         for (BindingListener bl: listeners ) {
             bl.validate(actionMessage, this);
+        }
+    }
+    
+    public void formCommit() {
+        for ( UIControl u: focusableControls ) {
+            if ( !(u instanceof UIInput) ) continue;
+            if ( ValueUtil.isEmpty(u.getName()) ) continue;
+            
+            UIInput ui = (UIInput) u;
+            if ( ui.isImmediate() ) continue;
+            
+            Object compValue = ui.getValue();
+            Object beanValue = UIControlUtil.getBeanValue(ui);
+            if ( !ValueUtil.isEqual(compValue, beanValue) ) {
+                UIInputUtil.updateBeanValue(ui);
+            }
         }
     }
     
@@ -242,6 +286,59 @@ public class Binding {
         
         return true;
     }
+    
+    public boolean display() {
+        //focus first UIInput that is not disabled/readonly
+        for (UIControl u: focusableControls ) {
+            if ( u instanceof UISubControl ) {
+                List<Binding> bindings = ((UISubControl) u).getSubBindings();
+                for ( Binding b : bindings ) {
+                    if ( b.display() ) {
+                        return true;
+                    }
+                }
+                
+            } else if ( u instanceof UIInput ) {
+                UIInput ui = (UIInput) u;
+                Component comp = (Component) ui;
+                if ( !ui.isReadonly() && comp.isEnabled() && comp.isFocusable() ) {
+                    comp.requestFocus();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * fireAction can be used to programmatically invoke a
+     * bean action (emulating a UICommand action) that can
+     * trigger a navigation process
+     */
+    public void fireAction(String action) {
+        if ( ValueUtil.isEmpty(action) ) return;
+        try {
+            ClientContext ctx = ClientContext.getCurrentContext();
+            Object outcome = null;
+            if ( !action.startsWith("_")) {
+                MethodResolver mr = ctx.getMethodResolver();
+                outcome = mr.invoke(getBean(), action, null, null);
+            } else {
+                outcome = action;
+            }
+            
+            NavigationHandler handler = ctx.getNavigationHandler();
+            UIViewPanel panel = getController().getCurrentView();
+            NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
+            if ( handler != null ) {
+                handler.navigate(navPanel, null, outcome);
+            }
+            
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public boolean isInitialized() {

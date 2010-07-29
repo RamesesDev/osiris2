@@ -23,6 +23,11 @@
               <Component id="xRadio2" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="296" max="32767" attributes="0"/>
           </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xActionBar2" pref="351" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -33,7 +38,9 @@
               <Component id="xRadio1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xRadio2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="177" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="116" max="-2" attributes="0"/>
+              <Component id="xActionBar2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="35" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -67,6 +74,11 @@
           <Insets value="[0, 0, 0, 0]"/>
         </Property>
         <Property name="name" type="java.lang.String" value="sample"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar2">
+      <Properties>
+        <Property name="useToolBar" type="boolean" value="false"/>
       </Properties>
     </Component>
   </SubComponents>

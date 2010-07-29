@@ -7,15 +7,16 @@ import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.common.Opener;
-import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIViewPanel;
+import com.rameses.rcp.ui.UISubControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.beans.Beans;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import javax.swing.JPanel;
@@ -25,7 +26,7 @@ import javax.swing.SwingUtilities;
  *
  * @author jaycverg
  */
-public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel {
+public class XSubFormPanel extends JPanel implements UISubControl, NavigatablePanel {
     
     private String handler;
     private String[] depends;
@@ -33,6 +34,8 @@ public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel
     private Binding binding;
     private BindingConnector bindingConnector = new  BindingConnector();
     private Stack<UIController> controllers = new Stack();
+    
+    private List<Binding> subBindings = new ArrayList();
     
     public XSubFormPanel() {
         super.setLayout(new BorderLayout());
@@ -42,16 +45,15 @@ public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel
     }
     
     public void setLayout(LayoutManager mgr) {;}
-
+    
     public Dimension getPreferredSize() {
         if ( getComponentCount() > 0 ) {
             return getComponent(0).getPreferredSize();
-        }
-        else {
+        } else {
             return super.getPreferredSize();
-        } 
+        }
     }
-            
+    
     public String getHandler() {
         return handler;
     }
@@ -142,6 +144,13 @@ public class XSubFormPanel extends JPanel implements UIControl, NavigatablePanel
         add(viewPanel);
         SwingUtilities.updateComponentTreeUI(this);
         viewPanel.refresh();
+        
+        subBindings.clear();
+        subBindings.add( subBinding );
+    }
+    
+    public List<Binding> getSubBindings() {
+        return subBindings;
     }
     
 }

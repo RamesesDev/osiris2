@@ -35,11 +35,11 @@ public final class CommonUtil {
         close.setImmediate(true);
         crudButtons.put("x", close);
         
-        Action addNew =new Action("addNew", "New", "com/rameses/osiris2/images/document.gif", 'n', "create");
+        Action addNew =new Action("addNew", "New", "com/rameses/osiris2/images/document.gif", 'n');
         addNew.setVisibleWhen( "#{editmode == 'read'}" );
         crudButtons.put("a", addNew);
         
-        Action save =new Action("save", "Save", "com/rameses/osiris2/images/save.gif", 's', "save");
+        Action save =new Action("save", "Save", "com/rameses/osiris2/images/save.gif", 's');
         save.setVisibleWhen( "#{editmode != 'read'}" );
         crudButtons.put("s", save);
         
@@ -48,11 +48,11 @@ public final class CommonUtil {
         cancelEdit.setImmediate(true);
         crudButtons.put("c", cancelEdit);
         
-        Action edit =new Action("edit", "Edit", "com/rameses/osiris2/images/edit.gif", 'e', "edit");
+        Action edit =new Action("edit", "Edit", "com/rameses/osiris2/images/edit.gif", 'e');
         edit.setVisibleWhen( "#{editmode == 'read'}" );
         crudButtons.put("e", edit);
         
-        Action delete =new Action("delete", "Delete", "images/common/16/delete.png", 'd', "delete");
+        Action delete =new Action("delete", "Delete", "images/common/16/delete.png", 'd');
         delete.setVisibleWhen( "#{editmode == 'read'}" );
         crudButtons.put("d", delete);
         

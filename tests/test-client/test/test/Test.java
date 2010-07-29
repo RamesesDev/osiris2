@@ -1,5 +1,6 @@
 package test;
-import javax.swing.JDialog;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import junit.framework.*;
 
 /*
@@ -20,11 +21,29 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-        JDialog d = new JDialog();
-        d.setContentPane(new TestPage());
-        d.setModal(true);
-        d.pack();
-        d.setVisible(true);
+//        InputStream is = getClass().getResourceAsStream("style3");
+//        StyleRuleParser parser = new StyleRuleParser();
+//        DefaultParseHandler handler = new DefaultParseHandler();
+//        try {
+//            parser.parse(is, handler);
+//
+//            for (StyleRule r: handler.getList()) {
+//                System.out.println(r);
+//            }
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+        
+        String value = "rgb(  50, 75 ,  80 )";
+        Matcher m = Pattern.compile("rgb\\((\\d+),(\\d+),(\\d+)\\)")
+        .matcher(value.replace(" ", ""));
+        
+        m.matches();
+        
+        System.out.println(m.group(1));
+        System.out.println(m.group(2));
+        System.out.println(m.group(3));
     }
     
 }

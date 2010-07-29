@@ -1,0 +1,11 @@
+
+"entity.idno" [entity.hasID == false] { 
+    readonly: true;
+}
+
+"entity.idno" [entity.hasID == true] { 
+    readonly: false;
+    requestFocus: true;
+}
+
+

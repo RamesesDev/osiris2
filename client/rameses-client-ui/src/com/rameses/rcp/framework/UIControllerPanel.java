@@ -5,7 +5,6 @@ import com.rameses.rcp.control.XButton;
 import java.awt.BorderLayout;
 import java.awt.LayoutManager;
 import java.util.Stack;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
@@ -24,20 +23,25 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     
     public UIControllerPanel() {
         super.setLayout(new BorderLayout());
+        
         addAncestorListener(new AncestorListener() {
             public void ancestorAdded(AncestorEvent event) {
                 if ( defaultBtn != null && !defaultBtnAdded ) {
-                    JComponent comp = event.getComponent();
-                    JRootPane rp = comp.getRootPane();
-                    if ( rp != null ) {
-                        rp.setDefaultButton(defaultBtn);
-                        defaultBtnAdded = true;
-                    }
+                    attachDefaultButton();
                 }
             }
+            
             public void ancestorMoved(AncestorEvent event) {}
             public void ancestorRemoved(AncestorEvent event) {}
         });
+    }
+    
+    private void attachDefaultButton() {
+        JRootPane rp = getRootPane();
+        if ( rp != null ) {
+            rp.setDefaultButton(defaultBtn);
+            defaultBtnAdded = true;
+        }
     }
     
     public UIControllerPanel(UIController controller) {
@@ -51,11 +55,17 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
         removeAll();
         if ( current != null ) {
             UIViewPanel p = current.getCurrentView();
-            defaultBtn = p.getBinding().getDefaultButton();
-            if ( defaultBtn != null ) defaultBtnAdded = false;
+            Binding binding = p.getBinding();
+            defaultBtn = binding.getDefaultButton();
+            if ( defaultBtn != null ) {
+                defaultBtnAdded = false;
+                //try to attach the default button
+                attachDefaultButton();
+            }
             
             add( p );
             p.refresh();
+            binding.display();
         }
         SwingUtilities.updateComponentTreeUI(this);
     }
@@ -81,9 +91,17 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     public void renderView() {
         _build();
     }
-
+    
     public boolean close() {
         return getCurrentController().getCurrentView().getBinding().close();
+    }
+    
+    public void display() {
+        UIController current = getCurrentController();
+        if ( current != null ) {
+            UIViewPanel p = current.getCurrentView();
+            p.getBinding().display();
+        }
     }
     
     
