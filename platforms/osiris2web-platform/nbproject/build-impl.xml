@@ -278,6 +278,7 @@
             -->
     <target name="deps-module-jar" depends="init" if="no.dist.ear.dir" unless="no.deps">
         <ant target="jar" inheritall="false" antfile="${project.commonweb}/build.xml"/>
+        <ant target="jar" inheritall="false" antfile="${project.graph}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2-components}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2-framework}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2web}/build.xml"/>
@@ -285,6 +286,7 @@
     </target>
     <target name="deps-ear-jar" depends="init" if="dist.ear.dir" unless="no.deps">
         <ant target="jar" inheritall="false" antfile="${project.commonweb}/build.xml"/>
+        <ant target="jar" inheritall="false" antfile="${project.graph}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2-components}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2-framework}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.osiris2web}/build.xml"/>
@@ -430,9 +432,17 @@
         <copy-ear-war file="${file.reference.jcaptcha-all-1.0-RC6.jar}" propname="included.lib.file.reference.jcaptcha-all-1.0-RC6.jar.X"/>
         <basename property="included.lib.reference.osiris2-components.jar" file="${reference.osiris2-components.jar}"/>
         <copy-ear-war file="${reference.osiris2-components.jar}" propname="included.lib.reference.osiris2-components.jar.X"/>
+        <basename property="included.lib.libs.rameses-common.classpath" file="${libs.rameses-common.classpath}"/>
+        <copy-ear-war file="${libs.rameses-common.classpath}" propname="included.lib.libs.rameses-common.classpath.X"/>
+        <basename property="included.lib.reference.graph.jar" file="${reference.graph.jar}"/>
+        <copy-ear-war file="${reference.graph.jar}" propname="included.lib.reference.graph.jar.X"/>
+        <basename property="included.lib.file.reference.jcommon-1.0.12.jar" file="${file.reference.jcommon-1.0.12.jar}"/>
+        <copy-ear-war file="${file.reference.jcommon-1.0.12.jar}" propname="included.lib.file.reference.jcommon-1.0.12.jar.X"/>
+        <basename property="included.lib.file.reference.jfreechart-1.0.8.jar" file="${file.reference.jfreechart-1.0.8.jar}"/>
+        <copy-ear-war file="${file.reference.jfreechart-1.0.8.jar}" propname="included.lib.file.reference.jfreechart-1.0.8.jar.X"/>
         <mkdir dir="${build.web.dir.real}/META-INF"/>
         <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.libs.facelets-1-1-12.classpath.1.X} ${included.lib.libs.facelets-1-1-12.classpath.2.X} ${included.lib.libs.facelets-1-1-12.classpath.3.X} ${included.lib.reference.osiris2web.jar} ${included.lib.reference.rameses-updates.jar} ${included.lib.reference.osiris2-framework.jar} ${included.lib.libs.ajax4jsf.classpath} ${included.lib.libs.web-fileupload.classpath.1.X} ${included.lib.libs.web-fileupload.classpath.2.X} ${included.lib.reference.commonweb.jar} ${included.lib.file.reference.jcaptcha-all-1.0-RC6.jar} ${included.lib.reference.osiris2-components.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.libs.facelets-1-1-12.classpath.1.X} ${included.lib.libs.facelets-1-1-12.classpath.2.X} ${included.lib.libs.facelets-1-1-12.classpath.3.X} ${included.lib.reference.osiris2web.jar} ${included.lib.reference.rameses-updates.jar} ${included.lib.reference.osiris2-framework.jar} ${included.lib.libs.ajax4jsf.classpath} ${included.lib.libs.web-fileupload.classpath.1.X} ${included.lib.libs.web-fileupload.classpath.2.X} ${included.lib.reference.commonweb.jar} ${included.lib.file.reference.jcaptcha-all-1.0-RC6.jar} ${included.lib.reference.osiris2-components.jar} ${included.lib.libs.rameses-common.classpath} ${included.lib.reference.graph.jar} ${included.lib.file.reference.jcommon-1.0.12.jar} ${included.lib.file.reference.jfreechart-1.0.8.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
@@ -449,6 +459,10 @@
         <copy file="${reference.commonweb.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${file.reference.jcaptcha-all-1.0-RC6.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${reference.osiris2-components.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
+        <copy file="${libs.rameses-common.classpath}" todir="${build.web.dir.real}/WEB-INF/lib"/>
+        <copy file="${reference.graph.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
+        <copy file="${file.reference.jcommon-1.0.12.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
+        <copy file="${file.reference.jfreechart-1.0.8.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
     </target>
     <target name="do-ear-dist" depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest">
         <dirname property="dist.jar.dir" file="${dist.ear.war}"/>
@@ -717,6 +731,7 @@
             -->
     <target name="deps-clean" depends="init" if="no.dist.ear.dir" unless="no.deps">
         <ant target="clean" inheritall="false" antfile="${project.commonweb}/build.xml"/>
+        <ant target="clean" inheritall="false" antfile="${project.graph}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.osiris2-components}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.osiris2-framework}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.osiris2web}/build.xml"/>
