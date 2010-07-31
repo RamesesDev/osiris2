@@ -107,4 +107,14 @@
         <validator-id>captchaValidator</validator-id>
         <validator-class>com.rameses.web.component.captcha.CaptchaValidator</validator-class>
     </validator>
+    
+    <!--========= Chart Component ================-->
+    <lifecycle>
+        <phase-listener>com.rameses.web.component.chart.ChartPhaseListener</phase-listener>
+    </lifecycle>
+    
+    <component>
+        <component-type>com.rameses.web.component.chart.UIChart</component-type>
+        <component-class>com.rameses.web.component.chart.UIChart</component-class>
+    </component> 
 </faces-config>
