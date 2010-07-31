@@ -1,4 +1,4 @@
-package com.rameses.system;
+package com.rameses.eserver;
 
 import java.io.Serializable;
 import javax.persistence.Entity;

@@ -36,6 +36,7 @@ public class SqlQuery {
     
     
     private String origStatement;
+    private Map vars;
     
     /***
      * By default, DataSource is passed by the SqlManager
@@ -280,11 +281,20 @@ public class SqlQuery {
      * used when setting variables to a statement
      */
     public SqlQuery setVars( Map map ) {
+        this.vars = map;
         this.statement = SqlUtil.substituteValues( this.origStatement, map );
         return this;
     }
     
     public String getStatement() {
         return statement;
+    }
+
+    public String getOriginalStatement() {
+        return origStatement;
+    }
+
+    public Map getVars() {
+        return vars;
     }
 }

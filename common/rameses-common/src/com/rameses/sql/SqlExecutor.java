@@ -24,14 +24,16 @@ public class SqlExecutor {
     private SqlManager sqlManager;
     protected String statement;
     private List<String> parameterNames;
-    protected List parameterValues;
+    private List parameterValues;
     private ParameterHandler parameterHandler;
     private Connection connection;
     
     private String origStatement;
+    private ExecutorExceptionHandler exceptionHandler;
     
     //contains list of parameterValues
     private List<List> batchData;
+    private Map vars;
     
     /***
      * By default, DataSource is passed by the SqlManager
@@ -83,8 +85,14 @@ public class SqlExecutor {
                 return ps.executeBatch();                
             }
         } catch(Exception ex) {
-            throw new IllegalStateException(ex.getMessage());
-        } finally {
+            if(exceptionHandler!=null) {
+                exceptionHandler.handleException(this, ex);
+                return 0;
+            }    
+            else
+                throw new IllegalStateException(ex.getMessage());
+        } 
+        finally {
             try {ps.close();} catch(Exception ign){;}
             try {
                 //close if connection is not manually injected.
@@ -92,6 +100,8 @@ public class SqlExecutor {
                     conn.close();
                 }
             } catch(Exception ign){;}
+            
+            //make sure to clear the data
             clear();
         }
     }
@@ -192,6 +202,7 @@ public class SqlExecutor {
      * used when setting variables to a statement
      */
     public SqlExecutor setVars( Map map ) {
+        this.vars = map;
         this.statement = SqlUtil.substituteValues( this.origStatement, map );
         return this;
     }
@@ -199,4 +210,22 @@ public class SqlExecutor {
     public String getStatement() {
         return statement;
     }
+
+    public void setExceptionHandler(ExecutorExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
+
+    public List<List> getBatchData() {
+        return batchData;
+    }
+
+    public List getParameterValues() {
+        return parameterValues;
+    }
+
+    public String getOriginalStatement() {
+        return origStatement;
+    }
+    
+    
 }

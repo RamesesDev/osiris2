@@ -72,10 +72,12 @@ public class QueryExecutor {
         qry.setFetchHandler(handler);
         rowsProcessed = 0;
         qry.getResultList();
+        
+        //make sure to nullify qry and executor so it cannot be used again.
+        qry = null;
         return rowsProcessed;
     }
     
-    // <editor-fold defaultstate="collapsed" desc="FETCH HANDLER USED FOR UNNAMED COLUMNS">
     private abstract class AbstractFetchHandler implements FetchHandler {
         private int batchCounter;
         
@@ -131,7 +133,6 @@ public class QueryExecutor {
             }
         }
     }
-    //</editor-fold>
     
     public long getRowsProcessed() {
         return rowsProcessed;

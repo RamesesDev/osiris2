@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.system;
+package com.rameses.eserver;
 
 import com.rameses.interfaces.DateServiceLocal;
 import java.util.Date;

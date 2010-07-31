@@ -1,3 +1,4 @@
 com.rameses.scripting.ScriptResourceProvider
 com.rameses.templates.TemplateResourceProvider
 com.rameses.eserver.SqlResourceProvider
+com.rameses.rules.RuleResourceProvider

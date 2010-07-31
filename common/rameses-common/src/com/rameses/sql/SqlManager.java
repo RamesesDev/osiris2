@@ -26,23 +26,19 @@ public class SqlManager {
         this.dataSource = ds;
     }
     
-    public SqlManager() {
-        
-    }
+    public SqlManager() {;}
 
     public void setDataSource(DataSource ds) {
         this.dataSource = ds;
     }
     
-    private Connection txnconn;
-    
+    /**
+     * always create a new connection when requesting from SqlManager
+     */
     public Connection getConnection() throws Exception {
         if(dataSource==null)
             throw new IllegalStateException("Datasource is null");
-
-        if(txnconn==null) txnconn = dataSource.getConnection();
-        if(txnconn.isClosed()) txnconn = dataSource.getConnection();
-        return txnconn;
+        return dataSource.getConnection();
     }
     
     

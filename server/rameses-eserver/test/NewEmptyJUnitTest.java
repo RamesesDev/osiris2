@@ -23,13 +23,14 @@ public class NewEmptyJUnitTest extends TestCase {
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
-    public void testHello() {
-        String name = "http://mytest.com";
-        String[] arr = name.split("://");
-        String nameSpace = arr[0];
-        String resourceName = arr[1];
-        System.out.println("Name space ->" + nameSpace);
-        System.out.println("resource->" + resourceName);
+    public void testHello() throws Exception {
+       //ClassLoader loader = Thread.currentThread().getContextClassLoader();
+       //InputStream is = loader.getResourceAsStream("META-INF/services");
+       //System.out.println("input stream is " + is);
+       //System.out.println(StreamUtil.toString(is));
+        
+       String d = "a/b/b/c/d/e/f/g/";
+       System.out.println( d.substring(0,d.length()-1)  );
     }
 
 }
