@@ -13,6 +13,7 @@ import com.rameses.rcp.ui.UISubControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.beans.Beans;
@@ -34,13 +35,15 @@ public class XSubFormPanel extends JPanel implements UISubControl, NavigatablePa
     private Binding binding;
     private BindingConnector bindingConnector = new  BindingConnector();
     private Stack<UIController> controllers = new Stack();
+    private boolean dynamic;
     
     private List<Binding> subBindings = new ArrayList();
     
     public XSubFormPanel() {
         super.setLayout(new BorderLayout());
         if ( Beans.isDesignTime() ) {
-            setPreferredSize( new Dimension(100,100) );
+            setPreferredSize( new Dimension(40,40) );
+            setBackground( Color.decode("#e3e3e3") );
         }
     }
     
@@ -88,11 +91,25 @@ public class XSubFormPanel extends JPanel implements UISubControl, NavigatablePa
     }
     
     public void refresh() {
+        if ( dynamic ) {
+            buildForm();
+        }
     }
     
     public void load() {
+        if ( !dynamic ) {
+            buildForm();
+        }
+    }
+    
+    private void buildForm() {
+        controllers.clear();
         Object obj = UIControlUtil.getBeanValue(this, getHandler());
-        if ( obj == null ) return;
+        if ( obj == null ) {
+            removeAll();
+            SwingUtilities.updateComponentTreeUI(this);
+            return;
+        }
         
         if ( !(obj instanceof Opener) )
             throw new IllegalStateException("handler should be an instanceof " + Opener.class.getName());
@@ -104,7 +121,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, NavigatablePa
         ControllerProvider provider = ClientContext.getCurrentContext().getControllerProvider();
         UIController controller = provider.getController(opener.getName());
         if ( controller == null )
-            throw new IllegalStateException("SubForm controller must not be null.");
+            throw new IllegalStateException("Cannot find controller " + opener.getName());
         
         controller.setName( opener.getName() );
         controller.setId( opener.getId() );
@@ -137,13 +154,13 @@ public class XSubFormPanel extends JPanel implements UISubControl, NavigatablePa
         UIViewPanel viewPanel = controller.getCurrentView();
         Binding subBinding = viewPanel.getBinding();
         subBinding.setBean(controller.getCodeBean());
-        List<Binding> subBindingList = bindingConnector.getSubBindings();
-        subBindingList.clear();
-        subBindingList.add(subBinding);
+        List<Binding> connectorBindings = bindingConnector.getSubBindings();
+        connectorBindings.clear();
+        connectorBindings.add(subBinding);
         removeAll();
         add(viewPanel);
-        SwingUtilities.updateComponentTreeUI(this);
         viewPanel.refresh();
+        SwingUtilities.updateComponentTreeUI(this);
         
         subBindings.clear();
         subBindings.add( subBinding );
@@ -151,6 +168,14 @@ public class XSubFormPanel extends JPanel implements UISubControl, NavigatablePa
     
     public List<Binding> getSubBindings() {
         return subBindings;
+    }
+    
+    public boolean isDynamic() {
+        return dynamic;
+    }
+    
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
     }
     
 }

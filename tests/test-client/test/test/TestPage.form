@@ -28,6 +28,11 @@
               <Component id="xActionBar2" pref="351" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="95" max="-2" attributes="0"/>
+              <Component id="xSubFormPanel1" min="-2" pref="154" max="-2" attributes="0"/>
+              <EmptySpace pref="126" max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -38,7 +43,9 @@
               <Component id="xRadio1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xRadio2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="116" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+              <Component id="xSubFormPanel1" min="-2" pref="42" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
               <Component id="xActionBar2" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="35" max="32767" attributes="0"/>
           </Group>
@@ -81,5 +88,20 @@
         <Property name="useToolBar" type="boolean" value="false"/>
       </Properties>
     </Component>
+    <Container class="com.rameses.rcp.control.XSubFormPanel" name="xSubFormPanel1">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="154" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="42" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+    </Container>
   </SubComponents>
 </Form>
