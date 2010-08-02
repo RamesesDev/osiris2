@@ -49,28 +49,35 @@ public class FileObjectRenderer implements PhaseListener {
                 HttpServletResponse resp = (HttpServletResponse) context.getExternalContext().getResponse();
                 InputStream is = null;
                 
+                String filename = null;
+                String contentType = null;
+                
                 if ( obj instanceof FileItem ) {
                     FileItem file = (FileItem) obj;
-                    if (file.getContentType() != null) {
-                        resp.setContentType( file.getContentType() );
-                        resp.setHeader("Content-Disposition", "inline;filename=" + file.getName() );
-                        is = file.getInputStream();
-                    }
-                }
-                else if ( obj instanceof byte[] ) {
+                    contentType = file.getContentType();
+                    filename = file.getName();
+                    is = file.getInputStream();
+                    
+                } else if ( obj instanceof byte[] ) {
                     is = new ByteArrayInputStream( (byte[]) obj);
                 }
                 
                 resp.addHeader("Cache-Control", "max-age=60");
                 resp.addHeader("Cache-Control", "public");
+                
                 if (req.getParameter("filename") != null) {
-                    String filename = req.getParameter("filename");
-                    resp.setHeader("Content-Disposition", "attachment; filename=" + filename);
+                    filename = req.getParameter("filename");
                 }
                 
+                String disposition = "inline";
                 String download = req.getParameter("download");
-                if (download != null && download.matches("true")) {
-                    resp.setContentType( "application/octet-stream" );
+                if (download != null && download.equals("true")) {
+                    disposition = "attachment";
+                }
+                resp.setHeader("Content-Disposition", disposition + ";filename=" + filename);
+                
+                if ( contentType != null ) {
+                    resp.setContentType( contentType );
                 }
                 
                 renderResponse(is, resp.getOutputStream());

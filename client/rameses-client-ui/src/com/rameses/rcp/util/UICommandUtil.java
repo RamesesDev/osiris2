@@ -34,11 +34,11 @@ public class UICommandUtil {
             if( !ControlSupport.isPermitted(permission))
                 throw new Exception("There is no sufficient privilege to perform this action.");
             
-            
+            binding.formCommit();
             validate(command, binding);
             
             String target = ValueUtil.isEmpty(command.getTarget())? "parent": command.getTarget();
-            NavigatablePanel navPanel = UIControlUtil.getParentPanel(command, target);
+            NavigatablePanel navPanel = UIControlUtil.getParentPanel((JComponent)command, target);
             if ( "root".equals(target) ) {
                 UIController rootCon = (UIController) navPanel.getControllers().peek();
                 Binding rootBinding = rootCon.getCurrentView().getBinding();
@@ -67,7 +67,7 @@ public class UICommandUtil {
                 }
             }
         } catch(Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
             
         }

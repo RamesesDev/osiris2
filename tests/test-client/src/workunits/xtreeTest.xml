@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XTree Test" index="-5"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+                
+        public class XTreeTestController  {
+               
+            def selected;
+            def subForm;
+                    
+            def treeHandler = [
+                
+                fetchNodes: {
+                    return [
+                        new Node('1', 'One'),
+                        new Node('2', 'Two'),
+                        new Node('3', 'Three')
+                    ]
+                }
+            
+            ] as TreeNodeModel;
+            
+            def getSubForm() {
+                if ( selected?.id == '1' ) {
+                    return new Opener('test-client:xtreeSub1');
+                }
+                else if ( selected?.id == '2' ) {
+                    return new Opener('test-client:xtreeSub2');
+                }
+                
+                return null;
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.xtree.Page1"/>
+    </pages>
+</workunit>

@@ -51,6 +51,10 @@
                 new Action(name: 'btnToggle', caption: 'Toggle', immediate: true)
             ];
             
+            void testPost() {
+                MsgBox.alert("Posting $entity.testPost");
+            }
+            
             @Close
             def close() {
                 MsgBox.alert('Closing');

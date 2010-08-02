@@ -159,6 +159,10 @@ public class XCheckBox extends JCheckBox implements UIInput, Containable {
     public void setRequestFocus(boolean focus) {
         if ( focus ) requestFocus();
     }
+    
+    public boolean isImmediate() {
+        return true;
+    }
     //</editor-fold>
     
 }

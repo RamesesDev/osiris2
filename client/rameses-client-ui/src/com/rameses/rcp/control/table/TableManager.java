@@ -194,6 +194,7 @@ public final class TableManager {
         public abstract void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column);
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            TableComponent xtable = (TableComponent) table;
             JComponent comp = getComponent();
             comp.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
             comp.setFont(table.getFont());
@@ -207,9 +208,30 @@ public final class TableManager {
                     comp.setBackground(FOCUS_BG);
                     comp.setForeground(table.getForeground());
                 }
+                
             } else {
                 comp.setForeground(table.getForeground());
                 comp.setOpaque(false);
+                
+                boolean even = (row % 2 == 0);
+                if ( even ) {
+                    if ( xtable.getEvenBackground() != null ) {
+                        comp.setBackground( xtable.getEvenBackground() );
+                        comp.setOpaque(true);
+                    }
+                    if ( xtable.getEvenForeground() != null ) {
+                        comp.setForeground( xtable.getEvenForeground() );
+                    }
+                    
+                } else {
+                    if ( xtable.getOddBackground() != null ) {
+                        comp.setBackground( xtable.getOddBackground() );
+                        comp.setOpaque(true);
+                    }
+                    if ( xtable.getOddForeground() != null ) {
+                        comp.setForeground( xtable.getOddForeground() );
+                    }
+                }
             }
             
             TableComponent tc = (TableComponent) table;
@@ -219,7 +241,7 @@ public final class TableManager {
                 
                 if (errmsg != null) {
                     if (!hasFocus) {
-                        comp.setBackground(Color.PINK);
+                        comp.setBackground( xtable.getErrorBackground() );
                         comp.setOpaque(true);
                     }
                 }

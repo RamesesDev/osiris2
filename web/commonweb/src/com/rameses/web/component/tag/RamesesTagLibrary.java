@@ -1,6 +1,7 @@
 package com.rameses.web.component.tag;
 
 import com.rameses.web.component.captcha.UICaptcha;
+import com.rameses.web.component.chart.UIChart;
 import com.rameses.web.component.image.UIGraphicImage;
 import com.rameses.web.component.fileupload.UIFileUpload;
 import com.rameses.web.component.imagecropper.UIImageCropper;
@@ -37,6 +38,8 @@ public class RamesesTagLibrary extends AbstractHtmlLibrary {
         addHtmlComponent("progressBar", UIProgressbar.class.getName(), null);
         addHtmlComponent("imageCropper", UIImageCropper.class.getName(), null);
         addHtmlComponent("suggest", UIAjaxSuggest.class.getName(), null);
+        
+        addHtmlComponent("chart", UIChart.class.getName(), null);
         
         //tag handlers
         addTagHandler("compositeControl", CompositeControlHandler.class);

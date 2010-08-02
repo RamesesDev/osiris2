@@ -51,7 +51,6 @@ public class LookupPage extends JPanel  {
         add(jPanel3, java.awt.BorderLayout.SOUTH);
 
         xSubFormPanel1.setHandler("queryHandler");
-        xSubFormPanel1.setPreferredSize(new java.awt.Dimension(100, 0));
         add(xSubFormPanel1, java.awt.BorderLayout.NORTH);
 
         xTable1.setHandler("handler");

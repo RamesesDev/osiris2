@@ -13,6 +13,7 @@ import com.rameses.osiris2.SecurityProvider;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.WorkUnit;
 import com.rameses.osiris2.WorkUnitInstance;
+import com.rameses.osiris2.web.util.ResourceUtil;
 import java.io.IOException;
 import java.util.Map;
 import javax.faces.context.FacesContext;
@@ -187,15 +188,23 @@ public class Osiris2RestorePhase implements PhaseListener {
             try {
                 MethodBinding mb = ctx.getApplication().createMethodBinding(mbExpr, null);
                 Object outcome = mb.invoke(ctx, null);
+                
                 if ( outcome instanceof Opener ) {
                     Opener opr = (Opener) outcome;
                     opr.setModuleName(wi.getModule().getName());
                     WebContext.redirect(opr);
                     ctx.responseComplete();
+                    
                 } else if ( outcome instanceof String && !isEmpty(outcome+"") ) {
                     wi.setCurrentPage(outcome+"");
+                    
                 } else if ( opener != null && opener.getOutcome() != null ) {
                     wi.setCurrentPage(opener.getOutcome());
+                    
+                } else if ( outcome instanceof WebResource ) {
+                    ResourceUtil.renderResource( (WebResource) outcome );
+                    ctx.responseComplete();
+                    
                 } else {
                     wi.setCurrentPage(wi.getDefaultPage().getName());
                 }

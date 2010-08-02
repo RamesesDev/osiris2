@@ -233,6 +233,10 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public void setRequestFocus(boolean focus) {
         if ( focus ) requestFocus();
     }
+
+    public boolean isImmediate() {
+        return false;
+    }
     //</editor-fold>
     
     

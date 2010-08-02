@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
-    <!--
+
     <invokers>
         <invoker folderid="/menu/smack" caption="Client 2" action="init"/>
     </invokers>
-    -->
+
     <code>
         <![CDATA[
         
@@ -19,12 +19,17 @@
             @Binding
             def binding;
         
+            @Service("MessageService")
+            def service;
+            
             def message;
             def messageList = new StringBuffer();
             
-            def con = SmackDelegate.getConnection("paadmin", "12345");
+            def con;
             
             void init() {
+                def conf = service.getConnectionConf("SmackConnection1");
+                con = MessagingDelegate.getConnection(conf, "paadmin", "12345");
                 con.open();
                 con.addListener( listener );
             }
@@ -32,7 +37,7 @@
             void send() {
                 def m = con.createMessage(null);
                 m.setText(message);
-                m.setRecepient("jay@etracs.org");
+                m.setRecipient("jay@etracs.org");
 
                 con.sendMessage(m);
                 message = "";
@@ -48,7 +53,6 @@
             @Close
             def close() {
                 con.close();
-                MsgBox.alert('hello world.');
             }
 
         }

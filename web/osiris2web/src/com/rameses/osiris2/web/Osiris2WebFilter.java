@@ -12,6 +12,7 @@ import com.rameses.osiris2.Module;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.WorkUnit;
 import com.rameses.osiris2.web.util.GZIPResponseWrapper;
+import com.rameses.osiris2.web.util.ResourceUtil;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -33,7 +34,6 @@ import javax.servlet.http.HttpSession;
 
 public class Osiris2WebFilter implements Filter {
     
-    public static final int BUFFER_SIZE = 10240;
     public static final String SESSION_ID = Osiris2WebFilter.class.getName()+"_sessId";
     
     private FilterConfig filterConfig;
@@ -138,29 +138,17 @@ public class Osiris2WebFilter implements Filter {
         BufferedOutputStream bos = null;
         BufferedInputStream bis = null;
         if ( is != null ) {
-            try {
-                String mimeType = req.getSession().getServletContext().getMimeType(path);
-                resp.setContentType(mimeType);
-                if ( isCacheable(path) ) {
-                    resp.addHeader("Cache-Control", "max-age=86400");
-                    resp.addHeader("Cache-Control", "public");
-                }
-                
-                byte []buffer = new byte[BUFFER_SIZE];
-                bis = new BufferedInputStream(is, BUFFER_SIZE);
-                bos = new BufferedOutputStream(resp.getOutputStream(), BUFFER_SIZE);
-                
-                int bytesRead = -1;
-                while ( (bytesRead = bis.read(buffer)) != -1) {
-                    bos.write(buffer, 0, bytesRead);
-                }
-                bos.flush();
-                
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
-            } finally {
-                try { bis.close(); } catch(Exception e){;}
-                try { bos.close(); } catch(Exception e){;}
+            String mimeType = req.getSession().getServletContext().getMimeType(path);
+            resp.setContentType(mimeType);
+            if ( isCacheable(path) ) {
+                resp.addHeader("Cache-Control", "max-age=86400");
+                resp.addHeader("Cache-Control", "public");
+            }
+            
+            try {                
+                ResourceUtil.renderResource(is, resp.getOutputStream());
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         } else {
             try {

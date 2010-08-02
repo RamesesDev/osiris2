@@ -162,6 +162,10 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
     public void setRequestFocus(boolean focus) {
         if ( focus ) requestFocus();
     }
+    
+    public boolean isImmediate() {
+        return false;
+    }
     //</editor-fold>
     
 }

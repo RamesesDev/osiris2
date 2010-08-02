@@ -12,5 +12,6 @@ public interface UIInput extends UIOutput {
     void setReadonly(boolean readonly);
     boolean isReadonly();
     void setRequestFocus(boolean focus);
+    boolean isImmediate();
     
 }

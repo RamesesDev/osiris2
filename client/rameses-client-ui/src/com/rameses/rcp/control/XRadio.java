@@ -155,6 +155,10 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Conta
     public void setCaption(String caption) {
         property.setCaption( caption );
     }
+        
+    public boolean isImmediate() {
+        return true;
+    }
     //</editor-fold>
     
 }

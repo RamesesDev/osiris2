@@ -105,11 +105,11 @@ public class NBPlatform implements Platform {
     }
     
     public void showError(JComponent actionSource, Exception e) {
-        JOptionPane.showMessageDialog(mainWindow.getComponent(), e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(mainWindow.getComponent(), getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
     }
     
     public boolean showConfirm(JComponent actionSource, Object message) {
-        int resp = JOptionPane.showConfirmDialog(mainWindow.getComponent(), message);
+        int resp = JOptionPane.showConfirmDialog(null, message, "Confirm", JOptionPane.YES_NO_OPTION);
         return resp == JOptionPane.YES_OPTION;
     }
     
@@ -136,4 +136,17 @@ public class NBPlatform implements Platform {
         }
     }
     
+    private String getMessage(Throwable t) {
+        if (t == null) return null;
+        
+        String msg = t.getMessage();
+        Throwable cause = t.getCause();
+        while (cause != null) {
+            String s = cause.getMessage();
+            if (s != null) msg = s;
+            
+            cause = cause.getCause();
+        }
+        return msg;
+    }
 }

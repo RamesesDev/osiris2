@@ -34,7 +34,9 @@ public class NavigationHandlerImpl implements NavigationHandler {
         UIController curController = conStack.peek();
         
         if ( ValueUtil.isEmpty(outcome) ) {
+            //if outcome is null or empty just refresh the current view
             curController.getCurrentView().refresh();
+            
         } else {
             if( outcome instanceof Opener )  {
                 Opener opener = (Opener) outcome;
@@ -91,6 +93,15 @@ public class NavigationHandlerImpl implements NavigationHandler {
                             platform.closeWindow(conId);
                         }
                     }
+                    
+                } else if ( oc.equals("_exit")) {
+                    //get the original owner of he window
+                    while ( conStack.size() > 1 ) {
+                        conStack.pop();
+                    }
+                    String conId = conStack.peek().getId();
+                    platform.closeWindow(conId);
+                    
                 } else {
                     if ( oc.startsWith("_") ) oc = oc.substring(1);
                     curController.setCurrentView( oc );
@@ -99,6 +110,8 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     curController.getCurrentView().getBinding().reinjectAnnotations();
                 }
             }
+            
+            //refresh new view
             panel.renderView();
         }
     }

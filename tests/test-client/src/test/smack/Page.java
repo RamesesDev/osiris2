@@ -21,6 +21,7 @@ public class Page extends javax.swing.JPanel {
         xTextArea1 = new com.rameses.rcp.control.XTextArea();
 
         xButton1.setText("send");
+        xButton1.setDefaultCommand(true);
         xButton1.setName("send");
 
         xTextField1.setName("message");

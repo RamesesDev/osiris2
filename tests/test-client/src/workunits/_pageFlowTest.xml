@@ -38,9 +38,11 @@
             <transition to="page1"/>
         </start>
         <page name="page1" title="Page 1">
+            <transition name="close" caption="Close" to="end"/>
             <transition name="next" caption="Next" to="page2"/>
         </page>
         <page name="page2" title="Page 2 Title">
+            <transition name="close" caption="Close" to="end"/>
             <transition name="back" caption="Back" to="page1"/>
             <transition name="saveNew" caption="Save New" to="page2" action="save" rendered="#{editmode=='create'}"/>
             <transition name="save" caption="Save" to="page2" action="save" rendered="#{editmode=='edit'}"/>
@@ -48,8 +50,8 @@
             <transition name="next" caption="Next" to="page3" rendered="#{editmode=='read'}"/>
         </page>
         <page name="page3" title="Page 2 Last Page Title">
-            <transition name="back" caption="Back" to="page2"/>
             <transition name="close" caption="Close" to="end"/>
+            <transition name="back" caption="Back" to="page2"/>
         </page>
         <end/>
     </pageflow>

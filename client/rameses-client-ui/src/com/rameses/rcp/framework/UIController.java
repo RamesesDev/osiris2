@@ -40,15 +40,15 @@ public abstract class UIController {
     public abstract Object getCodeBean();
     public abstract Object init(Map params, String action);
     
-    public void setCurrentView(String name) {
-        if ( !initialized ) initialize();
-        
+    public void setCurrentView(String name) {        
         if ( !ValueUtil.isEmpty(name) ) {
-            currentView = viewCache.get(name).getViewPanel();
+            currentView = getView(name);
         }
     }
     
     public UIViewPanel getCurrentView() {
+        if ( !initialized ) initialize();
+        
         if ( currentView == null ) {
             currentView = getDefaultView();
         }
@@ -56,6 +56,8 @@ public abstract class UIController {
     }
     
     public UIViewPanel getView(String name) {
+        if ( !initialized ) initialize();
+        
         return viewCache.get(name).getViewPanel();
     }
     

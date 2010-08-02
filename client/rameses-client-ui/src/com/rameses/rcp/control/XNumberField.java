@@ -48,26 +48,38 @@ public class XNumberField extends XTextField {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private Object convertValue() {
-        String fieldText = getText().replace(",", "");
-        if( fieldText.trim().length() == 0 ) {
-            return null;
-        }
         Class fType = getFieldType();
-        if(fType == BigDecimal.class) {
-            return new BigDecimal(fieldText);
-        } else if(fType == Integer.class) {
-            return new Integer(fieldText);
-        } else if(fType == Double.class) {
-            return new Double(fieldText);
-        } else if(fType == int.class) {
-            return Integer.parseInt(fieldText);
-        } else if(fType == Long.class) {
-            return new Long(fieldText);
-        } else if(fType == long.class) {
-            return Long.parseLong(fieldText);
-        } else if(fType == double.class) {
-            return Double.parseDouble(fieldText);
+        String fieldText = getText().replace(",", "");
+        
+        if( fieldText.trim().length() == 0 ) {
+            if ( fType.isPrimitive() ) {
+                return 0;
+            }
+            else {
+                return null;
+            }
         }
+        
+        try {
+            if(fType == BigDecimal.class) {
+                return new BigDecimal(fieldText);
+            } else if(fType == Integer.class) {
+                return new Integer(fieldText);
+            } else if(fType == Double.class) {
+                return new Double(fieldText);
+            } else if(fType == int.class) {
+                return Integer.parseInt(fieldText);
+            } else if(fType == Long.class) {
+                return new Long(fieldText);
+            } else if(fType == long.class) {
+                return Long.parseLong(fieldText);
+            } else if(fType == double.class) {
+                return Double.parseDouble(fieldText);
+            }
+        } catch(NumberFormatException nfe) {
+            return UIControlUtil.getBeanValue(this);
+        }
+        
         return fieldText;
     }
     

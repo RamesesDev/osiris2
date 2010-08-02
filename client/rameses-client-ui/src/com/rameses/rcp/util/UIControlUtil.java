@@ -13,6 +13,7 @@ import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.util.ExpressionResolver;
 import com.rameses.util.PropertyResolver;
+import com.rameses.util.ValueUtil;
 import java.awt.Container;
 import javax.swing.JComponent;
 
@@ -24,6 +25,8 @@ public class UIControlUtil {
     }
     
     public static  Object getBeanValue(UIControl control, String property) {
+        if ( ValueUtil.isEmpty(property) ) return null;
+        
         PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
         Object bean = control.getBinding().getBean();
         return resolver.getProperty(bean, property);
@@ -45,8 +48,7 @@ public class UIControlUtil {
         return control.getIndex() - ((UIControl) control2).getIndex();
     }
     
-    public static NavigatablePanel getParentPanel(UIControl control, String target) {
-        JComponent comp = (JComponent) control;
+    public static NavigatablePanel getParentPanel(JComponent comp, String target) {
         NavigatablePanel panel = null; //(NavigatablePanel) comp.getClientProperty(NavigatablePanel.class);
         if ( panel == null ) {
             Container parent = comp.getParent();

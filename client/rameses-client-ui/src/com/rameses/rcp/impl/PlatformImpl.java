@@ -2,7 +2,6 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
-import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.util.ValueUtil;
 import java.awt.Container;
 import java.util.HashMap;
@@ -89,11 +88,11 @@ public class PlatformImpl implements Platform {
     }
     
     public void showError(JComponent actionSource, Exception e) {
-        JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
     }
     
     public boolean showConfirm(JComponent actionSource, Object message) {
-        return JOptionPane.showConfirmDialog(null, message) == JOptionPane.YES_OPTION;
+        return JOptionPane.showConfirmDialog(null, message, "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
     
     public void showInfo(JComponent actionSource, Object message) {
@@ -142,5 +141,19 @@ public class PlatformImpl implements Platform {
         }
         return null;
     }
-
+    
+    private String getMessage(Throwable t) {
+        if (t == null) return null;
+        
+        String msg = t.getMessage();
+        Throwable cause = t.getCause();
+        while (cause != null) {
+            String s = cause.getMessage();
+            if (s != null) msg = s;
+            
+            cause = cause.getCause();
+        }
+        return msg;
+    }
+    
 }
