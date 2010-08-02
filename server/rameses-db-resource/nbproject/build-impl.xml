@@ -15,7 +15,7 @@ is divided into following sections:
   - cleanup
 
         -->
-<project name="rameses-dbscript-impl" default="build" basedir=".." xmlns:ejbjarproject3="http://www.netbeans.org/ns/j2ee-ejbjarproject/3" xmlns:ejbjarproject2="http://www.netbeans.org/ns/j2ee-ejbjarproject/2" xmlns:ejbjarproject1="http://www.netbeans.org/ns/j2ee-ejbjarproject/1" xmlns:jaxws="http://www.netbeans.org/ns/jax-ws/1">
+<project name="rameses-db-resource-impl" default="build" basedir=".." xmlns:ejbjarproject3="http://www.netbeans.org/ns/j2ee-ejbjarproject/3" xmlns:ejbjarproject2="http://www.netbeans.org/ns/j2ee-ejbjarproject/2" xmlns:ejbjarproject1="http://www.netbeans.org/ns/j2ee-ejbjarproject/1" xmlns:jaxws="http://www.netbeans.org/ns/jax-ws/1">
     <import file="ant-deploy.xml"/>
     <target name="default" depends="dist,javadoc" description="Build whole project."/>
     <!-- 
@@ -208,12 +208,8 @@ is divided into following sections:
     <!--
                 COMPILATION SECTION
             -->
-    <target name="-deps-module-jar" depends="init" if="no.dist.ear.dir" unless="no.deps">
-        <ant target="jar" inheritall="false" antfile="${project.rameses-interfaces}/build.xml"/>
-    </target>
-    <target name="-deps-ear-jar" depends="init" if="dist.ear.dir" unless="no.deps">
-        <ant target="jar" inheritall="false" antfile="${project.rameses-interfaces}/build.xml"/>
-    </target>
+    <target name="-deps-module-jar" depends="init" if="no.dist.ear.dir" unless="no.deps"/>
+    <target name="-deps-ear-jar" depends="init" if="dist.ear.dir" unless="no.deps"/>
     <target name="deps-jar" depends="init, -deps-module-jar, -deps-ear-jar"/>
     <target name="-pre-pre-compile" depends="init,deps-jar">
         <mkdir dir="${build.classes.dir}"/>
@@ -479,9 +475,7 @@ is divided into following sections:
     <!--
                 CLEANUP SECTION
             -->
-    <target name="deps-clean" depends="init" if="no.dist.ear.dir" unless="no.deps">
-        <ant target="clean" inheritall="false" antfile="${project.rameses-interfaces}/build.xml"/>
-    </target>
+    <target name="deps-clean" depends="init" if="no.dist.ear.dir" unless="no.deps"/>
     <target name="-do-clean" depends="init">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>

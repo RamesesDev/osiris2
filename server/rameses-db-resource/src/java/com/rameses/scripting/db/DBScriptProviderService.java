@@ -45,43 +45,6 @@ public class DBScriptProviderService implements DBScriptProviderServiceLocal {
         } 
     }
     
-    /*
-    public byte[] getScriptData(String name) {
-        try {
-            StringBuffer sb = new StringBuffer("select o.code from ");
-            sb.append( DBScriptInfo.class.getName() + " o ");
-            sb.append(" where o.name=:name");
-            Object o = em.createQuery(sb.toString()).setParameter("name",name).getSingleResult();
-            if(o!=null) 
-                return o.toString().getBytes();
-            else
-                return null;
-        } 
-        catch(NoResultException nre) {
-            return null;
-        } 
-        catch (Exception e) {
-            throw new IllegalStateException(e);
-        } 
-    }
-    
-    public byte[] getConfData(String name) {
-        try {
-            StringBuffer sb = new StringBuffer("select o.code from ");
-            sb.append( DBConfData.class.getName() + " o ");
-            sb.append(" where o.name=:name");
-            Object o = em.createQuery(sb.toString()).setParameter("name",name).getSingleResult();
-            if(o!=null) 
-                return o.toString().getBytes();
-            else
-                return null;
-        } catch(NoResultException nre) {
-            return null;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-     */
 
     
 }

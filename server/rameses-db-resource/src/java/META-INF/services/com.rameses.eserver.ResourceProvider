@@ -1,0 +1,2 @@
+com.rameses.scripting.db.DBScriptResourceProvider
+com.rameses.scripting.db.DBSqlCacheProvider

@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.rules;
+package com.rameses.eserver;
 
 import java.util.List;
 

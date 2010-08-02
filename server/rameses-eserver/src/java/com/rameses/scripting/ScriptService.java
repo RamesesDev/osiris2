@@ -79,6 +79,8 @@ public class ScriptService implements ScriptServiceLocal {
                 if( actionMethod.isAnnotationPresent(Before.class)) hasInterceptors = false;
                 else if( actionMethod.isAnnotationPresent(After.class)) hasInterceptors = false;
                 
+                
+                
                 //fire before interceptors;
                 String fullName = name + "." + method;
                 

@@ -9,23 +9,31 @@
 
 package com.rameses.scripting.db;
 
-import com.rameses.interfaces.ResourceProvider;
+import com.rameses.eserver.ResourceProvider;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import javax.naming.InitialContext;
 
 
-public class DBConfProvider implements ResourceProvider {
+public class DBSqlCacheProvider extends ResourceProvider {
     
-    public String getNamespace() {
-        return ResourceProvider.CONF;
+    public String getName() {
+        return "sql";
     }
-   
+    
+    public String getDescription() {
+        return "DB Sql Cache Resource Provider [sql://]";
+    }
+
+    public boolean accept(String nameSpace) {
+        return (nameSpace.equalsIgnoreCase("sql"));
+    }
+
     public InputStream getResource(String name) {
         try {
             InitialContext ctx = new InitialContext();
             DBScriptProviderServiceLocal ds = (DBScriptProviderServiceLocal)ctx.lookup(DBScriptProviderService.class.getSimpleName()+"/local");
-            byte[] b = ds.getInfo(name, DBConfData.class.getName());
+            byte[] b = ds.getInfo(name,DBSqlCacheInfo.class.getName() );
             if( b!= null )
                 return new ByteArrayInputStream(b);
             else
@@ -35,7 +43,9 @@ public class DBConfProvider implements ResourceProvider {
         }
     }
 
-    
-   
+    public int getPriority() {
+        return 10;
+    }
+
     
 }

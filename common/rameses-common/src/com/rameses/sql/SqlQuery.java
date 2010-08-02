@@ -25,7 +25,7 @@ public class SqlQuery {
     private SqlManager sqlManager;
     protected String statement;
     
-    protected List<String> parameterNames;
+    private List<String> parameterNames = new ArrayList();
     protected List parameterValues;
     private FetchHandler fetchHandler;
     private ParameterHandler parameterHandler;
@@ -43,11 +43,16 @@ public class SqlQuery {
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlQuery(SqlManager sm, String statement, List parameterNames) {
+    SqlQuery(SqlManager sm, String statement, List paramNames) {
         this.statement = statement;
         this.origStatement = statement;
         this.sqlManager = sm;
-        this.parameterNames = parameterNames;
+        this.parameterNames.clear();
+        if(paramNames!=null) {
+            for(Object o : paramNames) {
+                this.parameterNames.add((String)o);
+            }
+        }
         parameterValues = new ArrayList();
     }
     
@@ -157,6 +162,10 @@ public class SqlQuery {
      * your statement must have the $P{param} named parameter.
      */
     public SqlQuery setParameters( Map map ) {
+        if(map==null) {
+            //do nothing and return it
+            return this;
+        }
         if(parameterNames==null)
             throw new IllegalStateException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
         int sz = parameterNames.size();
@@ -169,6 +178,11 @@ public class SqlQuery {
     
     
     public SqlQuery setParameters( List params ) {
+        if(params==null) {
+            //do nothing and return it
+            return this;
+        }
+        
         if(parameterNames!=null && parameterNames.size()>0){
             if(parameterNames.size()!=params.size())
                 throw new IllegalStateException("Parameter count does not match");
@@ -297,4 +311,9 @@ public class SqlQuery {
     public Map getVars() {
         return vars;
     }
+
+    public List<String> getParameterNames() {
+        return parameterNames;
+    }
+    
 }
