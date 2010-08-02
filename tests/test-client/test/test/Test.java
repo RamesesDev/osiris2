@@ -21,29 +21,20 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-//        InputStream is = getClass().getResourceAsStream("style3");
-//        StyleRuleParser parser = new StyleRuleParser();
-//        DefaultParseHandler handler = new DefaultParseHandler();
-//        try {
-//            parser.parse(is, handler);
-//
-//            for (StyleRule r: handler.getList()) {
-//                System.out.println(r);
-//            }
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
+        System.setProperty("web.app.url", "http://localhost:8080");
         
-        String value = "rgb(  50, 75 ,  80 )";
-        Matcher m = Pattern.compile("rgb\\((\\d+),(\\d+),(\\d+)\\)")
-        .matcher(value.replace(" ", ""));
+        String s = "app.url=${web.app.url}/something";
         
-        m.matches();
+        StringBuffer sb = new StringBuffer();
+        Matcher m = Pattern.compile("\\$\\{(.*)\\}").matcher(s);
+        boolean result = m.find();
+        while(result) {
+            m.appendReplacement(sb, System.getProperty(m.group(1)) );
+            result = m.find();
+        }
+        m.appendTail(sb);
         
-        System.out.println(m.group(1));
-        System.out.println(m.group(2));
-        System.out.println(m.group(3));
+        System.out.println("output: " + sb);
     }
     
 }

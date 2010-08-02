@@ -211,7 +211,7 @@ public class XActionBar extends JPanel implements UIComposite {
         if ( Beans.isDesignTime() ) {
             if ( !useToolBar ) {
                 setOpaque(true);
-                setBackground(Color.YELLOW);
+                setBackground( new Color(214,218,222));
             }
             
             add(new JButton("Button 1"));

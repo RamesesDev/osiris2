@@ -17,7 +17,7 @@ import javax.swing.event.AncestorListener;
  */
 public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewContext {
     
-    private Stack controllers = new ControllerStack();
+    private Stack controllers = new Stack();
     private boolean defaultBtnAdded;
     private XButton defaultBtn;
     
@@ -103,18 +103,5 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
             p.getBinding().display();
         }
     }
-    
-    
-    //<editor-fold defaultstate="collapsed" desc="  ControllerStack (class)  ">
-    public class ControllerStack extends Stack {
         
-        public Object push(Object item) {
-            UIController con = (UIController) item;
-            con.initialize();
-            return super.push(con);
-        }
-        
-    }
-    //</editor-fold>
-    
 }

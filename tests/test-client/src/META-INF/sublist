@@ -1,7 +1,7 @@
 
 "selectedItem" [true] { 
-    evenBackground: rgb(200,219,227);
-    evenForeground: #0000ff;
+    evenBackground: #e3e3e3;
+    evenForeground: #000000;
 }
 
 
