@@ -11,6 +11,7 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
+import java.beans.Beans;
 import javax.swing.JTextArea;
 
 /**
@@ -60,9 +61,17 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Contai
     
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setText(String t) {
+        if ( Beans.isDesignTime() ) {
+            setName( t );
+        } else {
+            super.setText( t );
+        }
+    }
+    
     public void setName(String name) {
         super.setName(name);
-        setText(name);
+        super.setText(name);
     }
     
     public Object getValue() {

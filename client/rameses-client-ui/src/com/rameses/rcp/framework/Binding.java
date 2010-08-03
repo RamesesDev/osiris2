@@ -246,6 +246,10 @@ public class Binding {
             
             UIInput ui = (UIInput) u;
             if ( ui.isImmediate() ) continue;
+            if ( ui.isReadonly() ) continue;
+            
+            Component c = (Component) ui;
+            if ( !c.isEnabled() || !c.isFocusable() ) continue;
             
             Object compValue = ui.getValue();
             Object beanValue = UIControlUtil.getBeanValue(ui);

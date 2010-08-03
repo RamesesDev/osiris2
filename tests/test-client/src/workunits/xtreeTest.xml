@@ -15,29 +15,51 @@
                
             def selected;
             def subForm;
-                    
+                                
             def treeHandler = [
                 
                 fetchNodes: {
-                    return [
-                        new Node('1', 'One'),
-                        new Node('2', 'Two'),
-                        new Node('3', 'Three')
-                    ]
+                    def o = nodesMap.get( it.id );
+                    def list = [];
+                    o?.each {
+                        def n = new Node(it.id, it.caption);
+                        if ( it.leaf ) n.leaf = it.leaf;
+                        list.add( n );
+                    };
+                    return list;
+                },
+                
+                openFolder: { node ->
+                    MsgBox.alert('testing open folder');
+                },
+                
+                openLeaf: {
+                    MsgBox.alert('testing open leaf');
                 }
             
             ] as TreeNodeModel;
-            
-            def getSubForm() {
-                if ( selected?.id == '1' ) {
-                    return new Opener('test-client:xtreeSub1');
-                }
-                else if ( selected?.id == '2' ) {
-                    return new Opener('test-client:xtreeSub2');
-                }
+                        
+            void addNode() {
+                if ( !selected ) return;
                 
-                return null;
+                def n = nodesMap.get( selected.id );
+                def size = n? n.size() : 0;
+                def entry = [id: selected.id+'-'+size, caption:selected.caption+'-'+size];
+                if ( n ) {
+                    if ( size > 5 ) entry.leaf = true;
+                    n.add( entry );
+                }
+                else {
+                    nodesMap.put( selected.id, [ entry ] );
+                }
+                selected.reload();
             }
+            
+            def nodesMap = [
+                'root': [[id:'1', caption: 'One'],[id:'2', caption: 'Two']],
+                '1': [[id:'11', caption: 'One-0'],[id:'12', caption: 'One-1']],
+                '2': [[id:'22', caption: 'Two-0'],[id:'22', caption: 'Two-1']]
+            ]
         
         }
         
