@@ -9,7 +9,6 @@
 
 package com.rameses.sql;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,29 +22,15 @@ public class SqlCache implements Serializable {
     private List paramNames;
     
     public SqlCache(String origStatement) {
-        parseStatement( origStatement );
-    }
-    
-    public SqlCache(InputStream is) {
-        try {
-            StringBuffer sb = new StringBuffer();
-            int i = 0;
-            while((i=is.read())!=-1) {
-                sb.append((char)i);
-            }
-            parseStatement( sb.toString() );
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
-        } finally {
-            try {is.close();} catch(Exception ign){;}
-        }
-    }
-    
-    protected void parseStatement(String stmt) {
         paramNames = new ArrayList();
-        this.statement = SqlUtil.parseStatement(stmt,paramNames);
+        this.statement = SqlUtil.parseStatement(origStatement,paramNames);
     }
-
+    
+    public SqlCache(String statement, List paramNames) {
+        this.paramNames = paramNames;
+        this.statement = statement;
+    }
+    
     public String getStatement() {
         return statement;
     }

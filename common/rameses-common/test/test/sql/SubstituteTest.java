@@ -36,6 +36,11 @@ public class SubstituteTest extends TestCase {
         String sql  ="select * from data where p=$P{data} ${condition}";
         System.out.println( SqlUtil.substituteValues( sql, map ));
     }
+   
+   public void testAlias() throws Exception {
+        String c = "mlkp/customer";
+        System.out.println( c.replaceAll("/", "_") );
+    }
     
     
 }

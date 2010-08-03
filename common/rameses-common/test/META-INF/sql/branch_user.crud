@@ -1,0 +1,7 @@
+<table name="tblperson">
+    uid=uid*
+    lastname=lastname
+    firstname=firstname
+    age=age
+    birthdate=birthdate
+</table>

@@ -25,26 +25,14 @@ public class SqlxCacheProvider extends SqlCacheProvider {
         return  name.endsWith(".sqlx");
     }
 
-    public void flush(String name) {
-    }
-
     public SqlCache createSqlCache(String name) {
         InputStream is = this.getSqlCacheResourceHandler().getResource( name );
-        try {
-            StringBuffer sb = new StringBuffer();
-            int i = 0;
-            while((i=is.read())!=-1) {
-                sb.append((char)i);
-            }
-            
-            String statement = formatText( sb.toString() );
-            return new SqlCache(statement);
-            
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
-        } finally {
-            try {is.close();} catch(Exception ign){;}
-        }        
+        if(is==null)
+            throw new IllegalStateException("Resource for " + name + " not found");
+
+        String txt = getInputStreamToString(is);
+        String statement = formatText( txt );
+        return new SqlCache(statement);
     }
 
     private String formatText( String sql ) {

@@ -25,15 +25,12 @@ public class DefaultSqlCacheProvider extends SqlCacheProvider {
         return name.endsWith(".sql");
     }
 
-    public void flush(String name) {
-        
-    }
-    
     public SqlCache createSqlCache(String name) {
         InputStream is = this.getSqlCacheResourceHandler().getResource( name );
         if( is == null )
             throw new IllegalStateException( "getNamedSqlCache error. Resource [" + name + "] does not exist");
-        return new SqlCache(is);
+        String txt = getInputStreamToString(is);
+        return new SqlCache(txt);
     }
     
     

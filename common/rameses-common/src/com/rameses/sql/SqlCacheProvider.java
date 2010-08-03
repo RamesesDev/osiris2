@@ -9,6 +9,8 @@
 
 package com.rameses.sql;
 
+import java.io.InputStream;
+
 /**
  *
  * @author elmo
@@ -27,6 +29,22 @@ public abstract class SqlCacheProvider {
     
     public abstract boolean accept( String name );
     public abstract SqlCache createSqlCache(String name);
-    public abstract void flush( String name );
+    
+    //utiltiy class
+    protected String getInputStreamToString(InputStream is) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            int i = 0;
+            while((i=is.read())!=-1) {
+                sb.append((char)i);
+            }
+            return sb.toString();
+            
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            try {is.close();} catch(Exception ign){;}
+        }        
+    }
     
 }
