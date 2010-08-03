@@ -8,6 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.Node;
+import com.rameses.rcp.common.NodeListener;
 import com.rameses.rcp.common.TreeNodeModel;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
@@ -34,6 +35,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 
@@ -46,12 +48,15 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
     private String handler;
     
     private DefaultMutableTreeNode root;
+    private DefaultTreeModel model;
     private TreeNodeModel nodeModel;
     private Node selectedNode;
+    private DefaultNode defaultNode;
     
     
     public XTree() {
         setCellRenderer( new NodeTreeRenderer() );
+        
     }
     
     public String[] getDepends() {
@@ -78,8 +83,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         return binding;
     }
     
-    public void refresh() {
-    }
+    public void refresh() {}
     
     public void load() {
         if( ValueUtil.isEmpty(handler) ) {
@@ -88,7 +92,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         nodeModel = (TreeNodeModel) UIControlUtil.getBeanValue(this, handler);
         root = new DefaultNode(nodeModel.getRootNode());
         
-        DefaultTreeModel model = new DefaultTreeModel(root, true);
+        model = new DefaultTreeModel(root, true);
         setModel(model);
         
         addTreeSelectionListener(this);
@@ -111,22 +115,17 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
                 openNode(selectedNode);
             }
         });
-        
-        if(!dynamic) {
-            render();
-        }
     }
     
-    private void render() {
-        
-    }
-    
-    private void openNode( Node o) {
+    private void openNode( Node node) {
         Object retVal = null;
-        if( o.isLeaf() ) {
-            retVal = nodeModel.openLeaf(o);
+        if( node.isLeaf() ) {
+            retVal = nodeModel.openLeaf(node);
         } else {
-            retVal = nodeModel.openFolder(o);
+            TreePath tp = new TreePath(defaultNode.getPath());
+            if ( isCollapsed(tp) ) return;
+            
+            retVal = nodeModel.openFolder(node);
         }
         
         NavigationHandler handler = ClientContext.getCurrentContext().getNavigationHandler();
@@ -147,7 +146,8 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
     }
     
     public void valueChanged(TreeSelectionEvent e) {
-        selectedNode = ((DefaultNode)e.getPath().getLastPathComponent()).getNode();
+        defaultNode = ((DefaultNode)e.getPath().getLastPathComponent());
+        selectedNode = defaultNode.getNode();
         if(getName()!=null ) {
             PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
             res.setProperty(binding.getBean(), getName(), selectedNode);
@@ -165,7 +165,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
     
     
     //<editor-fold defaultstate="collapsed" desc="  DefaultNode (class)  ">
-    public class DefaultNode extends DefaultMutableTreeNode {
+    public class DefaultNode extends DefaultMutableTreeNode implements NodeListener {
         
         private Node node;
         
@@ -176,13 +176,13 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         public DefaultNode(Node node) {
             super(node.getCaption(), !node.isLeaf());
             this.node = node;
+            this.node.addListener(this);
         }
         
         public int getChildCount() {
             if( !node.isLoaded() ) {
                 synchronized(this) {
                     node.setLoaded( true );
-                    this.removeAllChildren();
                     loadChildren();
                 }
             }
@@ -192,6 +192,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         public void loadChildren() {
             Node[] nodes = nodeModel.fetchNodes(node);
             if( nodes !=null) {
+                super.removeAllChildren();
                 for(Node n: nodes ) {
                     this.add(new DefaultNode(n));
                 }
@@ -200,6 +201,15 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         
         public Node getNode() {
             return node;
+        }
+        
+        public void reload() {
+            if ( !node.isLoaded() ) return;
+            
+            synchronized(this) {
+                loadChildren();
+                XTree.this.model.reload(this);
+            }
         }
         
     }
@@ -232,4 +242,5 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         
     }
     //</editor-fold>
+    
 }

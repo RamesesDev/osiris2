@@ -10,6 +10,8 @@
 package com.rameses.rcp.common;
 
 import java.rmi.server.UID;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +28,10 @@ public class Node {
     private boolean leaf;
     private String icon;
     private Map properties;
-     private boolean loaded;
+    private boolean loaded;
+    
+    private List<NodeListener> listeners = new ArrayList();
+    
     
     public Node() {
     }
@@ -46,8 +51,23 @@ public class Node {
         this.item = o;
     }
     
-    // <editor-fold defaultstate="collapsed" desc="GETTER/SETTER">
+    public void addListener(NodeListener listener) {
+        if ( !listeners.contains(listener) ) {
+            listeners.add(listener);
+        }
+    }
     
+    public void removeListener(NodeListener listener) {
+        listeners.remove(listener);
+    }
+    
+    public void reload() {
+        for (NodeListener nl: listeners) {
+            nl.reload();
+        }
+    }
+    
+    // <editor-fold defaultstate="collapsed" desc="GETTER/SETTER">
     public Object getItem() {
         return item;
     }
@@ -96,25 +116,26 @@ public class Node {
     public void setId(String id) {
         this.id = id;
     }
-    //</editor-fold>
-
+    
     public String getIcon() {
         return icon;
     }
-
+    
     public void setIcon(String icon) {
         this.icon = icon;
     }
-
+    
     public Map getProperties() {
         return properties;
     }
     
-     public boolean isLoaded() {
+    public boolean isLoaded() {
         return loaded;
     }
-
+    
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
     }
+    //</editor-fold>
+    
 }

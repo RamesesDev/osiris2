@@ -10,7 +10,7 @@ public abstract class TreeNodeModel {
     public abstract Node[] fetchNodes( Node node );
     
     public Node getRootNode() {
-        return new Node("root", "Root");
+        return new Node("root", "All");
     }
     
     public Object openLeaf(Node node){

@@ -6,6 +6,7 @@ import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
+import java.beans.Beans;
 import javax.swing.JLabel;
 
 /**
@@ -38,9 +39,17 @@ public class XLabel extends JLabel implements UIControl, Containable {
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setText(String t) {
+        if ( Beans.isDesignTime() ) {
+            setExpression( t );
+        } else {
+            super.setText( t );
+        }
+    }
+    
     public void setName(String name) {
         super.setName(name);
-        setText(name);
+        super.setText(name);
     }
     
     public String[] getDepends() {
@@ -77,7 +86,7 @@ public class XLabel extends JLabel implements UIControl, Containable {
     
     public void setExpression(String expression) {
         this.expression = expression;
-        setText(expression);
+        super.setText(expression);
     }
     //</editor-fold>
     

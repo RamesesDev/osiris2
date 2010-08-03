@@ -1,6 +1,5 @@
 package test;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.swing.JTree;
 import junit.framework.*;
 
 /*
@@ -21,20 +20,10 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-        System.setProperty("web.app.url", "http://localhost:8080");
-        
-        String s = "app.url=${web.app.url}/something";
-        
-        StringBuffer sb = new StringBuffer();
-        Matcher m = Pattern.compile("\\$\\{(.*)\\}").matcher(s);
-        boolean result = m.find();
-        while(result) {
-            m.appendReplacement(sb, System.getProperty(m.group(1)) );
-            result = m.find();
+        JTree t = new JTree();
+        for ( Object o: t.getActionMap().allKeys() ) {
+            System.out.println( o );
         }
-        m.appendTail(sb);
-        
-        System.out.println("output: " + sb);
     }
     
 }
