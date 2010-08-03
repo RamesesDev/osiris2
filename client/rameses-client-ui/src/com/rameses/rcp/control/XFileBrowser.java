@@ -287,6 +287,10 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Contai
     public void setRequestFocus(boolean focus) {
         if ( focus ) btnBrowse.requestFocus();
     }
+
+    public boolean isImmediate() {
+        return true;
+    }
     //</editor-fold>
     
     

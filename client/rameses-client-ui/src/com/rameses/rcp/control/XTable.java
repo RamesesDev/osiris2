@@ -26,6 +26,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -50,7 +52,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-public class XTable extends JPanel implements UIInput, TableListener, Validatable {
+public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
     private TableComponent table = new TableComponent();
     private ListScrollBar scrollBar = new ListScrollBar();
@@ -300,7 +302,69 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     
     public void setRequestFocus(boolean focus) {
-        if ( focus ) requestFocus();
+        if ( focus ) table.requestFocus();
+    }
+    
+    public void requestFocus() {
+        table.grabFocus();
+    }
+    
+    public void focusGained(FocusEvent e) {
+        table.grabFocus();
+    }
+    
+    public void focusLost(FocusEvent e) {}
+    
+    public Color getEvenBackground() {
+        return table.getEvenBackground();
+    }
+    
+    public void setEvenBackground(Color evenBackground) {
+        table.setEvenBackground( evenBackground );
+    }
+    
+    public Color getOddBackground() {
+        return table.getOddBackground();
+    }
+    
+    public void setOddBackground(Color oddBackground) {
+        table.setOddBackground( oddBackground );
+    }
+    
+    public Color getErrorBackground() {
+        return table.getErrorBackground();
+    }
+    
+    public void setErrorBackground(Color errorBackground) {
+        table.setErrorBackground( errorBackground );
+    }
+    
+    public Color getEvenForeground() {
+        return table.getEvenForeground();
+    }
+    
+    public void setEvenForeground(Color evenForeground) {
+        table.setEvenForeground( evenForeground );
+    }
+    
+    public Color getOddForeground() {
+        return table.getOddForeground();
+    }
+    
+    public void setOddForeground(Color oddForeground) {
+        table.setOddForeground( oddForeground );
+    }
+    
+    public Color getErrorForeground() {
+        return table.getErrorForeground();
+    }
+    
+    public void setErrorForeground(Color errorForeground) {
+        table.setErrorForeground( errorForeground );
+    }
+    
+    public boolean isImmediate() {
+        return true;
     }
     //</editor-fold>
     

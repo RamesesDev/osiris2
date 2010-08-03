@@ -10,6 +10,7 @@ import com.rameses.rcp.framework.ChangeLog;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -58,6 +59,16 @@ public class TableComponent extends JTable implements ListModelListener {
     private boolean rowCommited = true;
     private JComponent currentEditor;
     private KeyEvent currentKeyEvent;
+    
+    //row background color options
+    private Color evenBackground;
+    private Color oddBackground;
+    private Color errorBackground = Color.PINK;
+    
+    //row foreground color options
+    private Color evenForeground;
+    private Color oddForeground;
+    private Color errorForeground;
     
     
     public TableComponent() {
@@ -143,11 +154,11 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     public void setAutoResize(boolean autoResize) {
-        if ( autoResize )
+        if ( autoResize ) {
             setAutoResizeMode(super.AUTO_RESIZE_LAST_COLUMN);
-        else
+        } else {
             setAutoResizeMode(super.AUTO_RESIZE_OFF);
-        
+        }
     }
     
     public boolean isReadonly() {
@@ -156,6 +167,54 @@ public class TableComponent extends JTable implements ListModelListener {
     
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
+    }
+    
+    public Color getEvenBackground() {
+        return evenBackground;
+    }
+    
+    public void setEvenBackground(Color evenBackground) {
+        this.evenBackground = evenBackground;
+    }
+    
+    public Color getOddBackground() {
+        return oddBackground;
+    }
+    
+    public void setOddBackground(Color oddBackground) {
+        this.oddBackground = oddBackground;
+    }
+    
+    public Color getErrorBackground() {
+        return errorBackground;
+    }
+    
+    public void setErrorBackground(Color errorBackground) {
+        this.errorBackground = errorBackground;
+    }
+    
+    public Color getEvenForeground() {
+        return evenForeground;
+    }
+    
+    public void setEvenForeground(Color evenForeground) {
+        this.evenForeground = evenForeground;
+    }
+    
+    public Color getOddForeground() {
+        return oddForeground;
+    }
+    
+    public void setOddForeground(Color oddForeground) {
+        this.oddForeground = oddForeground;
+    }
+    
+    public Color getErrorForeground() {
+        return errorForeground;
+    }
+    
+    public void setErrorForeground(Color errorForeground) {
+        this.errorForeground = errorForeground;
     }
     //</editor-fold>
     

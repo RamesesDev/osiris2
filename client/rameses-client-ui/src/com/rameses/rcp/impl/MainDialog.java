@@ -12,6 +12,7 @@ package com.rameses.rcp.impl;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
 import com.rameses.rcp.framework.ClientContext;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -31,9 +32,11 @@ public class MainDialog implements MainWindow {
     
     public MainDialog() {
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLayout( new BorderLayout() );
+        
         JPanel dummy = new JPanel();
         dummy.setPreferredSize(new Dimension(500,500));
-        dialog.setContentPane(dummy);
+        dialog.add(dummy, BorderLayout.CENTER, 0);
         
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -66,9 +69,17 @@ public class MainDialog implements MainWindow {
     }
     
     public void setComponent(JComponent comp, String constraint) {
-        if ( constraint.equals(MainWindow.MENUBAR)) {
+        if ( constraint == null ) {
+            //do nothing
+        } else if ( constraint.equals(MainWindow.MENUBAR)) {
             dialog.setJMenuBar((JMenuBar) comp);
+        } else if ( constraint.equals(MainWindow.TOOLBAR) ) {
+            if ( dialog.getComponentCount() > 1 ) {
+                dialog.remove(1);
+            }
+            dialog.add(comp, BorderLayout.NORTH, 1);
         }
+        SwingUtilities.updateComponentTreeUI( dialog.getContentPane() );
     }
     
 }

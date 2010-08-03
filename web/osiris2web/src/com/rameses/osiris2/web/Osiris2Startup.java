@@ -11,7 +11,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -63,8 +66,14 @@ public class Osiris2Startup extends HttpServlet {
         if( is == null )
             throw new ServletException("Client.conf " + conf + " does not exist.");
         try {
+            Properties source = new Properties();
+            source.load(is);
+            
             Properties props = new Properties();
-            props.load(is);
+            for(Map.Entry me: source.entrySet()) {
+                props.put(me.getKey(), resolveValue(me.getValue()+""));
+            }
+            
             String appurl = props.getProperty("app.url");
             if(appurl==null)
                 throw new ServletException("app.url does not exist in the client.conf " + conf);
@@ -100,6 +109,22 @@ public class Osiris2Startup extends HttpServlet {
         } catch(Exception ign){
             ign.printStackTrace();
         }
+    }
+    
+    private String resolveValue(String value) {
+        StringBuffer sb = new StringBuffer();        
+        Matcher m = Pattern.compile("\\$\\{(.*)\\}").matcher(value);
+        boolean found = m.find();
+        
+        if ( !found ) return value;
+        
+        while(found) {
+            m.appendReplacement(sb, System.getProperty(m.group(1)) );
+            found = m.find();
+        }
+        m.appendTail(sb);
+        
+        return sb.toString();
     }
     
     

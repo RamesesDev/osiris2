@@ -13,5 +13,10 @@ package com.rameses.platform.interfaces;
  * normally implemented by UIControllerPanel
  */
 public interface ViewContext {
+    
+    static final long serialVersionUID = 1L;
+    
     boolean close();
+    void display();
+    
 }

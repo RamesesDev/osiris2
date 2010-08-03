@@ -27,6 +27,7 @@ public class NBPopup extends JDialog implements SubWindow {
     private String id;
     private ViewContext viewContext;
     
+    
     public NBPopup(NBPlatform platform, JFrame parent, String id) {
         super(parent);
         init(platform, id);
@@ -67,7 +68,13 @@ public class NBPopup extends JDialog implements SubWindow {
         public void windowClosing(WindowEvent e) {
             closeWindow();
         }
-        
+
+        public void windowOpened(WindowEvent e) {
+            if ( viewContext != null ) {
+                viewContext.display();
+            }
+        }
+                
     }
     
     private class EscAction implements ActionListener {

@@ -78,7 +78,6 @@ public class ListViewPage extends javax.swing.JPanel {
         pnlCenter.setLayout(new java.awt.BorderLayout());
 
         xSubFormPanel1.setHandler("listHandler.queryHandler");
-        xSubFormPanel1.setPreferredSize(new java.awt.Dimension(200, 0));
         pnlCenter.add(xSubFormPanel1, java.awt.BorderLayout.NORTH);
 
         xTable1.setHandler("listHandler");

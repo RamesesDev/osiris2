@@ -17,8 +17,8 @@ public class Main {
         } catch (Exception e) {;}
         
         Map m = new HashMap();
-        //m.put("default.host", "10.0.0.153:8080");
-        m.put("default.host", "localhost:8080");
+        m.put("default.host", "10.0.0.152:8080");
+        //m.put("default.host", "localhost:8080");
         OsirisTestPlatform.runTest(m);
     }
 }

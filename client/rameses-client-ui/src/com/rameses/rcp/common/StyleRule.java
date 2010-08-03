@@ -2,6 +2,7 @@ package com.rameses.rcp.common;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class StyleRule implements Serializable {
@@ -9,7 +10,7 @@ public class StyleRule implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private String pattern;
-    private Map properties = new HashMap();
+    private Map properties = new LinkedHashMap();
     private String expression;
     
     public StyleRule() {

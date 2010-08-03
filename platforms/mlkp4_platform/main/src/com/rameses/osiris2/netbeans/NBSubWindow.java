@@ -8,14 +8,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import org.openide.windows.TopComponent;
 
 public class NBSubWindow extends TopComponent implements SubWindow {
+    
     private NBPlatform nbPlatform;
     private NBMainWindow mainWindow;
     private String preferredID;
     private boolean closeable = true;
     private boolean bypassVerifyClose;
+    
     
     public NBSubWindow(NBPlatform nbPlatform, NBMainWindow mainWindow, String preferredID) {
         this.nbPlatform = nbPlatform;
@@ -35,12 +38,25 @@ public class NBSubWindow extends TopComponent implements SubWindow {
     
     public int getPersistenceType() { return PERSISTENCE_NEVER; }
     
+    public void open() {
+        super.open();
+        
+        if ( getViewContext() == null ) return;
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                getViewContext().display();
+            }
+        });
+    }
+    
     public boolean canClose() {
         if (!closeable) return false;
         if (!bypassVerifyClose) {
-            Component c = getComponent(0);
-            if (c instanceof ViewContext)
-                return ((ViewContext) c).close();
+            ViewContext vc = getViewContext();
+            if ( vc != null ) {
+                return vc.close();
+            }
         }
         return true;
     }
@@ -62,4 +78,14 @@ public class NBSubWindow extends TopComponent implements SubWindow {
             }
         }
     }
+    
+    private ViewContext getViewContext() {
+        Component c = getComponent(0);
+        if (c instanceof ViewContext) {
+            return ((ViewContext) c);
+        }
+        
+        return null;
+    }
+    
 }

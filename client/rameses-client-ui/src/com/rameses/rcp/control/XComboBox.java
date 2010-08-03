@@ -34,7 +34,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private String[] depends;
     private String caption;
     private String items;
-    private boolean dynamic = false;
+    private boolean immediate = false;
     private boolean isEnum = false;
     private String expression;
     private String emptyText = "-";
@@ -54,7 +54,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     
     public void refresh() {
-        if ( dynamic && !isEnum ) {
+        if ( immediate && !isEnum ) {
             buildList();
         }
         Object value = UIControlUtil.getBeanValue(this);
@@ -63,7 +63,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void load() {
         super.setModel(model);
-        if ( dynamic ) {
+        if ( immediate ) {
             super.addItemListener(this);
         } else {
             super.setInputVerifier(UIInputUtil.VERIFIER);
@@ -205,14 +205,6 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
         this.items = items;
     }
     
-    public boolean isDynamic() {
-        return dynamic;
-    }
-    
-    public void setDynamic(boolean dynamic) {
-        this.dynamic = dynamic;
-    }
-    
     public String getExpression() {
         return expression;
     }
@@ -291,6 +283,14 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
 
     public void setRequestFocus(boolean focus) {
         if ( focus ) requestFocus();
+    }
+
+    public boolean isImmediate() {
+        return immediate;
+    }
+    
+    public void setImmediate(boolean immediate) {
+        this.immediate = immediate;
     }
     //</editor-fold>
     

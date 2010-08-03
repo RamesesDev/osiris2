@@ -31,19 +31,27 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library files="1">
-                    <file>${reference.commonweb.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library files="1">
-                    <file>${file.reference.jcaptcha-all-1.0-RC6.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library files="1">
                     <file>${reference.osiris2-components.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
-                <library>
+                <library files="1">
                     <file>${libs.rameses-common.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library files="1">
+                    <file>${file.reference.jcaptcha-all-1.0-RC6.jar-1}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library files="1">
+                    <file>${file.reference.rameses-chart.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library files="1">
+                    <file>${file.reference.commonweb.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library files="2">
+                    <file>${libs.jfreechart.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
@@ -56,14 +64,6 @@
             </test-roots>
         </data>
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
-            <reference>
-                <foreign-project>commonweb</foreign-project>
-                <artifact-type>jar</artifact-type>
-                <script>build.xml</script>
-                <target>jar</target>
-                <clean-target>clean</clean-target>
-                <id>jar</id>
-            </reference>
             <reference>
                 <foreign-project>osiris2-components</foreign-project>
                 <artifact-type>jar</artifact-type>

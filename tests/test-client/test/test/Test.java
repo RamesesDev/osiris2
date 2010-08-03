@@ -1,5 +1,6 @@
 package test;
-import javax.swing.JDialog;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import junit.framework.*;
 
 /*
@@ -20,11 +21,20 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-        JDialog d = new JDialog();
-        d.setContentPane(new TestPage());
-        d.setModal(true);
-        d.pack();
-        d.setVisible(true);
+        System.setProperty("web.app.url", "http://localhost:8080");
+        
+        String s = "app.url=${web.app.url}/something";
+        
+        StringBuffer sb = new StringBuffer();
+        Matcher m = Pattern.compile("\\$\\{(.*)\\}").matcher(s);
+        boolean result = m.find();
+        while(result) {
+            m.appendReplacement(sb, System.getProperty(m.group(1)) );
+            result = m.find();
+        }
+        m.appendTail(sb);
+        
+        System.out.println("output: " + sb);
     }
     
 }

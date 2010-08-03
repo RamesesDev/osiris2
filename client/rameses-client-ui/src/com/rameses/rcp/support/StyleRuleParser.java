@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StyleRuleParser {
     
@@ -186,16 +188,28 @@ public class StyleRuleParser {
         }
     }
     
-    
+    //<editor-fold defaultstate="collapsed" desc="  Default Value/Property Resolver classes  ">
     public static class ColorResolver implements ValueResolver {
         
         public Object resolve(String name, String value) {
-            if(name.contains("color")) {
-                if(value.startsWith("#")) {
-                    return Color.decode(value);
-                }
-                return Color.getColor(value);
+            //a hex color value is expected
+            if(value.startsWith("#")) {
+                return Color.decode(value);
             }
+            
+            //an rgb color value is expected
+            //example: rgb(200, 219, 227)
+            else if ( value.startsWith("rgb") ) {
+                String exp = "rgb\\((\\d+),(\\d+),(\\d+)\\)";
+                Matcher m = Pattern.compile(exp).matcher(value.replace(" ", ""));
+                if ( m.matches() ) {
+                    int r = Integer.parseInt(m.group(1));
+                    int g = Integer.parseInt(m.group(2));
+                    int b = Integer.parseInt(m.group(3));
+                    return new Color(r,g,b);
+                }
+            }
+            
             return null;
         }
         
@@ -208,7 +222,7 @@ public class StyleRuleParser {
             else if ( "false".equals(value) ) return false;
             
             return null;
-        }   
+        }
         
     }
     
@@ -225,4 +239,6 @@ public class StyleRuleParser {
         }
         
     }
+    //</editor-fold>
+    
 }

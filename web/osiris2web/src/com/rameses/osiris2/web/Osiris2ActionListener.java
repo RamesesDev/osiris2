@@ -8,6 +8,7 @@
 package com.rameses.osiris2.web;
 
 import com.rameses.osiris2.WorkUnitInstance;
+import com.rameses.osiris2.web.util.ResourceUtil;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
@@ -19,7 +20,6 @@ import javax.faces.el.MethodBinding;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
-
 
 public class Osiris2ActionListener implements ActionListener {
     
@@ -54,6 +54,7 @@ public class Osiris2ActionListener implements ActionListener {
             fromAction = methodBinding.getExpressionString();
             try {
                 Object result = methodBinding.invoke(facesContext, null);
+                                
                 if ( result instanceof Opener ) {
                     WorkUnitInstance wi = WebContext.getCurrentWorkUnitInstance();
                     Opener op = (Opener) result;
@@ -62,8 +63,15 @@ public class Osiris2ActionListener implements ActionListener {
                         WebContext.getRequest().getSession().setAttribute(Opener.class.getName(), op);
                         outcome = WebUtil.OPENER_OUTCOME;
                     }
+                    
                 } else if (result instanceof String ) {
                     outcome = (String) result;
+                    
+                } else if (result instanceof WebResource ) {
+                    ResourceUtil.renderResource( (WebResource) result );
+                    facesContext.responseComplete();
+                    return;
+                    
                 }
             } catch(EvaluationException e) {
                 Throwable cause = e.getCause();

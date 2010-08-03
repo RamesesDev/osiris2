@@ -16,9 +16,11 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jLabel1" pref="292" max="32767" attributes="0"/>
+                      <Component id="jLabel1" pref="229" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xButton2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                       <Component id="xLabel2" alignment="0" max="32767" attributes="1"/>
@@ -36,6 +38,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xLabel1" min="-2" max="-2" attributes="0"/>
@@ -66,6 +69,12 @@
     <Component class="com.rameses.rcp.control.XLabel" name="xLabel2">
       <Properties>
         <Property name="name" type="java.lang.String" value="lastname"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XButton" name="xButton2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Exit"/>
+        <Property name="name" type="java.lang.String" value="_exit"/>
       </Properties>
     </Component>
   </SubComponents>

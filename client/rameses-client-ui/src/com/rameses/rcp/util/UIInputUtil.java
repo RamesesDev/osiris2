@@ -62,6 +62,8 @@ public class UIInputUtil {
             ClientContext ctx = ClientContext.getCurrentContext();
             PropertyResolver resolver = ctx.getPropertyResolver();
             String name = control.getName();
+            if ( ValueUtil.isEmpty(name) ) return;
+            
             Object inputValue = control.getValue();
             Object beanValue = resolver.getProperty(bean, name);
             resolver.setProperty(bean, name, inputValue);
