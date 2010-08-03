@@ -9,7 +9,9 @@
 
 package com.rameses.sql;
 
+import com.sun.jmx.remote.util.Service;
 import java.sql.Connection;
+import java.util.Iterator;
 import javax.sql.DataSource;
 
 /**
@@ -19,7 +21,8 @@ import javax.sql.DataSource;
 public class SqlManager {
     
     protected DataSource dataSource;
-    private SqlCacheProvider sqlCacheProvider = new BasicSqlCacheProvider();
+    
+    private SqlCacheResourceHandler sqlCacheResourceHandler = new DefaultSqlCacheResourceHandler();
     
     /** Creates a new instance of SQLManager */
     public SqlManager(DataSource ds) {
@@ -41,32 +44,62 @@ public class SqlManager {
         return dataSource.getConnection();
     }
     
+    private SqlCache getSqlCache(String statement ) {
+        SqlCache sq = sqlCacheResourceHandler.getCache( statement );
+        if(sq==null) {
+            sq = new SqlCache(statement);
+            sqlCacheResourceHandler.storeCache( statement, sq );
+        }
+        return sq;
+    }
+    
+    private SqlCache getNamedSqlCache(String name ) {
+        if(name.indexOf(".")<0) name = name + ".sql";
+        SqlCache sq = sqlCacheResourceHandler.getCache( name );
+        if( sq == null ) {
+            Iterator iter = Service.providers( SqlCacheProvider.class, Thread.currentThread().getContextClassLoader() );
+            while(iter.hasNext()) {
+                SqlCacheProvider sp = (SqlCacheProvider)iter.next();
+                if( sp.accept( name )) {
+                    sp.setSqlCacheResourceHandler( sqlCacheResourceHandler );
+                    sq = sp.createSqlCache(name);
+                    sqlCacheResourceHandler.storeCache(name, sq);
+                }
+            }
+        }
+        if(sq ==null)
+            throw new IllegalStateException("Sql Cache " + name + " is not found!");
+        return sq;
+    }
+    
+    
     
     public SqlQuery createQuery(String statement) {
-        if(sqlCacheProvider==null)
+        if(sqlCacheResourceHandler==null)
             throw new IllegalStateException("SqlCacheProvider must be provided");
-        SqlCache sq = sqlCacheProvider.getSqlCache(statement);
+        
+        SqlCache sq = getSqlCache(statement);
         return new SqlQuery(this,sq.getStatement(),sq.getParamNames());
     }
     
     public SqlQuery createNamedQuery(String name) {
-        if(sqlCacheProvider==null)
+        if(sqlCacheResourceHandler==null)
             throw new IllegalStateException("SqlCacheProvider must be provided");
-        SqlCache sq = sqlCacheProvider.getNamedSqlCache(name);
+        SqlCache sq = getNamedSqlCache(name);
         return new SqlQuery( this, sq.getStatement(),sq.getParamNames());
     }
 
     public SqlExecutor createExecutor(String statement) {
-        if(sqlCacheProvider==null)
+        if(sqlCacheResourceHandler==null)
             throw new IllegalStateException("SqlCacheProvider must be provided");
-        SqlCache sq = sqlCacheProvider.getSqlCache(statement);
+        SqlCache sq = getSqlCache(statement);
         return new SqlExecutor(this,sq.getStatement(),sq.getParamNames());
     }
 
     public SqlExecutor createNamedExecutor( String name ) {
-        if(sqlCacheProvider==null)
+        if(sqlCacheResourceHandler==null)
             throw new IllegalStateException("SqlCacheProvider must be provided");
-        SqlCache sq = sqlCacheProvider.getNamedSqlCache(name);
+        SqlCache sq = getNamedSqlCache(name);
         return new SqlExecutor(this,sq.getStatement(),sq.getParamNames());    
     }
     
@@ -78,8 +111,8 @@ public class SqlManager {
         return new QueryExecutor();
     }
     
-    public void setSqlCacheProvider(SqlCacheProvider sq) {
-        this.sqlCacheProvider = sq;
+    public void setSqlCacheResourceHandler(SqlCacheResourceHandler sq) {
+        this.sqlCacheResourceHandler = sq;
     }
     
 }

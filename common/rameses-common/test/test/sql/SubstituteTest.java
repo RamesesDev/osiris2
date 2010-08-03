@@ -1,11 +1,11 @@
 /*
- * Tester.java
+ * SqlTest.java
  * JUnit based test
  *
- * Created on June 2, 2010, 2:26 PM
+ * Created on July 22, 2010, 9:59 AM
  */
 
-package test;
+package test.sql;
 
 import com.rameses.sql.SqlUtil;
 import java.util.HashMap;
@@ -16,9 +16,9 @@ import junit.framework.*;
  *
  * @author elmo
  */
-public class Tester extends TestCase {
+public class SubstituteTest extends TestCase {
     
-    public Tester(String testName) {
+    public SubstituteTest(String testName) {
         super(testName);
     }
 
@@ -28,14 +28,14 @@ public class Tester extends TestCase {
     protected void tearDown() throws Exception {
     }
     
-    // TODO add test methods here. The name must begin with 'test'. For example:
-    public void testSubstitute() throws Exception {
-        String c = "where cond = $P{cond}";
+   public void testSubstitute() throws Exception {
+        String c = " and name = ${lastname}";
         Map map = new HashMap();
         map.put("condition", c);
-        String sql = "select from o ${condition}";
+        //String sql = "${xcondition} select from o ${xcondition} ${fields}";
+        String sql  ="select * from data where p=$P{data} ${condition}";
         System.out.println( SqlUtil.substituteValues( sql, map ));
     }
-
+    
     
 }
