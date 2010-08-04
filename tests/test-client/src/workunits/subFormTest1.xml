@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
-    <invokers>
-        <invoker folderid="/menu/file" caption="SubForm Test"/>
-    </invokers>
-    
+
     <code>
         <![CDATA[
         
@@ -13,8 +10,12 @@
                 
         public class SubFormTest1Controller  {
         
-            def entity = [:];
+            def entity = [ value: 'sample'];
                         
+            void fireAction() {
+                MsgBox.alert( entity );
+            }
+            
         }
         
         ]]>

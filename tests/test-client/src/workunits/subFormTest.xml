@@ -13,7 +13,7 @@
                 
         public class SubFormTestController  {
         
-            def entity = [ detail:[ caption: 'Contact No.', value: '1234'] ];
+            def entity = [ detail:[ caption: 'Contact No.'] ];
             
             def subFormHandler = new Opener(
                 name: 'test-client:subFormTest1', params: [entity: entity.detail ]
