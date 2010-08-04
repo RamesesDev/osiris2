@@ -1,5 +1,5 @@
 <linked>
-    <table name="tblperson">
+    <table name="tblperson" alias="xperson">
         uid=uid*
         lastname=lastname
         firstname=firstname

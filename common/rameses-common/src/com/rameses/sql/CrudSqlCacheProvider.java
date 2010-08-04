@@ -197,7 +197,7 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         List paramNames = new ArrayList();
         List<CrudField> primKeys = new ArrayList();
         StringBuffer sb = new StringBuffer();
-        sb.append( "DELETE " + cp.tableName);
+        sb.append( "DELETE FROM " + cp.tableName);
         boolean firstPass = true;
         for(CrudField cf: cp.fields) {
             if(cf.primary) {
@@ -227,9 +227,11 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
      * SELECT ${fields} FROM ( select field1 as name1, field2 as name2 from table ) tbl ${condition}
      */
     // <editor-fold defaultstate="collapsed" desc="SQL LIST">
-    private SqlCache getListSqlCache( CrudParser cp , String alias) {
-        if(alias ==null ) alias = cp.tableName;
+    private SqlCache getListSqlCache( CrudParser cp , String xalias) {
+        String alias = cp.alias;
+        if(alias==null || alias.trim().length()==0) alias = xalias;
         alias = alias.replaceAll("/", "_");
+        
         List<CrudField> primKeys = new ArrayList();
         List paramNames = new ArrayList();
         StringBuffer sb = new StringBuffer();
@@ -261,6 +263,7 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         private StringBuffer sb;
         String tableName;
         String linkTable;
+        String alias;
         List<CrudField> fields = new ArrayList();
         
         public CrudParser(InputStream is ) {
@@ -278,6 +281,7 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             if(qName.equals("table")) {
                 tableName = attributes.getValue( "name" );
+                alias = attributes.getValue("alias");
                 sb = new StringBuffer();
             }
             else if(qName.equals("link-ref")) {

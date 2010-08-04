@@ -16,5 +16,6 @@ package com.rameses.scripting.db;
 public interface DBScriptProviderServiceLocal {
     
     byte[] getInfo(String name, String className);
-   
+    byte[] getAllInterceptors();
+    
 }

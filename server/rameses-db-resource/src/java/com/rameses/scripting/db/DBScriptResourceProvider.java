@@ -55,7 +55,8 @@ public class DBScriptResourceProvider extends ResourceProvider {
         byte[] b = null;
         if(name.equals("interceptors")) {
             DBScriptProviderServiceLocal ds = (DBScriptProviderServiceLocal)ctx.lookup(DBScriptProviderService.class.getSimpleName()+"/local");
-            b = ds.getInfo(name, DBConfData.class.getName());
+            //b = ds.getInfo(name, DBConfData.class.getName());
+            b = ds.getAllInterceptors();
         }
         else if(name.equals("deployers")) {
             DBScriptProviderServiceLocal ds = (DBScriptProviderServiceLocal)ctx.lookup(DBScriptProviderService.class.getSimpleName()+"/local");

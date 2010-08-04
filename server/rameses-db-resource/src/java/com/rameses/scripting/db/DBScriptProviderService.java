@@ -8,6 +8,7 @@
  */
 package com.rameses.scripting.db;
 
+import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -36,6 +37,27 @@ public class DBScriptProviderService implements DBScriptProviderServiceLocal {
                 return o.toString().getBytes();
             else
                 return null;
+        } 
+        catch(NoResultException nre) {
+            return null;
+        } 
+        catch (Exception e) {
+            throw new IllegalStateException(e);
+        } 
+    }
+
+    public byte[] getAllInterceptors() {
+        try {
+            StringBuffer sb = new StringBuffer("select o.name from " );
+            sb.append( DBScriptInfo.class.getName() + " o ");
+            sb.append(" where o.category=:category");
+            List list = em.createQuery(sb.toString()).setParameter("category","interceptor").getResultList();
+            
+            StringBuffer data = new StringBuffer();
+            for(Object o: list ) {
+                data.append( o + "\n");
+            }
+            return data.toString().getBytes();
         } 
         catch(NoResultException nre) {
             return null;

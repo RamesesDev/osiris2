@@ -23,6 +23,7 @@ public final class ScriptEval {
     public ScriptEval(ActionEvent ae) {
         Binding b = new Binding();
         b.setVariable("args", ae.getArgs());
+        b.setVariable("env",ae.getEnv());
         shell = new GroovyShell(b);
     }
     
