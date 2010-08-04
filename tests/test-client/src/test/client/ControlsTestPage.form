@@ -21,6 +21,8 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xButton5" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton1" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -46,6 +48,7 @@
               <EmptySpace pref="26" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="xButton5" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton3" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -317,6 +320,13 @@
         <Property name="text" type="java.lang.String" value="Post"/>
         <Property name="defaultCommand" type="boolean" value="true"/>
         <Property name="name" type="java.lang.String" value="testPost"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XButton" name="xButton5">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Save"/>
+        <Property name="immediate" type="boolean" value="true"/>
+        <Property name="name" type="java.lang.String" value="save"/>
       </Properties>
     </Component>
   </SubComponents>

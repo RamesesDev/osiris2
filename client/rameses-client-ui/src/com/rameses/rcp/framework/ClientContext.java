@@ -20,8 +20,10 @@ import com.rameses.util.PropertyResolver;
 import com.rameses.util.ValueResolver;
 import com.sun.jmx.remote.util.Service;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  *
@@ -33,6 +35,7 @@ public abstract class ClientContext {
     private TaskManager taskManager;
     private NavigationHandler navigationHandler = new NavigationHandlerImpl();
     private ControllerProvider controllerProvider;
+    private Map headers = new HashMap();
     
     
     //<editor-fold defaultstate="collapsed" desc="  abstract properties  ">
@@ -89,6 +92,14 @@ public abstract class ClientContext {
         return taskManager;
     }
     
+    public Map getHeaders() {
+        return headers;
+    }
+    
+    public void setHeaders(Map headers) {
+        this.headers = headers;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  ControllerProviderWrapper (class)  ">
     private class ControllerProviderWrapper implements ControllerProvider {
         
@@ -129,4 +140,5 @@ public abstract class ClientContext {
         
     }
     //</editor-fold>
+    
 }

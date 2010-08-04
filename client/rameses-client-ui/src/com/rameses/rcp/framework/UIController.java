@@ -40,7 +40,7 @@ public abstract class UIController {
     public abstract Object getCodeBean();
     public abstract Object init(Map params, String action);
     
-    public void setCurrentView(String name) {        
+    public void setCurrentView(String name) {
         if ( !ValueUtil.isEmpty(name) ) {
             currentView = getView(name);
         }
@@ -157,39 +157,63 @@ public abstract class UIController {
         
         private void loadStyleRules(Class pageClass, Binding binding) {
             if ( !pageClass.isAnnotationPresent(StyleSheet.class) ) return;
-            
+
+            List<String> sources = new ArrayList();
             StyleSheet ss = (StyleSheet) pageClass.getAnnotation(StyleSheet.class);
             String source = ss.value();
             
+            if ( source.indexOf(",") > -1 ) {
+                for (String s: source.split("\\s*,\\s*")) {
+                    sources.add( s );
+                }
+            } else {
+                sources.add( source );
+            }
+                        
+            List<StyleRule> newRules = new ArrayList();
             ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
-            InputStream is = null;
             
+            InputStream is = null;
+            for ( String s : sources ) {
+                is = loader.getResourceAsStream(s);
+                List<StyleRule> sr = getStyles(is);
+                if ( sr.size() > 0 ) {
+                    newRules.addAll( sr );
+                }
+            }
+            
+            if ( newRules.size() == 0 ) return;
+            
+            StyleRule[] oldRules = binding.getStyleRules();
+            List list = new ArrayList();
+            if(oldRules!=null) {
+                for(StyleRule s : oldRules) {
+                    list.add(s);
+                }
+            }
+            
+            for(Object s: newRules) {
+                list.add((StyleRule)s);
+            }
+            StyleRule[] sr =(StyleRule[]) list.toArray(new StyleRule[]{});
+            binding.setStyleRules(sr);
+            
+        }
+        
+        private List<StyleRule> getStyles(InputStream is) {
             try {
-                is = loader.getResourceAsStream(source);
-                
                 StyleRuleParser parser = new StyleRuleParser();
                 DefaultParseHandler handler = new DefaultParseHandler();
                 parser.parse(is, handler);
                 
-                List<StyleRule> newRules = handler.getList();
-                if ( newRules.size() == 0 ) return;
+                return handler.getList();
                 
-                StyleRule[] oldRules = binding.getStyleRules();
-                List list = new ArrayList();
-                if(oldRules!=null) {
-                    for(StyleRule s : oldRules) {
-                        list.add(s);
-                    }
-                }
-                for(Object s: newRules) {
-                    list.add((StyleRule)s);
-                }
-                StyleRule[] sr =(StyleRule[]) list.toArray(new StyleRule[]{});
-                binding.setStyleRules(sr);
-                
-            } catch (Exception ign) {;} finally {
+            } catch (Exception ign) {
+            } finally {
                 try { is.close(); } catch(Exception ign){;}
             }
+            
+            return new ArrayList();
         }
         
     }

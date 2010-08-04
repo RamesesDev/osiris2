@@ -1,0 +1,9 @@
+
+"entity.*" [readonly]  { 
+    background: #ffffff;
+}
+
+"entity.*" [!readonly] { 
+    background: #ffffff;
+}
+

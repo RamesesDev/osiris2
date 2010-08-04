@@ -34,6 +34,7 @@ public class Template1 extends javax.swing.JPanel {
         jPanel1.add(jLabel1, java.awt.BorderLayout.CENTER);
 
         xActionBar1.setName("actions");
+        xActionBar1.setPreferredSize(new java.awt.Dimension(136, 26));
         jPanel1.add(xActionBar1, java.awt.BorderLayout.NORTH);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);

@@ -20,10 +20,7 @@ public class Test extends TestCase {
     }
     
     public void testHello() {
-        JTree t = new JTree();
-        for ( Object o: t.getActionMap().allKeys() ) {
-            System.out.println( o );
-        }
+
     }
     
 }

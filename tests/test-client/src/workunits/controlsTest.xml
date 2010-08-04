@@ -55,6 +55,10 @@
                 MsgBox.alert("Posting $entity.testPost");
             }
             
+            void save() {
+            
+            }
+            
             @Close
             def close() {
                 MsgBox.alert('Closing');

@@ -9,13 +9,16 @@
 package com.rameses.rcp.support;
 
 import com.rameses.rcp.common.StyleRule;
+import com.rameses.rcp.framework.ClientContext;
 import java.awt.Color;
 import java.io.InputStream;
 import java.io.StreamTokenizer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.ImageIcon;
 
 public class StyleRuleParser {
     
@@ -27,9 +30,10 @@ public class StyleRuleParser {
     private String stylePattern;
     
     //<editor-fold defaultstate="collapsed" desc="  parse method  ">
-    public void parse( InputStream is, AbstractParseHandler handler ) throws Exception {
+    public void parse( InputStream is, ParseHandler handler ) throws Exception {
         StreamTokenizer tokenizer = new StreamTokenizer(is);
         tokenizer.ordinaryChar('.');
+        tokenizer.ordinaryChar('/');
         tokenizer.ordinaryChars('0', '9');
         while(tokenizer.nextToken() != tokenizer.TT_EOF ) {
             if(tokenizer.ttype == '"') {
@@ -87,10 +91,12 @@ public class StyleRuleParser {
                 }
             }
         }
+        
     }
     //</editor-fold>
     
-    public static interface AbstractParseHandler {
+    //<editor-fold defaultstate="collapsed" desc="  StyleRuleParser interfaces  ">
+    public static interface ParseHandler {
         void startStyle();
         void setStyle(String pattern, String expr);
         void startProperties();
@@ -110,8 +116,10 @@ public class StyleRuleParser {
         String resolve(String propertyName);
         
     }
+    //</editor-fold>
     
-    public static class DefaultParseHandler implements StyleRuleParser.AbstractParseHandler {
+    //<editor-fold defaultstate="collapsed" desc="  DefaultParseHandler (class)  ">
+    public static class DefaultParseHandler implements StyleRuleParser.ParseHandler {
         
         private StyleRule currentStyle;
         private List<StyleRule> list = new ArrayList();
@@ -187,6 +195,7 @@ public class StyleRuleParser {
             }
         }
     }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Default Value/Property Resolver classes  ">
     public static class ColorResolver implements ValueResolver {
@@ -218,8 +227,15 @@ public class StyleRuleParser {
     public static class DataTypeResolver implements ValueResolver {
         
         public Object resolve(String name, String value) {
-            if ( "true".equals(value) ) return true;
-            else if ( "false".equals(value) ) return false;
+            if ( "true".equals(value) ) {
+                return true;
+            } else if ( "false".equals(value) ) {
+                return false;
+            } else if ( "icon".equals(name) ) {
+                ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
+                URL u = loader.getResource(value);
+                return new ImageIcon(u);
+            }
             
             return null;
         }

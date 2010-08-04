@@ -11,12 +11,16 @@
         import com.rameses.rcp.common.*;
         import test.model.*;
                 
-        public class SubListTestController  {
+        public class SubFormTestController  {
         
-            def entity = [:];
+            def entity = [ detail:[ caption: 'Contact No.', value: '1234'] ];
+            
+            def subFormHandler = new Opener(
+                name: 'test-client:subFormTest1', params: [entity: entity.detail ]
+            );
             
             void save() {
-                MsgBox.alert('Transaction saved.');
+                MsgBox.alert( entity );
             }
             
         }
