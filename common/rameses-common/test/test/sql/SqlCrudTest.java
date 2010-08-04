@@ -36,7 +36,7 @@ public class SqlCrudTest extends TestCase {
         
         CrudSqlCacheProvider cp = new CrudSqlCacheProvider();
         cp.setSqlCacheResourceHandler( new DefaultSqlCacheResourceHandler() );
-        SqlCache sq = cp.createSqlCache( "branch_user_read.crud" );
+        SqlCache sq = cp.createSqlCache( "branch_user_list.crud" );
         System.out.println(sq.getStatement());
         for(Object o: sq.getParamNames()) {
             System.out.println(o+"");

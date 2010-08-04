@@ -80,6 +80,7 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
     /**
      * generates a standard insert statement
      */
+    // <editor-fold defaultstate="collapsed" desc="SQL CREATE">
     private SqlCache getCreateSqlCache( CrudParser cp ) {
         List paramNames = new ArrayList();
         StringBuffer sb = new StringBuffer();
@@ -87,26 +88,32 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         sb.append( "INSERT INTO " + cp.tableName + " (");
         tail.append( "(" );
         boolean firstPass = true;
-            for(CrudField cf: cp.fields) {
-                if(firstPass) 
-                    firstPass = false;
-                else {
-                    sb.append(",");
-                    tail.append(",");
-                }    
-                sb.append( cf.fieldName );
-                tail.append( "?");
-                paramNames.add( cf.name );
-            }
+        
+        //loop the fields.
+        for(CrudField cf: cp.fields) {
+            if(cf.linked) continue;
+            if(firstPass) 
+                firstPass = false;
+            else {
+                sb.append(",");
+                tail.append(",");
+            }    
+            sb.append( cf.fieldName );
+            tail.append( "?");
+            paramNames.add( cf.name );
+        }
         sb.append( ")");
         tail.append( ")");
         String stmt = sb.append( " VALUES ").append(tail).toString();
         return new SqlCache(stmt,paramNames);
     }
+    //</editor-fold>
+
     
     /**
      * generates a select statement with primary key as the finder
      */
+    // <editor-fold defaultstate="collapsed" desc="SQL READ">
     private SqlCache getReadSqlCache( CrudParser cp ) {
         List paramNames = new ArrayList();
         List<CrudField> primKeys = new ArrayList();
@@ -124,9 +131,13 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
             else {
                 sb.append(",");
             }    
+            if(!cf.linked) sb.append( cp.tableName + ".");
             sb.append( cf.fieldName + " AS " + cf.name);
         }
         sb.append( " FROM " + cp.tableName);
+        
+        if(cp.linkTable!=null) sb.append( cp.linkTable);
+        
         if( primKeys.size()== 0 ) 
             throw new IllegalStateException("There must be at least one primary key for CRUD getReadSqlCache");
             
@@ -134,13 +145,16 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         int i = 0; 
         for(CrudField p: primKeys) {
             if( i>0) sb.append( " AND " );
-            sb.append( p.fieldName + "=?" );
+            sb.append( cp.tableName +"."+ p.fieldName + "=?" );
             i++;
         }
         String stmt = sb.toString();
         return new SqlCache(stmt,paramNames);
     }
+    //</editor-fold>
+
     
+    // <editor-fold defaultstate="collapsed" desc="SQL UPDATE">
     private SqlCache getUpdateSqlCache( CrudParser cp ) {
         List paramNames = new ArrayList();
         List<CrudField> primKeys = new ArrayList();
@@ -148,6 +162,7 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         sb.append( "UPDATE " + cp.tableName + " SET ");
         boolean firstPass = true;
         for(CrudField cf: cp.fields) {
+            if(cf.linked) continue;
             if(cf.primary) {
                 primKeys.add(cf);
                 continue;
@@ -174,7 +189,10 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         String stmt = sb.toString();
         return new SqlCache(stmt,paramNames);
     }
+    //</editor-fold>
+
     
+    // <editor-fold defaultstate="collapsed" desc="SQL DELETE">
     private SqlCache getDeleteSqlCache( CrudParser cp ) {
         List paramNames = new ArrayList();
         List<CrudField> primKeys = new ArrayList();
@@ -200,12 +218,15 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         String stmt = sb.toString();
         return new SqlCache(stmt,paramNames);
     }
+    //</editor-fold>
+
     
     /***
      * standard list statement is as follows
      * <br>
      * SELECT ${fields} FROM ( select field1 as name1, field2 as name2 from table ) tbl ${condition}
      */
+    // <editor-fold defaultstate="collapsed" desc="SQL LIST">
     private SqlCache getListSqlCache( CrudParser cp , String alias) {
         if(alias ==null ) alias = cp.tableName;
         alias = alias.replaceAll("/", "_");
@@ -221,21 +242,25 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
             else {
                 sb.append(",");
             }    
+            if(!cf.linked) sb.append(cp.tableName+".");
             sb.append( cf.fieldName + " AS " + cf.name);
         }
         sb.append( " FROM " + cp.tableName);
+        if(cp.linkTable!=null) sb.append(cp.linkTable);
         sb.append( " ) " + alias );
         sb.append( " ${condition}");
         
         String stmt = sb.toString();
         return new SqlCache(stmt,paramNames);
     }
-    
+    //</editor-fold>
+
     
     // <editor-fold defaultstate="collapsed" desc="CRUD PARSER">
     private class CrudParser extends DefaultHandler {
         private StringBuffer sb;
         String tableName;
+        String linkTable;
         List<CrudField> fields = new ArrayList();
         
         public CrudParser(InputStream is ) {
@@ -255,10 +280,13 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
                 tableName = attributes.getValue( "name" );
                 sb = new StringBuffer();
             }
+            else if(qName.equals("link-ref")) {
+                sb = new StringBuffer();
+            }
         }
         
         public void characters(char[] ch, int start, int length) throws SAXException {
-            sb.append( ch, start, length );
+            if(sb!=null) sb.append( ch, start, length );
         }
         
         public void endElement(String uri, String localName, String qName) throws SAXException {
@@ -283,11 +311,22 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
                         else {
                             crf.fieldName = f.trim();
                         }
+                        
+                        //if field name has an alias example customer.name, then it is assumed
+                        //to be a link field. also primary is set off because link fields
+                        //can never be primary keys
+                        if(crf.fieldName.indexOf(".")>0) {
+                            crf.linked = true;
+                            crf.primary = false;
+                        }
                         fields.add(crf);
                     }
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
+            }
+            else if(qName.equals("link-ref")) {
+                linkTable = sb.toString();
             }
         }
     }
@@ -296,6 +335,7 @@ public class CrudSqlCacheProvider extends SqlCacheProvider {
         String name;
         String fieldName;
         boolean primary;
+        boolean linked;
     }
     
     //</editor-fold>
