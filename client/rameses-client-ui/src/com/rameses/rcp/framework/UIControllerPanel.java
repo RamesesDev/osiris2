@@ -17,7 +17,7 @@ import javax.swing.event.AncestorListener;
  */
 public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewContext {
     
-    private Stack controllers = new Stack();
+    private Stack<UIControllerContext> controllers = new Stack();
     private boolean defaultBtnAdded;
     private XButton defaultBtn;
     
@@ -46,18 +46,19 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
         }
     }
     
-    public UIControllerPanel(UIController controller) {
+    public UIControllerPanel(UIControllerContext controller) {
         this();
         controllers.push(controller);
         _build();
     }
     
     private void _build() {
-        UIController current = getCurrentController();
+        UIControllerContext current = getCurrentController();
         removeAll();
         if ( current != null ) {
             UIViewPanel p = current.getCurrentView();
             Binding binding = p.getBinding();
+            binding.getProperties().put(UIViewPanel.class, p);
             defaultBtn = binding.getDefaultButton();
             if ( defaultBtn != null ) {
                 defaultBtnAdded = false;
@@ -67,25 +68,25 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
             
             add( p );
             p.refresh();
-            binding.display();
+            binding.focusFirstInput();
         }
         SwingUtilities.updateComponentTreeUI(this);
     }
     
     public void setLayout(LayoutManager mgr) {;}
     
-    public Stack getControllers() {
+    public Stack<UIControllerContext> getControllers() {
         return controllers;
     }
     
-    public void setControllers(Stack controllers) {
+    public void setControllers(Stack<UIControllerContext> controllers) {
         this.controllers = controllers;
         _build();
     }
     
-    public UIController getCurrentController() {
+    public UIControllerContext getCurrentController() {
         if ( !controllers.empty() ) {
-            return (UIController) controllers.peek();
+            return (UIControllerContext) controllers.peek();
         }
         return null;
     }
@@ -99,10 +100,10 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     }
     
     public void display() {
-        UIController current = getCurrentController();
+        UIControllerContext current = getCurrentController();
         if ( current != null ) {
             UIViewPanel p = current.getCurrentView();
-            p.getBinding().display();
+            p.getBinding().focusFirstInput();
         }
     }
         

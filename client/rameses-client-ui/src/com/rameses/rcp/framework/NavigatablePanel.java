@@ -12,8 +12,8 @@ public interface NavigatablePanel {
      * @description
      *    returns the Stack of UIControllers in the NavigatablePanel
      */
-    Stack getControllers();
-    void setControllers(Stack controllers);
+    Stack<UIControllerContext> getControllers();
+    void setControllers(Stack<UIControllerContext> controllers);
     /**
      * @description
      *    this method is called by the navigation handler

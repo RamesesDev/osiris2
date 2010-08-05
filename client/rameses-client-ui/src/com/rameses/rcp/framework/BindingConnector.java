@@ -14,14 +14,13 @@ import com.rameses.rcp.util.ActionMessage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BindingConnector {
+public class BindingConnector implements BindingListener {
     
     private Binding parentBinding;
     private List<Binding> subBindings = new ArrayList();
-    private BindingListener listener = new ConnectorBindingListener();
     
-    public BindingConnector() {
-    }
+    
+    public BindingConnector() {}
     
     public Binding getParentBinding() {
         return parentBinding;
@@ -29,27 +28,41 @@ public class BindingConnector {
     
     public void setParentBinding(Binding parentBinding) {
         this.parentBinding = parentBinding;
-        parentBinding.addBindingListener(listener);
+        parentBinding.addBindingListener(this);
     }
     
     public List<Binding> getSubBindings() {
         return subBindings;
     }
     
-    private class ConnectorBindingListener implements BindingListener {
-        
-        public void validate(ActionMessage actionMessage, Binding parent) {
-            for (Binding sb : subBindings ) {
-                sb.validate(actionMessage);
-            }
+    public void validate(ActionMessage actionMessage, Binding parent) {
+        for (Binding sb : subBindings ) {
+            sb.validate(actionMessage);
         }
-        
-        public void notifyDepends(UIControl control, Binding parent) {
-            for (Binding sb : subBindings) {
-                sb.notifyDepends(control);
-            }
+    }
+    
+    public void notifyDepends(UIControl control, Binding parent) {
+        for (Binding sb : subBindings) {
+            sb.notifyDepends(control);
         }
-        
+    }
+    
+    public void refresh(String fieldRegEx) {
+        for (Binding sb : subBindings) {
+            sb.refresh(fieldRegEx);
+        }
+    }
+    
+    public void formCommit() {
+        for (Binding sb : subBindings) {
+            sb.formCommit();
+        }
+    }
+    
+    public void update() {
+        for (Binding sb : subBindings) {
+            sb.update();
+        }
     }
     
 }

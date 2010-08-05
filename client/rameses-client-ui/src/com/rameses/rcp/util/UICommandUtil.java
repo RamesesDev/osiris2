@@ -1,7 +1,6 @@
 package com.rameses.rcp.util;
 
 import com.rameses.rcp.control.XButton;
-import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.util.MethodResolver;
@@ -40,7 +39,7 @@ public class UICommandUtil {
             String target = ValueUtil.isEmpty(command.getTarget())? "parent": command.getTarget();
             NavigatablePanel navPanel = UIControlUtil.getParentPanel((JComponent)command, target);
             if ( "root".equals(target) ) {
-                UIController rootCon = (UIController) navPanel.getControllers().peek();
+                UIControllerContext rootCon = (UIControllerContext) navPanel.getControllers().peek();
                 Binding rootBinding = rootCon.getCurrentView().getBinding();
                 validate(command, rootBinding);
             }

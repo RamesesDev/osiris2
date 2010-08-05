@@ -7,8 +7,8 @@ import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ControlSupport;
-import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.UIController;
+import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
@@ -77,10 +77,12 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
             
         } else {
             Opener opener = null;
-            //check if instanceof String, then load the opener.
+            
             if( o instanceof Opener ) {
                 opener = (Opener)o;
-            } else {
+            }
+            //check if instanceof String, then load the opener.
+            else {
                 opener = new Opener(handler);
             }
             
@@ -88,15 +90,14 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 throw new IllegalStateException("Lookup Handler must reference an Opener object");
             
             opener = ControlSupport.initOpener( opener, getBinding().getController() );
-            ControllerProvider cp = ClientContext.getCurrentContext().getControllerProvider();
-            lookupController = cp.getController( opener.getName() );
+            lookupController = opener.getController();
             if( lookupController == null ) {
                 throw new IllegalStateException("Lookup Controller must be valid");
             }
             
             if( !(lookupController.getCodeBean() instanceof LookupModel) )
                 throw new IllegalStateException("Lookup Handler code bean must be an instanceof LookupListModel");
-            
+
             
             lookupController.setTitle( opener.getCaption() );
             lookupController.setId( opener.getId() );
@@ -115,16 +116,17 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 UIController c = lookupController;
                 if ( c == null ) return; //should use a default lookup handler
                 
+                UIControllerContext uic = new UIControllerContext(c);                
                 Platform platform = ClientContext.getCurrentContext().getPlatform();
-                String conId = c.getId();
+                String conId = uic.getId();
                 if ( conId == null ) conId = getName() + handler;
                 if ( platform.isWindowExists(conId) ) return;
                 
-                UIControllerPanel lookupPanel = new UIControllerPanel(c);
+                UIControllerPanel lookupPanel = new UIControllerPanel( uic );
                 
                 Map props = new HashMap();
                 props.put("id", conId);
-                props.put("title", c.getTitle());
+                props.put("title", uic .getTitle());
                 
                 platform.showPopup(this, lookupPanel, props);
             }
@@ -208,8 +210,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                     setText("");
                     selectedValue = null;
                     UIInputUtil.updateBeanValue(XLookupField.this);
-                }
-                else {
+                } else {
                     refresh();
                 }
                 dirty = false;

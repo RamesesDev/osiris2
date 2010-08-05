@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker folderid="/menu/file" caption="SubForm Test"/>
+        <invoker folderid="/menu/file" caption="SubForm Test" index="-10"/>
     </invokers>
     
     <code>

@@ -40,12 +40,14 @@ public class TestPage extends javax.swing.JPanel {
         formPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Entry"));
         formPanel1.setCaptionWidth(100);
         xTextField2.setCaption("Firstname");
+        xTextField2.setIndex(-2);
         xTextField2.setName("firstname");
         xTextField2.setPreferredSize(new java.awt.Dimension(120, 19));
         xTextField2.setRequired(true);
         formPanel1.add(xTextField2);
 
         xTextField1.setCaption("Lastname");
+        xTextField1.setIndex(-1);
         xTextField1.setName("lastname");
         xTextField1.setPreferredSize(new java.awt.Dimension(200, 19));
         xTextField1.setRequired(true);

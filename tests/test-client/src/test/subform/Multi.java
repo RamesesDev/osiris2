@@ -21,7 +21,8 @@ public class Multi extends javax.swing.JPanel {
         xTextField2 = new com.rameses.rcp.control.XTextField();
         xButton1 = new com.rameses.rcp.control.XButton();
 
-        xSubFormPanel1.setName("subController");
+        xSubFormPanel1.setHandler("subFormHandler");
+        xSubFormPanel1.setIndex(10);
         org.jdesktop.layout.GroupLayout xSubFormPanel1Layout = new org.jdesktop.layout.GroupLayout(xSubFormPanel1);
         xSubFormPanel1.setLayout(xSubFormPanel1Layout);
         xSubFormPanel1Layout.setHorizontalGroup(
@@ -35,14 +36,14 @@ public class Multi extends javax.swing.JPanel {
 
         formPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Entry"));
         formPanel1.setCaptionWidth(100);
-        xTextField1.setText("xTextField1");
         xTextField1.setCaption("Name");
+        xTextField1.setName("entity.name");
         xTextField1.setPreferredSize(new java.awt.Dimension(200, 19));
         xTextField1.setRequired(true);
         formPanel1.add(xTextField1);
 
-        xTextField2.setText("xTextField2");
         xTextField2.setCaption("Address");
+        xTextField2.setName("entity.address");
         xTextField2.setPreferredSize(new java.awt.Dimension(200, 19));
         xTextField2.setRequired(true);
         formPanel1.add(xTextField2);
@@ -66,7 +67,7 @@ public class Multi extends javax.swing.JPanel {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .add(formPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(formPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 100, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(xSubFormPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)

@@ -1,5 +1,6 @@
 package com.rameses.rcp.common;
 
+import com.rameses.rcp.framework.UIController;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,9 @@ public class Opener {
     private Map params = new HashMap();
     private String target;
     private String outcome;
+    
+    private UIController controller;
+    private UIController caller;
     
     
     public Opener() {
@@ -84,6 +88,22 @@ public class Opener {
     
     public void setOutcome(String outcome) {
         this.outcome = outcome;
+    }
+
+    public UIController getController() {
+        return controller;
+    }
+
+    public void setController(UIController controller) {
+        this.controller = controller;
+    }
+
+    public UIController getCaller() {
+        return caller;
+    }
+
+    public void setCaller(UIController caller) {
+        this.caller = caller;
     }
     
 }

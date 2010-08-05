@@ -14,8 +14,10 @@ import com.rameses.osiris2.SessionContext;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ControllerProvider;
+import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.support.ResourceUtil;
+import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,16 +54,17 @@ public final class ToolbarUtil {
     
     public static Component getViewComponent(Invoker inv) {
         ControllerProvider cp = ClientContext.getCurrentContext().getControllerProvider();
-        UIController uc = cp.getController( inv.getWorkunitid() );
+        UIController c = cp.getController( inv.getWorkunitid() );
         String action = inv.getAction();
+        UIControllerContext uic = new UIControllerContext( c );
         if(action!=null) {
-            String out = (String)uc.init(new HashMap(), action);
-            if ( out != null ) 
-                uc.setCurrentView(out);
+            String out = (String)c.init(new HashMap(), action);
+            if ( !ValueUtil.isEmpty(out) ) {
+                uic.setCurrentView(out);
+            }
         } 
         
-        UIControllerPanel p = new UIControllerPanel(uc);
-        //p.display();
+        UIControllerPanel p = new UIControllerPanel(uic);
         return p;
     }
     

@@ -5,7 +5,6 @@ import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.Page;
 import com.rameses.osiris2.WorkUnitInstance;
 import com.rameses.rcp.framework.ControlSupport;
-import com.rameses.rcp.framework.UIViewPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +12,10 @@ import java.util.Map;
 public class WorkUnitUIController extends UIController {
     
     private WorkUnitInstance workunit;
-    private Class defaultPage;
     private String id;
     private String title;
     private String name;
-    private String defaultPageName;
+    private String defaultPageName = "default";
     
     public WorkUnitUIController(WorkUnitInstance wu) {
         this.workunit = wu;
@@ -29,13 +27,13 @@ public class WorkUnitUIController extends UIController {
         return workunit.getController();
     }
     
-    public UIViewPanel getDefaultView() {
-        if(defaultPage==null) {
+    public String getDefaultView() {
+        if(defaultPageName==null) {
             if( workunit.getWorkunit().getPages().size()>0 ) {
                 defaultPageName = workunit.getCurrentPage().getName();
             }
         }
-        return viewCache.get(defaultPageName).getViewPanel();
+        return defaultPageName;
     }
     
     public UIController.View[] getViews() {
@@ -71,22 +69,7 @@ public class WorkUnitUIController extends UIController {
             throw new IllegalStateException(e);
         }
     }
-    
-    
-    //extend UIView so that page classes will be on demand
-//    public class OsirisView extends UIView {
-//        private String template;
-//
-//        public OsirisView(Page page){
-//            super(page.getName());
-//            this.template = page.getTemplate();
-//        }
-//
-//        public Class getViewClass() {
-//            return pageToClass(template);
-//        }
-//    }
-    
+
     public Object init(Map properties, String action) {
         //set the properties
         ControlSupport.setProperties( getCodeBean(), properties );
@@ -108,7 +91,7 @@ public class WorkUnitUIController extends UIController {
                 return workunit.getCurrentPage().getName();
         } else {
             if( workunit.getWorkunit().getPages().size()>0 ) {
-                defaultPageName = workunit.getCurrentPage().getTemplate();
+                defaultPageName = workunit.getCurrentPage().getName();
             }
             if(action == null ) {
                 return null;

@@ -7,12 +7,8 @@
 
 package com.rameses.rcp.ui;
 
-import com.rameses.rcp.framework.Binding;
-import java.util.List;
-
-
 public interface UISubControl extends UIControl {
  
-    List<Binding> getSubBindings();
+    boolean focusFirstInput();
     
 }

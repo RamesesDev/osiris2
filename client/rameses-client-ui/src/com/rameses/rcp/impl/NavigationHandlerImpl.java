@@ -3,12 +3,12 @@ package com.rameses.rcp.impl;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ControlSupport;
-import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.framework.UIController;
+import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.util.ValueUtil;
 import java.util.HashMap;
@@ -30,8 +30,8 @@ public class NavigationHandlerImpl implements NavigationHandler {
         ClientContext ctx = ClientContext.getCurrentContext();
         Platform platform = ctx.getPlatform();
         
-        Stack<UIController> conStack = panel.getControllers();
-        UIController curController = conStack.peek();
+        Stack<UIControllerContext> conStack = panel.getControllers();
+        UIControllerContext curController = conStack.peek();
         
         if ( ValueUtil.isEmpty(outcome) ) {
             //if outcome is null or empty just refresh the current view
@@ -40,7 +40,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
         } else {
             if( outcome instanceof Opener )  {
                 Opener opener = (Opener) outcome;
-                opener = ControlSupport.initOpener( opener, curController );
+                opener = ControlSupport.initOpener( opener, curController.getController() );
                 boolean self = ValueUtil.isEmpty(opener.getTarget());
                 String id = opener.getId();
                 
@@ -49,20 +49,10 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     return;
                 }
                 
-                ControllerProvider provider = ctx.getControllerProvider();
-                UIController controller = provider.getController(opener.getName());
-                controller.setId( id );
-                controller.setName( opener.getName() );
-                controller.setTitle( opener.getCaption() );
-                
-                String opnrOutcome = opener.getOutcome();
-                Object o = controller.init(opener.getParams(), opener.getAction());
-                if ( o != null && o instanceof String ) {
-                    opnrOutcome = (String) o;
-                }
-                
-                if ( !ValueUtil.isEmpty(opnrOutcome) ) {
-                    controller.setCurrentView( opnrOutcome );
+                UIController opCon = opener.getController();
+                UIControllerContext controller = new UIControllerContext(opCon);
+                if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
+                    controller.setCurrentView( opener.getOutcome() );
                 }
                 
                 if ( self ) {

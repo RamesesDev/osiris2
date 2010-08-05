@@ -1,100 +1,31 @@
 package com.rameses.rcp.framework;
 
-import com.rameses.rcp.common.StyleRule;
-import com.rameses.rcp.support.StyleRuleParser;
-import com.rameses.rcp.support.StyleRuleParser.DefaultParseHandler;
-import com.rameses.rcp.ui.annotations.StyleSheet;
-import com.rameses.rcp.ui.annotations.Template;
-import com.rameses.util.ValueUtil;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
 
 public abstract class UIController {
-    
-    protected Map<String, View> viewCache = new Hashtable();
-    private UIViewPanel currentView;
-    private String id;
-    private String name;
-    private String title;
-    private boolean initialized = false;
     
     
     public UIController() {}
     
-    public void initialize() {
-        if ( initialized ) return;
-        for (View v: getViews()) {
-            viewCache.put(v.getName(), v);
-        }
-        initialized = true;
-    }
-    
     public abstract View[] getViews();
-    public abstract UIViewPanel getDefaultView();
+    public abstract String getDefaultView();
     public abstract Object getCodeBean();
     public abstract Object init(Map params, String action);
     
-    public void setCurrentView(String name) {
-        if ( !ValueUtil.isEmpty(name) ) {
-            currentView = getView(name);
-        }
-    }
+    public abstract String getId();
+    public abstract void setId(String id);
     
-    public UIViewPanel getCurrentView() {
-        if ( !initialized ) initialize();
-        
-        if ( currentView == null ) {
-            currentView = getDefaultView();
-        }
-        return currentView;
-    }
+    public abstract String getTitle();
+    public abstract void setTitle(String title);
     
-    public UIViewPanel getView(String name) {
-        if ( !initialized ) initialize();
-        
-        return viewCache.get(name).getViewPanel();
-    }
+    public abstract String getName();
+    public abstract void setName(String name);
     
-    public String getId() {
-        if ( id == null ) {
-            return name;
-        }
-        
-        return id;
-    }
-    
-    public void setId(String id) {
-        this.id = id;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    //<editor-fold defaultstate="collapsed" desc="  View (class)  ">
-    public class View {
+
+    public static class View {
         
         private String name;
         private String template;
-        private UIViewPanel viewPanel;
         
         public View(String name) {
             this(name, null);
@@ -113,111 +44,6 @@ public abstract class UIController {
             return template;
         }
         
-        public UIViewPanel getViewPanel() {
-            if ( viewPanel == null ) {
-                ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
-                try {
-                    JComponent panel = (JComponent) loader.loadClass(template).newInstance();
-                    if ( panel instanceof UIViewPanel )
-                        throw new Exception("Template " + template + " should not be an instance of UIViewPanel.");
-                    
-                    viewPanel = new UIViewPanel();
-                    Binding binding = viewPanel.getBinding();
-                    
-                    Class pageClass = panel.getClass();
-                    JPanel master = null;
-                    if( pageClass.isAnnotationPresent(Template.class) ) {
-                        Template t = (Template)pageClass.getAnnotation(Template.class);
-                        Class mClass = (Class) t.value()[0];
-                        master = (JPanel) mClass.newInstance();
-                        if(master instanceof UIViewPanel)
-                            throw new Exception("Master template " + mClass.getName() + " must not extend a UIViewPanel" );
-                        
-                        loadStyleRules(mClass, binding);
-                    }
-                    
-                    loadStyleRules(pageClass, binding);
-                    
-                    if ( master != null ) {
-                        master.add(panel);
-                        viewPanel.add(master);
-                    } else {
-                        viewPanel.add(panel);
-                    }
-                    
-                    binding.init();
-                    binding.setController(UIController.this);
-                    
-                } catch(Exception e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-            return viewPanel;
-        }
-        
-        private void loadStyleRules(Class pageClass, Binding binding) {
-            if ( !pageClass.isAnnotationPresent(StyleSheet.class) ) return;
-
-            List<String> sources = new ArrayList();
-            StyleSheet ss = (StyleSheet) pageClass.getAnnotation(StyleSheet.class);
-            String source = ss.value();
-            
-            if ( source.indexOf(",") > -1 ) {
-                for (String s: source.split("\\s*,\\s*")) {
-                    sources.add( s );
-                }
-            } else {
-                sources.add( source );
-            }
-                        
-            List<StyleRule> newRules = new ArrayList();
-            ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
-            
-            InputStream is = null;
-            for ( String s : sources ) {
-                is = loader.getResourceAsStream(s);
-                List<StyleRule> sr = getStyles(is);
-                if ( sr.size() > 0 ) {
-                    newRules.addAll( sr );
-                }
-            }
-            
-            if ( newRules.size() == 0 ) return;
-            
-            StyleRule[] oldRules = binding.getStyleRules();
-            List list = new ArrayList();
-            if(oldRules!=null) {
-                for(StyleRule s : oldRules) {
-                    list.add(s);
-                }
-            }
-            
-            for(Object s: newRules) {
-                list.add((StyleRule)s);
-            }
-            StyleRule[] sr =(StyleRule[]) list.toArray(new StyleRule[]{});
-            binding.setStyleRules(sr);
-            
-        }
-        
-        private List<StyleRule> getStyles(InputStream is) {
-            try {
-                StyleRuleParser parser = new StyleRuleParser();
-                DefaultParseHandler handler = new DefaultParseHandler();
-                parser.parse(is, handler);
-                
-                return handler.getList();
-                
-            } catch (Exception ign) {
-            } finally {
-                try { is.close(); } catch(Exception ign){;}
-            }
-            
-            return new ArrayList();
-        }
-        
     }
-    //</editor-fold>
-    
     
 }

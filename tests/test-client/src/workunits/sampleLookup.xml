@@ -11,6 +11,13 @@
                 
         public class SamplLookupController extends SimpleLookup {
                 
+            def data = [
+                [code: '1234', name: 'Pencil'],
+                [code: '2355', name: 'Ballpen'],
+                [code: '3633', name: 'Paper'],
+                [code: '7122', name: 'Writing Notebook']
+            ];
+        
             Column[] getColumns() {
                 return [
                     new Column(name: 'item.code', caption: 'Item Code', width: 50),
@@ -19,12 +26,11 @@
             }
             
             List fetchList(Map params) {
-                return [
-                    [code: '1234', name: 'Pencil'],
-                    [code: '1235', name: 'Ballpen'],
-                    [code: '1236', name: 'Paper'],
-                    [code: '1237', name: 'Writing Notebook']
-                ];
+                if ( search ) {
+                    return data.findAll { it.code.startsWith(search) };
+                }
+                
+                return data;
             }
         
         }
