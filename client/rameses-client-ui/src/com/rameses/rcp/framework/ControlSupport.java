@@ -88,9 +88,7 @@ public final class ControlSupport {
     }
     
     public static Opener initOpener( Opener opener, UIController caller ) {
-        if ( caller == null ) return opener;
-        
-        if ( ValueUtil.isEmpty(opener.getName()) ) {
+        if ( caller != null && ValueUtil.isEmpty(opener.getName()) ) {
             opener.setController( caller );
             
         } else {
@@ -101,14 +99,15 @@ public final class ControlSupport {
             controller.setTitle( opener.getCaption() );
             
             if ( caller != null ) {
-                injectCaller( controller.getCodeBean(), controller.getClass(), caller);
+                Object callee = controller.getCodeBean();
+                injectCaller( callee, callee.getClass(), caller.getCodeBean());
             }
             opener.setController( controller );
         }
         
         UIController controller = opener.getController();
         if( opener.getCaption()==null ) {
-            opener.setCaption( caller.getName() );
+            opener.setCaption( controller.getName() );
         }
         
         Object o = controller.init(opener.getParams(), opener.getAction());

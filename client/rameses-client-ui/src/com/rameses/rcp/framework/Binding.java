@@ -253,7 +253,7 @@ public class Binding {
             if ( ui.isReadonly() ) continue;
             
             Component c = (Component) ui;
-            if ( !c.isEnabled() || !c.isFocusable() ) continue;
+            if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) continue;
             
             Object compValue = ui.getValue();
             Object beanValue = UIControlUtil.getBeanValue(ui);
