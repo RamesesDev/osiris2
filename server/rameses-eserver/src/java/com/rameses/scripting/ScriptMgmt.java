@@ -43,6 +43,8 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
     private Map<String, Class> remoteInterfaces = new Hashtable();
     
+    //we have to build the interfaces on the fly
+    private Map<String, Class> localInterfaces = new Hashtable();
     
     public void start() throws Exception {
         System.out.println("STARTING SCRIPT MANAGEMENT");
@@ -75,6 +77,9 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         beforeInterceptorsMap.clear();
         afterInterceptorsMap.clear();
         remoteInterfaces.clear();
+        localInterfaces.clear();
+        //we must recreate the classLoader
+        classLoader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
     }
     
     public void flushAll() {
@@ -208,12 +213,17 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
     public Object createLocalProxy(String name, Map env) {
         try {
-            ScriptObject o = getScriptObject(name);
-            Class clazz = o.getProxyIntfClass();
-            if(clazz==null)
-                throw new IllegalStateException("Interface class does not exist. Please ensure a @ProxyMethod is defined");
             InitialContext ctx = new InitialContext();
             ScriptServiceLocal scriptService = (ScriptServiceLocal)ctx.lookup(CONSTANTS.SCRIPT_SERVICE_LOCAL);
+            Class clazz = localInterfaces.get( name );
+            if(clazz==null) {
+                byte[] bytes = scriptService.getScriptInfo(name);
+                clazz = classLoader.parseClass( new ByteArrayInputStream(bytes)  );
+                localInterfaces.put(name, clazz);
+            }
+            if(clazz==null)
+                throw new IllegalStateException("Interface class does not exist. Please ensure a @ProxyMethod is defined");
+            
             ScriptProxyInvocationHandler handler = new ScriptProxyInvocationHandler(scriptService, name, env);
             return Proxy.newProxyInstance(classLoader, new Class[]{clazz}, handler);
         } catch(Exception e) {
@@ -225,8 +235,15 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     public Object createRemoteProxy(String name, Map env, String hostKey ) {
         try {
             ScriptServiceLocal scriptService = RemoteDelegate.getScriptService(hostKey,env);
-            byte[] bytes = scriptService.getScriptInfo(name);
-            Class clazz = classLoader.parseClass( new ByteArrayInputStream(bytes)  );
+            Class clazz = remoteInterfaces.get(name);
+            if(clazz==null) {
+                byte[] bytes = scriptService.getScriptInfo(name);
+                clazz = classLoader.parseClass( new ByteArrayInputStream(bytes)  );
+                remoteInterfaces.put(name,clazz);
+            }
+            if(clazz==null)
+                throw new IllegalStateException("Interface class does not exist. Please ensure a @ProxyMethod is defined");
+            
             ScriptProxyInvocationHandler handler = new ScriptProxyInvocationHandler(scriptService, name, env);
             return Proxy.newProxyInstance(classLoader, new Class[]{clazz}, handler);
         } catch(Exception e) {
