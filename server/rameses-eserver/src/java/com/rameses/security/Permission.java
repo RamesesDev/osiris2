@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.auth.server;
+package com.rameses.security;
 
 import java.io.Serializable;
 
@@ -19,12 +19,11 @@ public class Permission implements Serializable {
     
     private String name;
     private String title;
-    private boolean allowed;
+    private String category;
     
-    public Permission(String name, String title,boolean allow) {
+    public Permission(String name, String title) {
         setName(name);
         setTitle(title);
-        setAllowed(allow);
     }
 
     
@@ -47,12 +46,25 @@ public class Permission implements Serializable {
         this.title = title;
     }
 
-    public boolean isAllowed() {
-        return allowed;
+    public String toString() {
+        return name +"=" + title;
     }
 
-    public void setAllowed(boolean allowed) {
-        this.allowed = allowed;
+    public boolean equals(Object obj) {
+        if(obj==null) return false;
+        Permission p = (Permission)obj;
+        return getName().equals( p.getName() );
     }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    
+
+            
     
 }

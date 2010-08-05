@@ -9,7 +9,6 @@
 
 package com.rameses.scripting;
 
-import com.rameses.eserver.*;
 import com.rameses.eserver.MultiResourceHandler;
 import com.rameses.eserver.ResourceProvider;
 import java.io.InputStream;
@@ -45,7 +44,7 @@ public class ScriptResourceProvider extends ResourceProvider {
             Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources(fileName);
             while(en.hasMoreElements()) {
                 URL u = en.nextElement();
-                handler.handle( u.openStream() );
+                handler.handle( u.openStream(), u.getPath() );
             }
         }
         else if(name.equals("deployers")) {
@@ -53,7 +52,7 @@ public class ScriptResourceProvider extends ResourceProvider {
             Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources(fileName);
             while(en.hasMoreElements()) {
                 URL u = en.nextElement();
-                handler.handle( u.openStream() );
+                handler.handle( u.openStream(), u.getPath() );
             }
         }
     }

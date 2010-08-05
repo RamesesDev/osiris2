@@ -29,7 +29,7 @@ public class ScriptDeployer implements ScriptDeployerMBean {
     
     private class DeployerHandler implements MultiResourceHandler {
         
-        public void handle(InputStream is) throws Exception {
+        public void handle(InputStream is, String source) throws Exception {
             InputStreamReader ir = new InputStreamReader(is);
             BufferedReader r = new BufferedReader(ir);
             String s = null;

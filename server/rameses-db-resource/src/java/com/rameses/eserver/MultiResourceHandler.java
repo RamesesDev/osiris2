@@ -17,6 +17,5 @@ import java.io.InputStream;
  */
 public interface MultiResourceHandler {
 
-    void handle( InputStream is ) throws Exception ;
-    
+    void handle( InputStream is, String resName ) throws Exception ;
 }

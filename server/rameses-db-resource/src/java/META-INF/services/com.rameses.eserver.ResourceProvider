@@ -1,2 +1,4 @@
-com.rameses.scripting.db.DBScriptResourceProvider
-com.rameses.scripting.db.DBSqlCacheProvider
+com.rameses.resources.db.DBScriptResourceProvider
+com.rameses.resources.db.DBSqlResourceProvider
+com.rameses.resources.db.DBPermissionResourceProvider
+com.rameses.resources.db.DBTemplateResourceProvider

@@ -147,7 +147,7 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
     private class InterceptorLoader implements MultiResourceHandler {
         
-        public void handle(InputStream is) throws Exception {
+        public void handle(InputStream is, String source) throws Exception {
             InputStreamReader ir = new InputStreamReader(is);
             BufferedReader r = new BufferedReader(ir);
             String s = null;
