@@ -1,5 +1,5 @@
 package test;
-import javax.swing.JTree;
+import com.rameses.util.MachineInfo;
 import junit.framework.*;
 
 /*
@@ -19,8 +19,12 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    public void testHello() {
-
+    public void testHello() throws Exception {
+        String mcaddress = MachineInfo.getInstance().getMacAddress();
+        System.out.println( mcaddress );
+        System.out.println( mcaddress.hashCode() );
+        System.out.println( (mcaddress+"1").hashCode() );
+        
     }
     
 }

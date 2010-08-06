@@ -59,6 +59,8 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
     
     
     public void actionPerformed(ActionEvent e) {
+        if ( !isFocusable() || !isVisible() || !isEnabled() ) return;
+        
         actionPerformed();
     }
     
@@ -127,10 +129,10 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         public void mouseClicked(MouseEvent e) {
             if(orientation.toUpperCase() == "RIGHT") {
                 if(e.getX() >= (AbstractIconedTextField.this.getWidth() - (imgWidth + XPAD)))
-                    actionPerformed();
+                    actionPerformed(null);
             } else {
                 if(e.getX() > 0 && e.getX() < (XPAD + imgWidth))
-                    actionPerformed();
+                    actionPerformed(null);
             }
         }
         

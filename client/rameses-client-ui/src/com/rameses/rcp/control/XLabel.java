@@ -39,14 +39,6 @@ public class XLabel extends JLabel implements UIControl, Containable {
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public void setText(String t) {
-        if ( Beans.isDesignTime() ) {
-            setExpression( t );
-        } else {
-            super.setText( t );
-        }
-    }
-    
     public void setName(String name) {
         super.setName(name);
         super.setText(name);
