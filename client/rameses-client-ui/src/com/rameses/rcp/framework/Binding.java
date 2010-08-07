@@ -46,6 +46,12 @@ public class Binding {
     private UIController controller;
     
     /**
+     * index of all controls in this binding
+     * this is used to speed up in finding a control by name
+     */
+    private Map<String, UIControl> controlsIndex = new Hashtable();
+    
+    /**
      * 1. reference of all controls that can aquire default focus
      *    when the window is showed or during page navigation
      * 2. this reference contains UIInput and UISubControl only
@@ -88,6 +94,9 @@ public class Binding {
             XButton btn = (XButton) control;
             if ( btn.isDefaultCommand() )
                 defaultButton = btn;
+        }
+        if( !ValueUtil.isEmpty(control.getName()) ) {
+            controlsIndex.put(control.getName(), control);
         }
     }
     
@@ -348,6 +357,19 @@ public class Binding {
             
         } catch(Exception e) {
             throw new IllegalStateException(e);
+        }
+    }
+    
+    /**
+     * focuses a UIControl from a code bean
+     * this is helpful when you do the validation from the code and
+     * you want to focus a control after displaying an error message
+     */
+    public void focus(String name) {
+        UIControl c = controlsIndex.get(name);
+        if ( c != null ) {
+            Component comp = (Component) c;
+            comp.requestFocus();
         }
     }
     //</editor-fold>

@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 public class MainDialog implements MainWindow {
     
     private JDialog dialog = new JDialog();
+    private MainWindowListener listener;
     
     public MainDialog() {
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -40,6 +41,11 @@ public class MainDialog implements MainWindow {
         
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                if ( listener != null ) {
+                    if ( !listener.onClose() ) {
+                        return;
+                    }
+                }
                 close();
             }
         });
@@ -66,6 +72,7 @@ public class MainDialog implements MainWindow {
     }
     
     public void setListener(MainWindowListener listener) {
+        this.listener = listener;
     }
     
     public void setComponent(JComponent comp, String constraint) {
