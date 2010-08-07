@@ -48,6 +48,9 @@ public class RuleMgmt implements RuleMgmtMBean, Serializable {
     }
 
     public void stop() throws Exception {
+        System.out.println("STOPPING RULE MANAGEMENT [" + jndiName +"]" );
+        InitialContext ctx = new InitialContext();
+        JndiUtil.unbind( ctx,jndiName );
     }
 
     public void deploy() {

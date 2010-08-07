@@ -250,5 +250,9 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
             throw new IllegalStateException(e);
         }
     }
+
+    public Map getLoadedScripts() {
+        return cacheService.getContext(SCRIPT_PREFIX);
+    }
     
 }
