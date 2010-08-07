@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+                
+        public class SubFormTest1Controller  {
+        
+            def entity = [ value: 'sample'];
+                        
+            void fireAction() {
+                MsgBox.alert( entity );
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.subform.SubPage"/>
+    </pages>
+</workunit>

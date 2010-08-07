@@ -11,7 +11,6 @@ package com.rameses.osiris2.client.ui.ext;
 
 import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.common.AbstractListModel;
-import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.common.PageListModel;
 import com.rameses.rcp.framework.UIController;
@@ -63,12 +62,12 @@ public abstract class ListViewController extends PageListModel {
     }
 
     public Object create() {
-        MsgBox.alert("Override create method");
+        System.out.println("Override create method");
         return null;
     }
     
     public Object open() {
-        MsgBox.alert("Override open method");
+        System.out.println("Override open method");
         return null;
     }
 

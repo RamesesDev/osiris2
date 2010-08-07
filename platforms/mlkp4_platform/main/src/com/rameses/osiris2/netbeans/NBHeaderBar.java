@@ -12,10 +12,13 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class NBHeaderBar extends JLayeredPane {
+    
     private Logo logo;
     private Layout layout;
+    
     
     public NBHeaderBar() {
         layout = new Layout();
@@ -32,6 +35,7 @@ public class NBHeaderBar extends JLayeredPane {
         }
         add(top, DEFAULT_LAYER);
         layout.jcHeader = top;
+        SwingUtilities.updateComponentTreeUI(this);
     }
     
     public void setBottomView(JComponent bottom) {
@@ -40,6 +44,7 @@ public class NBHeaderBar extends JLayeredPane {
         }
         add(bottom, DEFAULT_LAYER);
         layout.jcFooter = bottom;
+        SwingUtilities.updateComponentTreeUI(this);
     }
     
     public void setLogoIcon(ImageIcon logoIcon) {

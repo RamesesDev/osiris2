@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="SubForm Test (Multi)" index="-11"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+                
+        public class SubFormTestController  {
+        
+            def entity = [ 
+                detail:[ 
+                    [caption: 'Home No.'],[caption: 'Mobile No.'],[caption: 'Fax No.']
+                ] 
+            ];
+            
+            def subFormHandler = [
+                new Opener(
+                    name: 'test-client:subFormTest1', params: [entity: entity.detail[0] ]
+                ),
+                new Opener(
+                    name: 'test-client:subFormTest1', params: [entity: entity.detail[1] ]
+                ),
+                new Opener(
+                    name: 'test-client:subFormTest1', params: [entity: entity.detail[2] ]
+                )
+            ];
+            
+            void save() {
+                MsgBox.alert( entity );
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.subform.Multi"/>
+    </pages>
+</workunit>

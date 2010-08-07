@@ -5,7 +5,9 @@ import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ControllerProvider;
+import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
+import com.rameses.util.ValueUtil;
 
 
 public final class MainWindowUtil {
@@ -25,8 +27,11 @@ public final class MainWindowUtil {
             if(action!=null) {
                 page = c.init(null, action)+"";
             }
-            c.setCurrentView(page);
-            UIControllerPanel up = new UIControllerPanel( c );
+            UIControllerContext uic = new UIControllerContext( c );
+            if ( !ValueUtil.isEmpty(page) ) {
+                uic.setCurrentView(page);
+            }
+            UIControllerPanel up = new UIControllerPanel( uic );
             String loc = i.getType().substring(i.getType().indexOf("_")+1);
             //w.add(up, loc);
             w.setComponent(up, MainWindow.CONTENT);

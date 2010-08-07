@@ -12,8 +12,7 @@
         
                 
         public class ControlsTestController  {
-                
-            Date date = new Date();
+
             def entity = [ civilStat: 'MARRIED' ];
             
             int intNum;
@@ -28,9 +27,10 @@
             
             def file;
             
+            def lookupHandler = new Opener(name: 'test-client:sampleLookup');
+            
             void btnShowInput() {
                 MsgBox.alert("""
-                    date = $date
                     intNum = $intNum
                     doubleNum = $doubleNum
                     decimalNum = $decimalNum
@@ -48,11 +48,15 @@
                 new Action(name: '_close', caption: 'Close', immediate: true),
                 new Action(name: 'edit', caption: 'Edit'),
                 new Action(name: 'print', caption: 'Print'),
-                new Action(name: 'btnToggle', caption: 'Toggle', immediate: true)
+                new Action(name: 'btnToggle', caption: 'Enable/Disable Controls', immediate: true)
             ];
             
             void testPost() {
                 MsgBox.alert("Posting $entity.testPost");
+            }
+            
+            void save() {
+            
             }
             
             @Close

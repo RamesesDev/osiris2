@@ -14,8 +14,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-public class NBMainWindow implements MainWindow 
-{
+public class NBMainWindow implements MainWindow {
+    
     private MainWindowListener listener;
     private JFrame window;
     private String mainTitle = "";
@@ -26,7 +26,10 @@ public class NBMainWindow implements MainWindow
     
     public Component getComponent() { return window; }
     
-    public MainWindowListener getListener() { return listener; }
+    public MainWindowListener getListener() {
+        return listener;
+    }
+    
     public void setListener(MainWindowListener listener) {
         this.listener = listener;
     }
@@ -45,9 +48,8 @@ public class NBMainWindow implements MainWindow
             }
         }
     }
-
-    private void setMenuBar(JMenuBar m) 
-    {
+    
+    private void setMenuBar(JMenuBar m) {
         if (m == null) m = new JMenuBar();
         
         List list = new ArrayList();
@@ -64,10 +66,8 @@ public class NBMainWindow implements MainWindow
             m.remove(mnu);
         }
         
-        //window.setJMenuBar(m);
         NBHeaderBar headerBar = NBManager.getInstance().getHeaderBar();
-        headerBar.setTopView(m); 
-        SwingUtilities.updateComponentTreeUI(headerBar);
+        headerBar.setTopView(m);
     }
     
     public void setTitle(String title) {
@@ -79,17 +79,16 @@ public class NBMainWindow implements MainWindow
     }
     
     public void close() {
+        if ( listener != null && !listener.onClose() ) return;
+        
         NBLifecycleManager.getInstance().exit();
     }
     
     public void setComponent(JComponent comp, String constraint) {
-        if ( MainWindow.TOOLBAR.equals(constraint) ) 
-        {
-            NBHeaderBar headerBar = NBManager.getInstance().getHeaderBar(); 
-            headerBar.setBottomView(comp); 
-        }
-        else if ( MainWindow.MENUBAR.equals(constraint) )
-        {
+        if ( MainWindow.TOOLBAR.equals(constraint) ) {
+            NBHeaderBar headerBar = NBManager.getInstance().getHeaderBar();
+            headerBar.setBottomView(comp);
+        } else if ( MainWindow.MENUBAR.equals(constraint) ) {
             JMenuBar m = (JMenuBar) comp;
             setMenuBar(m);
         }

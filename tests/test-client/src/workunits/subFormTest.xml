@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker folderid="/menu/file" caption="SubForm Test"/>
+        <invoker folderid="/menu/file" caption="SubForm Test" index="-10"/>
     </invokers>
     
     <code>
@@ -11,12 +11,16 @@
         import com.rameses.rcp.common.*;
         import test.model.*;
                 
-        public class SubListTestController  {
+        public class SubFormTestController  {
         
-            def entity = [:];
+            def entity = [ detail:[ caption: 'Contact No.'] ];
+            
+            def subFormHandler = new Opener(
+                name: 'test-client:subFormTest1', params: [entity: entity.detail ]
+            );
             
             void save() {
-                MsgBox.alert('Transaction saved.');
+                MsgBox.alert( entity );
             }
             
         }

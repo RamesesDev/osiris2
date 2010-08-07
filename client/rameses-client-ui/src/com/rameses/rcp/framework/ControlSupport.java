@@ -6,6 +6,7 @@ import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Map;
 import javax.swing.ImageIcon;
 
@@ -87,16 +88,55 @@ public final class ControlSupport {
     }
     
     public static Opener initOpener( Opener opener, UIController caller ) {
-        if ( caller == null ) return opener;
-        
-        if ( ValueUtil.isEmpty(opener.getName()) ) {
-            opener.setName( caller.getName() );
+        if ( caller != null && ValueUtil.isEmpty(opener.getName()) ) {
+            opener.setController( caller );
+            
+        } else {
+            ControllerProvider provider = ClientContext.getCurrentContext().getControllerProvider();
+            UIController controller = provider.getController(opener.getName());
+            controller.setId( opener.getId() );
+            controller.setName( opener.getName() );
+            controller.setTitle( opener.getCaption() );
+            
+            if ( caller != null ) {
+                Object callee = controller.getCodeBean();
+                injectCaller( callee, callee.getClass(), caller.getCodeBean());
+            }
+            opener.setController( controller );
         }
+        
+        UIController controller = opener.getController();
         if( opener.getCaption()==null ) {
-            opener.setCaption( caller.getName() );
+            opener.setCaption( controller.getName() );
         }
         
+        Object o = controller.init(opener.getParams(), opener.getAction());
+        if ( o != null && o instanceof String ) {
+            opener.setOutcome( (String)o );
+        }
+                
         return opener;
+    }
+    
+    public static void injectCaller( Object callee, Class clazz, Object caller ) {
+        //if caller is the same as calle do not proceed
+        //for cases for subforms having the same controller.
+        if( callee!=null && callee.equals(caller)) return;
+        
+        //inject the caller here..
+        for(Field f: clazz.getDeclaredFields()) {
+            if( f.isAnnotationPresent(com.rameses.rcp.annotations.Caller.class)) {
+                boolean accessible = f.isAccessible();
+                f.setAccessible(true);
+                try { f.set(callee, caller); } catch(Exception ign){;}
+                f.setAccessible(accessible);
+                break;
+            }
+        }
+        Class superClass = clazz.getSuperclass();
+        if(superClass!=null) {
+            injectCaller( callee, superClass, caller );
+        }
     }
     
     public static boolean isPermitted(String permission ) {

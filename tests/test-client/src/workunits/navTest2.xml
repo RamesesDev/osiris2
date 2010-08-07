@@ -10,17 +10,23 @@
                 
         public class TestNav2Controller  {
         
+            @Caller
             def caller;
         
             def firstname;
             def lastname;
         
+            void init() {
+                println 'caller is ' + caller;
+            }
+            
             public String close() {
                 return "_close";
             }
             
             @Close
             void formClosing() {
+                println 'caller is ' + caller;
                 caller?.binding?.fireAction('launch2');
             }
         }

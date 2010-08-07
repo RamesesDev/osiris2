@@ -46,6 +46,12 @@ public class Binding {
     private UIController controller;
     
     /**
+     * index of all controls in this binding
+     * this is used to speed up in finding a control by name
+     */
+    private Map<String, UIControl> controlsIndex = new Hashtable();
+    
+    /**
      * 1. reference of all controls that can aquire default focus
      *    when the window is showed or during page navigation
      * 2. this reference contains UIInput and UISubControl only
@@ -88,6 +94,9 @@ public class Binding {
             XButton btn = (XButton) control;
             if ( btn.isDefaultCommand() )
                 defaultButton = btn;
+        }
+        if( !ValueUtil.isEmpty(control.getName()) ) {
+            controlsIndex.put(control.getName(), control);
         }
     }
     
@@ -156,6 +165,10 @@ public class Binding {
         }
         refreshed.clear();
         refreshed = null;
+        
+        for (BindingListener bl : listeners) {
+            bl.refresh(fieldRegEx);
+        }
     }
     
     private void _doRefresh( UIControl u, Set refreshed ) {
@@ -249,7 +262,7 @@ public class Binding {
             if ( ui.isReadonly() ) continue;
             
             Component c = (Component) ui;
-            if ( !c.isEnabled() || !c.isFocusable() ) continue;
+            if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) continue;
             
             Object compValue = ui.getValue();
             Object beanValue = UIControlUtil.getBeanValue(ui);
@@ -257,11 +270,19 @@ public class Binding {
                 UIInputUtil.updateBeanValue(ui);
             }
         }
+        
+        for (BindingListener bl : listeners) {
+            bl.formCommit();
+        }
     }
     
     public void update() {
         //clear changeLog
         if ( changeLog != null ) changeLog.clear();
+        
+        for (BindingListener bl : listeners) {
+            bl.update();
+        }
     }
     
     public void addBindingListener(BindingListener listener) {
@@ -291,16 +312,12 @@ public class Binding {
         return true;
     }
     
-    public boolean display() {
+    public boolean focusFirstInput() {
         //focus first UIInput that is not disabled/readonly
         for (UIControl u: focusableControls ) {
             if ( u instanceof UISubControl ) {
-                List<Binding> bindings = ((UISubControl) u).getSubBindings();
-                for ( Binding b : bindings ) {
-                    if ( b.display() ) {
-                        return true;
-                    }
-                }
+                UISubControl uis = (UISubControl) u;
+                if ( uis.focusFirstInput() ) return true;
                 
             } else if ( u instanceof UIInput ) {
                 UIInput ui = (UIInput) u;
@@ -332,7 +349,7 @@ public class Binding {
             }
             
             NavigationHandler handler = ctx.getNavigationHandler();
-            UIViewPanel panel = getController().getCurrentView();
+            UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
             NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
             if ( handler != null ) {
                 handler.navigate(navPanel, null, outcome);
@@ -340,6 +357,19 @@ public class Binding {
             
         } catch(Exception e) {
             throw new IllegalStateException(e);
+        }
+    }
+    
+    /**
+     * focuses a UIControl from a code bean
+     * this is helpful when you do the validation from the code and
+     * you want to focus a control after displaying an error message
+     */
+    public void focus(String name) {
+        UIControl c = controlsIndex.get(name);
+        if ( c != null ) {
+            Component comp = (Component) c;
+            comp.requestFocus();
         }
     }
     //</editor-fold>

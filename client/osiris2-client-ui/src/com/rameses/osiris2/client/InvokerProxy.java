@@ -12,14 +12,12 @@ package com.rameses.osiris2.client;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.invoker.client.HttpInvokerClient;
 import com.rameses.invoker.client.HttpClientManager;
-import com.rameses.util.MachineInfo;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -70,11 +68,8 @@ public class InvokerProxy {
         public Object invoke(Object object, Method method, Object[] args) throws Throwable {
             if( method.getName().equals("toString")) return serviceName;
             
-            String mcaddr = MachineInfo.getInstance().getMacAddress();
-            Map m = new HashMap();
-            m.put("macaddress", mcaddr);
-            
-            return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, m } );
+            Map headers = ClientContext.getCurrentContext().getHeaders();            
+            return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
         }
     } 
  

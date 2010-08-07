@@ -122,9 +122,6 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         if( node.isLeaf() ) {
             retVal = nodeModel.openLeaf(node);
         } else {
-            TreePath tp = new TreePath(defaultNode.getPath());
-            if ( isCollapsed(tp) ) return;
-            
             retVal = nodeModel.openFolder(node);
         }
         

@@ -17,8 +17,10 @@ import com.rameses.osiris2.Invoker;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.common.Action;
 import com.rameses.rcp.framework.ControllerProvider;
+import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.util.ExpressionResolver;
+import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +60,11 @@ public final class InvokerUtil {
             if((target.endsWith("process")||target.endsWith("action"))) {
                 //do nothing
             } else {
-                UIControllerPanel panel = new UIControllerPanel(u);
+                UIControllerContext uic = new UIControllerContext( u );
+                if ( !ValueUtil.isEmpty(outcome) ) {
+                    uic.setCurrentView(outcome);
+                }
+                UIControllerPanel panel = new UIControllerPanel( uic );
                 Map winParams = new HashMap();
                 if ( params != null ) {
                     winParams.putAll(params);

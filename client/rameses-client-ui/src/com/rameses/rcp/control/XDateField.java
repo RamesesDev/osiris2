@@ -36,6 +36,21 @@ public class XDateField extends XTextField {
         if( Beans.isDesignTime())
             return "";
         
+        try {
+            if ( !ValueUtil.isEmpty(getText()) ) {
+                formattedDate = inputFormatter.parse(getText());
+            }
+        } catch(Exception e) {
+            formattedDate = null;
+            ActionMessage actionMessage = getActionMessage();
+            actionMessage.addMessage("", "Expected format for {0} is " + inputFormat, new Object[] {getCaption()});
+            
+            if(actionMessage.hasMessages())  {
+                ControlProperty controlProperty = getControlProperty();
+                controlProperty.setErrorMessage(actionMessage.toString());
+            }
+        }
+        
         return formattedDate;
     }
     
@@ -98,24 +113,6 @@ public class XDateField extends XTextField {
             else
                 setText( inputFormatter.format(value).toString() );
         }
-    }
-    
-    public void validateInput() {
-        ActionMessage actionMessage = getActionMessage();
-        ControlProperty controlProperty = getControlProperty();
-        super.validateInput();
-        
-        try {
-            formattedDate = inputFormatter.parse(getText());
-        } catch(Exception e) {
-            formattedDate = null;
-            if(isRequired()) {
-                actionMessage.addMessage("", "Expected format for {0} is " + inputFormat, new Object[] {getCaption()});
-            }
-        }
-        
-        if(actionMessage.hasMessages())
-            controlProperty.setErrorMessage(actionMessage.toString());
     }
     
     //<editor-fold defaultstate="collapsed" desc="  DateFieldSupport (class)  ">

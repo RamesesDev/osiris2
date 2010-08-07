@@ -49,6 +49,9 @@
         <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
           <Properties>
             <Property name="name" type="java.lang.String" value="actions"/>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[136, 26]"/>
+            </Property>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

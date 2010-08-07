@@ -28,8 +28,9 @@
             }
 
             public Object launch() {
-                return new PopupOpener(name: "test-client:navTest2", params: [
-                    firstname: firstname, lastname: lastname, caller: this
+                return new PopupOpener(name: "test-client:navTest2", action: 'init', 
+                params: [
+                    firstname: firstname, lastname: lastname
                 ]);
             }
 

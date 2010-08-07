@@ -64,10 +64,7 @@ public class NBInstaller extends ModuleInstall {
         String appsys = (String) props.get("app.url");
         if (appsys == null || appsys.trim().length() == 0)
             throw new NullPointerException("app.url must be provided");
-        
-        
-        //mainWindow.setTitle("Downloading updates, please wait...");
-        
+                
         UpdateCenter uc = new UpdateCenter(appsys);
         uc.start();
         
@@ -176,7 +173,7 @@ public class NBInstaller extends ModuleInstall {
             ImageIcon iicon = new ImageIcon(fileIcon.toURL());
             mainWindow.setIconImage(iicon.getImage());
         } catch(Exception ign) {;}
-        
+
     }
     
     private void alert( final String msg ) {

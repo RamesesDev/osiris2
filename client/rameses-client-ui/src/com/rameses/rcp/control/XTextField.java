@@ -53,23 +53,14 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     public void validateInput() {
         actionMessage.clearMessages();
         property.setErrorMessage(null);
-        if ( isRequired() && ValueUtil.isEmpty(getValue()) ) {
+        if ( isRequired() && ValueUtil.isEmpty( getText() ) ) {
             actionMessage.addMessage("1001", "{0} is required.", new Object[] {getCaption()});
             property.setErrorMessage(actionMessage.toString());
         }
     }
     
     
-    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public void setText(String t) {
-        if ( Beans.isDesignTime() ) {
-            setName( t );
-        }
-        else {
-            super.setText( t );
-        }
-    }
-    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">    
     public void setName(String name) {
         super.setName(name);
         super.setText(name);

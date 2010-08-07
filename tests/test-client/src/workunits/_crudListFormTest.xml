@@ -47,6 +47,12 @@
         
         public class ListController extends CRUDList {
         
+            def data = [
+                [name: 'Alvin', address: 'Labangon, CC'],
+                [name: 'Mike', address: 'Labangon, CC'],
+                [name: 'Jay', address: 'Labangon, CC']
+            ];
+        
             public Column[] getColumns() {
                 return [
                     new Column(name:"item.name", caption:"Name", primary: true),
@@ -55,11 +61,11 @@
             }
 
             public List fetchList(Map map) {
-                return [
-                    [name: 'Alvin', address: 'Labangon, CC'],
-                    [name: 'Mike', address: 'Labangon, CC'],
-                    [name: 'Jay', address: 'Labangon, CC']
-                ];
+                if ( search ) {
+                    return data.findAll { it.name.startsWith(search) };
+                }
+            
+                return data;
             }
         
         }
@@ -68,6 +74,7 @@
     </code>
     
     <pages>
+        <page name="query" template="test.os2clientx.QueryPage" />
         <page name="form" template="test.os2clientx.Page"/>
     </pages>
 </workunit>

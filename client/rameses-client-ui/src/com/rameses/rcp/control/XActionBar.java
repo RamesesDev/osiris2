@@ -59,6 +59,14 @@ public class XActionBar extends JPanel implements UIComposite {
         }
     }
     
+    public void setPreferredSize(Dimension d) {
+        if ( useToolBar ) {
+            toolBar.setPreferredSize(d);
+        } else {
+            super.setPreferredSize(d);
+        }
+    }
+    
     public Component add(Component comp) {
         if ( useToolBar ) {
             toolBar.add(comp);

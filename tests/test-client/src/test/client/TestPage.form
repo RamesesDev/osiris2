@@ -70,6 +70,7 @@
         <Component class="com.rameses.rcp.control.XTextField" name="xTextField2">
           <Properties>
             <Property name="caption" type="java.lang.String" value="Firstname"/>
+            <Property name="index" type="int" value="-2"/>
             <Property name="name" type="java.lang.String" value="firstname"/>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[120, 19]"/>
@@ -80,6 +81,7 @@
         <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
           <Properties>
             <Property name="caption" type="java.lang.String" value="Lastname"/>
+            <Property name="index" type="int" value="-1"/>
             <Property name="name" type="java.lang.String" value="lastname"/>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[200, 19]"/>

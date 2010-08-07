@@ -1,0 +1,9 @@
+
+"entity.*" [readonly]  { 
+    
+}
+
+"entity.*" [!readonly] { 
+
+}
+

@@ -4,6 +4,8 @@ import com.rameses.osiris2.Invoker;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ControllerProvider;
+import com.rameses.rcp.framework.UIControllerContext;
+import com.rameses.util.ValueUtil;
 import java.util.List;
 import java.util.Stack;
 
@@ -74,9 +76,12 @@ public class UILoaderStack extends Stack {
                         throw new IllegalStateException("ERROR IN LOADER " + i.getWorkunitid() + ": " + e.getMessage(), e);
                     }
                 } else {
-                    c.initialize();
-                    c.init( null, action );
-                    peek = c;
+                    UIControllerContext uic = new UIControllerContext( c );
+                    Object outcome = c.init( null, action );
+                    if ( !ValueUtil.isEmpty(outcome) && outcome instanceof String ) {
+                        uic.setCurrentView(outcome+"");
+                    }
+                    peek = uic;
                     
                     //if size is 1, this is the last loader usually the home page
                     //reload the menus/folders
