@@ -88,5 +88,10 @@ public class DBResourceService implements DBResourceServiceLocal {
     public byte[] getConf(String name) {
         return getResource(ResourceConf.class, name);
     }
+
+    public List getConfCategory(String category) {
+        String ql = "select o.name from " + ResourceConf.class.getName() + " o where o.category=:category";
+        return em.createQuery(ql).setParameter("category", category).getResultList();
+    }
     
 }

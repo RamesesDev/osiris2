@@ -64,8 +64,9 @@ public class SqlExecutor {
     }
     
     
-    public void setConnection(Connection connection) {
+    public SqlExecutor setConnection(Connection connection) {
         this.connection = connection;
+        return this;
     }
     
     public void setParameterHandler(ParameterHandler paramHandler) {

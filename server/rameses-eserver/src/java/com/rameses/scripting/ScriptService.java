@@ -96,6 +96,11 @@ public class ScriptService implements ScriptServiceLocal {
                             executeInterceptor(b, ae, se, scriptService, env);    
                         }
                         Object retval =  actionMethod.invoke( target, params );
+                        
+                        //do not proceed with other interceptors if the return value is an exception
+                        if( retval instanceof Exception )
+                            return retval;
+                        
                         ae.setResult(retval);
                         for(String b: scriptMgmt.findAfterInterceptors(fullName)) {
                             executeInterceptor(b, ae, se, scriptService, env);    
