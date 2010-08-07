@@ -29,6 +29,7 @@ public class SqlExecutor {
     private Connection connection;
     
     private String origStatement;
+    private List origParamNames;
     private ExecutorExceptionHandler exceptionHandler;
     
     //contains list of parameterValues
@@ -41,17 +42,27 @@ public class SqlExecutor {
      * setConnection.
      */
     SqlExecutor(SqlManager sm, String statement, List paramNames) {
-        this.statement = statement;
         this.origStatement = statement;
+        this.origParamNames = paramNames;
         this.sqlManager = sm;
+        clear();
+    }
+    
+    public void clear() {
+        this.statement = origStatement;
+        parameterNames.clear();
         this.parameterNames.clear();
-        if(paramNames!=null) {
-            for(Object o : paramNames) {
+        if(origParamNames!=null) {
+            for(Object o : origParamNames) {
                 this.parameterNames.add((String)o);
             }
         }
         parameterValues = new ArrayList();
+        parameterValues.clear();
+        if(batchData!=null) batchData.clear();
+        batchData = null;        
     }
+    
     
     public void setConnection(Connection connection) {
         this.connection = connection;
@@ -111,11 +122,7 @@ public class SqlExecutor {
         }
     }
     
-    public void clear() {
-        parameterValues.clear();
-        if(batchData!=null) batchData.clear();
-        batchData = null;
-    }
+   
     
     // <editor-fold defaultstate="collapsed" desc="SETTING PARAMETER OPTIONS">
     public SqlExecutor setParameter( int idx, Object v ) {
@@ -151,7 +158,7 @@ public class SqlExecutor {
         if(parameterNames==null)
             throw new IllegalStateException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
         int sz = parameterNames.size();
-        clear();
+        parameterValues.clear();
         for(int i=0;i<sz;i++ ) {
             parameterValues.add(  i, map.get( parameterNames.get(i)  ));
         }
@@ -170,7 +177,7 @@ public class SqlExecutor {
                 throw new IllegalStateException("Parameter count does not match");
         }        
         int sz = params.size();
-        clear();
+        parameterValues.clear();
         for(int i=0;i<sz;i++ ) {
             parameterValues.add(  i, params.get(i) );
         }
@@ -181,7 +188,7 @@ public class SqlExecutor {
     /***
      * Apply the correct statments. can be overridden
      */
-    protected String getFixedSqlStatement() {
+    private String getFixedSqlStatement() {
         return statement;
     }
     
@@ -219,6 +226,8 @@ public class SqlExecutor {
     public SqlExecutor setVars( Map map ) {
         this.vars = map;
         this.statement = SqlUtil.substituteValues( this.origStatement, map );
+        //reparse the statement after parsing to update the parameter names
+        this.statement = SqlUtil.parseStatement(statement, parameterNames);         
         return this;
     }
     

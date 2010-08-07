@@ -10,6 +10,7 @@
 package com.rameses.sql;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,11 +21,16 @@ public class SqlCache implements Serializable {
     private String statement;
     private List paramNames;
     
-    public SqlCache(String statement, List paramNames) {
-        this.statement = statement;
-        this.paramNames = paramNames;
+    public SqlCache(String origStatement) {
+        paramNames = new ArrayList();
+        this.statement = SqlUtil.parseStatement(origStatement,paramNames);
     }
-
+    
+    public SqlCache(String statement, List paramNames) {
+        this.paramNames = paramNames;
+        this.statement = statement;
+    }
+    
     public String getStatement() {
         return statement;
     }
@@ -32,5 +38,8 @@ public class SqlCache implements Serializable {
     public List getParamNames() {
         return paramNames;
     }
+
+    
+    
     
 }

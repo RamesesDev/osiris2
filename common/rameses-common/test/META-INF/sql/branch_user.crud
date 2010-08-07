@@ -1,0 +1,17 @@
+<linked>
+    <table name="tblperson" alias="xperson">
+        uid=uid*
+        lastname=lastname
+        firstname=firstname
+        age=age
+        birthdate=birthdate
+        area=area.code
+        region=region.code
+        loop=loop.codes
+    </table>
+    <link-ref>
+        INNER JOIN tblarea area ON id = area.objid
+        INNER JOIN tblregion region ON area.parentid = region.objid
+        INNER JOIN tblloop loop ON region.parentid = loop.objid
+    </link-ref>
+</linked>

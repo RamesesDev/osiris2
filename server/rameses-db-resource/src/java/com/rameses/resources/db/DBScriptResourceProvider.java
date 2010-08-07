@@ -7,12 +7,13 @@
  * and open the template in the editor.
  */
 
-package com.rameses.scripting.db;
+package com.rameses.resources.db;
 
 import com.rameses.eserver.MultiResourceHandler;
 import com.rameses.eserver.ResourceProvider;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
 import javax.naming.InitialContext;
 
 
@@ -39,8 +40,8 @@ public class DBScriptResourceProvider extends ResourceProvider {
     public InputStream getResource(String name) throws Exception {
         try {
             InitialContext ctx = new InitialContext();
-            DBScriptProviderServiceLocal ds = (DBScriptProviderServiceLocal)ctx.lookup(DBScriptProviderService.class.getSimpleName()+"/local");
-            byte[] b = ds.getInfo(name,DBScriptInfo.class.getName() );
+            DBResourceServiceLocal ds = (DBResourceServiceLocal)ctx.lookup(DBResourceService.class.getSimpleName()+"/local");
+            byte[] b = ds.getScriptResource(name);
             if( b!= null )
                 return new ByteArrayInputStream(b);
             else
@@ -54,15 +55,21 @@ public class DBScriptResourceProvider extends ResourceProvider {
         InitialContext ctx = new InitialContext();
         byte[] b = null;
         if(name.equals("interceptors")) {
-            DBScriptProviderServiceLocal ds = (DBScriptProviderServiceLocal)ctx.lookup(DBScriptProviderService.class.getSimpleName()+"/local");
-            b = ds.getInfo(name, DBConfData.class.getName());
+            DBResourceServiceLocal ds = (DBResourceServiceLocal)ctx.lookup(DBResourceService.class.getSimpleName()+"/local");
+            //b = ds.getInfo(name, DBConfData.class.getName());
+            List list = ds.getInterceptors();
+            StringBuffer data = new StringBuffer();
+            for(Object o: list ) {
+                data.append( o + "\n");
+            }
+            b = data.toString().getBytes();
         }
         else if(name.equals("deployers")) {
-            DBScriptProviderServiceLocal ds = (DBScriptProviderServiceLocal)ctx.lookup(DBScriptProviderService.class.getSimpleName()+"/local");
-            b = ds.getInfo(name, DBConfData.class.getName());
+            DBResourceServiceLocal ds = (DBResourceServiceLocal)ctx.lookup(DBResourceService.class.getSimpleName()+"/local");
+            b = ds.getConf("deployers");
         }
         if( b!= null )
-            handler.handle( new ByteArrayInputStream(b) );
+            handler.handle( new ByteArrayInputStream(b), "dbscript:"+name );
     }
     
     

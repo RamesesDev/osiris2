@@ -25,6 +25,7 @@ public final class SqlUtil {
     }
     
     private static Pattern pattern = Pattern.compile("\\$P\\{.+?\\}"); 
+    private static Pattern substitute = Pattern.compile("\\$\\{.+?\\}");
     
     /***
      * This method parses a statement and stores parameters in the
@@ -41,6 +42,8 @@ public final class SqlUtil {
      * @return the corrected sql statement 
      */
     public static String parseStatement( String sql, List paramNames ) {
+        if(! sql.contains("$P") ) return sql;
+        
         Matcher m = pattern.matcher(sql);
         int start = 0;
         StringBuffer sb = new StringBuffer();
@@ -57,6 +60,23 @@ public final class SqlUtil {
     
     
     public static String substituteValues( String sql, Map values ) {
+        if(! sql.contains("{") ) return sql;
+        
+        Matcher m = substitute.matcher(sql);
+        int start = 0;
+        StringBuffer sb = new StringBuffer();
+        while(m.find()) {
+            int end = m.start();
+            String name = m.group().replaceAll( "\\$\\{|\\}", "").trim();
+            
+            Object val = values.get(name);
+            if( val == null ) val = "${"+name+"}";
+            sb.append( sql.substring(start, end ) + val );
+            start = end + m.group().length();
+        }
+        sb.append( sql.substring(start) );
+        return sb.toString();
+        /*
         String ss = sql;
         if( values != null ) {
             for( Object oo: values.entrySet()) {
@@ -67,6 +87,7 @@ public final class SqlUtil {
             }
         }
         return  ss;
+         */
     }
     
     

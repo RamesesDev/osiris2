@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.scripting.db;
+package com.rameses.resources.db;
 
 import com.rameses.eserver.ResourceProvider;
 import java.io.ByteArrayInputStream;
@@ -15,25 +15,31 @@ import java.io.InputStream;
 import javax.naming.InitialContext;
 
 
-public class DBSqlCacheProvider extends ResourceProvider {
+public class DBTemplateResourceProvider extends ResourceProvider {
+    
     
     public String getName() {
-        return "sql";
+        return "template" ;
     }
     
     public String getDescription() {
-        return "DB Sql Cache Resource Provider [sql://]";
+        return "DB Template Resource Provider [template//]";
     }
-
+    
+    
     public boolean accept(String nameSpace) {
-        return (nameSpace.equalsIgnoreCase("sql"));
+        return (nameSpace.equalsIgnoreCase("template"));
     }
 
-    public InputStream getResource(String name) {
+    public int getPriority() {
+        return 100;
+    }
+    
+    public InputStream getResource(String name) throws Exception {
         try {
             InitialContext ctx = new InitialContext();
-            DBScriptProviderServiceLocal ds = (DBScriptProviderServiceLocal)ctx.lookup(DBScriptProviderService.class.getSimpleName()+"/local");
-            byte[] b = ds.getInfo(name,DBSqlCacheInfo.class.getName() );
+            DBResourceServiceLocal ds = (DBResourceServiceLocal)ctx.lookup(DBResourceService.class.getSimpleName()+"/local");
+            byte[] b = ds.getTemplateResource(name);
             if( b!= null )
                 return new ByteArrayInputStream(b);
             else
@@ -42,10 +48,7 @@ public class DBSqlCacheProvider extends ResourceProvider {
             throw new IllegalStateException(e);
         }
     }
-
-    public int getPriority() {
-        return 10;
-    }
-
+    
+   
     
 }

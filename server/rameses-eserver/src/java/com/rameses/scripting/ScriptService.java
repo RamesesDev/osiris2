@@ -89,7 +89,7 @@ public class ScriptService implements ScriptServiceLocal {
                     ScriptEval se = null;
                     try {
                         //start transaction
-                        ae = new ActionEvent( imeta.getName(), actionMethod.getName(), params);
+                        ae = new ActionEvent( imeta.getName(), actionMethod.getName(), params, env);
                         se = new ScriptEval(ae);
                         ScriptServiceLocal  scriptService = (ScriptServiceLocal)context.lookup("ScriptService/local");
                         for(String b: scriptMgmt.findBeforeInterceptors(fullName)) {

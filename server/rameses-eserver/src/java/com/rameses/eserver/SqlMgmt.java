@@ -10,7 +10,7 @@
 package com.rameses.eserver;
 
 import com.rameses.sql.SqlCache;
-import com.rameses.sql.SqlCacheProvider;
+import com.rameses.sql.SqlCacheResourceHandler;
 import com.rameses.sql.SqlManager;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -49,7 +49,7 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
             InitialContext ctx = new InitialContext();
             DataSource ds = (DataSource)ctx.lookup(dataSource);
             SqlManager sql = new SqlManager(ds);
-            sql.setSqlCacheProvider(sqlCacheProvider);
+            sql.setSqlCacheResourceHandler(sqlCacheProvider);
             return sql;
         } catch(Exception e) {
             throw new IllegalStateException(e);
@@ -58,14 +58,14 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
     
     public SqlManager createSqlManager(DataSource ds) {
         SqlManager sql = new SqlManager(ds);
-        sql.setSqlCacheProvider(sqlCacheProvider);
+        sql.setSqlCacheResourceHandler(sqlCacheProvider);
         return sql;
     }
     
     public SqlManager createSqlManager() {
         SqlManager sql = new SqlManager();
-        sql.setSqlCacheProvider(sqlCacheProvider);
-        return sql;        
+        sql.setSqlCacheResourceHandler(sqlCacheProvider);
+        return sql;
     }
     
     public void flushAll() {
@@ -73,40 +73,27 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
     }
     
     
-    public class SqlMgmtCacheProvider extends SqlCacheProvider implements Serializable {
+    public class SqlMgmtCacheProvider implements SqlCacheResourceHandler,Serializable {
         
-        public SqlCache getSqlCache(String statement) {
-            Map map = (Map)cacheService.getContext("sqlcache");
-            SqlCache sq = (SqlCache)map.get(statement);
-            if(sq==null) {
-                sq = createSqlCache(statement);
-                map.put(statement, sq);
-            }
-            return sq;
-        }
-        
-        //find first in the resources
-        public SqlCache getNamedSqlCache(String name) {
+        public InputStream getResource(String name) {
             try {
-                Map map = (Map)cacheService.getContext("sqlcache");
-                SqlCache sq = (SqlCache)map.get(name);
-                if(sq==null) {
-                    String fileName = name;
-                    if( name.indexOf(".")<0 ) fileName = fileName + ".sql";
-                    
-                    //find first in the resources
-                    InputStream is = resourceService.getResource( "sql://" + fileName );
-                    String s = getInputStreamToString(is);
-                    s = formatText( fileName, s );
-                    sq = createSqlCache(s);
-                    map.put(name, sq);
-                }
-                return sq;
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
+                return resourceService.getResource( "sql://" + name );
+            } catch(Exception e) {
+                System.out.println("SqlMgmtCacheProvider error." + e.getMessage());
+                return null;
             }
-            
         }
+        
+        public void storeCache(String key, SqlCache sq) {
+            Map map = (Map)cacheService.getContext("sqlcache");
+            map.put(key, sq);
+        }
+        
+        public SqlCache getCache(String key) {
+            Map map = (Map)cacheService.getContext("sqlcache");
+            return (SqlCache)map.get(key);
+        }
+        
         
     }
     

@@ -36,6 +36,8 @@ public class SqlQuery {
     
     
     private String origStatement;
+    private List origParamNames;
+    
     private Map vars;
     
     /***
@@ -44,17 +46,26 @@ public class SqlQuery {
      * setConnection.
      */
     SqlQuery(SqlManager sm, String statement, List paramNames) {
-        this.statement = statement;
         this.origStatement = statement;
+        this.origParamNames = paramNames;
         this.sqlManager = sm;
+        clear();
+    }
+    
+    public void clear() {
+        this.statement = origStatement;
+        parameterNames.clear();
         this.parameterNames.clear();
-        if(paramNames!=null) {
-            for(Object o : paramNames) {
+        if(origParamNames!=null) {
+            for(Object o : origParamNames) {
                 this.parameterNames.add((String)o);
             }
         }
-        parameterValues = new ArrayList();
+        if(parameterValues==null)
+            parameterValues = new ArrayList();
+        parameterValues.clear();
     }
+    
     
     public void setConnection(Connection connection) {
         this.connection = connection;
@@ -130,11 +141,6 @@ public class SqlQuery {
         }
     }
     
-    public void clear() {
-        //cleanup existing parameter values after execution.
-        parameterValues.clear();
-    }
-    
     
     // <editor-fold defaultstate="collapsed" desc="SET PARAMETER OPTIONS">
     public SqlQuery setParameter( int idx, Object v ) {
@@ -169,7 +175,7 @@ public class SqlQuery {
         if(parameterNames==null)
             throw new IllegalStateException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
         int sz = parameterNames.size();
-        clear();
+        parameterValues.clear();
         for(int i=0;i<sz;i++ ) {
             parameterValues.add(  i, map.get( parameterNames.get(i)  ));
         }
@@ -188,7 +194,7 @@ public class SqlQuery {
                 throw new IllegalStateException("Parameter count does not match");
         }
         int sz = params.size();
-        clear();
+        parameterValues.clear();
         for(int i=0;i<sz;i++ ) {
             parameterValues.add(  i, params.get(i) );
         }
@@ -297,6 +303,8 @@ public class SqlQuery {
     public SqlQuery setVars( Map map ) {
         this.vars = map;
         this.statement = SqlUtil.substituteValues( this.origStatement, map );
+        //reparse the statement after parsing to update the parameter names
+        this.statement = SqlUtil.parseStatement(statement, parameterNames);        
         return this;
     }
     

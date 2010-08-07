@@ -7,10 +7,9 @@
 
 package test;
 
-import com.rameses.util.CipherUtil;
-import com.rameses.util.MachineInfo;
-import java.io.Serializable;
-import java.text.MessageFormat;
+import com.rameses.sql.SqlUtil;
+import java.util.HashMap;
+import java.util.Map;
 import junit.framework.*;
 
 /**
@@ -30,27 +29,13 @@ public class Tester extends TestCase {
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
-    public void xtestMachineInfo() throws Exception {
-        //System.out.println(System.getProperty("os.name"));
-        MachineInfo m = MachineInfo.getInstance();
-        System.out.println(m.getOs() + " " + m.getMacAddress() );
+    public void testSubstitute() throws Exception {
+        String c = "where cond = $P{cond}";
+        Map map = new HashMap();
+        map.put("condition", c);
+        String sql = "select from o ${condition}";
+        System.out.println( SqlUtil.substituteValues( sql, map ));
     }
 
-    public void xtestCipher() throws Exception {
-        String a = "the cat in the hat";
-        Object o = CipherUtil.encode( a );
-        System.out.println(CipherUtil.decode((Serializable)o));
-    }
-    
-    public void xtestMessageFormatter() {
-        Object[] arr = new Object[]{ "windhell", "jayrome"};
-        System.out.println(MessageFormat.format("{0} needs help from {1}, di ba {0}?", arr));
-    }
-    
-    public void testSplit() {
-        String s = "select * from a vAlueS  b";
-        System.out.println(s.split("\\s(V|v)(a|A)(l|L)(u|U)(e|E)(s|S)\\s").length);
-    }
-    
     
 }
