@@ -9,6 +9,7 @@ package com.rameses.messaging.xmpp;
 
 import com.rameses.messaging.SystemConnection;
 import com.rameses.messaging.SystemMessage;
+import com.rameses.util.MachineInfo;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,10 +30,18 @@ public class SmackSystemConnection extends SystemConnection implements PacketLis
     private XMPPConnection conn;
     private boolean autoCreateAccount = true;
     private boolean connected;
+    private String machineAccount;
     
     
     public SmackSystemConnection() {
         setPort(5222);
+        
+        try {
+            machineAccount = MachineInfo.getInstance().getMacAddress().hashCode()+"";
+            
+        } catch(Exception e) {
+            throw new IllegalStateException("Cannot read mac address", e);
+        }
     }
     
     public void open() throws Exception {
@@ -125,6 +134,14 @@ public class SmackSystemConnection extends SystemConnection implements PacketLis
     
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public String getUsername() {
+        return machineAccount;
+    }
+    
+    public String getPassword() {
+        return machineAccount;
+    }
+        
     public boolean isAutoCreateAccount() {
         return autoCreateAccount;
     }
