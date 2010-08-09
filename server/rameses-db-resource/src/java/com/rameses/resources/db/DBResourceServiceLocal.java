@@ -23,10 +23,13 @@ public interface DBResourceServiceLocal {
     
     List getInterceptors();
     List getPermissions();
+    List getConfCategory(String category);
+    List getDsList();
     
     byte[] getPermissionResource(String name);    
     byte[] getTemplateResource(String name);
     byte[] getScriptResource(String name);
     byte[] getSqlResource(String name);
+    byte[] getDsResource(String name);
 
 }

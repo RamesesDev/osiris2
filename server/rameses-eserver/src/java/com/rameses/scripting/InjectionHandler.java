@@ -62,11 +62,11 @@ public class InjectionHandler implements AnnotationFieldHandler {
     }
     
     public Object getResource(Field field, Annotation annotation) throws Exception {
-        if( annotation instanceof Resource) {
+        if( annotation instanceof com.rameses.annotations.Resource) {
             String resname = correctValue(((Resource)annotation).value());
             return lookup(resname,null);
         } 
-        else if( annotation instanceof Service) {
+        else if( annotation instanceof com.rameses.annotations.Service) {
             //check first if the script info is already cached. if not yet then cache it
             Service asvc = (Service)annotation;
             String scriptname = correctValue(asvc.value());
@@ -83,14 +83,10 @@ public class InjectionHandler implements AnnotationFieldHandler {
                 return mbean.createRemoteProxy(scriptname, env, host );
             }
         }
-        /*
-        else if( annotation instanceof Script ) {
-            String scriptname = ((Script)annotation).value();
-            ScriptServiceLocal ssl = (ScriptServiceLocal)lookup(ScriptService.class.getSimpleName() + "/local", null) ;
-            Class clazz = ssl.getScriptIntfClass(scriptname);
-            return Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, new LocalScriptInvocationHandler(scriptname, ssl));
-        } 
-         */
+        
+        else if( annotation instanceof com.rameses.annotations.Invoker) {
+            return new InvokerLookup( callerService, env );
+        }
         else if(annotation instanceof Env ) {
             return env;
         }

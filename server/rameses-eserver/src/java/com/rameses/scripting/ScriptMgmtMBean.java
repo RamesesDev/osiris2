@@ -28,5 +28,6 @@ public interface ScriptMgmtMBean {
     List<String> findBeforeInterceptors(String name);
     List<String> findAfterInterceptors(String name);
 
+    Map getLoadedScripts();
             
 }

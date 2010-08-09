@@ -67,8 +67,9 @@ public class SqlQuery {
     }
     
     
-    public void setConnection(Connection connection) {
+    public SqlQuery setConnection(Connection connection) {
         this.connection = connection;
+        return this;
     }
     
     public void setFetchHandler(FetchHandler resultHandler) {

@@ -31,7 +31,6 @@ public class NewEmptyJUnitTest extends TestCase {
         
        //String d = "a/b/b/c/d/e/f/g/";
        //System.out.println( d.substring(0,d.length()-1)  );
-        
         System.out.println("module:workunit.fire".matches(".*:.*\\..*"));
     }
 

@@ -9,6 +9,7 @@
 
 package com.rameses.sql;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -59,9 +60,10 @@ public final class SqlUtil {
     }
     
     
-    public static String substituteValues( String sql, Map values ) {
+    public static String substituteValues( String sql, Map xvalues ) {
         if(! sql.contains("{") ) return sql;
-        
+
+        Map values = new SystemMap(xvalues);
         Matcher m = substitute.matcher(sql);
         int start = 0;
         StringBuffer sb = new StringBuffer();
@@ -76,19 +78,27 @@ public final class SqlUtil {
         }
         sb.append( sql.substring(start) );
         return sb.toString();
-        /*
-        String ss = sql;
-        if( values != null ) {
-            for( Object oo: values.entrySet()) {
-                Map.Entry e = (Map.Entry)oo;
-                String key = "\\$\\{" + (e.getKey()+"").trim() + "\\}";
-                String value = e.getValue()+"";
-                ss = ss.replaceAll( key, value );
-            }
-        }
-        return  ss;
-         */
     }
     
+    
+    private static class SystemMap extends HashMap {
+        private Map map;
+        
+        public SystemMap(Map map) {
+            this.map = map;
+        }
+
+        public Object get(Object key) {
+            if(map.containsKey(key)) {
+                return map.get(key);
+            }
+            else {
+                return System.getProperty(key+"");
+            }
+        }
+        
+
+        
+    }
     
 }

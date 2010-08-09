@@ -62,7 +62,10 @@ public class DBResourceService implements DBResourceServiceLocal {
         return getResource(ResourcePermission.class, name);
     }
     
-    
+    public byte[] getDsResource(String name) {
+        return getResource(ResourceDs.class, name);
+    }
+
     //collective resources
     public List getInterceptors() {
         try {
@@ -88,5 +91,16 @@ public class DBResourceService implements DBResourceServiceLocal {
     public byte[] getConf(String name) {
         return getResource(ResourceConf.class, name);
     }
+
+    public List getConfCategory(String category) {
+        String ql = "select o.name from " + ResourceConf.class.getName() + " o where o.category=:category";
+        return em.createQuery(ql).setParameter("category", category).getResultList();
+    }
+
+    public List getDsList() {
+        String ql = "select o.name from " + ResourceDs.class.getName() + " o ";
+        return em.createQuery(ql).getResultList();
+    }
+
     
 }

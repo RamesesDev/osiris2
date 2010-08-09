@@ -71,6 +71,9 @@ public class ResourceService implements ResourceServiceMBean, Serializable {
                     URL u = new URL(name);
                     is = u.openStream();
                 } catch(Exception e) {;}
+                finally {
+                    try {is.close(); } catch(Exception ign){;}
+                }
             }
         }
         if(is==null)
@@ -88,7 +91,14 @@ public class ResourceService implements ResourceServiceMBean, Serializable {
             Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources(name);
             while(en.hasMoreElements()) {
                 URL u = en.nextElement();
-                handler.handle( u.openStream(), u.getPath() );
+                try {
+                    is = u.openStream();
+                    handler.handle(is, u.getPath() );
+                }
+                catch(Exception e){;}
+                finally{
+                    try {is.close();}catch(Exception ign){;}
+                }
             }
         } 
         else {
@@ -104,8 +114,12 @@ public class ResourceService implements ResourceServiceMBean, Serializable {
             if(!isHandled) {
                 try {
                     URL u = new URL(name);
-                    handler.handle(u.openStream(),u.getPath());
+                    is = u.openStream();                    
+                    handler.handle(is,u.getPath());
                 } catch(Exception e) {;}
+                finally {
+                    try {is.close();}catch(Exception ign){;}
+                }
             }
         }
     }

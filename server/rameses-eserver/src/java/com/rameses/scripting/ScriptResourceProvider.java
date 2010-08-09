@@ -42,17 +42,29 @@ public class ScriptResourceProvider extends ResourceProvider {
         if(name.equals("interceptors")) {
             String fileName = "META-INF/interceptors.conf";
             Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources(fileName);
+            InputStream is = null;
             while(en.hasMoreElements()) {
-                URL u = en.nextElement();
-                handler.handle( u.openStream(), u.getPath() );
+                try {
+                    URL u = en.nextElement();
+                    is = u.openStream();
+                    handler.handle( is, u.getPath() );
+                } catch(Exception e){;} finally {
+                    try {is.close();}catch(Exception ign){;}
+                }
             }
-        }
-        else if(name.equals("deployers")) {
+        } else if(name.equals("deployers")) {
             String fileName = "META-INF/deployers.conf";
             Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources(fileName);
+            InputStream is = null;
             while(en.hasMoreElements()) {
-                URL u = en.nextElement();
-                handler.handle( u.openStream(), u.getPath() );
+                try {
+                    URL u = en.nextElement();
+                    is = u.openStream();
+                    handler.handle( is, u.getPath() );
+                } catch(Exception e){;} finally {
+                    try {is.close();}catch(Exception ign){;}
+                }
+                
             }
         }
     }
