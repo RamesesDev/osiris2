@@ -17,17 +17,27 @@ public class SmackMessage extends Message {
     public SmackMessage() {
         smackMessage = new org.jivesoftware.smack.packet.Message();
     }
-
+    
     public Object getMessage() {
         return smackMessage;
     }
     
-    public void setText(String text) {
-        smackMessage.setBody(text);   
+    public void setMessage(Object message) {
+        if ( message instanceof org.jivesoftware.smack.packet.Message ) {
+            this.smackMessage = new org.jivesoftware.smack.packet.Message();
+        }
+        else if ( message instanceof String ) {
+            this.smackMessage.setBody( message.toString() );
+        }
     }
     
-    public void setRecipient(String name) {
-        smackMessage.setTo(name);
+    public void setRecipient(Object name) {
+        smackMessage.setTo( name+"" );
     }
+
+    public void setSender(Object sender) {
+        smackMessage.setFrom( sender+"" );
+    }
+    
     
 }
