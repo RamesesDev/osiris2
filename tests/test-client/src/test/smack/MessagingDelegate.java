@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class MessagingDelegate {
     
-    public static SmackConnection getConnection(Map conf, String uname, String pwd) {
+    public static SmackConnection getConnection(Map conf) {
         try {
             String host = "10.0.0.104";//(String) conf.get("host");
             String driverClass = "com.rameses.messaging.xmpp.SmackSystemConnection";//(String) conf.get("driverClass");
@@ -28,5 +28,5 @@ public class MessagingDelegate {
             return null;
         }
     }
-    
+        
 }

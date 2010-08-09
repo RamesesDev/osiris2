@@ -29,7 +29,7 @@
             
             void init() {
                 def conf = service.getConnectionConf("SmackConnection1");
-                con = MessagingDelegate.getConnection(conf, "jay", "12345");
+                con = MessagingDelegate.getConnection(conf);
                 con.open();
                 con.addMessageListener( listener );
             }

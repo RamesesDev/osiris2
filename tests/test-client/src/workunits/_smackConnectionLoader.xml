@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="loader" caption="Loader 1" index="1"
+                 target="process" action="init"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.rcp.framework.ClientContext;
+        import com.rameses.messaging.ConnectionManager;
+        import com.rameses.osiris2.client.*;
+        import com.rameses.platform.interfaces.*;
+        
+                        
+        public class SmackConnectionLoaderController  {        
+            
+            void init() {
+                def ctx = ClientContext.currentContext;
+                ctx.taskManager.addTask( new ConnectionTask() );
+                ctx.platform.mainWindow.listener = windowListener;
+            }
+            
+            def windowListener = [
+                onEvent: { eventName, evt -> },
+                onClose: {
+                    OsirisContext.getAsyncConnection().disconnect();
+                    return true;
+                }
+            ] as MainWindowListener;
+            
+        }
+        
+        class ConnectionTask extends Task {
+            boolean accept() { true }
+            
+            void execute() {
+                try {
+                    def host = "10.0.0.104";
+                    def driverClass = "com.rameses.messaging.xmpp.SmackSystemConnection";
+
+                    def con = ConnectionManager.instance.getConnection(driverClass, host);
+                    OsirisContext.getAsyncConnection().connection = con;
+                    con.open();
+                    
+                    println "successfully connected.";
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                setEnded( true );
+            }
+
+        }
+        
+        ]]>
+    </code>
+</workunit>

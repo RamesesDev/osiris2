@@ -15,10 +15,13 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.packet.DefaultPacketExtension;
+import org.jivesoftware.smack.packet.PacketExtension;
 
 
 public class SmackConnection extends MessagingConnection implements PacketListener, PacketFilter, ConnectionListener {
     
+    public static final String NAME_SPACE = "smack:asyncextension";
     private XMPPConnection conn;
     private boolean autoCreateAccount = true;
     private boolean connected;
@@ -63,7 +66,10 @@ public class SmackConnection extends MessagingConnection implements PacketListen
     }
     
     public void sendMessage(Message message) {
-        conn.sendPacket((Packet) message.getMessage());
+        Packet msg = (Packet) message.getMessage();
+        PacketExtension pe = new DefaultPacketExtension(NAME_SPACE, NAME_SPACE);
+        msg.addExtension(pe);
+        conn.sendPacket( msg );
     }
     
     public Message createMessage(Map properties) {
@@ -72,11 +78,15 @@ public class SmackConnection extends MessagingConnection implements PacketListen
     
     
     public void processPacket(Packet packet) {
-        super.processMessage(packet);
+        org.jivesoftware.smack.packet.Message sm = (org.jivesoftware.smack.packet.Message) packet;
+        SmackMessage msg = new SmackMessage();
+        msg.setMessage( sm );
+        
+        super.processMessage( msg );
     }
     
     public boolean accept(Packet packet) {
-        return true;
+        return packet.getExtension(NAME_SPACE) != null;
     }
     
     //---- connection listening support
@@ -95,7 +105,7 @@ public class SmackConnection extends MessagingConnection implements PacketListen
         super.notifyConnected();
     }
     
-    public void reconnectingIn(int i) {}    
+    public void reconnectingIn(int i) {}
     public void reconnectionFailed(Exception exception) {}
     
     

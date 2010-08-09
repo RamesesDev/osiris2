@@ -12,7 +12,9 @@ public interface Message {
     
     Object getMessage();
     void setMessage(Object message);
-    void setRecipient(Object recipient);
+    void setRecipient(Object name);
+    Object getRecipient();
     void setSender(Object sender);
+    Object getSender();
     
 }

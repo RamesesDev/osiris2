@@ -9,10 +9,10 @@ package com.rameses.messaging.xmpp;
 
 import com.rameses.messaging.*;
 
-
 public class SmackMessage implements Message {
     
     private org.jivesoftware.smack.packet.Message smackMessage;
+    
     
     public SmackMessage() {
         smackMessage = new org.jivesoftware.smack.packet.Message();
@@ -25,8 +25,7 @@ public class SmackMessage implements Message {
     public void setMessage(Object message) {
         if ( message instanceof org.jivesoftware.smack.packet.Message ) {
             this.smackMessage = new org.jivesoftware.smack.packet.Message();
-        }
-        else if ( message instanceof String ) {
+        } else if ( message instanceof String ) {
             this.smackMessage.setBody( message.toString() );
         }
     }
@@ -34,10 +33,17 @@ public class SmackMessage implements Message {
     public void setRecipient(Object name) {
         smackMessage.setTo( name+"" );
     }
-
+    
+    public Object getRecipient() {
+        return smackMessage.getTo();
+    }
+    
     public void setSender(Object sender) {
         smackMessage.setFrom( sender+"" );
     }
     
+    public Object getSender() {
+        return smackMessage.getFrom();
+    }
     
 }

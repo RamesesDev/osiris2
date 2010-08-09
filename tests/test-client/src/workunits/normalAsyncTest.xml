@@ -34,14 +34,15 @@
                 if ( o ) {
                     items.addAll( o );
                     listHandler.load();
-                    binding.refresh();
                 }
             }
             
             def listHandler = [
+            
                 getRows: { 20 },
                 getColumns: { [ new Column(name: 'item.name', caption: 'Customer Name') ] },
                 fetchList: { items  }
+                
             ] as SubListModel;
             
         }

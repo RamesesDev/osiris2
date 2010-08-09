@@ -122,12 +122,24 @@ public class OsirisMethodResolver implements MethodResolver {
                 if(o==null) retVal = true;
                 //invoke a special method if the response is an async id.
                 if ( (o != null) && (o instanceof String) && (o.toString().startsWith("ASYNC:"))) {
-                    AsyncPollTask apt = new AsyncPollTask(bean, responseHandler, o.toString(), host);
-                    ClientContext.getCurrentContext().getTaskManager().addTask(apt);
+                    AsyncSystemConnection sysCon = OsirisContext.getAsyncConnection();
+                    if ( sysCon != null && sysCon.isConnected() ) {
+                        String reqId = o.toString();
+                        AsyncResponse ar = new AsyncResponse(bean, responseHandler, reqId, host);
+                        sysCon.registerListener(reqId, ar);
+                        
+                    } else {
+                        AsyncPollTask apt = new AsyncPollTask(bean, responseHandler, o.toString(), host);
+                        ClientContext.getCurrentContext().getTaskManager().addTask(apt);
+                    }
+                    
                     retVal = true;
+                    
                 } else if ( !ValueUtil.isEmpty(responseHandler) ) {
                     invokeMethod(bean, responseHandler, new Object[]{ o }, new Class[]{ Object.class });
+                    
                 }
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
                 retVal = true; //end if an exception is thrown
@@ -191,4 +203,5 @@ public class OsirisMethodResolver implements MethodResolver {
         }
     }
     //</editor-fold>
+
 }
