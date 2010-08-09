@@ -1,5 +1,5 @@
 /*
- * SmackMessage.java
+ * SystemMessage.java
  *
  * Created on July 24, 2010, 10:12 AM
  * @author jaycverg
@@ -10,11 +10,11 @@ package com.rameses.messaging.xmpp;
 import com.rameses.messaging.*;
 
 
-public class SmackMessage extends Message {
+public class SystemMessage extends Message {
     
     private org.jivesoftware.smack.packet.Message smackMessage;
     
-    public SmackMessage() {
+    public SystemMessage() {
         smackMessage = new org.jivesoftware.smack.packet.Message();
     }
 
