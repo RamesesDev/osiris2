@@ -1,5 +1,5 @@
 /*
- * SmackMessagingConnection.java
+ * SystemMessagingConnection.java
  *
  * Created on July 24, 2010, 9:54 AM
  * @author jaycverg
@@ -17,11 +17,11 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 
 
-public class SmackMessagingConnection extends MessagingConnection implements PacketListener, PacketFilter {
+public class SystemMessagingConnection extends MessagingConnection implements PacketListener, PacketFilter {
     
     private XMPPConnection conn;
     
-    public SmackMessagingConnection() {
+    public SystemMessagingConnection() {
         setPort(5222);
     }
     
@@ -52,7 +52,7 @@ public class SmackMessagingConnection extends MessagingConnection implements Pac
     }
     
     public Message createMessage(Map properties) {
-        return new SmackMessage();
+        return new SystemMessage();
     }
     
     
