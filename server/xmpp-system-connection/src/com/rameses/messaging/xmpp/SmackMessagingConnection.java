@@ -5,12 +5,14 @@
  * @author jaycverg
  */
 
-package com.rameses.messaging;
+package com.rameses.messaging.xmpp;
 
+import com.rameses.messaging.*;
 import java.util.Map;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 
@@ -30,7 +32,15 @@ public class SmackMessagingConnection extends MessagingConnection implements Pac
         conn = new XMPPConnection(conf);
         conn.connect();
         conn.addPacketListener( this, this );
-        conn.login(getUsername(), getPassword());
+        
+        String username = getUsername();
+        String password = getPassword();
+        try {
+            conn.login(username, password);
+        } catch(XMPPException xmppe) {
+            conn.getAccountManager().createAccount(username, password);
+            conn.login(username, password);
+        }
     }
     
     public void close() {

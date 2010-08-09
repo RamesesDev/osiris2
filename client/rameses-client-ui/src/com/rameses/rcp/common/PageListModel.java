@@ -62,6 +62,7 @@ public abstract class PageListModel extends AbstractListModel {
             m.put("_search", search);
             m.put("_start", minlimit );
             m.put("_rowsize", fetchRows );
+            m.put("_limit", fetchRows );
             dataList = fetchList(m);
             
             boolean lastPage = true;            

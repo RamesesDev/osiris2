@@ -5,7 +5,9 @@
  * @author jaycverg
  */
 
-package com.rameses.messaging;
+package com.rameses.messaging.xmpp;
+
+import com.rameses.messaging.*;
 
 
 public class SmackMessage extends Message {

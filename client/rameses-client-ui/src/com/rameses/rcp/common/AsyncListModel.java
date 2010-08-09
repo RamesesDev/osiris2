@@ -101,6 +101,7 @@ public abstract class AsyncListModel extends PageListModel implements Runnable, 
             Map map = new HashMap();
             map.put("_start", startrow);
             map.put( "_rowsize", rowsize+1);
+            map.put( "_limit", rowsize+1);
             map.put( "_batch", batchNo);
             
             List subList = fetchList(map);
