@@ -10,4 +10,7 @@ package com.rameses.messaging;
 
 public interface ConnectionListener {
     
+    void onConnect();
+    void onDisconnect();
+    
 }

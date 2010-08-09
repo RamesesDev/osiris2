@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
-
+    
     <invokers>
         <invoker folderid="/menu/smack" caption="Client 2" action="init"/>
     </invokers>
-
+    
     <code>
         <![CDATA[
         
@@ -12,35 +12,23 @@
         import com.rameses.rcp.common.*;
         import com.rameses.messaging.*;
         import test.smack.*;
+        import com.rameses.util.*;
         
                 
         public class SmackTest1 {
             
             @Binding
             def binding;
-        
-            @Service("MessageService")
-            def service;
             
-            def message;
-            def messageList = new StringBuffer();
-            
+            def output = new StringBuffer();
+                      
             def con;
             
             void init() {
-                def conf = service.getConnectionConf("SmackConnection1");
-                con = MessagingDelegate.getConnection(conf, "paadmin", "12345");
+                def uname = MachineInfo.getInstance().getMacAddress();
+                con = MessagingDelegate.getConnection(null, uname.hashCode()+"", "12345");
                 con.open();
-                con.addListener( listener );
-            }
-            
-            void send() {
-                def m = con.createMessage(null);
-                m.setText(message);
-                m.setRecipient("jay@etracs.org");
-
-                con.sendMessage(m);
-                message = "";
+                con.addMessageListener( listener );
             }
             
             def listener =[
@@ -61,6 +49,6 @@
     </code>
     
     <pages>
-        <page template="test.smack.Page"/>
+        <page template="test.smack.Page2"/>
     </pages>
 </workunit>

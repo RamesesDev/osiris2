@@ -12,6 +12,7 @@ package com.rameses.osiris2.client;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.invoker.client.HttpInvokerClient;
 import com.rameses.invoker.client.HttpClientManager;
+import com.rameses.util.MachineInfo;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -59,6 +60,7 @@ public class InvokerProxy {
         
         private HttpInvokerClient client;
         private String serviceName;
+        private String machineKey;
         
         public MyHandler(String serviceName, HttpInvokerClient client) {
             this.serviceName = serviceName;
@@ -68,8 +70,20 @@ public class InvokerProxy {
         public Object invoke(Object object, Method method, Object[] args) throws Throwable {
             if( method.getName().equals("toString")) return serviceName;
             
-            Map headers = ClientContext.getCurrentContext().getHeaders();            
+            Map headers = ClientContext.getCurrentContext().getHeaders();
+            headers.put("machinekey", getMachineKey());
             return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
+        }
+        
+        private String getMachineKey() {
+            if ( machineKey == null ) {
+                try {
+                    machineKey = MachineInfo.getInstance().getMacAddress().hashCode()+"";
+                } catch (Exception ex) {
+                    throw new IllegalStateException(ex);
+                }
+            }
+            return machineKey;
         }
     } 
  

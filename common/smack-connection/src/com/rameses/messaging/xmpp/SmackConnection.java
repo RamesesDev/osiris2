@@ -14,11 +14,15 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.ConnectionListener;
 
 
-public class SmackConnection extends MessagingConnection implements PacketListener, PacketFilter {
+public class SmackConnection extends MessagingConnection implements PacketListener, PacketFilter, ConnectionListener {
     
     private XMPPConnection conn;
+    private boolean autoCreateAccount = true;
+    private boolean connected;
+    
     
     public SmackConnection() {
         setPort(5222);
@@ -30,25 +34,31 @@ public class SmackConnection extends MessagingConnection implements PacketListen
         
         conn = new XMPPConnection(conf);
         conn.connect();
-        conn.addPacketListener( this, this );
+        conn.addConnectionListener(this);
+        conn.addPacketListener(this, this);
+        
+        connected = true;
+        super.notifyConnected();
         
         String username = getUsername();
         String password = getPassword();
         
         //force create the account.
-        try {
-            conn.getAccountManager().createAccount(username, password);
+        if ( autoCreateAccount ) {
+            try {
+                conn.getAccountManager().createAccount(username, password);
+            } catch(Exception ign){;}
         }
-        catch(Exception ign){;}
         
         conn.login(username, password);
     }
     
     public void close() {
-        try {
-            conn.getAccountManager().deleteAccount();
+        if ( autoCreateAccount ) {
+            try {
+                conn.getAccountManager().deleteAccount();
+            } catch(Exception ign){;}
         }
-        catch(Exception ign){;}
         conn.disconnect();
     }
     
@@ -69,4 +79,37 @@ public class SmackConnection extends MessagingConnection implements PacketListen
         return true;
     }
     
+    //---- connection listening support
+    public void connectionClosed() {
+        connected = false;
+        super.notifyDisconnected();
+    }
+    
+    public void connectionClosedOnError(Exception e) {
+        connected = false;
+        super.notifyDisconnected();
+    }
+    
+    public void reconnectionSuccessful() {
+        connected = true;
+        super.notifyConnected();
+    }
+    
+    public void reconnectingIn(int i) {}    
+    public void reconnectionFailed(Exception exception) {}
+    
+    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public boolean isAutoCreateAccount() {
+        return autoCreateAccount;
+    }
+    
+    public void setAutoCreateAccount(boolean autoCreateAccount) {
+        this.autoCreateAccount = autoCreateAccount;
+    }
+    
+    public boolean isConnected() {
+        return connected;
+    }
+    //</editor-fold>
 }

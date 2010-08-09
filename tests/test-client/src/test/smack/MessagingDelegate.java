@@ -7,20 +7,21 @@
 
 package test.smack;
 
+
 import com.rameses.messaging.ConnectionManager;
-import com.rameses.messaging.SmackMessagingConnection;
+import com.rameses.messaging.xmpp.SmackConnection;
 import java.util.Map;
 
 
 public class MessagingDelegate {
     
-    public static SmackMessagingConnection getConnection(Map conf, String uname, String pwd) {
+    public static SmackConnection getConnection(Map conf, String uname, String pwd) {
         try {
-            String host = (String) conf.get("host");
-            String driverClass = (String) conf.get("driverClass");
+            String host = "10.0.0.104";//(String) conf.get("host");
+            String driverClass = "com.rameses.messaging.xmpp.SmackSystemConnection";//(String) conf.get("driverClass");
             
-            return (SmackMessagingConnection) ConnectionManager.getInstance()
-            .getConnection(driverClass, host, uname, pwd);
+            return (SmackConnection) ConnectionManager.getInstance()
+            .getConnection(driverClass, host);
             
         } catch (Exception ex) {
             ex.printStackTrace();

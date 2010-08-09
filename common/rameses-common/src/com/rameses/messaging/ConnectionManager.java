@@ -24,6 +24,15 @@ public class ConnectionManager {
         return con;
     }
     
+    public final MessagingConnection getConnection(String driver, String url) throws Exception {
+        Class driverClass = Thread.currentThread().getContextClassLoader().loadClass(driver);
+        MessagingConnection con = (MessagingConnection) driverClass.newInstance();
+        
+        con.setHost(url);
+        
+        return con;
+    }
+    
     public static final ConnectionManager getInstance() {
         if ( manager == null ) {
             manager = new ConnectionManager();

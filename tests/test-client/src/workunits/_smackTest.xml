@@ -31,7 +31,7 @@
                 def conf = service.getConnectionConf("SmackConnection1");
                 con = MessagingDelegate.getConnection(conf, "jay", "12345");
                 con.open();
-                con.addListener( listener );
+                con.addMessageListener( listener );
             }
             
             void send() {

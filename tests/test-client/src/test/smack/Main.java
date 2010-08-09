@@ -7,13 +7,6 @@
 
 package test.smack;
 
-import com.rameses.messaging.MessageListener;
-import com.rameses.messaging.SmackMessage;
-import com.rameses.messaging.SmackMessagingConnection;
-import javax.swing.JOptionPane;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-
 
 public class Main {
     

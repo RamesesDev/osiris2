@@ -25,6 +25,20 @@ public abstract class MessagingConnection {
     public abstract void close();
     public abstract void sendMessage(Message message);
     public abstract Message createMessage(Map properties);
+    public abstract boolean isConnected();
+    
+    protected void notifyConnected() {
+        for(ConnectionListener cl: connectionListeners) {
+            cl.onDisconnect();
+        }
+    }
+    
+    protected void notifyDisconnected() {
+        for(ConnectionListener cl: connectionListeners) {
+            cl.onDisconnect();
+        }
+    }
+    
     
     public void processMessage(Object message) {
         for ( MessageListener m : messageListeners ) {
@@ -32,23 +46,23 @@ public abstract class MessagingConnection {
         }
     }
     
-    public void addListener(MessageListener listener) {
+    public void addMessageListener(MessageListener listener) {
         if ( !messageListeners.contains(listener) ) {
             messageListeners.add(listener);
         }
     }
     
-    public void removeListener(MessageListener listener) {
+    public void removeMessageListener(MessageListener listener) {
         messageListeners.remove(listener);
     }
     
-    public void addListener(ConnectionListener listener) {
+    public void addConnectionListener(ConnectionListener listener) {
         if ( !connectionListeners.contains(listener) ) {
             connectionListeners.add(listener);
         }
     }
     
-    public void removeListener(ConnectionListener listener) {
+    public void removeConnectionListener(ConnectionListener listener) {
         connectionListeners.remove(listener);
     }
     

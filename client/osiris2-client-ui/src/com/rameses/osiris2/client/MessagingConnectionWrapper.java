@@ -45,5 +45,13 @@ public class MessagingConnectionWrapper extends MessagingConnection {
         
         return null;
     }
+
+    public boolean isConnected() {
+        if ( origCon != null ) {
+            return origCon.isConnected();
+        }
+        
+        return false;
+    }
     
 }
