@@ -9,6 +9,8 @@
 
 package com.rameses.eserver;
 
+import com.rameses.interfaces.ResourceHandler;
+import com.rameses.eserver.ResourceServiceMBean;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
@@ -65,7 +67,7 @@ public class ConfMgmt implements Serializable, ConfMgmtMBean {
         return cacheService.getContext(CONSTANTS.CONF_CACHE);
     }
 
-    private class ConfResourceHandler implements MultiResourceHandler {
+    private class ConfResourceHandler implements ResourceHandler {
         private Properties props = new Properties();
         
         public void handle(InputStream is, String resName) throws Exception {

@@ -8,6 +8,8 @@
  */
 package com.rameses.eserver;
 
+import com.rameses.interfaces.ResourceHandler;
+import com.rameses.interfaces.ResourceProvider;
 import com.sun.jmx.remote.util.Service;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -82,7 +84,7 @@ public class ResourceService implements ResourceServiceMBean, Serializable {
             return is;
     }
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         if(handler==null)
             throw new IllegalStateException("MultiResourceHandler must not be null");
         String[] arr = name.split("://");

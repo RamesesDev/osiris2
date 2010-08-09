@@ -10,7 +10,7 @@
 package com.rameses.scripting;
 
 import com.rameses.eserver.CONSTANTS;
-import com.rameses.interfaces.ResponseServiceLocal;
+import com.rameses.interfaces.AsyncResponseServiceLocal;
 import com.rameses.interfaces.ScriptServiceLocal;
 import com.rameses.invoker.client.HttpClientManager;
 import com.rameses.invoker.client.HttpInvokerClient;
@@ -59,16 +59,16 @@ public class RemoteDelegate {
     }
     
     
-    public static class RemoteResponseService implements ResponseServiceLocal {
+    public static class RemoteResponseService implements AsyncResponseServiceLocal {
         
         private HttpInvokerClient client;
         public RemoteResponseService( HttpInvokerClient client ) {
             this.client = client;
         }
         
-        public void registerData(String requestId, Object data) {
+        public void registerData(String requestId, String requester, Object data) {
             try {
-                client.invoke( CONSTANTS.RESPONSE_SERVICE + ".registerData", new Object[]{ requestId, data } );
+                client.invoke( CONSTANTS.RESPONSE_SERVICE + ".registerData", new Object[]{ requestId, requester, data } );
             } catch (Exception ex) {
                 throw new IllegalStateException(ex);
             }

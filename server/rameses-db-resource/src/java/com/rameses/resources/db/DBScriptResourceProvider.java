@@ -9,15 +9,14 @@
 
 package com.rameses.resources.db;
 
-import com.rameses.eserver.MultiResourceHandler;
-import com.rameses.eserver.ResourceProvider;
+import com.rameses.interfaces.ResourceHandler;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 import javax.naming.InitialContext;
 
 
-public class DBScriptResourceProvider extends ResourceProvider {
+public class DBScriptResourceProvider extends AbstractDBResourceProvider {
     
     
     public String getName() {
@@ -51,7 +50,7 @@ public class DBScriptResourceProvider extends ResourceProvider {
         }
     }
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         InitialContext ctx = new InitialContext();
         byte[] b = null;
         if(name.equals("interceptors")) {

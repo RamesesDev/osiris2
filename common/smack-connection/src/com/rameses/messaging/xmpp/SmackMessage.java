@@ -10,7 +10,7 @@ package com.rameses.messaging.xmpp;
 import com.rameses.messaging.*;
 
 
-public class SmackMessage extends Message {
+public class SmackMessage implements Message {
     
     private org.jivesoftware.smack.packet.Message smackMessage;
     

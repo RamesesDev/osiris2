@@ -9,7 +9,7 @@
 
 package com.rameses.security;
 
-import com.rameses.eserver.MultiResourceHandler;
+import com.rameses.interfaces.ResourceHandler;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -20,7 +20,7 @@ import java.util.Map;
  *
  * @author elmo
  */
-public class PermissionMultiResourceHandler implements MultiResourceHandler {
+public class PermissionMultiResourceHandler implements ResourceHandler {
     
     private Map permissions;
     private PermissionParser parser;

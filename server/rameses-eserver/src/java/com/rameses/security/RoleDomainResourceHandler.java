@@ -9,7 +9,7 @@
 
 package com.rameses.security;
 
-import com.rameses.eserver.MultiResourceHandler;
+import com.rameses.interfaces.ResourceHandler;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * @author elmo
  */
-public class RoleDomainResourceHandler implements MultiResourceHandler {
+public class RoleDomainResourceHandler implements ResourceHandler {
     
     private Map<String,List> domains = new Hashtable();
     

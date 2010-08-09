@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.interfaces.*;
 import java.io.InputStream;
 
 /**
@@ -24,7 +25,7 @@ public interface ResourceServiceMBean {
     void start() throws Exception;
     void stop() throws Exception;
     InputStream getResource(String name) throws Exception;
-    void scanResources( String name, MultiResourceHandler handler ) throws Exception;
+    void scanResources( String name, ResourceHandler handler ) throws Exception;
     
     
 }

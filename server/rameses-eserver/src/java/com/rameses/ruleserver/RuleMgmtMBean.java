@@ -7,8 +7,9 @@
  * and open the template in the editor.
  */
 
-package com.rameses.eserver;
+package com.rameses.ruleserver;
 
+import com.rameses.eserver.*;
 import java.util.List;
 
 public interface RuleMgmtMBean {

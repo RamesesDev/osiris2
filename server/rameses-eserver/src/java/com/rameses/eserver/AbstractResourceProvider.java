@@ -1,13 +1,14 @@
 package com.rameses.eserver;
 
+import com.rameses.interfaces.ResourceHandler;
+import com.rameses.interfaces.ResourceProvider;
 import java.io.InputStream;
-import java.io.Serializable;
 
 /***
  * This interface is used by db script local.
  * The higher number is more prioritized  
  */
-public abstract class ResourceProvider  implements Comparable, Serializable {
+public abstract class AbstractResourceProvider  implements ResourceProvider {
 
     public abstract String getName();
     public abstract String getDescription();
@@ -15,7 +16,7 @@ public abstract class ResourceProvider  implements Comparable, Serializable {
     public abstract boolean accept(String nameSpace);
     public abstract InputStream getResource(String name) throws Exception;
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         //do nothing...
         throw new Exception("There is no scanResources implementation for " + getName());
     }

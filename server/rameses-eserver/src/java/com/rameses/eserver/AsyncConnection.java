@@ -1,6 +1,8 @@
 package com.rameses.eserver;
 
+import com.rameses.messaging.ConnectionListener;
 import com.rameses.messaging.ConnectionManager;
+import com.rameses.messaging.Message;
 import com.rameses.messaging.MessageListener;
 import com.rameses.messaging.MessagingConnection;
 import java.io.Serializable;
@@ -15,9 +17,9 @@ import javax.naming.InitialContext;
  * @author jaycverg
  */
 
-public class AsyncConnection implements AsyncConnectionMBean, Serializable, MessageListener {
+public class AsyncConnection implements AsyncConnectionMBean, Serializable, MessageListener, ConnectionListener {
     
-    private String jndiName;
+    private String jndiName = CONSTANTS.SYSTEM_NOTIFIER;
     private String host;
     private int port;
     private String username;
@@ -35,23 +37,29 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
         JndiUtil.bind(ctx, jndiName, this);
 
         con = ConnectionManager.getInstance().getConnection(driverClass, host, username, password);
-        con.addListener(this);        
+        con.addMessageListener(this); 
+        con.addConnectionListener(this);
         con.open();
     }
     
     public void stop() throws Exception {
         System.out.println("STOPPING ASYNC CONNECTION: " + jndiName);
+        con.removeConnectionListener(this);
+        con.removeMessageListener(this);
         con.close();
+        con = null;
         InitialContext ctx = new InitialContext();
         JndiUtil.unbind(ctx, jndiName);
     }
     
     public Map getConf() {
+        if(con==null)
+            throw new IllegalStateException("No connection available");
         Map m = new HashMap();
-        m.put("host", host);
-        m.put("port", port);
-        m.put("driverClass", driverClass);
-        m.put("user", username);
+        m.put("host", con.getHost());
+        m.put("port", con.getPort());
+        m.put("driverClass", getDriverClass());
+        m.put("user",con.getUsername());
         return m;
     }
     
@@ -60,6 +68,11 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
     }
 
     public void onMessage(Object message) {
+        System.out.println("receive msg " + message);
+        if(message !=null && message instanceof Message) {
+            Message msg = (Message)message;
+            System.out.println("receiving message " + msg.getMessage() );
+        }
         //System.out.println("receiving message....." + message);
     }
 
@@ -109,6 +122,14 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
 
     public void setDriverClass(String driverClass) {
         this.driverClass = driverClass;
+    }
+
+    public void onConnect() {
+        System.out.println("CONNECTED " + jndiName);
+    }
+
+    public void onDisconnect() {
+        System.out.println(jndiName + " is disconnected");
     }
     
 }

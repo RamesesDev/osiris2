@@ -6,7 +6,7 @@ import com.rameses.annotations.After;
 import com.rameses.annotations.Before;
 import com.rameses.eserver.CONSTANTS;
 import com.rameses.eserver.CacheServiceMBean;
-import com.rameses.eserver.MultiResourceHandler;
+import com.rameses.interfaces.ResourceHandler;
 import com.rameses.eserver.ResourceServiceMBean;
 import com.rameses.interfaces.ScriptServiceLocal;
 import groovy.lang.GroovyClassLoader;
@@ -150,7 +150,7 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         Collections.sort(afterInterceptors);
     }
     
-    private class InterceptorLoader implements MultiResourceHandler {
+    private class InterceptorLoader implements ResourceHandler {
         
         public void handle(InputStream is, String source) throws Exception {
             InputStreamReader ir = new InputStreamReader(is);

@@ -8,11 +8,11 @@
 package com.rameses.messaging;
 
 
-public abstract class Message {
+public interface Message {
     
-    public abstract Object getMessage();
-    public abstract void setMessage(Object message);
-    public abstract void setRecipient(Object recipient);
-    public abstract void setSender(Object sender);
+    Object getMessage();
+    void setMessage(Object message);
+    void setRecipient(Object recipient);
+    void setSender(Object sender);
     
 }

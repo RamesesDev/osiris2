@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.interfaces.ResourceHandler;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
@@ -17,7 +18,7 @@ import java.util.Enumeration;
  *
  * @author elmo
  */
-public class ConfResourceProvider extends ResourceProvider {
+public class ConfResourceProvider extends AbstractResourceProvider {
     
     public String getName() {
         return "conf";
@@ -40,7 +41,7 @@ public class ConfResourceProvider extends ResourceProvider {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
     }
 
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         if(name.equals("vars")) {
             Enumeration<URL> e = Thread.currentThread().getContextClassLoader().getResources("META-INF/global.conf");
             while(e.hasMoreElements()) {

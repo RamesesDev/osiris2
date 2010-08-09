@@ -1,6 +1,6 @@
 package com.rameses.scripting;
 
-import com.rameses.interfaces.ResponseServiceLocal;
+import com.rameses.interfaces.AsyncResponseServiceLocal;
 import com.rameses.interfaces.ScriptServiceLocal;
 
 
@@ -16,8 +16,8 @@ public class ScriptMDB implements MessageListener {
     @Resource(mappedName="ScriptService/local")
     private ScriptServiceLocal scriptService;
     
-    @Resource(mappedName="ResponseService/local")
-    private ResponseServiceLocal responseService;
+    @Resource(mappedName="AsyncResponseService/local")
+    private AsyncResponseServiceLocal responseService;
     
     public void onMessage(Message message) {
         try {
@@ -84,10 +84,13 @@ public class ScriptMDB implements MessageListener {
                 RemoteDelegate.getScriptService("response.host",m).invoke(script,method,new Object[]{result},env);
             }
         } else {
+            
+            //send response back to original requester which is the machine key of the client.
+            String machinekey = (String)env.get("machinekey");
             if(sameServer && result!=null) {
-                responseService.registerData( requestId, result );
+                responseService.registerData( requestId, machinekey, result );
             } else {
-                RemoteDelegate.getResponseService("response.host", m).registerData(requestId, result);
+                RemoteDelegate.getResponseService("response.host", m).registerData(requestId, machinekey, result);
             }
         }
     }

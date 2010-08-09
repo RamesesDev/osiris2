@@ -9,7 +9,7 @@
 
 package com.rameses.resources.db;
 
-import com.rameses.eserver.*;
+import com.rameses.interfaces.ResourceHandler;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -19,7 +19,7 @@ import javax.naming.InitialContext;
  *
  * @author elmo
  */
-public class DsLoaderResourceProvider extends ResourceProvider {
+public class DsLoaderResourceProvider extends AbstractDBResourceProvider {
     
     public DsLoaderResourceProvider() {
     }
@@ -54,7 +54,7 @@ public class DsLoaderResourceProvider extends ResourceProvider {
         }
     }
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
          try {
             InitialContext ctx = new InitialContext();
             InputStream is = null;             

@@ -9,8 +9,8 @@
 
 package com.rameses.security;
 
-import com.rameses.eserver.MultiResourceHandler;
-import com.rameses.eserver.ResourceProvider;
+import com.rameses.interfaces.ResourceHandler;
+import com.rameses.eserver.AbstractResourceProvider;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
@@ -19,7 +19,7 @@ import java.util.Enumeration;
  *
  * @author elmo
  */
-public class PermissionResourceProvider extends ResourceProvider {
+public class PermissionResourceProvider extends AbstractResourceProvider {
     
     /** Creates a new instance of PermissionResourceProvider */
     public PermissionResourceProvider() {
@@ -45,7 +45,7 @@ public class PermissionResourceProvider extends ResourceProvider {
         throw new Exception("getResource is not applicable for permissions");
     }
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         String fileName = null;
         if(name.equals("roledomains"))  fileName = "META-INF/roledomain.conf";
         else fileName = "META-INF/permissions.xml";

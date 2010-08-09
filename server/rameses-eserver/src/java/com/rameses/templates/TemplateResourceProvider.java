@@ -9,7 +9,7 @@
 
 package com.rameses.templates;
 
-import com.rameses.eserver.ResourceProvider;
+import com.rameses.eserver.AbstractResourceProvider;
 import java.io.InputStream;
 
 /**
@@ -20,7 +20,7 @@ import java.io.InputStream;
  *
  *  where my file corresponds to the folder under META-INF/templates
  */
-public class TemplateResourceProvider extends ResourceProvider {
+public class TemplateResourceProvider extends AbstractResourceProvider {
     
     public TemplateResourceProvider() {
     }

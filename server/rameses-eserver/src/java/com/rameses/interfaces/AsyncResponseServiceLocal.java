@@ -9,15 +9,13 @@
 
 package com.rameses.interfaces;
 
-import java.util.List;
-
 /**
  *
  * @author ms
  */
-public interface ResponseServiceLocal {
+public interface AsyncResponseServiceLocal {
     
-    void registerData( String requestId, Object data );
+    void registerData( String requestId, String requester, Object data );
     void removeStaleObjects();
     Object getResponseData( String requestId );
     

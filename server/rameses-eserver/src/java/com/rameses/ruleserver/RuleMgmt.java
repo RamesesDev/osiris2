@@ -7,8 +7,9 @@
  * and open the template in the editor.
  */
 
-package com.rameses.eserver;
+package com.rameses.ruleserver;
 
+import com.rameses.eserver.*;
 import com.rameses.interfaces.RuleDomain;
 import com.rameses.interfaces.RuleDomainProvider;
 import com.sun.jmx.remote.util.Service;

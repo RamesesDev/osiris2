@@ -9,13 +9,12 @@
 
 package com.rameses.resources.db;
 
-import com.rameses.eserver.ResourceProvider;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import javax.naming.InitialContext;
 
 
-public class DBTemplateResourceProvider extends ResourceProvider {
+public class DBTemplateResourceProvider extends AbstractDBResourceProvider {
     
     
     public String getName() {

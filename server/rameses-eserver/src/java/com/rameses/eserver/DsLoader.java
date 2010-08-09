@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.interfaces.ResourceHandler;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -79,7 +80,7 @@ public class DsLoader implements DsLoaderMBean {
         return rootPath + "/" + deployPath + "/" + name + "-ds.xml";
     }
     
-    private class DsLoaderHandler implements MultiResourceHandler {
+    private class DsLoaderHandler implements ResourceHandler {
         
         public void handle(InputStream is, String resName) throws Exception {
             FileOutputStream fos = null;
@@ -92,7 +93,6 @@ public class DsLoader implements DsLoaderMBean {
                     fos.write( i );
                 }
                 fos.flush();
-                f.createNewFile();
                 dataSources.add( fileName );
             } 
             catch(Exception e) {

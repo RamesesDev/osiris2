@@ -9,15 +9,14 @@
 
 package com.rameses.resources.db;
 
-import com.rameses.eserver.MultiResourceHandler;
-import com.rameses.eserver.ResourceProvider;
+import com.rameses.interfaces.ResourceHandler;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 import javax.naming.InitialContext;
 
 
-public class DBConfResourceProvider extends ResourceProvider {
+public class DBConfResourceProvider extends AbstractDBResourceProvider {
     
     public String getName() {
         return "conf" ;
@@ -36,7 +35,7 @@ public class DBConfResourceProvider extends ResourceProvider {
         return 100;
     }
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         if(name.equals("vars")) {
             InitialContext ctx = new InitialContext();
             DBResourceServiceLocal ds = (DBResourceServiceLocal)ctx.lookup(DBResourceService.class.getSimpleName()+"/local");

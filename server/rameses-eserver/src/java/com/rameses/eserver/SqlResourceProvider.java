@@ -15,7 +15,7 @@ import java.io.InputStream;
  *
  * @author elmo
  */
-public class SqlResourceProvider extends ResourceProvider {
+public class SqlResourceProvider extends AbstractResourceProvider {
     
     public String getName() {
         return "sql";

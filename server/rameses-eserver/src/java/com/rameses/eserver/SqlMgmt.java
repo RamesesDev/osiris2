@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.eserver.ResourceServiceMBean;
 import com.rameses.sql.SqlCache;
 import com.rameses.sql.SqlCacheResourceHandler;
 import com.rameses.sql.SqlManager;

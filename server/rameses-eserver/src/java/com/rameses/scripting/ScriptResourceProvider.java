@@ -9,8 +9,8 @@
 
 package com.rameses.scripting;
 
-import com.rameses.eserver.MultiResourceHandler;
-import com.rameses.eserver.ResourceProvider;
+import com.rameses.interfaces.ResourceHandler;
+import com.rameses.eserver.AbstractResourceProvider;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
@@ -19,7 +19,7 @@ import java.util.Enumeration;
  *
  * @author elmo
  */
-public class ScriptResourceProvider extends ResourceProvider {
+public class ScriptResourceProvider extends AbstractResourceProvider {
     
     public String getName() {
         return "script" ;
@@ -38,7 +38,7 @@ public class ScriptResourceProvider extends ResourceProvider {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
     }
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         if(name.equals("interceptors")) {
             String fileName = "META-INF/interceptors.conf";
             Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources(fileName);

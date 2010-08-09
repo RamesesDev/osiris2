@@ -25,7 +25,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="sys_response_queue")
+@Table(name="sys_async_response")
 public class ResponseQueue implements Serializable {
     
     @Id

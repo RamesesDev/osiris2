@@ -6,8 +6,7 @@ public interface ScriptServiceLocal {
     
     byte[] getScriptInfo(String name);
 
-    //Object getScript(String name);
-    
     Object invoke(String name, String method, Object[] params, Map env);   
-    
+
+
 }

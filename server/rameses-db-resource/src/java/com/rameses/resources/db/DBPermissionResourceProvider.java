@@ -9,15 +9,15 @@
 
 package com.rameses.resources.db;
 
-import com.rameses.eserver.MultiResourceHandler;
-import com.rameses.eserver.ResourceProvider;
+import com.rameses.interfaces.ResourceHandler;
+import com.rameses.resources.db.AbstractDBResourceProvider;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 import javax.naming.InitialContext;
 
 
-public class DBPermissionResourceProvider extends ResourceProvider {
+public class DBPermissionResourceProvider extends AbstractDBResourceProvider {
     
     
     public String getName() {
@@ -51,7 +51,7 @@ public class DBPermissionResourceProvider extends ResourceProvider {
         }
     }
     
-    public void scanResources(String name, MultiResourceHandler handler) throws Exception {
+    public void scanResources(String name, ResourceHandler handler) throws Exception {
         InitialContext ctx = new InitialContext();
         DBResourceServiceLocal ds = (DBResourceServiceLocal)ctx.lookup(DBResourceService.class.getSimpleName()+"/local");
         if(name.equals("roledomains")) {

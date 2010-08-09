@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.eserver;
+package com.rameses.interfaces;
 
 import java.io.InputStream;
 
@@ -15,7 +15,8 @@ import java.io.InputStream;
  *
  * @author elmo
  */
-public interface MultiResourceHandler {
+public interface ResourceHandler {
 
     void handle( InputStream is, String resName ) throws Exception ;
+    
 }

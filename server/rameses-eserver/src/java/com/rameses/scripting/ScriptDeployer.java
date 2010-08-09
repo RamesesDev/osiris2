@@ -1,7 +1,7 @@
 package com.rameses.scripting;
 
 import com.rameses.interfaces.ScriptServiceLocal;
-import com.rameses.eserver.MultiResourceHandler;
+import com.rameses.interfaces.ResourceHandler;
 import com.rameses.eserver.ResourceServiceMBean;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -27,7 +27,7 @@ public class ScriptDeployer implements ScriptDeployerMBean {
         System.out.println("STOPPING SCRIPT DEPLOYERS");
     }
     
-    private class DeployerHandler implements MultiResourceHandler {
+    private class DeployerHandler implements ResourceHandler {
         
         public void handle(InputStream is, String source) throws Exception {
             InputStreamReader ir = new InputStreamReader(is);
