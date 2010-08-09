@@ -79,7 +79,7 @@ public class SmackSystemConnection extends SystemConnection implements PacketLis
         conn.sendPacket( msg );
     }
     
-    public SystemMessage createMessage(Map properties) {
+    public SystemMessage createSystemMessage(Map properties) {
         return new SmackSystemMessage();
     }
     
