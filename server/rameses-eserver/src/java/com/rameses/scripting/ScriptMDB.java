@@ -88,9 +88,9 @@ public class ScriptMDB implements MessageListener {
             //send response back to original requester which is the machine key of the client.
             String machinekey = (String)env.get("machinekey");
             if(sameServer && result!=null) {
-                responseService.registerData( requestId, machinekey, result );
+                responseService.pushResponse( requestId, machinekey, result );
             } else {
-                RemoteDelegate.getResponseService("response.host", m).registerData(requestId, machinekey, result);
+                RemoteDelegate.getResponseService("response.host", m).pushResponse(requestId, machinekey, result);
             }
         }
     }

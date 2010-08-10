@@ -8,7 +8,6 @@
 package com.rameses.messaging.xmpp;
 
 import com.rameses.messaging.*;
-import java.util.Map;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -21,7 +20,7 @@ import org.jivesoftware.smack.packet.PacketExtension;
 
 public class SmackConnection extends MessagingConnection implements PacketListener, PacketFilter, ConnectionListener {
     
-    public static final String NAME_SPACE = "smack:asyncextension";
+    public static final String NAME_SPACE = "smack:smackconnection";
     private XMPPConnection conn;
     private boolean autoCreateAccount = true;
     private boolean connected;
@@ -37,8 +36,7 @@ public class SmackConnection extends MessagingConnection implements PacketListen
         
         conn = new XMPPConnection(conf);
         conn.connect();
-        conn.addConnectionListener(this);
-        conn.addPacketListener(this, this);
+        
         
         connected = true;
         super.notifyConnected();
@@ -54,6 +52,9 @@ public class SmackConnection extends MessagingConnection implements PacketListen
         }
         
         conn.login(username, password);
+        
+        conn.addConnectionListener(this);
+        conn.addPacketListener(this, this);
     }
     
     public void close() {
@@ -66,28 +67,58 @@ public class SmackConnection extends MessagingConnection implements PacketListen
     }
     
     public void sendMessage(Message message) {
-        Packet msg = (Packet) message.getMessage();
-        PacketExtension pe = new DefaultPacketExtension(NAME_SPACE, NAME_SPACE);
-        msg.addExtension(pe);
-        conn.sendPacket( msg );
+        for(String receiver: message.getReceivers()) {
+            org.jivesoftware.smack.packet.Message smackMessage = new org.jivesoftware.smack.packet.Message();
+            smackMessage.setFrom( message.getSender() );
+            smackMessage.setTo( receiver + "@" + getHost() );
+            smackMessage.setBody( message.getBody() );
+            smackMessage.setSubject( message.getSubject() );
+            if(  message.getChannel()!=null) {
+                smackMessage.setThread( message.getChannel() );
+            }
+            PacketExtension pe = new DefaultPacketExtension(message.getType(), NAME_SPACE);
+            smackMessage.addExtension(pe);
+            conn.sendPacket( smackMessage );
+        }
     }
     
-    public Message createMessage(Map properties) {
-        return new SmackMessage();
-    }
-    
-    
-    public void processPacket(Packet packet) {
-        org.jivesoftware.smack.packet.Message sm = (org.jivesoftware.smack.packet.Message) packet;
-        SmackMessage msg = new SmackMessage();
-        msg.setMessage( sm );
-        
-        super.processMessage( msg );
-    }
-    
+    //filtering the message
     public boolean accept(Packet packet) {
         return packet.getExtension(NAME_SPACE) != null;
     }
+    
+    //receiving the message. implementation for PacketListener
+    public void processPacket(Packet packet) {
+        if( packet instanceof org.jivesoftware.smack.packet.Message ) {
+            org.jivesoftware.smack.packet.Message smackMessage = (org.jivesoftware.smack.packet.Message) packet;
+            PacketExtension pe = smackMessage.getExtension( NAME_SPACE );
+            Message msg = rebuildMessage( pe.getElementName(), smackMessage );
+            if(msg!=null) super.processMessage( msg );
+        }
+    }
+    
+    private Message rebuildMessage(String type, org.jivesoftware.smack.packet.Message pm ) {
+        if(type.equals("system")) {
+            SystemMessage sm = new SystemMessage(pm.getBody());
+            sm.setSender( pm.getFrom() );
+            sm.addReceiver( pm.getTo() );
+            sm.setChannel( pm.getThread() );
+            sm.setSubject( pm.getSubject() );
+            return sm;
+        }
+        else {
+            TextMessage tm = new TextMessage();
+            tm.setBody( pm.getBody() );
+            tm.setSender( pm.getFrom() );
+            tm.addReceiver( pm.getTo() );
+            tm.setChannel( pm.getThread() );
+            tm.setSubject( pm.getSubject() );
+            return tm;
+        }
+    }
+    
+    
+    
     
     //---- connection listening support
     public void connectionClosed() {

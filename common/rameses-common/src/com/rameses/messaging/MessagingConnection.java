@@ -9,7 +9,6 @@ package com.rameses.messaging;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public abstract class MessagingConnection {
     
@@ -24,7 +23,7 @@ public abstract class MessagingConnection {
     public abstract void open() throws Exception;
     public abstract void close();
     public abstract void sendMessage(Message message);
-    public abstract Message createMessage(Map properties);
+
     public abstract boolean isConnected();
     
     protected void notifyConnected() {
@@ -39,10 +38,11 @@ public abstract class MessagingConnection {
         }
     }
     
-    
     public void processMessage(Object message) {
-        for ( MessageListener m : messageListeners ) {
-            m.onMessage(message);
+        if(message instanceof Message) {
+            for ( MessageListener m : messageListeners ) {
+                m.onMessage( (Message) message);
+            }
         }
     }
     

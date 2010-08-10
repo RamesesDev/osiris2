@@ -15,8 +15,9 @@ package com.rameses.interfaces;
  */
 public interface AsyncResponseServiceLocal {
     
-    void registerData( String requestId, String requester, Object data );
-    void removeStaleObjects();
-    Object getResponseData( String requestId );
+    void pushResponse( String requestId, String requester, Object data );
+    Object getPollData(String requestId);
+    Object getPushData(String id);
+    
     
 }
