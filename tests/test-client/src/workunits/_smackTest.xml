@@ -19,8 +19,8 @@
             @Binding
             def binding;
             
-            @Service("MessageService")
-            def service;
+            //@Service("MessageService")
+            //def service;
         
             def message;
             def messageList = new StringBuffer();
@@ -28,27 +28,33 @@
             def con;
             
             void init() {
-                def conf = service.getConnectionConf("SmackConnection1");
-                con = MessagingDelegate.getConnection(conf);
+                //def conf = service.getConnectionConf("SmackConnection1");
+                con = MessagingDelegate.getConnection( null );
                 con.open();
                 con.addMessageListener( listener );
             }
             
             void send() {
-                def m = con.createMessage(null);
+             try {
+                def m = con.createSystemMessage(null);
                 
                 println "sending " + message;
                 
-                m.setText(message);
-                m.setRecipient("paadmin@etracs.org");
-
-                con.sendMessage(m);
+                //m.setMessage(message);
+                m.requestId = "sample id";
+                m.pushId = "push id";
+                m.setRecipient("admin@10.0.0.104");
+                con.sendMessage( m );
                 message = "";
+             }
+             catch(e) {
+                e.printStackTrace();
+             }
             }
             
             def listener =[
                 onMessage: { m ->
-                    messageList.append( m.getBody() + "\n" );
+                    messageList.append( m.getMessage + "\n" );
                     binding.refresh();
                 }
             ] as MessageListener;

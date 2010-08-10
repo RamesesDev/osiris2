@@ -9,18 +9,18 @@ package test.smack;
 
 
 import com.rameses.messaging.ConnectionManager;
-import com.rameses.messaging.xmpp.SmackConnection;
+import com.rameses.messaging.xmpp.SmackSystemConnection;
 import java.util.Map;
 
 
 public class MessagingDelegate {
     
-    public static SmackConnection getConnection(Map conf) {
+    public static SmackSystemConnection getConnection(Map conf) {
         try {
             String host = "10.0.0.104";//(String) conf.get("host");
             String driverClass = "com.rameses.messaging.xmpp.SmackSystemConnection";//(String) conf.get("driverClass");
             
-            return (SmackConnection) ConnectionManager.getInstance()
+            return (SmackSystemConnection) ConnectionManager.getInstance()
             .getConnection(driverClass, host);
             
         } catch (Exception ex) {

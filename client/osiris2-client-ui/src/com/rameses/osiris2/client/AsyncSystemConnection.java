@@ -30,6 +30,7 @@ public class AsyncSystemConnection implements MessageListener {
     
     public void setConnection(SystemConnection con) {
         connection = con;
+        System.out.println("setting connection " + con);
         connection.addMessageListener(this);
     }
     
@@ -54,6 +55,7 @@ public class AsyncSystemConnection implements MessageListener {
     }
     
     public void onMessage(Object message) {
+        System.out.println("firing on message..... " + message);
         if ( message instanceof SystemMessage ) {
             SystemMessage msg = (SystemMessage) message;
             String key = msg.getRequestId()+"";

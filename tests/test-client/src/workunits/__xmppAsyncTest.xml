@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XMPP Async Test" index="-2"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+
+                
+        public class XMPPAsyncTestController {
+        
+            @Service("SystemNotifier")
+            def svc;
+        
+            @Async()
+            Object test() {
+                return svc.test("firing async from dev02..");
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.async.XMPPAsyncPage"/>
+    </pages>
+</workunit>

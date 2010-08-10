@@ -124,9 +124,11 @@ public class OsirisMethodResolver implements MethodResolver {
                 if ( (o != null) && (o instanceof String) && (o.toString().startsWith("ASYNC:"))) {
                     AsyncSystemConnection sysCon = OsirisContext.getAsyncConnection();
                     if ( sysCon != null && sysCon.isConnected() ) {
+                        System.out.println("using xmpp support....");
                         String reqId = o.toString();
                         AsyncResponse ar = new AsyncResponse(bean, responseHandler, reqId, host);
                         sysCon.registerListener(reqId, ar);
+                        System.out.println("async connection cnnected is " + sysCon.getConnection());
                         
                     } else {
                         AsyncPollTask apt = new AsyncPollTask(bean, responseHandler, o.toString(), host);
@@ -181,7 +183,7 @@ public class OsirisMethodResolver implements MethodResolver {
                 Map env = OsirisContext.getSession().getEnv();
                 HttpInvokerClient client = HttpClientManager.getInstance().getService(host, env);
                 while(true) {
-                    Object obj = client.invoke("ResponseService.getResponseData", new Object[]{ reqId });
+                    Object obj = client.invoke("ResponseService.getPollData", new Object[]{ reqId });
                     if ( obj != null ) {
                         counter = 0;
                         invokeMethod(bean, respHandler, new Object[]{ obj }, null);

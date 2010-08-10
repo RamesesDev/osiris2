@@ -28,11 +28,12 @@ public class AsyncResponse {
         this.host = host;
     }
     
-    public void onResponse(Map response) {
+    public void onResponse(Map data) {
+        System.out.println("firing response....");
         try {
             Map env = OsirisContext.getSession().getEnv();
             HttpInvokerClient client = HttpClientManager.getInstance().getService(host, env);
-            Object obj = client.invoke("ResponseService.getResponseData", new Object[]{ reqId });
+            Object obj = client.invoke("ResponseService.getPushData", new Object[]{ data.get("pushId") });
             if ( obj != null ) {
                 invokeMethod(bean, respHandler, new Object[]{ obj }, null);
             }
