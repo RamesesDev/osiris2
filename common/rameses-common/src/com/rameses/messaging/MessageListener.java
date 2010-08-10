@@ -10,6 +10,6 @@ package com.rameses.messaging;
 
 public interface MessageListener {
     
-    void onMessage(Object message);
+    void onMessage(Message message);
         
 }

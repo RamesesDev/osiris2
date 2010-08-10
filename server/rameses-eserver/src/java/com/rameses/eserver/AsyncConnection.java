@@ -35,7 +35,6 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
         System.out.println("STARTING ASYNC CONNECTION: " + jndiName);
         InitialContext ctx = new InitialContext();        
         JndiUtil.bind(ctx, jndiName, this);
-
         con = ConnectionManager.getInstance().getConnection(driverClass, host, username, password);
         con.addMessageListener(this); 
         con.addConnectionListener(this);
@@ -67,13 +66,8 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
         return con;
     }
 
-    public void onMessage(Object message) {
+    public void onMessage(Message message) {
         System.out.println("receive msg " + message);
-        if(message !=null && message instanceof Message) {
-            Message msg = (Message)message;
-            System.out.println("receiving message " + msg.getMessage() );
-        }
-        //System.out.println("receiving message....." + message);
     }
 
     public String getJndiName() {
