@@ -17,6 +17,7 @@ public class ConnectionManager {
     
     private ConnectionManager() {}
     
+    
     public final MessagingConnection createConnection(String name, String driver, String url, String username, String password) throws Exception {
         if ( !connections.containsKey(name) ) {
             MessagingConnection con = getConnection(driver, url);
@@ -34,6 +35,10 @@ public class ConnectionManager {
             connections.put(name, con);
         }
         
+        return connections.get(name);
+    }
+    
+    public final MessagingConnection getConnection(String name) {
         return connections.get(name);
     }
     
