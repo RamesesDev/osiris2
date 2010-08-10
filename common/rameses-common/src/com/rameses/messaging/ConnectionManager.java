@@ -7,29 +7,40 @@
 
 package com.rameses.messaging;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ConnectionManager {
     
     private static ConnectionManager manager;
+    private Map<String, MessagingConnection> connections = new HashMap();
     
     private ConnectionManager() {}
     
-    public final MessagingConnection getConnection(String driver, String url, String username, String password) throws Exception {
-        Class driverClass = Thread.currentThread().getContextClassLoader().loadClass(driver);
-        MessagingConnection con = (MessagingConnection) driverClass.newInstance();
+    public final MessagingConnection createConnection(String name, String driver, String url, String username, String password) throws Exception {
+        if ( !connections.containsKey(name) ) {
+            MessagingConnection con = getConnection(driver, url);
+            con.setUsername(username);
+            con.setPassword(password);
+            connections.put(name, con);
+        }
         
-        con.setHost(url);
-        con.setUsername(username);
-        con.setPassword(password);
-        
-        return con;
+        return connections.get(name);
     }
     
-    public final MessagingConnection getConnection(String driver, String url) throws Exception {
+    public final MessagingConnection createConnection(String name, String driver, String url) throws Exception {
+        if ( !connections.containsKey(name) ) {
+            MessagingConnection con = getConnection(driver, url);
+            connections.put(name, con);
+        }
+        
+        return connections.get(name);
+    }
+    
+    private MessagingConnection getConnection(String driver, String url) throws Exception {
         Class driverClass = Thread.currentThread().getContextClassLoader().loadClass(driver);
         MessagingConnection con = (MessagingConnection) driverClass.newInstance();
-        
-        con.setHost(url);
-        
+        con.setHost( url );
         return con;
     }
     
