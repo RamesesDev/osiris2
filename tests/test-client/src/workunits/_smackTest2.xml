@@ -11,7 +11,6 @@
         import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
         import com.rameses.messaging.*;
-        import test.smack.*;
         import com.rameses.util.*;
         
                 
@@ -25,15 +24,21 @@
             def con;
             
             void init() {
-                def uname = MachineInfo.getInstance().getMacAddress();
-                con = MessagingDelegate.getConnection(null, uname.hashCode()+"", "12345");
-                con.open();
+                def cm = ConnectionManager.instance;
+                con = cm.getConnection('system');
                 con.addMessageListener( listener );
+            }
+            
+            void doSend() {
+                def msg = new SystemMessage('12341234', '111111');
+                msg.addReceiver( '1958094673@10.0.0.104' );
+                con.sendMessage( msg );
             }
             
             def listener =[
                 onMessage: { m ->
-                    messageList.append( m.getBody() + "\n" );
+                    output.append( m+"" );
+                    println "firing on message " + m;
                     binding.refresh();
                 }
             ] as MessageListener;

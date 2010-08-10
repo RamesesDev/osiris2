@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
-    
+
     <invokers>
         <invoker type="loader" caption="Loader 1" index="1"
                  target="process" action="init"/>
@@ -9,55 +9,55 @@
     <code>
         <![CDATA[
         
-        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
         import com.rameses.rcp.framework.ClientContext;
-        import com.rameses.messaging.ConnectionManager;
+        import com.rameses.messaging.*;
         import com.rameses.osiris2.client.*;
         import com.rameses.platform.interfaces.*;
-        import test.smack.*;
         
                         
         public class SmackConnectionLoaderController  {        
             
+            @Service("SystemNotifier")
+            def svc;
+        
             void init() {
                 def ctx = ClientContext.currentContext;
-                //ctx.taskManager.addTask( new ConnectionTask() );
-                ctx.platform.mainWindow.listener = windowListener;
-                
-                //def host = "10.0.0.104";
-                //def driverClass = "com.rameses.messaging.xmpp.SmackSystemConnection";
-
-                //def con = ConnectionManager.instance.getConnection(driverClass, host);
-                def con = MessagingDelegate.getConnection( null );
-                con.open();
-                OsirisContext.getAsyncConnection().connection = con;
+                ctx.taskManager.addTask( new ConnectionTask( svc ) );
+                ctx.platform.mainWindow.addListener( windowListener );
             }
             
             def windowListener = [
                 onEvent: { eventName, evt -> },
                 onClose: {
-                    OsirisContext.getAsyncConnection().disconnect();
+                    println "closing xmpp connection...";
+                    def con = ConnectionManager.instance.getConnection("system");
+                    if ( con && con.isConnected() ) {
+                        con.close();
+                    }
+                    
                     return true;
                 }
             ] as MainWindowListener;
             
         }
         
-        /**
         class ConnectionTask extends Task {
+        
+            def svc;
+        
+            ConnectionTask( s ) {
+                svc = s;
+            }
+        
             boolean accept() { true }
             
             void execute() {
                 try {
-                    def host = "10.0.0.104";
-                    def driverClass = "com.rameses.messaging.xmpp.SmackSystemConnection";
-
-                    def con = ConnectionManager.instance.getConnection(driverClass, host);
-                    OsirisContext.getAsyncConnection().connection = con;
+                    def conf = svc.getConnectionDetails();
+                    def con = ConnectionManager.instance.createConnection("system", conf.driverClass, conf.host);
                     con.open();
-                    
-                    println "successfully connected.";
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -66,7 +66,6 @@
             }
 
         }
-        */
         
         ]]>
     </code>

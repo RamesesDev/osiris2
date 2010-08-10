@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
+    
     <invokers>
         <invoker folderid="/menu/file" caption="XMPP Async Test" index="-2"/>
     </invokers>
@@ -16,9 +17,13 @@
             @Service("SystemNotifier")
             def svc;
         
-            @Async()
+            @Async(responseHandler="resp")
             Object test() {
                 return svc.test("firing async from dev02..");
+            }
+            
+            void resp(Object data) {
+                println 'receiving data: ' + data;
             }
             
         }

@@ -12,11 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 public class NBMainWindow implements MainWindow {
     
-    private MainWindowListener listener;
+    private List<MainWindowListener> listeners = new ArrayList();
     private JFrame window;
     private String mainTitle = "";
     
@@ -26,12 +25,18 @@ public class NBMainWindow implements MainWindow {
     
     public Component getComponent() { return window; }
     
-    public MainWindowListener getListener() {
-        return listener;
+    public List<MainWindowListener> getListeners() {
+        return listeners;
     }
     
-    public void setListener(MainWindowListener listener) {
-        this.listener = listener;
+    public void addListener(MainWindowListener listener) {
+        if ( !listeners.contains(listener) ) {
+            listeners.add( listener );
+        }
+    }
+    
+    public void removeListener(MainWindowListener listener) {
+        listeners.remove(listener);
     }
     
     public void invoke(String name, String action, Map properties) {
@@ -79,8 +84,6 @@ public class NBMainWindow implements MainWindow {
     }
     
     public void close() {
-        if ( listener != null && !listener.onClose() ) return;
-        
         NBLifecycleManager.getInstance().exit();
     }
     
