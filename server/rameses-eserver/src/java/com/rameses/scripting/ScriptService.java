@@ -11,10 +11,8 @@ package com.rameses.scripting;
 
 import com.rameses.classutils.ClassDef;
 import com.rameses.interfaces.ScriptServiceLocal;
-
-import com.rameses.annotations.After;
 import com.rameses.annotations.Async;
-import com.rameses.annotations.Before;
+import com.rameses.annotations.ProxyMethod;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.rmi.server.UID;
@@ -59,10 +57,10 @@ public class ScriptService implements ScriptServiceLocal {
                 name = name.substring(1);
             }
             
-            ScriptObject imeta = scriptMgmt.getScriptObject(name);
-            
-            Object target = imeta.getTargetClass().newInstance();
-            ClassDef classDef = imeta.getClassDef();
+            ScriptObject scriptObj = scriptMgmt.getScriptObject(name);
+
+            Object target = scriptObj.getTargetClass().newInstance();
+            ClassDef classDef = scriptObj.getClassDef();
             Method actionMethod = classDef.findMethodByName( method );
             
             boolean async = (!bypassAsync && actionMethod.isAnnotationPresent(Async.class));
@@ -72,27 +70,28 @@ public class ScriptService implements ScriptServiceLocal {
                 injectionHandler = new InjectionHandler(name, context,env);
                 classDef.injectFields( target, injectionHandler );
                 
-                
-                //check if interceptors should fire
-                //normally if this is an interceptor method, then this should not fire.
-                boolean hasInterceptors = true;
-                if( actionMethod.isAnnotationPresent(Before.class)) hasInterceptors = false;
-                else if( actionMethod.isAnnotationPresent(After.class)) hasInterceptors = false;
-                
+                //check if interceptors should fire. This is applied only to all proxy methods.
+                boolean applyInterceptors = false;
+                if(actionMethod.isAnnotationPresent(ProxyMethod.class)) applyInterceptors = true;
                 
                 
                 //fire before interceptors;
                 String fullName = name + "." + method;
                 
-                if( hasInterceptors ) {
+                if( applyInterceptors ) {
                     ActionEvent ae = null;
                     ScriptEval se = null;
                     try {
+                        
+                        //make sure to load interceptors first
+                        scriptMgmt.loadInterceptors( scriptObj, name, method );
+                        
+                        
                         //start transaction
-                        ae = new ActionEvent( imeta.getName(), actionMethod.getName(), params, env);
+                        ae = new ActionEvent( scriptObj.getName(), actionMethod.getName(), params, env);
                         se = new ScriptEval(ae);
                         ScriptServiceLocal  scriptService = (ScriptServiceLocal)context.lookup("ScriptService/local");
-                        for(String b: scriptMgmt.findBeforeInterceptors(fullName)) {
+                        for(String b: scriptObj.findBeforeInterceptors(method)) {
                             executeInterceptor(b, ae, se, scriptService, env);    
                         }
                         Object retval =  actionMethod.invoke( target, params );
@@ -102,7 +101,7 @@ public class ScriptService implements ScriptServiceLocal {
                             return retval;
                         
                         ae.setResult(retval);
-                        for(String b: scriptMgmt.findAfterInterceptors(fullName)) {
+                        for(String b: scriptObj.findAfterInterceptors(method)) {
                             executeInterceptor(b, ae, se, scriptService, env);    
                         }
                         return retval;

@@ -33,8 +33,6 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
     private List<InterceptorDef> beforeInterceptors;
     private List<InterceptorDef> afterInterceptors;
-    private Map<String,List<String>> beforeInterceptorsMap = new Hashtable<String,List<String>>();
-    private Map<String,List<String>> afterInterceptorsMap = new Hashtable<String,List<String>>();
     
     private GroovyClassLoader classLoader;
     
@@ -45,6 +43,13 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     
     //we have to build the interfaces on the fly
     private Map<String, Class> localInterfaces = new Hashtable();
+    
+    
+    /**
+     * this is incremented everytime the flush interceptors is called.
+     */
+    private int interceptorModifiedVersion;
+    
     
     public void start() throws Exception {
         System.out.println("STARTING SCRIPT MANAGEMENT");
@@ -74,8 +79,6 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         if(afterInterceptors!=null) afterInterceptors.clear();
         beforeInterceptors = null;
         afterInterceptors = null;
-        beforeInterceptorsMap.clear();
-        afterInterceptorsMap.clear();
         remoteInterfaces.clear();
         localInterfaces.clear();
         //we must recreate the classLoader
@@ -92,8 +95,6 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         if(afterInterceptors!=null) afterInterceptors.clear();
         beforeInterceptors = null;
         afterInterceptors = null;
-        beforeInterceptorsMap.clear();
-        afterInterceptorsMap.clear();
         buildInterceptors();
     }
     
@@ -131,11 +132,13 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     }
     
     /**
-     * steps:
-     *  1. create a groovy script file under META-INF
-     *  2. register the path of file in the interceptors.conf file similar to META-INF/services
+     * This loads and finds all interceptors declared in the application.
+     * the modified version is needed so that the script objects interceptors
+     * can be synchronized properly
      */
     private synchronized void buildInterceptors() {
+        interceptorModifiedVersion++;
+        System.out.println("Loading interceptors .... v"+interceptorModifiedVersion);
         if( beforeInterceptors !=null ) return;
         beforeInterceptors = new ArrayList<InterceptorDef>();
         afterInterceptors = new ArrayList<InterceptorDef>();
@@ -148,6 +151,7 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         //sort the interceptors
         Collections.sort(beforeInterceptors);
         Collections.sort(afterInterceptors);
+        
     }
     
     private class InterceptorLoader implements ResourceHandler {
@@ -181,35 +185,7 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
     }
     
     
-    public List<String> findBeforeInterceptors(String name) {
-        if( !beforeInterceptorsMap.containsKey(name) ) {
-            synchronized(beforeInterceptorsMap) {
-                List<String> list = new ArrayList<String>();
-                for(InterceptorDef idf: beforeInterceptors) {
-                    if(idf.accept(name)) {
-                        list.add(idf.getSignature());
-                    }
-                }
-                beforeInterceptorsMap.put(name,list);
-            }
-        }
-        return beforeInterceptorsMap.get(name);
-    }
     
-    public List<String> findAfterInterceptors(String name) {
-        if( !afterInterceptorsMap.containsKey(name) ) {
-            synchronized(afterInterceptorsMap) {
-                List<String> list = new ArrayList<String>();
-                for(InterceptorDef idf: afterInterceptors) {
-                    if(idf.accept(name)) {
-                        list.add(idf.getSignature());
-                    }
-                }
-                afterInterceptorsMap.put(name,list);
-            }
-        }
-        return afterInterceptorsMap.get(name);
-    }
     
     public Object createLocalProxy(String name, Map env) {
         try {
@@ -250,9 +226,44 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
             throw new IllegalStateException(e);
         }
     }
-
+    
     public Map getLoadedScripts() {
         return cacheService.getContext(SCRIPT_PREFIX);
     }
+    
+    public void loadInterceptors(ScriptObject so, String serviceName, String method ) {
+        //load before and after to a method
+        //check first the interceptor modified version and compare if we need to reflush.
+        boolean needsReload = (so.getInterceptorModifiedVersion() != interceptorModifiedVersion);
+        so.setInterceptorModifiedVersion( interceptorModifiedVersion );
+        
+        Map _beforeInterceptors = so.getBeforeInterceptors();
+        Map _afterInterceptors = so.getAfterInterceptors();
+        String name = serviceName+"."+method;
+        if(!_beforeInterceptors.containsKey(method) || needsReload ) {
+            List<String> list = new ArrayList<String>();
+            for(InterceptorDef idf: beforeInterceptors) {
+                if(idf.accept(name)) {
+                    list.add(idf.getSignature());
+                }
+            }
+            _beforeInterceptors.put(method,list);
+        }
+        
+        if(!_afterInterceptors.containsKey(method) || needsReload ) {
+            List<String> list = new ArrayList<String>();
+            for(InterceptorDef idf: afterInterceptors) {
+                if(idf.accept(name)) {
+                    list.add(idf.getSignature());
+                }
+            }
+            _afterInterceptors.put(method,list);
+        }
+    }
+
+    public int getInterceptorModifiedVersion() {
+        return interceptorModifiedVersion;
+    }
+    
     
 }

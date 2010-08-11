@@ -35,7 +35,8 @@ public class AsyncConnection implements AsyncConnectionMBean, Serializable, Mess
         System.out.println("STARTING ASYNC CONNECTION: " + jndiName);
         InitialContext ctx = new InitialContext();        
         JndiUtil.bind(ctx, jndiName, this);
-        con = ConnectionManager.getInstance().getConnection(driverClass, host, username, password);
+        ConnectionManager cm = new ConnectionManager();
+        con = cm.createConnection( jndiName, driverClass, host, username, password);
         con.addMessageListener(this); 
         con.addConnectionListener(this);
         con.open();

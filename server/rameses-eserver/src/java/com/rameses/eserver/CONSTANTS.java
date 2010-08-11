@@ -30,4 +30,9 @@ public interface CONSTANTS {
     
     public final static String SYSTEM_NOTIFIER = "SystemNotifier";
     
+    //these are keywords used by Async from the client. These are carried inside env.
+    public final static String HEADER_MACHINE_KEY = "machinekey";
+    public final static String HEADER_REPLY_TO = "replyto";
+    
+    
 }

@@ -2,6 +2,7 @@ package com.rameses.scripting;
 
 import com.rameses.interfaces.AsyncResponseServiceLocal;
 import com.rameses.interfaces.ScriptServiceLocal;
+import com.rameses.scripting.RemoteDelegate.RemoteResponseService;
 
 
 import java.util.HashMap;
@@ -86,11 +87,11 @@ public class ScriptMDB implements MessageListener {
         } else {
             
             //send response back to original requester which is the machine key of the client.
-            String machinekey = (String)env.get("machinekey");
             if(sameServer && result!=null) {
-                responseService.pushResponse( requestId, machinekey, result );
+                responseService.pushResponse( requestId, result );
             } else {
-                RemoteDelegate.getResponseService("response.host", m).pushResponse(requestId, machinekey, result);
+                RemoteResponseService rr = RemoteDelegate.getResponseService("response.host", m);
+                rr.pushResponse(requestId, result);
             }
         }
     }

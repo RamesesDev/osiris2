@@ -82,6 +82,7 @@ public class SqlExecutor {
                 conn = connection;
             else
                 conn = sqlManager.getConnection();
+            
             if(parameterHandler==null) 
                 parameterHandler = new BasicParameterHandler();
             
