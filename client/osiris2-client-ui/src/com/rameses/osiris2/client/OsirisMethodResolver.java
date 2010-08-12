@@ -9,10 +9,7 @@ package com.rameses.osiris2.client;
 
 import com.rameses.classutils.ClassDefUtil;
 import com.rameses.messaging.ConnectionManager;
-import com.rameses.messaging.Message;
-import com.rameses.messaging.MessageListener;
 import com.rameses.messaging.MessagingConnection;
-import com.rameses.messaging.SystemMessage;
 import com.rameses.rcp.common.ScheduledTask;
 import com.rameses.rcp.common.Task;
 import com.rameses.rcp.annotations.Async;
@@ -29,8 +26,8 @@ import org.apache.commons.beanutils.MethodUtils;
 
 public class OsirisMethodResolver implements MethodResolver {
     
-    private PushMessageListner pushListener;
     private Map<String, AsyncResponseDelegate> respDelegates = new Hashtable();
+    private Map<String, Task> asyncTasks = new Hashtable();
     
     
     private AsyncResponseDelegate getResponseDelegate(String host) {
@@ -61,6 +58,13 @@ public class OsirisMethodResolver implements MethodResolver {
         ClassDefUtil util = ClassDefUtil.getInstance();
         Method m = util.findMethodByName(xbean.getClass(), xaction);
         if ( m != null && m.isAnnotationPresent(Async.class) ) {
+            
+            String taskId = getTaskId(xbean, xaction);
+            Task t = asyncTasks.get(taskId);
+            
+            //check if a task associated w/ the action is still running
+            if ( t != null && !t.isEnded() ) return null;
+            
             Async async = (Async) m.getAnnotation(Async.class);
             String resp = async.responseHandler();
             String host = async.host();
@@ -72,11 +76,16 @@ public class OsirisMethodResolver implements MethodResolver {
             
             AsyncAction aa = new AsyncAction(xbean, xaction, paramTypes, args, resp, host, async.loop(), eventVar );
             ClientContext.getCurrentContext().getTaskManager().addTask(aa);
+            asyncTasks.put(taskId, aa);
             
             return null;
         }
         
         return invokeMethod(xbean, xaction, args, null);
+    }
+
+    private String getTaskId(Object bean, String action) {
+        return bean.hashCode() + "." + action.hashCode();
     }
     
     
@@ -149,14 +158,11 @@ public class OsirisMethodResolver implements MethodResolver {
                 //invoke a special method if the response is an async id.
                 if ( (o != null) && (o instanceof String) && (o.toString().startsWith("ASYNC:"))) {
                     String reqId = o.toString();
-                    if ( sysCon != null && sysCon.isConnected() ) {
-                        AsyncPushResponse ar = new AsyncPushResponse(bean, responseHandler, reqId, host);
-                        registerPushListener( sysCon, reqId, ar );
-                        
-                    } else {
-                        AsyncPollTask apt = new AsyncPollTask(bean, responseHandler, reqId, host);
-                        ClientContext.getCurrentContext().getTaskManager().addTask(apt);
-                    }
+                    AsyncPollTask apt = new AsyncPollTask(bean, responseHandler, reqId, host);
+                    ClientContext.getCurrentContext().getTaskManager().addTask(apt);
+                    
+                    String taskId = getTaskId(bean, action);
+                    asyncTasks.put(taskId, apt);
                     
                     retVal = true;
                     
@@ -170,14 +176,6 @@ public class OsirisMethodResolver implements MethodResolver {
                 retVal = true; //end if an exception is thrown
             }
             return retVal;
-        }
-        
-        private void registerPushListener(MessagingConnection con, String reqId, AsyncPushResponse ar) {
-            if ( pushListener == null ) {
-                pushListener = new PushMessageListner();
-                con.addMessageListener( pushListener );
-            }
-            pushListener.register(reqId, ar);
         }
         
     }
@@ -234,62 +232,4 @@ public class OsirisMethodResolver implements MethodResolver {
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  PushMessageListner (class)  ">
-    public class PushMessageListner implements MessageListener {
-        
-        private Map<String, AsyncPushResponse> listeners = new Hashtable();
-        
-        public void register(String reqId, AsyncPushResponse listener) {
-            if ( !listeners.containsKey(reqId) ) {
-                listeners.put(reqId, listener);
-            }
-        }
-        
-        public void onMessage(Message message) {
-            if ( message instanceof SystemMessage ) {
-                SystemMessage msg = (SystemMessage) message;
-                String key = msg.getRequestid();
-                
-                AsyncPushResponse resp = listeners.remove(key);
-                if ( resp == null ) return;
-                
-                resp.onResponse( msg.getPushid() );
-            }
-        }
-        
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  AsyncPushResponse (class)  ">
-    public class AsyncPushResponse {
-        
-        private Object bean;
-        private String respHandler;
-        private String reqId;
-        private String host;
-        
-        
-        public AsyncPushResponse(Object bean, String respHandler, String reqId, String host) {
-            this.bean = bean;
-            this.respHandler = respHandler;
-            this.reqId = reqId;
-            this.host = host;
-        }
-        
-        public void onResponse(String pushId) {
-            try {
-                AsyncResponseDelegate ard = getResponseDelegate(host);
-                System.out.println("push id is " + pushId);
-                Object obj = ard.getPushData( pushId );
-                System.out.println("response object is " + obj);
-                if ( obj != null ) {
-                    invokeMethod(bean, respHandler, new Object[]{ obj }, null);
-                }
-            }catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
-        
-    }
-    //</editor-fold>
 }

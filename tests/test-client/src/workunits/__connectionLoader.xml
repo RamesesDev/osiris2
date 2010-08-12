@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
-
+    <!--
     <invokers>
         <invoker type="loader" caption="Loader 1" index="1"
                  target="process" action="init"/>
     </invokers>
-
+    -->
     <code>
         <![CDATA[
         

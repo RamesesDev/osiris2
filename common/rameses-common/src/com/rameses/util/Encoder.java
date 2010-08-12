@@ -23,6 +23,7 @@ public abstract class Encoder {
     public abstract String encode(String v);
     
     public static MD5Encoder MD5 = new MD5Encoder();
+    public static SHA1Encoder SHA1 = new SHA1Encoder();
     
     public Encoder() {
     }
@@ -31,6 +32,9 @@ public abstract class Encoder {
     public static Encoder get(String name) {
         if(name.equalsIgnoreCase("md5")) {
             return MD5;
+        }
+        else if ( name.equalsIgnoreCase("sha1") ) {
+            return SHA1;
         }
         return encoders.get(name);
     }
@@ -56,5 +60,27 @@ public abstract class Encoder {
         }
     }
     
+    public static class SHA1Encoder extends Encoder {
+        
+        public String encode(String value) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA1");
+                md.update(value.getBytes());
+                
+                byte[] hash =  md.digest();
+                String hexDigit = "0123456789ABCDEF";
+                StringBuffer sb = new StringBuffer(hash.length);
+                for (int i=0; i< hash.length; i++) {
+                    int b = hash[i];
+                    sb.append(hexDigit.charAt((b >> 4) & 0x0f));
+                    sb.append(hexDigit.charAt(b & 0x0f));
+                }
+                return sb.toString();
+            } catch(Exception e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+        
+    }
     
 }

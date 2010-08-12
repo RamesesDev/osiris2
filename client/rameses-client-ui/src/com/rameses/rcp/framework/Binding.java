@@ -53,7 +53,7 @@ public class Binding {
     
     /**
      * 1. reference of all controls that can aquire default focus
-     *    when the window is showed or during page navigation
+     *    when the window is shown or during page navigation
      * 2. this reference contains UIInput and UISubControl only
      */
     private List<UIControl> focusableControls = new ArrayList();

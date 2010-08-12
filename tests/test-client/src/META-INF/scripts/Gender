@@ -1,0 +1,11 @@
+import com.rameses.rcp.annotations.*;
+import com.rameses.rcp.common.*;
+
+public class Gender {
+
+    public List getList() {
+        return ["MALE", "FEMALE"];
+    }
+
+
+}

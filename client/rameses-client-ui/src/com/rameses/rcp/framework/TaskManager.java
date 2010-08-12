@@ -85,9 +85,15 @@ public class TaskManager {
             this.task = task;
         }
         public void run() {
+            task.start();
             task.execute();
             //after executing, do we need to send this back to the pool? check if ended
-            if(!task.isEnded()) addTask(task);
+            if(!task.isEnded()) {
+                addTask(task);
+            }
+            else {
+                task.end();
+            }
         }
     }
 

@@ -72,9 +72,7 @@ public class InvokerProxy {
             
             Map headers = ClientContext.getCurrentContext().getHeaders();
             headers.put(CONSTANTS.HEADER_MACHINE_KEY, getMachineKey());
-            
-            System.out.println("sending headers: " + headers);
-            
+
             return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
         }
         

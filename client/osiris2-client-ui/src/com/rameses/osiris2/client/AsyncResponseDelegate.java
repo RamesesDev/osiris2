@@ -17,10 +17,6 @@ public class AsyncResponseDelegate {
     private static final String SERVICE_NAME = "AsyncResponseService";
     private HttpInvokerClient client;
     
-    public Object getPushData(String pushId) throws Exception {
-        return client.invoke(SERVICE_NAME +".getPushData", new Object[]{ pushId });
-    }
-    
     public Object getPollData(String reqId) throws Exception {
         return client.invoke(SERVICE_NAME +".getPollData", new Object[]{ reqId });
     }
