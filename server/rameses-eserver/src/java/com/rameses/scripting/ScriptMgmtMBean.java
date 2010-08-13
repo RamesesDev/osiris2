@@ -9,7 +9,6 @@
 
 package com.rameses.scripting;
 
-import java.util.List;
 import java.util.Map;
 
 public interface ScriptMgmtMBean {
@@ -25,9 +24,8 @@ public interface ScriptMgmtMBean {
     void flushInterceptors();
     void flushScript(String name);
     
-    List<String> findBeforeInterceptors(String name);
-    List<String> findAfterInterceptors(String name);
-
+    void loadInterceptors( ScriptObject obj, String serviceName, String method );
     Map getLoadedScripts();
-            
+    
+    int getInterceptorModifiedVersion(); 
 }

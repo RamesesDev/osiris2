@@ -27,7 +27,7 @@ public class InterceptorDef implements Comparable {
     public InterceptorDef(String scriptName, Method m, int idx, String pattern, String expr) {
         this.pattern = pattern;
         this.scriptName = scriptName;
-        this.index = index;
+        this.index = idx;
         this.method = m.getName();
         if( m.getParameterTypes()!=null && m.getParameterTypes().length>0) {
             this.hasParam = true;
@@ -51,7 +51,6 @@ public class InterceptorDef implements Comparable {
     }
     
     public int compareTo(Object o) {
-        if( o instanceof InterceptorDef ) return 0;
         InterceptorDef idf = (InterceptorDef)o;
         if( getIndex() < idf.getIndex() ) {
             return -1;

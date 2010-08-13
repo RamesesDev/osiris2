@@ -7,15 +7,15 @@
 
 package com.rameses.messaging;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 public class ConnectionManager {
     
     private static ConnectionManager manager;
-    private Map<String, MessagingConnection> connections = new HashMap();
+    private Map<String, MessagingConnection> connections = new Hashtable();
     
-    private ConnectionManager() {}
+    public ConnectionManager() {}
     
     
     public final MessagingConnection createConnection(String name, String driver, String url, String username, String password) throws Exception {

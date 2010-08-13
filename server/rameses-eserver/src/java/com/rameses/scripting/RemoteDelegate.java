@@ -66,14 +66,13 @@ public class RemoteDelegate {
             this.client = client;
         }
         
-        public void pushResponse(String requestId, String requester, Object data) {
+        public void pushResponse(String requestId, Object data) {
             try {
-                client.invoke( CONSTANTS.RESPONSE_SERVICE + ".pushResponse", new Object[]{ requestId, requester, data } );
+                client.invoke( CONSTANTS.RESPONSE_SERVICE + ".pushResponse", new Object[]{ requestId, data } );
             } catch (Exception ex) {
                 throw new IllegalStateException(ex);
             }
         }
-
 
         public Object getPollData(String requestId) {
             try {
@@ -83,14 +82,6 @@ public class RemoteDelegate {
             }
         }
 
-        public Object getPushData(String id) {
-            try {
-                return client.invoke( CONSTANTS.RESPONSE_SERVICE + ".getPushData", new Object[]{id} );
-            } catch (Exception ex) {
-                throw new IllegalStateException(ex);
-            }
-        }
-        
     }
     
     

@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 public class SqlManager {
     
     protected DataSource dataSource;
-    
+    private Connection currentConnection;
     private SqlCacheResourceHandler sqlCacheResourceHandler = new DefaultSqlCacheResourceHandler();
     
     /** Creates a new instance of SQLManager */
@@ -35,12 +35,36 @@ public class SqlManager {
         this.dataSource = ds;
     }
     
+    public Connection openConnection() throws Exception {
+        if(dataSource==null)
+            throw new IllegalStateException("Datasource is null");
+        currentConnection = dataSource.getConnection();
+        return currentConnection;
+    }
+    
+    public void closeConnection() {
+        if(currentConnection==null) return;
+        try {
+            currentConnection.close();
+        }
+        catch(Exception ign){;}
+        currentConnection = null;
+    }
+    
+    
     /**
      * always create a new connection when requesting from SqlManager
      */
     public Connection getConnection() throws Exception {
         if(dataSource==null)
             throw new IllegalStateException("Datasource is null");
+        
+        if(currentConnection!=null && currentConnection.isClosed() ) 
+            currentConnection = null;
+        
+        if(currentConnection!=null) {
+            return currentConnection;
+        }    
         return dataSource.getConnection();
     }
     
