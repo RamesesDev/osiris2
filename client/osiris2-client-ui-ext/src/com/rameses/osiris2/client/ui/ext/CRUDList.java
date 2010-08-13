@@ -7,11 +7,11 @@
 
 package com.rameses.osiris2.client.ui.ext;
 
+import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.util.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import java.util.HashMap;
 import java.util.List;

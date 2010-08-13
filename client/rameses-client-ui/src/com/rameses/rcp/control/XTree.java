@@ -17,7 +17,7 @@ import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

@@ -16,7 +16,7 @@ import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
-import com.rameses.util.ExpressionResolver;
+import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

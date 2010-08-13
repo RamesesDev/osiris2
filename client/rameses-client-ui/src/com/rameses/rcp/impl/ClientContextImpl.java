@@ -3,10 +3,10 @@ import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ClientSecurityProvider;
 import com.rameses.rcp.framework.ResourceProvider;
-import com.rameses.util.ExpressionResolver;
-import com.rameses.util.MethodResolver;
-import com.rameses.util.PropertyResolver;
-import com.rameses.util.ValueResolver;
+import com.rameses.common.ExpressionResolver;
+import com.rameses.common.MethodResolver;
+import com.rameses.common.PropertyResolver;
+import com.rameses.common.ValueResolver;
 import java.util.Locale;
 
 /**

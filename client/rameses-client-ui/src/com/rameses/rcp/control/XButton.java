@@ -7,7 +7,7 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.rcp.util.UIControlUtil;
-import com.rameses.util.ExpressionResolver;
+import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

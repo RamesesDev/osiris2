@@ -9,7 +9,7 @@
 
 package com.rameses.rcp.framework;
 
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.PropertyResolver;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;

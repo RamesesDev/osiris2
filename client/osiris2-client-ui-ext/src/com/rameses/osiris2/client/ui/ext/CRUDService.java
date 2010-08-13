@@ -1,12 +1,12 @@
 
 package com.rameses.osiris2.client.ui.ext;
 
+import com.rameses.common.MethodResolver;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.client.OsirisContext;
 import com.rameses.osiris2.client.InvokerProxy;
 import com.rameses.rcp.framework.ChangeLog;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.util.MethodResolver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

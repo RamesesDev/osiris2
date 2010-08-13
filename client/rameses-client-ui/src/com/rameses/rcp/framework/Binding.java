@@ -14,7 +14,7 @@ import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
-import com.rameses.util.MethodResolver;
+import com.rameses.common.MethodResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -151,8 +151,8 @@ public class Binding {
     
     /**
      *@description
-     *  accepts list of filednames
-     *  sample usage: refresh("field1|field2")
+     *  accepts regex expression of filednames
+     *  sample usage: refresh("field1|field2|entity.*")
      */
     public void refresh(String fieldRegEx) {
         Set<UIControl> refreshed = new HashSet();

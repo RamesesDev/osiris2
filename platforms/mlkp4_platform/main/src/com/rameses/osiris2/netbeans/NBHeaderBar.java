@@ -118,13 +118,21 @@ public class NBHeaderBar extends JLayeredPane {
                     jcLogo.setBounds(w-dim.width, y, dim.width, dim.height);
                 }
                 
-                if (jcHeader != null) {
+                if (jcHeader instanceof JComponent) {
+                    hideIfEmpty( (JComponent)jcHeader );
+                }
+                
+                if (jcHeader != null && jcHeader.isVisible() ) {
                     Dimension dim = jcHeader.getPreferredSize();
                     jcHeader.setBounds(x, y, w, dim.height);
                     y += dim.height;
                 }
                 
-                if (jcFooter != null) {
+                if (jcFooter instanceof JComponent) {
+                    hideIfEmpty( (JComponent)jcFooter );
+                }
+                
+                if (jcFooter != null && jcFooter.isVisible()) {
                     Dimension dim = jcFooter.getPreferredSize();
                     jcFooter.setBounds(x, y, w, dim.height);
                 }
@@ -134,13 +142,22 @@ public class NBHeaderBar extends JLayeredPane {
         public Dimension getLayoutSize(Container parent) {
             synchronized (parent.getTreeLock()) {
                 int w=0, h=0;
-                if (jcHeader != null) {
+                
+                if (jcHeader instanceof JComponent) {
+                    hideIfEmpty( (JComponent)jcHeader );
+                }
+                
+                if (jcHeader != null && jcHeader.isVisible()) {
                     Dimension dim = jcHeader.getPreferredSize();
                     w = dim.width;
                     h = dim.height;
                 }
                 
-                if (jcFooter != null) {
+                if (jcFooter instanceof JComponent) {
+                    hideIfEmpty( (JComponent)jcFooter );
+                }
+                
+                if (jcFooter != null && jcFooter.isVisible()) {
                     Dimension dim = jcFooter.getPreferredSize();
                     if (w == 0)
                         w = dim.width;
@@ -163,6 +180,13 @@ public class NBHeaderBar extends JLayeredPane {
                 h += (margin.top + margin.bottom);
                 return new Dimension(w, h);
             }
+        }
+        
+        private void hideIfEmpty(JComponent jc) {
+            if ( jc.getComponentCount() == 0 )
+                jc.setVisible(false);
+            else
+                jc.setVisible(true);
         }
     }
     //</editor-fold>

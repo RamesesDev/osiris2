@@ -15,7 +15,7 @@ import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
-import com.rameses.util.MethodResolver;
+import com.rameses.common.MethodResolver;
 import com.rameses.util.ValueUtil;
 import javax.swing.JProgressBar;
 

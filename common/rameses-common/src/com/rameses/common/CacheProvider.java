@@ -6,7 +6,7 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-package com.rameses.util;
+package com.rameses.common;
 
 import com.sun.jmx.remote.util.Service;
 import java.util.Iterator;

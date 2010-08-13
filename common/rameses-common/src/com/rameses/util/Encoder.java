@@ -32,8 +32,7 @@ public abstract class Encoder {
     public static Encoder get(String name) {
         if(name.equalsIgnoreCase("md5")) {
             return MD5;
-        }
-        else if ( name.equalsIgnoreCase("sha1") ) {
+        } else if ( name.equalsIgnoreCase("sha1") ) {
             return SHA1;
         }
         return encoders.get(name);
@@ -71,9 +70,9 @@ public abstract class Encoder {
                 String hexDigit = "0123456789ABCDEF";
                 StringBuffer sb = new StringBuffer(hash.length);
                 for (int i=0; i< hash.length; i++) {
-                    int b = hash[i];
-                    sb.append(hexDigit.charAt((b >> 4) & 0x0f));
-                    sb.append(hexDigit.charAt(b & 0x0f));
+                    int b = hash[i] & 0xFF;
+                    sb.append(hexDigit.charAt(b >>> 4));
+                    sb.append(hexDigit.charAt(b & 0xF));
                 }
                 return sb.toString();
             } catch(Exception e) {
