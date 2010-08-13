@@ -48,31 +48,11 @@ public class NBMainWindow implements MainWindow {
                 Object o = nbmenus.get(name.substring(3));
                 if (o instanceof AbstractButton) {
                     ((AbstractButton) o).doClick();
-                } else
+                } else {
                     JOptionPane.showMessageDialog(window, "No available handler for action '"+name+"'     ");
+                }
             }
         }
-    }
-    
-    private void setMenuBar(JMenuBar m) {
-        if (m == null) m = new JMenuBar();
-        
-        List list = new ArrayList();
-        for (int i=0; i<m.getComponentCount(); i++) {
-            JMenu jm = m.getMenu(i);
-            jm.getComponentCount();
-            
-            if (jm.getMenuComponentCount() == 0)
-                list.add(m.getMenu(i));
-        }
-        
-        while (!list.isEmpty()) {
-            JMenu mnu = (JMenu) list.remove(0);
-            m.remove(mnu);
-        }
-        
-        NBHeaderBar headerBar = NBManager.getInstance().getHeaderBar();
-        headerBar.setTopView(m);
     }
     
     public void setTitle(String title) {
@@ -95,6 +75,46 @@ public class NBMainWindow implements MainWindow {
             JMenuBar m = (JMenuBar) comp;
             setMenuBar(m);
         }
+    }
+    
+    private void setMenuBar(JMenuBar m) {
+        if (m == null) m = new JMenuBar();
+        
+        List emptyMenu = new ArrayList();
+        for (int i=0; i<m.getComponentCount(); i++) {
+            JMenu jm = m.getMenu(i);
+            if ( !hasChildren(jm) )
+                emptyMenu.add(jm);
+        }
+        
+        while (!emptyMenu.isEmpty()) {
+            JMenu mnu = (JMenu) emptyMenu.remove(0);
+            m.remove(mnu);
+        }
+        
+        NBHeaderBar headerBar = NBManager.getInstance().getHeaderBar();
+        headerBar.setTopView(m);
+    }
+    
+    private boolean hasChildren(JMenu jm) {
+        jm.getComponentCount();
+        if ( jm.getMenuComponentCount() == 0 )
+            return false;
+        
+        boolean hasChildren = false;
+        for(int i=0; i<jm.getMenuComponentCount(); ++i) {
+            Component c = jm.getMenuComponent(i);
+            if ( c instanceof JMenu ) {
+                JMenu subMenu = (JMenu) c;
+                if ( !hasChildren(subMenu) ) {
+                    jm.remove(subMenu);
+                }
+            } else {
+                hasChildren = true;
+            }
+        }
+        
+        return hasChildren;
     }
     
     public void show() {

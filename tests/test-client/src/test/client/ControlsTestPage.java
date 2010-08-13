@@ -115,7 +115,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xCheckBox2.setUncheckValue("NO");
         formPanel1.add(xCheckBox2);
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(225, 80));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(250, 80));
         xTextArea1.setColumns(20);
         xTextArea1.setRows(5);
         xTextArea1.setCaption("Memo");

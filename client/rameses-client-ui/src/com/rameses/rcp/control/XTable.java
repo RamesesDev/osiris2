@@ -198,8 +198,8 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public void rowChanged() {
         if ( !ValueUtil.isEmpty(getName()) ) {
             UIInputUtil.updateBeanValue(this, false); //we don't need to add entry to change log
-            rowHeaderView.clearEditing();
         }
+        rowHeaderView.clearEditing();
     }
     
     public void editCellAt(int rowIndex, int colIndex) {

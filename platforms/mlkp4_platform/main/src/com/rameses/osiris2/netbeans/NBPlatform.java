@@ -109,7 +109,7 @@ public class NBPlatform implements Platform {
     }
     
     public boolean showConfirm(JComponent actionSource, Object message) {
-        int resp = JOptionPane.showConfirmDialog(null, message, "Confirm", JOptionPane.YES_NO_OPTION);
+        int resp = JOptionPane.showConfirmDialog(mainWindow.getComponent(), message, "Confirm", JOptionPane.YES_NO_OPTION);
         return resp == JOptionPane.YES_OPTION;
     }
     
@@ -149,4 +149,9 @@ public class NBPlatform implements Platform {
         }
         return msg;
     }
+
+    public void exit() {
+        mainWindow.close();
+    }
+    
 }

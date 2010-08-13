@@ -514,7 +514,7 @@ public class TableComponent extends JTable implements ListModelListener {
     public void refreshList() {
         if ( editingMode ) hideEditor(false);
         if ( !rowCommited ) {
-            cancelRowEdit();
+            rowCommited = true;
             rowChanged();
         }
         

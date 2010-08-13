@@ -67,13 +67,19 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
-        if( mouseOverImage == true )
+        
+        if( !isFocusable() ) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
+        } else if( mouseOverImage == true ) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
-        if(imgWidth > 0)
+        }
+        
+        if(imgWidth > 0) {
             if(orientation.toUpperCase() == "RIGHT")
                 g2.drawImage( icon.getImage(), this.getWidth() - (imgWidth + XPAD), (this.getHeight() - imgHeight) / 2 , null);
             else
                 g2.drawImage( icon.getImage(), XPAD, (this.getHeight() - imgHeight) / 2 , null);
+        }
         g2.dispose();
     }
     

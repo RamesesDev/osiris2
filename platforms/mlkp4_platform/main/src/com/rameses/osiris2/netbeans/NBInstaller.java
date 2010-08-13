@@ -187,7 +187,6 @@ public class NBInstaller extends ModuleInstall {
     
     public boolean closing() {
         if (nbMainWindow != null && nbMainWindow.getListeners() != null) {
-            //if (nbMainWindow.getListener().onClose()) return true;
             for(MainWindowListener mwl : nbMainWindow.getListeners() ) {
                 try {
                     if ( !mwl.onClose() ) return false;

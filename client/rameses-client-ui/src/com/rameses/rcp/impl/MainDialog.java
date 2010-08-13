@@ -43,15 +43,6 @@ public class MainDialog implements MainWindow {
         
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                if ( listeners != null ) {
-                    for(MainWindowListener mwl: listeners ) {
-                        try {
-                        if ( !mwl.onClose() ) return;
-                        } catch(Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
                 close();
             }
         });
@@ -69,6 +60,16 @@ public class MainDialog implements MainWindow {
     }
     
     public void close() {
+        if ( listeners != null ) {
+            for(MainWindowListener mwl: listeners ) {
+                try {
+                    if ( !mwl.onClose() ) return;
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
         ClientContext.getCurrentContext().getTaskManager().stop();
         dialog.dispose();
     }

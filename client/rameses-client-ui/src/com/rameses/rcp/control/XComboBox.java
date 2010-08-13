@@ -44,14 +44,22 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private String onAfterUpdate;
     private Class fieldType;
     private boolean readonly;
-        
+    
     private DefaultComboBoxModel model;
     
     
     public XComboBox() {
-        model = new DefaultComboBoxModel();
+        initComponents();
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  initComponents method  ">
+    private void initComponents() {
+        if ( Beans.isDesignTime() ) {
+            model = new DefaultComboBoxModel(new Object[]{"Item 1"});
+            super.setModel( model );
+        }
+    }
+    //</editor-fold>
     
     public void refresh() {
         if ( immediate && !isEnum ) {
@@ -62,7 +70,9 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     }
     
     public void load() {
+        model = new DefaultComboBoxModel();
         super.setModel(model);
+        
         if ( immediate ) {
             super.addItemListener(this);
         } else {
@@ -141,6 +151,15 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setName(String name) {
+        super.setName(name);
+        
+        if ( Beans.isDesignTime() ) {
+            model.removeAllElements();
+            model.addElement(name);
+        }
+    }
+    
     public Object getValue() {
         if ( Beans.isDesignTime() ) return null;
         
@@ -270,21 +289,21 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public void setFieldType(Class fieldType) {
         this.fieldType = fieldType;
     }
-
+    
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEnabled(!readonly);
         setFocusable(!readonly);
     }
-
+    
     public boolean isReadonly() {
         return readonly;
     }
-
+    
     public void setRequestFocus(boolean focus) {
         if ( focus ) requestFocus();
     }
-
+    
     public boolean isImmediate() {
         return immediate;
     }

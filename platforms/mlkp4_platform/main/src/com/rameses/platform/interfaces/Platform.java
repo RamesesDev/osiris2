@@ -25,5 +25,6 @@ public interface Platform {
     void showAlert(JComponent actionSource, Object message); //shows warning messages
     Object showInput(JComponent actionSource, Object message); //shows an input message box
     MainWindow getMainWindow();
+    void exit();
     
 }

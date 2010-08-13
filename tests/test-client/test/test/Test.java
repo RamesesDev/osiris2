@@ -19,8 +19,7 @@ public class Test extends TestCase {
     }
     
     public void testHello() throws Exception {
-        String s = "java.lang.Integer";
-        System.out.println(s.replaceAll("\\.", "/"));
+
     }
     
 }
