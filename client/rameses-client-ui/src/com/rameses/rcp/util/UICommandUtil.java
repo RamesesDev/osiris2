@@ -3,7 +3,7 @@ package com.rameses.rcp.util;
 import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
-import com.rameses.util.MethodResolver;
+import com.rameses.common.MethodResolver;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.JComponent;

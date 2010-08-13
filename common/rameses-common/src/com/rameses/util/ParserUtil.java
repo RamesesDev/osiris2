@@ -9,6 +9,7 @@
 
 package com.rameses.util;
 
+import com.rameses.common.PropertyResolver;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

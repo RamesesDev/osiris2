@@ -1,0 +1,7 @@
+public class TestScript {
+
+    public String getMessage() {
+        return "script from sub.TestScript";
+    }
+
+}

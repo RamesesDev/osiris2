@@ -155,5 +155,9 @@ public class PlatformImpl implements Platform {
         }
         return msg;
     }
+
+    public void exit() {
+        mainWindow.close();
+    }
     
 }

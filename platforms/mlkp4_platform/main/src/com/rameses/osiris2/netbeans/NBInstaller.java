@@ -3,6 +3,7 @@ package com.rameses.osiris2.netbeans;
 import com.rameses.client.updates.UpdateCenter;
 import com.rameses.platform.interfaces.AppLoader;
 import com.rameses.platform.interfaces.MainWindow;
+import com.rameses.platform.interfaces.MainWindowListener;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -64,7 +65,7 @@ public class NBInstaller extends ModuleInstall {
         String appsys = (String) props.get("app.url");
         if (appsys == null || appsys.trim().length() == 0)
             throw new NullPointerException("app.url must be provided");
-                
+        
         UpdateCenter uc = new UpdateCenter(appsys);
         uc.start();
         
@@ -173,7 +174,7 @@ public class NBInstaller extends ModuleInstall {
             ImageIcon iicon = new ImageIcon(fileIcon.toURL());
             mainWindow.setIconImage(iicon.getImage());
         } catch(Exception ign) {;}
-
+        
     }
     
     private void alert( final String msg ) {
@@ -185,9 +186,15 @@ public class NBInstaller extends ModuleInstall {
     }
     
     public boolean closing() {
-        if (nbMainWindow != null && nbMainWindow.getListener() != null) {
-            if (nbMainWindow.getListener().onClose()) return true;
-            return false;
+        if (nbMainWindow != null && nbMainWindow.getListeners() != null) {
+            for(MainWindowListener mwl : nbMainWindow.getListeners() ) {
+                try {
+                    if ( !mwl.onClose() ) return false;
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return true;
         }
         
         int opt = JOptionPane.showConfirmDialog(mainWindow, "Are you sure you want to exit from the system?", "Confirmation", JOptionPane.YES_NO_OPTION);

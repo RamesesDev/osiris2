@@ -1,7 +1,7 @@
 package com.rameses.rcp.common;
 
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.PropertyResolver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

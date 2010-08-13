@@ -9,9 +9,9 @@
 
 package com.rameses.osiris2;
 
+import com.rameses.common.PropertyResolver;
 import com.rameses.osiris2.custom.DefaultPropertyResolver;
 import com.rameses.util.ParserUtil;
-import com.rameses.util.PropertyResolver;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;

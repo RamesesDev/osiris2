@@ -1,4 +1,4 @@
-package com.rameses.util;
+package com.rameses.common;
 
 public interface ExpressionResolver 
 {

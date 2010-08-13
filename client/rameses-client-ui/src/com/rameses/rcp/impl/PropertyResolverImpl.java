@@ -1,6 +1,6 @@
 package com.rameses.rcp.impl;
 
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 

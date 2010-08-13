@@ -19,7 +19,7 @@ import com.rameses.rcp.common.Action;
 import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
-import com.rameses.util.ExpressionResolver;
+import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
 import java.util.HashMap;

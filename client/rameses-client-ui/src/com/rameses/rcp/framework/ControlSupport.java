@@ -1,7 +1,7 @@
 package com.rameses.rcp.framework;
 
 import com.rameses.rcp.common.Opener;
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.io.ByteArrayOutputStream;

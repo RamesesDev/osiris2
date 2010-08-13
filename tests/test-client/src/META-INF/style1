@@ -8,10 +8,10 @@
 }
 
 "entity.memo" [checkBox2 == 'YES'] {
-    enabled: true;
+    readonly: false;
     requestFocus: true;
 }
 
 "entity.memo" [checkBox2 == 'NO'] {
-    enabled: false;
+    readonly: true;
 }

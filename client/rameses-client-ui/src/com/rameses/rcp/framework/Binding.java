@@ -14,7 +14,7 @@ import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
-import com.rameses.util.MethodResolver;
+import com.rameses.common.MethodResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -53,7 +53,7 @@ public class Binding {
     
     /**
      * 1. reference of all controls that can aquire default focus
-     *    when the window is showed or during page navigation
+     *    when the window is shown or during page navigation
      * 2. this reference contains UIInput and UISubControl only
      */
     private List<UIControl> focusableControls = new ArrayList();
@@ -151,8 +151,8 @@ public class Binding {
     
     /**
      *@description
-     *  accepts list of filednames
-     *  sample usage: refresh("field1|field2")
+     *  accepts regex expression of filednames
+     *  sample usage: refresh("field1|field2|entity.*")
      */
     public void refresh(String fieldRegEx) {
         Set<UIControl> refreshed = new HashSet();

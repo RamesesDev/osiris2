@@ -1,0 +1,14 @@
+import com.rameses.rcp.annotations.*;
+import com.rameses.rcp.common.*;
+
+public class TestScript {
+
+    @Script("test-client:sub.TestScript")
+    def script;
+
+    public void test() {
+        MsgBox.alert( script.message  );
+    }
+
+
+}
