@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.FocusListener;
+import java.beans.Beans;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -38,6 +39,15 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
+
+/**
+ * @description
+ *   This class handles TableComponents cell renderer and editor management
+ * Default Alignments:
+ *  1. decimal/double - right
+ *  2. integer/boolean/checkbox/date - center
+ *  3. string - left
+ */
 
 public final class TableManager {
     
@@ -67,8 +77,9 @@ public final class TableManager {
         //map of renderers
         TableCellRenderer renderer = new StringRenderer();
         renderers.put("string", renderer);
-        renderers.put("number", renderer);
+        renderers.put("integer", renderer);
         renderers.put("decimal", renderer);
+        renderers.put("double", renderer);
         renderers.put("date", renderer);
         renderers.put("combo", renderer);
         renderers.put("lookup", renderer);
@@ -175,11 +186,36 @@ public final class TableManager {
         private JLabel label = new JLabel();
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if ( !Beans.isDesignTime() ) {
+                TableComponent xtable = (TableComponent) table;
+                Column c = ((DefaultTableModel)xtable.getModel()).getColumn(column);
+                if ( isRightAligned(c, value) ) {
+                    label.setHorizontalAlignment( SwingConstants.RIGHT );
+                    
+                } else if ( isCenterAligned(c, value) ) {
+                    label.setHorizontalAlignment( SwingConstants.CENTER );
+                    
+                } else {
+                    label.setHorizontalAlignment( SwingConstants.LEFT );
+                }
+            }
+            
             label.setText( ValueUtil.isEmpty(value) ? " " : value + "");
             Border bb = new TableHeaderBorder();
             Border eb = BorderFactory.createEmptyBorder(2,5,2,1);
             label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
             return label;
+        }
+        
+        private boolean isRightAligned(Column c, Object value) {
+            return (c.getType()+"").matches("decimal|double") ||
+                    value instanceof Double || value instanceof BigDecimal;
+        }
+        
+        private boolean isCenterAligned(Column c, Object value) {
+            return (c.getType()+"").matches("date|integer|boolean|checkbox") ||
+                    value instanceof Number || value instanceof Date ||
+                    value instanceof Time || value instanceof Timestamp;
         }
         
     }
@@ -251,12 +287,6 @@ public final class TableManager {
             return comp;
         }
         
-        protected int getAlignmentConstant(String alignment) {
-            if ( "right".equals(alignment)) return SwingConstants.RIGHT;
-            if ( "center".equals(alignment) ) return SwingConstants.CENTER;
-            
-            return SwingConstants.LEFT;
-        }
     }
     //</editor-fold>
     
@@ -276,15 +306,16 @@ public final class TableManager {
             TableComponent tc = (TableComponent) table;
             Column c = ((DefaultTableModel) tc.getModel()).getColumn(column);
             String format = c.getFormat();
-            if ( "decimal".equals(c.getType()) || value instanceof BigDecimal || value instanceof Double ) {
+            String type = c.getType();
+            if ( "decimal".equals(type) || "double".equals(type) || value instanceof BigDecimal || value instanceof Double ) {
                 label.setHorizontalAlignment( SwingConstants.RIGHT );
                 label.setText((value == null ? "" : format(value, format, "#,##0.00")));
                 
-            } else if ( "number".equals(c.getType()) || value instanceof Number ) {
+            } else if ( "integer".equals(type) || value instanceof Number ) {
                 label.setHorizontalAlignment( SwingConstants.CENTER );
                 label.setText((value == null ? "" : format(value, format, "#,##0")));
                 
-            } else if ( "date".equals(c.getType()) || value instanceof Date ||
+            } else if ( "date".equals(type) || value instanceof Date ||
                     value instanceof Time || value instanceof Timestamp ) {
                 
                 label.setHorizontalAlignment( SwingConstants.CENTER );

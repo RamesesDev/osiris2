@@ -29,6 +29,10 @@
               </Group>
               <EmptySpace pref="226" max="32767" attributes="0"/>
           </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="xTable1" pref="513" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -44,9 +48,11 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xActionBar2" min="-2" max="-2" attributes="1"/>
-              <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="xComboBox1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="87" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xTable1" pref="184" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -106,6 +112,8 @@
       <Properties>
         <Property name="name" type="java.lang.String" value="entity.country"/>
       </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XTable" name="xTable1">
     </Component>
   </SubComponents>
 </Form>
