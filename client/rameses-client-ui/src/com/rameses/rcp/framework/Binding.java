@@ -145,6 +145,10 @@ public class Binding {
         }
     }
     
+    /**
+     *@description
+     *  refreshes all UIControls in this binding
+     */
     public void refresh() {
         refresh(null);
     }
@@ -154,10 +158,11 @@ public class Binding {
      *  accepts regex expression of filednames
      *  sample usage: refresh("field1|field2|entity.*")
      */
-    public void refresh(String fieldRegEx) {
+    public void refresh(String regEx) {
         Set<UIControl> refreshed = new HashSet();
         for( UIControl uu : controls ) {
-            if ( fieldRegEx != null && !uu.getName().matches(fieldRegEx) ){
+            String name = uu.getName();
+            if ( regEx != null && name != null && !name.matches(regEx) ){
                 continue;
             }
             
@@ -167,7 +172,7 @@ public class Binding {
         refreshed = null;
         
         for (BindingListener bl : listeners) {
-            bl.refresh(fieldRegEx);
+            bl.refresh(regEx);
         }
     }
     

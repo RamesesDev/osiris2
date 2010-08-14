@@ -60,7 +60,11 @@
                 fetchList: { [ 'ARNEL RETIZA', 'DANDEE ALEJANDRINO', 'ALVIN MAGALONA'] },
                 getColumns: { [ new Column(name: 'item', caption: 'Customers') ] },
                 onOpenItem: { obj, colName ->
-                    new WindowOpener(name: 'test-client:navTest3', params: [ name: listHandler.selectedItem?.item ]) 
+                    def item = listHandler.selectedItem?.item;
+                    new WindowOpener(
+                        name: 'test-client:navTest3', id: item,
+                        params: [ name: item ], permission: 'open'
+                    ) 
                 }
             
             ] as SubListModel;

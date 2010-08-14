@@ -1,6 +1,7 @@
 package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.NavigatablePanel;
@@ -17,8 +18,9 @@ import java.util.Stack;
 import javax.swing.JComponent;
 
 /**
- *
  * @author jaycverg
+ * @description
+ *   handles page navigation using the actions outcome
  */
 public class NavigationHandlerImpl implements NavigationHandler {
     
@@ -50,6 +52,18 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 }
                 
                 UIController opCon = opener.getController();
+                String permission = opener.getPermission();
+                
+                //check permission(if allowed) when specified
+                if ( !ValueUtil.isEmpty(permission) ) {
+                    permission = opCon.getName() + "." + permission;
+                    if( !ControlSupport.isPermitted(permission) ) {
+                        MsgBox.err("You don't have permission to perform this transaction.");
+                        return;
+                    }
+                    
+                }
+                
                 UIControllerContext controller = new UIControllerContext(opCon);
                 if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
                     controller.setCurrentView( opener.getOutcome() );
