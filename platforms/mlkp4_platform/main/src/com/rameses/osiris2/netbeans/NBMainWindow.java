@@ -80,15 +80,15 @@ public class NBMainWindow implements MainWindow {
     private void setMenuBar(JMenuBar m) {
         if (m == null) m = new JMenuBar();
         
-        List emptyMenu = new ArrayList();
+        List emptyMenus = new ArrayList();
         for (int i=0; i<m.getComponentCount(); i++) {
             JMenu jm = m.getMenu(i);
             if ( !hasChildren(jm) )
-                emptyMenu.add(jm);
+                emptyMenus.add(jm);
         }
         
-        while (!emptyMenu.isEmpty()) {
-            JMenu mnu = (JMenu) emptyMenu.remove(0);
+        while (!emptyMenus.isEmpty()) {
+            JMenu mnu = (JMenu) emptyMenus.remove(0);
             m.remove(mnu);
         }
         
@@ -102,16 +102,22 @@ public class NBMainWindow implements MainWindow {
             return false;
         
         boolean hasChildren = false;
+        List emptyMenus = new ArrayList();
         for(int i=0; i<jm.getMenuComponentCount(); ++i) {
             Component c = jm.getMenuComponent(i);
             if ( c instanceof JMenu ) {
                 JMenu subMenu = (JMenu) c;
                 if ( !hasChildren(subMenu) ) {
-                    jm.remove(subMenu);
+                    emptyMenus.add(subMenu);
                 }
             } else {
                 hasChildren = true;
             }
+        }
+        
+        while (!emptyMenus.isEmpty()) {
+            JMenu mnu = (JMenu) emptyMenus.remove(0);
+            jm.remove(mnu);
         }
         
         return hasChildren;
