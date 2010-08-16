@@ -11,6 +11,7 @@ package com.rameses.osiris2.client;
 
 import com.rameses.osiris2.AppContext;
 import com.rameses.platform.interfaces.AppLoader;
+import com.rameses.platform.interfaces.MainWindowListener;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ClientSecurityProvider;
@@ -54,7 +55,7 @@ public class OsirisAppLoader implements AppLoader {
                 UILoaderStack uls = new UILoaderStack();
                 uls.setLoaders( loaders );
                 uip.setControllers(uls);
-
+                
                 env.put("canclose", "false" );
                 env.put("title", "Home");
                 env.put("id", "loader_workunits");
@@ -62,6 +63,22 @@ public class OsirisAppLoader implements AppLoader {
             }
             startupApp.load();
             ctx.getTaskManager().start();
+            
+            //stop TaskManager when mainwindow is closed
+            platform.getMainWindow().addListener(new MainWindowListener() {
+                public boolean onClose() {
+                    try {
+                        ClientContext.getCurrentContext().getTaskManager().stop();
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    
+                    return true;
+                }
+                public Object onEvent(String eventName, Object evt) {
+                    return null;
+                }
+            });
             
         } catch(Exception ex) {
             throw new IllegalStateException(ex);
