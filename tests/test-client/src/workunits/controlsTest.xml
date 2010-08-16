@@ -14,6 +14,7 @@
         public class ControlsTestController  {
 
             def entity = [ civilStat: 'MARRIED' ];
+            def lnameCaption = 'Lastname (from bean)';
             
             int intNum;
             double doubleNum;

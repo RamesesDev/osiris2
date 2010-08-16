@@ -377,6 +377,13 @@ public class Binding {
             comp.requestFocus();
         }
     }
+    
+    /**
+     * returns the UIControl w/ the specified name
+     */
+    public UIControl find(String name) {
+        return controlsIndex.get(name);
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">

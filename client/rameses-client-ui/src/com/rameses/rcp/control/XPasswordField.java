@@ -2,7 +2,7 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -27,7 +27,7 @@ import javax.swing.text.DefaultCaret;
  * @author Windhel
  */
 
-public class XPasswordField extends JPasswordField implements UIInput, Validatable, Containable {
+public class XPasswordField extends JPasswordField implements UIInput, Validatable, ActiveControl {
     
     private static Font FONT = new Font("Dialog", Font.PLAIN, 24);
     

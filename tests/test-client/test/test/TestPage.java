@@ -22,7 +22,8 @@ public class TestPage extends javax.swing.JPanel {
         xActionBar2 = new com.rameses.rcp.control.XActionBar();
         xSubFormPanel1 = new com.rameses.rcp.control.XSubFormPanel();
         xComboBox1 = new com.rameses.rcp.control.XComboBox();
-        xTable1 = new com.rameses.rcp.control.XTable();
+        xToolBar1 = new com.rameses.rcp.control.XToolBar();
+        xButton1 = new com.rameses.rcp.control.XButton();
 
         xRadio1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         xRadio1.setText("xRadio1");
@@ -49,11 +50,29 @@ public class TestPage extends javax.swing.JPanel {
 
         xComboBox1.setName("entity.country");
 
+        xButton1.setText("xButton1");
+
+        org.jdesktop.layout.GroupLayout xToolBar1Layout = new org.jdesktop.layout.GroupLayout(xToolBar1);
+        xToolBar1.setLayout(xToolBar1Layout);
+        xToolBar1Layout.setHorizontalGroup(
+            xToolBar1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(xToolBar1Layout.createSequentialGroup()
+                .add(84, 84, 84)
+                .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(283, Short.MAX_VALUE))
+        );
+        xToolBar1Layout.setVerticalGroup(
+            xToolBar1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(xToolBar1Layout.createSequentialGroup()
+                .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(xActionBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE)
+            .add(xActionBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -65,9 +84,9 @@ public class TestPage extends javax.swing.JPanel {
                             .add(xActionBar2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 214, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(xSubFormPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 154, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(xComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 202, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(226, Short.MAX_VALUE))
+                .addContainerGap(320, Short.MAX_VALUE))
             .add(layout.createSequentialGroup()
-                .add(xTable1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
+                .add(xToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -84,9 +103,9 @@ public class TestPage extends javax.swing.JPanel {
                 .add(xActionBar2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(xComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(xTable1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 116, Short.MAX_VALUE)
+                .add(xToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(49, 49, 49))
         );
     }// </editor-fold>//GEN-END:initComponents
     
@@ -94,11 +113,12 @@ public class TestPage extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.rameses.rcp.control.XActionBar xActionBar1;
     private com.rameses.rcp.control.XActionBar xActionBar2;
+    private com.rameses.rcp.control.XButton xButton1;
     private com.rameses.rcp.control.XComboBox xComboBox1;
     private com.rameses.rcp.control.XRadio xRadio1;
     private com.rameses.rcp.control.XRadio xRadio2;
     private com.rameses.rcp.control.XSubFormPanel xSubFormPanel1;
-    private com.rameses.rcp.control.XTable xTable1;
+    private com.rameses.rcp.control.XToolBar xToolBar1;
     // End of variables declaration//GEN-END:variables
     
 }

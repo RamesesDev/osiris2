@@ -8,7 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -30,7 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 
-public class XFileBrowser extends JPanel implements UIInput, Validatable, Containable, ActionListener {
+public class XFileBrowser extends JPanel implements UIInput, Validatable, ActiveControl, ActionListener {
     
     private Binding binding;
     private String[] depends;
