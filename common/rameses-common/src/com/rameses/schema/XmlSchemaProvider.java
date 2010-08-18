@@ -28,7 +28,6 @@ public class XmlSchemaProvider extends SchemaProvider {
         try {
             is = getConf().getResourceProvider().getResource(name);
             SchemaXmlParser parser = new SchemaXmlParser( getConf().getPropertyResolver() );
-            if( name.endsWith(".xml")) name = name.substring(0, name.indexOf(".xml"));
             return parser.parse( is, name );
         } catch(Exception e) {
             return null;

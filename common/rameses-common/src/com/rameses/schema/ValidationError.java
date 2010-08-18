@@ -34,7 +34,7 @@ public class ValidationError {
     public String toString() {
         if(code==null)
             return message; 
-        return "["+code+"] " + message; 
+        return message; 
     }
     
 }

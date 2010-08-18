@@ -43,7 +43,7 @@ public class DefaultSchemaResourceProvider implements SchemaResourceProvider  {
         }
         
         //if inputstream cannot be found by the providers, try classpath
-        String fileName = "META-INF/schema/" + name;
+        String fileName = "META-INF/schema/" + name + ".xml";
         is = classLoader.getResourceAsStream(fileName);
         if (is==null)
             throw new RuntimeException("Schema resource " + name + " cannot be found!");

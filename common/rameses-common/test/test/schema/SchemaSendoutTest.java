@@ -34,7 +34,7 @@ public class SchemaSendoutTest extends TestCase {
     
     
     public void testMap() throws Exception {
-        Map map = mgr.createMap( "sendout1.xml");
+        Map map = mgr.createMap( "sendout1");
         
         for(Object o: map.entrySet()) {
             Map.Entry me = (Map.Entry)o;

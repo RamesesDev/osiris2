@@ -43,15 +43,15 @@ public class SchemaTest extends TestCase {
     protected void tearDown() throws Exception {
     }
     
-    public void xtestRoot() throws Exception {
-        Schema schema = mgr.getSchema( "customer.xml" );
+    public void testRoot() throws Exception {
+        Schema schema = mgr.getSchema( "customer" );
         assertEquals( schema.getRootElement(), schema.getElement("customer") );
     }
     
     
     // TODO add test methods here. The name must begin with 'test'. For example:
-    public void xtestScanFields() throws Exception {
-        Schema schema = mgr.getSchema( "customer.xml" );
+    public void testScanFields() throws Exception {
+        Schema schema = mgr.getSchema( "customer" );
         assertNotNull(schema);
         SchemaScanner sc = mgr.newScanner();
         Map data = new HashMap();
@@ -63,16 +63,16 @@ public class SchemaTest extends TestCase {
         System.out.println("end scanning fields--------");
     }
     
-    public void xtestCreateObject() throws Exception {
-        Map map = mgr.createMap(  "sendout.xml" );
+    public void testCreateObject() throws Exception {
+        Map map = mgr.createMap(  "sendout" );
         for(Object o: map.entrySet()) {
             Map.Entry me = (Map.Entry)o;
             System.out.println(me.getKey()+"="+me.getValue());
         }
     }
 
-    public void xtestPersistence() throws Exception {
-        Schema schema = mgr.getSchema( "sendout.xml" );
+    public void testPersistence() throws Exception {
+        Schema schema = mgr.getSchema( "sendout" );
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
 
@@ -123,11 +123,11 @@ public class SchemaTest extends TestCase {
     }
     
     
-    public void xtestCrudStatement2() throws Exception {
+    public void testCrudStatement2() throws Exception {
         SqlManager sm = SqlManager.getInstance();
         sm.getConf().getExtensions().put( SchemaManager.class, mgr );
         SqlContext ctx = sm.createContext();
-        SqlQuery qry = ctx.createNamedQuery( "sendout_create.xml-schema");
+        SqlQuery qry = ctx.createNamedQuery( "sendout_create.schema");
         System.out.println("*******************");
         System.out.println("statement: " + qry.getStatement());
         for(Object s: qry.getParameterNames() ) {
@@ -137,7 +137,7 @@ public class SchemaTest extends TestCase {
     
     public void xtestValidate() throws Exception {
         SchemaValidationHandler handler = new SchemaValidationHandler();
-        Schema schema = mgr.getSchema( "customer.xml" );
+        Schema schema = mgr.getSchema( "customer" );
         assertNotNull(schema);
         SchemaScanner sc = mgr.newScanner();
         Map map = new HashMap();
@@ -147,20 +147,10 @@ public class SchemaTest extends TestCase {
             throw new Exception(handler.getResult().toString());
     }
     
-    //see the customer.xml for this implementation
-    //the two must have return different nodes because of the exclude statement
-    public void xtestLinkedElement() throws Exception {
-        Schema schema = mgr.getSchema( "customer.xml" );
-    }
-    
-    public void xtestSqlCrud() throws Exception {
-        
-    }
-    
     public void testInnerElement() throws Exception {
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
-        SqlUnit su = sq.getNamedSqlUnit( "branch_agent:branch_create.xml-schema" );
+        SqlUnit su = sq.getNamedSqlUnit( "branch_agent:branch_create.schema" );
         assertNotNull(su);
     }
     

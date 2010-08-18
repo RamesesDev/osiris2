@@ -70,10 +70,21 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
     }
 
     public void validate(String schemaName, Object value) throws Exception {
-        Schema schema = getSchema(schemaName);
+        String sname = schemaName;
+        String elementName = null;
+        if(schemaName.indexOf(":")>0) {
+            sname = schemaName.substring(0, schemaName.indexOf(":"));
+            elementName = schemaName.substring(schemaName.indexOf(":")+1);
+        }    
+        
+        Schema schema = getSchema(sname);
+        
         SchemaValidationHandler handler = new SchemaValidationHandler();
         SchemaScanner scanner = schemaManager.newScanner();
-        scanner.scan(schema, value, handler);
+        if(elementName==null)
+            scanner.scan(schema, value, handler);
+        else 
+            scanner.scan(schema, schema.getElement(elementName),value,handler);
         ValidationResult vr = handler.getResult();
         if(vr.hasErrors()) {
             throw new Exception(vr.toString());

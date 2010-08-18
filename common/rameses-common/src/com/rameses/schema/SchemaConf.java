@@ -22,7 +22,7 @@ import java.util.List;
 public class SchemaConf {
     
     public final static String XML_SCHEMA_EXT = ".xml";
-    public final static String XML_SCHEMA = "xml-schema";
+    public final static String XML_SCHEMA = "schema";
     
     private PropertyResolver propertyResolver;
     private SchemaResourceProvider resourceProvider = new DefaultSchemaResourceProvider();

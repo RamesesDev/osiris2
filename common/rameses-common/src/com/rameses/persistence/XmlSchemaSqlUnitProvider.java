@@ -96,7 +96,7 @@ public class XmlSchemaSqlUnitProvider extends SqlUnitProvider {
         }
         
         
-        Schema schema = schemaManager.getSchema( schemaName + SchemaConf.XML_SCHEMA_EXT );
+        Schema schema = schemaManager.getSchema( schemaName );
         SchemaElement element = null;
         if( elementName==null ) {
             element = schema.getRootElement();
