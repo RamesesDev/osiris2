@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+
+    <invokers>
+        <invoker folderid="/menu/file" caption="Inject Script Test" index="-2"/>
+    </invokers>
+
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+        public class TestScriptController {
+        
+            @Script( "TestScript" )
+            def script;
+        
+            @Script( "test-client:Gender" )
+            def gender;
+
+            public void fireTest() {
+                script.test();
+                MsgBox.alert( gender.list );
+            }    
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.script.TestPage"/>
+    </pages>
+</workunit>

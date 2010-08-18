@@ -1,8 +1,8 @@
 
 package com.rameses.osiris2.reports;
 
+import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.util.PropertyResolver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

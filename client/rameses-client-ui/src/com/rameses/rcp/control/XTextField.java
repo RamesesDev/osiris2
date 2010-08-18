@@ -12,7 +12,6 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.event.KeyEvent;
-import java.beans.Beans;
 import javax.swing.JTextField;
 
 /**
@@ -33,7 +32,9 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     private TextDocument document = new TextDocument();
     
     
-    public XTextField() {}
+    public XTextField() {
+        document.setTextCase(TextCase.UPPER);
+    }
     
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
@@ -42,7 +43,6 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     
     public void load() {
         setInputVerifier(UIInputUtil.VERIFIER);
-        document.setTextCase(TextCase.UPPER);
         setDocument(document);
     }
     

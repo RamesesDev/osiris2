@@ -9,7 +9,8 @@
 
 package com.rameses.osiris2.custom;
 
-import com.rameses.util.PropertyResolver;
+
+import com.rameses.common.PropertyResolver;
 import org.apache.commons.beanutils.PropertyUtils;
 
 /**

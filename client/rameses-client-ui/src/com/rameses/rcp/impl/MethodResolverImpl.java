@@ -1,8 +1,8 @@
 package com.rameses.rcp.impl;
 
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.util.MethodResolver;
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.MethodResolver;
+import com.rameses.common.PropertyResolver;
 import org.apache.commons.beanutils.MethodUtils;
 
 /**

@@ -14,7 +14,7 @@ import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
-import com.rameses.util.ExpressionResolver;
+import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;

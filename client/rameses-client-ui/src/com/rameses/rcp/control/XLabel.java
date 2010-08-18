@@ -22,6 +22,10 @@ public class XLabel extends JLabel implements UIControl, Containable {
     private String expression;
     
     
+    public XLabel() {
+        super();
+    }
+    
     public void refresh() {
         Object value = null;
         if ( !ValueUtil.isEmpty(expression)) {
@@ -39,17 +43,22 @@ public class XLabel extends JLabel implements UIControl, Containable {
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public void setText(String t) {
+    public String getText() {
         if ( Beans.isDesignTime() ) {
-            setExpression( t );
+            if ( !ValueUtil.isEmpty(expression) )
+                return expression;
+            else if ( !ValueUtil.isEmpty(getName()) )
+                return getName();
+            else
+                return super.getText();
+            
         } else {
-            super.setText( t );
+            return super.getText();
         }
     }
     
     public void setName(String name) {
         super.setName(name);
-        super.setText(name);
     }
     
     public String[] getDepends() {
@@ -86,7 +95,6 @@ public class XLabel extends JLabel implements UIControl, Containable {
     
     public void setExpression(String expression) {
         this.expression = expression;
-        super.setText(expression);
     }
     //</editor-fold>
     

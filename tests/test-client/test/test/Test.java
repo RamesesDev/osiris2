@@ -1,5 +1,4 @@
 package test;
-import com.rameses.util.MachineInfo;
 import junit.framework.*;
 
 /*
@@ -20,11 +19,7 @@ public class Test extends TestCase {
     }
     
     public void testHello() throws Exception {
-        String mcaddress = MachineInfo.getInstance().getMacAddress();
-        System.out.println( mcaddress );
-        System.out.println( mcaddress.hashCode() );
-        System.out.println( (mcaddress+"1").hashCode() );
-        
+
     }
     
 }

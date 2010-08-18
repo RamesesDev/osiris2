@@ -12,27 +12,22 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Component id="xActionBar1" alignment="0" pref="525" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="xRadio1" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="xImagePanel1" alignment="0" min="-2" pref="293" max="-2" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="xRadio2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="xActionBar2" alignment="0" min="-2" pref="214" max="-2" attributes="0"/>
                           <Component id="xSubFormPanel1" alignment="0" min="-2" pref="154" max="-2" attributes="0"/>
+                          <Component id="xComboBox1" alignment="0" min="-2" pref="202" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="220" max="32767" attributes="0"/>
-          </Group>
-          <Component id="xActionBar1" alignment="0" pref="525" max="32767" attributes="0"/>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jToolBar1" min="-2" pref="363" max="-2" attributes="0"/>
-              <EmptySpace pref="150" max="32767" attributes="0"/>
+              <EmptySpace pref="226" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -49,10 +44,9 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xActionBar2" min="-2" max="-2" attributes="1"/>
-              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-              <Component id="xImagePanel1" min="-2" pref="141" max="-2" attributes="1"/>
-              <EmptySpace pref="11" max="32767" attributes="0"/>
-              <Component id="jToolBar1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
+              <Component id="xComboBox1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="87" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -72,11 +66,6 @@
           <Insets value="[0, 0, 0, 0]"/>
         </Property>
         <Property name="name" type="java.lang.String" value="sample"/>
-      </Properties>
-    </Component>
-    <Component class="com.rameses.rcp.control.XImagePanel" name="xImagePanel1">
-      <Properties>
-        <Property name="advanced" type="boolean" value="true"/>
       </Properties>
     </Component>
     <Component class="com.rameses.rcp.control.XRadio" name="xRadio2">
@@ -113,16 +102,10 @@
         </DimensionLayout>
       </Layout>
     </Container>
-    <Container class="javax.swing.JToolBar" name="jToolBar1">
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
-      <SubComponents>
-        <Component class="com.rameses.rcp.control.XButton" name="xButton1">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Button One"/>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
+    <Component class="com.rameses.rcp.control.XComboBox" name="xComboBox1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="entity.country"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

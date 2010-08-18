@@ -87,6 +87,10 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Contai
     
     
     public void actionPerformed(ActionEvent e) {
+        if ( !txtField.isFocusable() || !txtField.isEnabled() ) {
+            return;
+        }
+        
         int resp = 0;
         if ( "open".equals(dialogType) ) {
             resp = fchooser.showOpenDialog(null);

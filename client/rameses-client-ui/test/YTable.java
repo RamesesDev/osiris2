@@ -8,7 +8,7 @@ import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.PropertyResolver;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;

@@ -11,7 +11,7 @@ import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.util.PropertyResolver;
+import com.rameses.common.PropertyResolver;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;

@@ -1,6 +1,6 @@
 package com.rameses.rcp.impl;
 
-import com.rameses.util.ExpressionResolver;
+import com.rameses.common.ExpressionResolver;
 import de.odysseus.el.ExpressionFactoryImpl;
 import de.odysseus.el.util.SimpleContext;
 import javax.el.ExpressionFactory;
