@@ -9,7 +9,7 @@
 
 package com.rameses.eserver;
 
-import com.rameses.sql.SqlManager;
+import com.rameses.sql.SqlContext;
 import javax.sql.DataSource;
 
 /**
@@ -20,9 +20,10 @@ public interface SqlMgmtMBean {
     
     void start() throws Exception;
     void stop() throws Exception;
-    SqlManager createSqlManager(String dataSource);
-    SqlManager createSqlManager(DataSource dataSource);
-    SqlManager createSqlManager();
+    SqlContext createSqlContext(String dataSource);
+    SqlContext createSqlContext(DataSource dataSource);
+    SqlContext createSqlContext();
     void flushAll();
+    
     
 }

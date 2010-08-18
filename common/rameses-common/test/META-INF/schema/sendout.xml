@@ -1,0 +1,28 @@
+<schema>
+    
+     <element tablename="tblsendout">
+        <field name="objid" type="string" required="true" primary="true" default="SND001"/>
+        <field name="sender" type="string" required="true" default="sender"/>
+        <field name="receiver" type="integer" required="true" default="receiver"/>        
+        <link-field name="remote" ref="remote" exclude="objid" />     
+    </element>
+     
+     <element name="remote">
+         <field name="objid" default="option1"/>
+         <field name="branch" default="branch1"/>
+         <field name="user" default="user1"/>
+         <field name="terminal" default="terminal1"/>
+         <link-field name="address1" ref="address" exclude="objid"/>
+         <link-field name="address2" ref="address" exclude="objid"/>         
+     </element>
+
+     <element name="address" tablename="tbladdress">
+         <field name="objid" primary="true" mapfield="objid"/>
+         <field name="street" default="street1"/>
+         <field name="city" default="city1"/>
+     </element>
+
+     
+</schema>
+
+

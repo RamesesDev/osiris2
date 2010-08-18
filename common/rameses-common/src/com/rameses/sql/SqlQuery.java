@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class SqlQuery {
     
-    private SqlManager sqlManager;
+    private SqlContext sqlContext;
     protected String statement;
     
     private List<String> parameterNames = new ArrayList();
@@ -45,10 +45,10 @@ public class SqlQuery {
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlQuery(SqlManager sm, String statement, List paramNames) {
+    SqlQuery(SqlContext sm, String statement, List paramNames) {
         this.origStatement = statement;
         this.origParamNames = paramNames;
-        this.sqlManager = sm;
+        this.sqlContext = sm;
         clear();
     }
     
@@ -88,7 +88,7 @@ public class SqlQuery {
             if(connection!=null)
                 conn = connection;
             else
-                conn = sqlManager.getConnection();
+                conn = sqlContext.getConnection();
             
             if(fetchHandler==null)
                 fetchHandler = new MapFetchHandler();
@@ -128,7 +128,7 @@ public class SqlQuery {
             
         } catch(Exception ex) {
             ex.printStackTrace();
-            throw new IllegalStateException(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         } finally {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
@@ -146,7 +146,7 @@ public class SqlQuery {
     // <editor-fold defaultstate="collapsed" desc="SET PARAMETER OPTIONS">
     public SqlQuery setParameter( int idx, Object v ) {
         if(idx<=0)
-            throw new IllegalStateException("Index must be 1 or higher");
+            throw new RuntimeException("Index must be 1 or higher");
         parameterValues.add(idx-1, v);
         return this;
     }
@@ -159,7 +159,7 @@ public class SqlQuery {
                 return this;
             }
         }
-        throw new IllegalStateException("Parameter " + name + " is not found");
+        throw new RuntimeException("Parameter " + name + " is not found");
     }
     
     
@@ -174,7 +174,7 @@ public class SqlQuery {
             return this;
         }
         if(parameterNames==null)
-            throw new IllegalStateException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
+            throw new RuntimeException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
         int sz = parameterNames.size();
         parameterValues.clear();
         for(int i=0;i<sz;i++ ) {
@@ -192,7 +192,7 @@ public class SqlQuery {
         
         if(parameterNames!=null && parameterNames.size()>0){
             if(parameterNames.size()!=params.size())
-                throw new IllegalStateException("Parameter count does not match");
+                throw new RuntimeException("Parameter count does not match");
         }
         int sz = params.size();
         parameterValues.clear();
@@ -260,7 +260,7 @@ public class SqlQuery {
             if(connection!=null)
                 conn = connection;
             else
-                conn = sqlManager.getConnection();
+                conn = sqlContext.getConnection();
             
             if(fetchHandler==null)
                 fetchHandler = new MapFetchHandler();
@@ -284,7 +284,7 @@ public class SqlQuery {
             
         } catch(Exception ex) {
             ex.printStackTrace();
-            throw new IllegalStateException(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         } finally {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
@@ -323,6 +323,10 @@ public class SqlQuery {
 
     public List<String> getParameterNames() {
         return parameterNames;
+    }
+
+    public SqlContext getSqlContext() {
+        return sqlContext;
     }
     
 }

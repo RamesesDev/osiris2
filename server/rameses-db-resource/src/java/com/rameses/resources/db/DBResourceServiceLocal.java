@@ -29,7 +29,9 @@ public interface DBResourceServiceLocal {
     byte[] getPermissionResource(String name);    
     byte[] getTemplateResource(String name);
     byte[] getScriptResource(String name);
-    byte[] getSqlResource(String name);
     byte[] getDsResource(String name);
 
+    byte[] getResource(Class clazz, String id);
+    
+    
 }

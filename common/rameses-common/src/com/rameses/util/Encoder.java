@@ -51,7 +51,7 @@ public abstract class Encoder {
                 }
                 return sb.toString();
             } catch(Exception e) {
-                throw new IllegalStateException(e.getMessage(), e);
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
     }

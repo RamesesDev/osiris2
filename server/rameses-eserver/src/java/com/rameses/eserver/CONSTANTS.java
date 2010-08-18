@@ -26,6 +26,7 @@ public interface CONSTANTS {
     
     public final static String SCRIPT_MGMT = "ScriptMgmt";
     public final static String SQLMGMT = "SqlMgmt";
+    public final static String SCHEMA_MGMT = "SchemaMgmt";
     public final static String CONF_CACHE = "CONF";
     
     public final static String SYSTEM_NOTIFIER = "SystemNotifier";

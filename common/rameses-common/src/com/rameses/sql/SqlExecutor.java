@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class SqlExecutor {
     
-    private SqlManager sqlManager;
+    private SqlContext sqlContext;
     protected String statement;
     private List<String> parameterNames = new ArrayList();
     private List parameterValues;
@@ -41,10 +41,10 @@ public class SqlExecutor {
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlExecutor(SqlManager sm, String statement, List paramNames) {
+    SqlExecutor(SqlContext sm, String statement, List paramNames) {
         this.origStatement = statement;
         this.origParamNames = paramNames;
-        this.sqlManager = sm;
+        this.sqlContext = sm;
         clear();
     }
     
@@ -81,7 +81,7 @@ public class SqlExecutor {
             if(connection!=null)
                 conn = connection;
             else
-                conn = sqlManager.getConnection();
+                conn = sqlContext.getConnection();
             
             if(parameterHandler==null) 
                 parameterHandler = new BasicParameterHandler();
@@ -108,7 +108,7 @@ public class SqlExecutor {
                 return 0;
             }    
             else
-                throw new IllegalStateException(ex.getMessage());
+                throw new RuntimeException(ex.getMessage());
         } 
         finally {
             try {ps.close();} catch(Exception ign){;}
@@ -129,7 +129,7 @@ public class SqlExecutor {
     // <editor-fold defaultstate="collapsed" desc="SETTING PARAMETER OPTIONS">
     public SqlExecutor setParameter( int idx, Object v ) {
         if(idx<=0) 
-            throw new IllegalStateException("Index must be 1 or higher");         
+            throw new RuntimeException("Index must be 1 or higher");         
         parameterValues.add(idx-1, v);
         return this;
     }
@@ -142,7 +142,7 @@ public class SqlExecutor {
                 return this;
             }
         }
-        throw new IllegalStateException("Parameter " + name + " is not found");
+        throw new RuntimeException("Parameter " + name + " is not found");
     }
     
     
@@ -158,7 +158,7 @@ public class SqlExecutor {
         }
         
         if(parameterNames==null)
-            throw new IllegalStateException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
+            throw new RuntimeException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
         int sz = parameterNames.size();
         parameterValues.clear();
         for(int i=0;i<sz;i++ ) {
@@ -176,7 +176,7 @@ public class SqlExecutor {
 
         if(parameterNames!=null && parameterNames.size()>0){
             if(parameterNames.size()!=params.size())
-                throw new IllegalStateException("Parameter count does not match");
+                throw new RuntimeException("Parameter count does not match");
         }        
         int sz = params.size();
         parameterValues.clear();
@@ -212,7 +212,7 @@ public class SqlExecutor {
     public SqlExecutor addBatch() {
         if(batchData==null) batchData = new ArrayList();
         if(parameterValues.size()==0)
-            throw new IllegalStateException("Add batch failed. There must be at least one parameter specified");
+            throw new RuntimeException("Add batch failed. There must be at least one parameter specified");
         batchData.add(parameterValues);
         parameterValues = new ArrayList();
         return this;
@@ -255,6 +255,10 @@ public class SqlExecutor {
 
     public void setBatchData(List<List> batchData) {
         this.batchData = batchData;
+    }
+
+    public SqlContext getSqlContext() {
+        return sqlContext;
     }
     
     

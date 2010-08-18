@@ -7,7 +7,11 @@
 
 package test.sql;
 
+import com.rameses.sql.SimpleDataSource;
 import com.rameses.sql.SqlExecutor;
+import com.rameses.sql.SqlContext;
+import com.rameses.sql.SqlManager;
+import javax.sql.DataSource;
 import junit.framework.*;
 
 /**
@@ -16,11 +20,16 @@ import junit.framework.*;
  */
 public class SqlExecutorTest extends TestCase {
     
-    public SqlExecutorTest(String testName) {
-        super(testName);
-    }
+    
+    private DataSource ds;
+    private SqlManager factory = SqlManager.getInstance();
     
     protected void setUp() throws Exception {
+        ds = new SimpleDataSource("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/taxpayer", "root", null);
+    }
+    
+    public SqlExecutorTest(String testName) {
+        super(testName);
     }
     
     protected void tearDown() throws Exception {
@@ -28,7 +37,7 @@ public class SqlExecutorTest extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testSimpleInsert() throws Exception {
-        TestSqlManager sm = new TestSqlManager();
+        SqlContext sm = factory.createContext( ds  );
         String sql = "insert into sample (id,name) values ($P{id}, $P{name})";
         SqlExecutor se = sm.createExecutor(sql);
         se.setParameter("id", "id0001");
@@ -47,7 +56,7 @@ public class SqlExecutorTest extends TestCase {
     }
     
     public void testSimpleInsert2() throws Exception {
-        TestSqlManager sm = new TestSqlManager();
+        SqlContext sm = factory.createContext( ds  );
         String sql = "insert into sample (id,name) values (?,?)";
         SqlExecutor se = sm.createExecutor(sql);
         se.setParameter(1, "id0004");

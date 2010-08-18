@@ -13,6 +13,8 @@ import com.rameses.classutils.ClassDef;
 import com.rameses.interfaces.ScriptServiceLocal;
 import com.rameses.annotations.Async;
 import com.rameses.annotations.ProxyMethod;
+import com.rameses.eserver.CONSTANTS;
+import com.rameses.eserver.SchemaMgmtMBean;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.rmi.server.UID;
@@ -62,6 +64,10 @@ public class ScriptService implements ScriptServiceLocal {
             Object target = scriptObj.getTargetClass().newInstance();
             ClassDef classDef = scriptObj.getClassDef();
             Method actionMethod = classDef.findMethodByName( method );
+            
+            //before firing method do parameter checks here.
+            checkParameters( scriptObj, method, params );
+            
             
             boolean async = (!bypassAsync && actionMethod.isAnnotationPresent(Async.class));
             if(!async) {
@@ -163,6 +169,8 @@ public class ScriptService implements ScriptServiceLocal {
         }
     }
     
+    
+    
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     private void executeInterceptor(String serviceName, ActionEvent ae, ScriptEval se, ScriptServiceLocal scriptService, Map env) {
         boolean hasParm = false;
@@ -237,5 +245,20 @@ public class ScriptService implements ScriptServiceLocal {
         return proxyInterface.getBytes();
     }
     
+    
+    private void checkParameters( ScriptObject obj, String method, Object[] args ) throws Exception {
+        CheckedParameter[] checkedParams = obj.getCheckedParameters(method);
+        for( CheckedParameter p : checkedParams ) {
+            if(p.isRequired() && args[p.getIndex()]==null ) 
+                throw new Exception( "argument " + p.getIndex() + " for method " + method + " must not be null" );
+            
+            String schemaName = p.getSchema(); 
+            if(schemaName!=null && schemaName.trim().length()>0) {
+                SchemaMgmtMBean schemaMgmt = (SchemaMgmtMBean)context.lookup(CONSTANTS.SCHEMA_MGMT);
+                schemaMgmt.validate(schemaName, args[p.getIndex()] );
+            }
+        }
+        
+    }
     
 }

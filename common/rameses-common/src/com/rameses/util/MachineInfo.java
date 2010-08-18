@@ -83,7 +83,7 @@ public abstract class MachineInfo {
             }
             
             if(instance==null)
-                throw new IllegalStateException("Machine with " + osName + " not supported");
+                throw new RuntimeException("Machine with " + osName + " not supported");
             instance.os = osName;    
         }
         return instance;

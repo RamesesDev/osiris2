@@ -8,6 +8,7 @@
  */
 package com.rameses.resources.db;
 
+import com.rameses.sql.db.SqlResource;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -27,7 +28,7 @@ public class DBResourceService implements DBResourceServiceLocal {
     public DBResourceService() {
     }
     
-    private byte[] getResource(Class clazz, String name) {
+    public byte[] getResource(Class clazz, String name) {
         try {
             String ql = "select o.content from " + clazz.getName() + " o where o.name=:name";
             Object o = em.createQuery(ql).setParameter("name",name).getSingleResult();
@@ -52,10 +53,6 @@ public class DBResourceService implements DBResourceServiceLocal {
 
     public byte[] getScriptResource(String name) {
         return getResource(ResourceScript.class, name);
-    }
-
-    public byte[] getSqlResource(String name) {
-        return getResource(ResourceSql.class, name);
     }
 
     public byte[] getPermissionResource(String name) {

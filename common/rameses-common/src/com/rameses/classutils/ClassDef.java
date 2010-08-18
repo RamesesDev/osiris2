@@ -47,7 +47,7 @@ public final class ClassDef {
     
     public void injectFields( Object o ) {
         if( handler == null )
-            throw new IllegalStateException("Please provide an annotation handler");
+            throw new RuntimeException("Please provide an annotation handler");
         injectFields(o, getHandler());
     }
     
