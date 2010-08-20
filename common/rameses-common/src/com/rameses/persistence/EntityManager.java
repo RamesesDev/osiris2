@@ -20,5 +20,4 @@ public interface EntityManager {
     Object update(String schemaName, Object data);
     void delete(String schemaName, Object data);
     
-    
 }

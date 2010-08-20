@@ -18,9 +18,11 @@ import com.rameses.schema.SchemaHandlerStatus;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SimpleField;
 import com.rameses.sql.SqlContext;
-import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
+import com.rameses.sql.SqlQuery;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -28,26 +30,26 @@ import java.util.Stack;
  *
  * This class is used for persistence
  */
-public class PersistenceHandler implements SchemaHandler {
+public class ReadPersistenceHandler implements SchemaHandler {
     
     private static final String TABLENAME = "tablename";
     
     private SchemaHandlerStatus status;
-    private Queue<SqlExecutor> queue = new LinkedList();
+    private Queue<SqlQuery> queue = new LinkedList();
     
     private Schema schema;
-    private Stack<SqlExecutor> stack = new Stack(); 
+    private Stack<SqlQuery> stack = new Stack(); 
     private SqlManager sqlManager;
     private SchemaManager schemaManager;
-    private String action = "create";
-    
+    private String action = "read";
+    private List<String> removeFields = new ArrayList();
     
     private SqlContext sqlContext;
     
-    public PersistenceHandler(SchemaManager schemaManager, SqlManager sqlManager) {
+    public ReadPersistenceHandler(SchemaManager schemaManager, SqlContext context) {
         this.sqlManager = sqlManager;
         this.schemaManager = schemaManager;
-        sqlContext = sqlManager.createContext();
+        sqlContext = context;
     }
     
     public void setStatus(SchemaHandlerStatus status) {
@@ -56,6 +58,7 @@ public class PersistenceHandler implements SchemaHandler {
     
     public void startSchema(Schema schema) {
         this.schema = schema;
+        removeFields.clear();
     }
 
     public void startElement(SchemaElement element, Object data) {
@@ -70,7 +73,7 @@ public class PersistenceHandler implements SchemaHandler {
             sb.append( "_" + action );
             sb.append( "." + SchemaConf.XML_SCHEMA );
             String ename = sb.toString() ;
-            SqlExecutor sq = sqlContext.createNamedExecutor(ename);
+            SqlQuery sq = sqlContext.createNamedQuery(ename);
             stack.push(sq);
             queue.add(sq);
         }
@@ -82,12 +85,18 @@ public class PersistenceHandler implements SchemaHandler {
         if(!stack.empty()) {
             String tbname = (String)sf.getElement().getProperties().get(TABLENAME);
             //if this has no table name, exclude the excluded fields.
-            if(tbname==null || tbname.trim().length()==0) {
-                if(status.isExcludeField(sf)) return;
+            String sname = sf.getName();
+            if(tbname!=null && tbname.trim().length()>0) {
+                if(status.isExcludeField(sf)) {
+                    removeFields.add(sf.getName());
+                }
             }
             
-            SqlExecutor se = stack.peek();
-            se.setParameter( sf.getName(), value );
+            SqlQuery sq = stack.peek();
+            if( sq.getParameterNames().indexOf(sf.getName())>=0) {
+                sq.setParameter( sf.getName(), value );
+            }
+            
         }
     }
     
@@ -114,7 +123,7 @@ public class PersistenceHandler implements SchemaHandler {
     public void endSchema(Schema schema) {
     }
     
-    public Queue<SqlExecutor> getQueue() {
+    public Queue<SqlQuery> getQueue() {
         return queue;
     }
 
@@ -126,14 +135,10 @@ public class PersistenceHandler implements SchemaHandler {
         this.sqlManager = sqlManager;
     }
 
-    public String getAction() {
-        return action;
+    public List<String> getRemoveFields() {
+        return removeFields;
     }
 
-    public void setAction(String action) {
-        this.action = action;
-    }
-    
     
     
 }

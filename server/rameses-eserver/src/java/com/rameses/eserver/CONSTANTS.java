@@ -25,7 +25,7 @@ public interface CONSTANTS {
     
     
     public final static String SCRIPT_MGMT = "ScriptMgmt";
-    public final static String SQLMGMT = "SqlMgmt";
+    public final static String PERSISTENCE_MGMT = "PersistenceMgmt";
     public final static String SCHEMA_MGMT = "SchemaMgmt";
     public final static String CONF_CACHE = "CONF";
     
@@ -35,5 +35,6 @@ public interface CONSTANTS {
     public final static String HEADER_MACHINE_KEY = "machinekey";
     public final static String HEADER_REPLY_TO = "replyto";
     
+    public static final String SQLMGMT_CACHE = "sqlcache";
     
 }

@@ -68,6 +68,10 @@ public final class SchemaScanner {
             } else if( fld instanceof LinkField ) {
                 LinkField lf = (LinkField)fld;
                 String ref = lf.getRef();
+                if(ref==null) {
+                    throw new RuntimeException("SchemaScanner error. link-field requires a ref attribute for schema " + schema.getName() );
+                }
+                    
                 status.pushLinkField( lf );
                 
                 try {

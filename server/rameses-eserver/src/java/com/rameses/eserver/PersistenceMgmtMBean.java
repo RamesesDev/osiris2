@@ -1,14 +1,6 @@
-/*
- * SqlMgmtMBean.java
- *
- * Created on July 24, 2010, 8:52 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package com.rameses.eserver;
 
+import com.rameses.persistence.EntityManager;
 import com.rameses.sql.SqlContext;
 import javax.sql.DataSource;
 
@@ -16,7 +8,7 @@ import javax.sql.DataSource;
  *
  * @author elmo
  */
-public interface SqlMgmtMBean {
+public interface PersistenceMgmtMBean {
     
     void start() throws Exception;
     void stop() throws Exception;
@@ -25,5 +17,7 @@ public interface SqlMgmtMBean {
     SqlContext createSqlContext();
     void flushAll();
     
+    
+    EntityManager createPersistenceContext(String datasource);
     
 }

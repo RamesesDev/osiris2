@@ -12,12 +12,12 @@
          <field name="branch" default="branch1"/>
          <field name="user" default="user1"/>
          <field name="terminal" default="terminal1"/>
-         <link-field name="address1" ref="address" exclude="objid"/>
-         <link-field name="address2" ref="address" exclude="objid"/>         
+         <!--<link-field name="address1" ref="address" exclude="objid"/>-->
+         <link-field name="address2" ref="address" exclude="xxid"/>         
      </element>
 
      <element name="address" tablename="tbladdress">
-         <field name="objid" primary="true" mapfield="objid"/>
+         <field name="xxid" primary="true" mapfield="objid"/>
          <field name="street" default="street1"/>
          <field name="city" default="city1"/>
      </element>

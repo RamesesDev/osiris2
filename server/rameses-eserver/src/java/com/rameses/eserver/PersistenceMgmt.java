@@ -1,14 +1,7 @@
-/*
- * SqlMgmt.java
- *
- * Created on July 24, 2010, 8:55 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package com.rameses.eserver;
 
+import com.rameses.persistence.DefaultEntityManager;
+import com.rameses.persistence.EntityManager;
 import com.rameses.schema.SchemaManager;
 import com.rameses.sql.SqlUnit;
 import com.rameses.sql.SqlContext;
@@ -21,16 +14,17 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 
-public class SqlMgmt implements Serializable, SqlMgmtMBean {
+public class PersistenceMgmt implements Serializable, PersistenceMgmtMBean {
     
-    private static final String SQLMGMT_CACHE = "sqlcache";
+    
     private CacheServiceMBean cacheService;
     private ResourceServiceMBean resourceService;
     
     private SqlManager sqlManager;
+    private SchemaMgmtMBean schemaMgmt;
 
     public void start() throws Exception {
-        System.out.println("STARTING SQL MGMT");
+        System.out.println("STARTING PERSISTENCE MGMT");
         InitialContext ctx = new InitialContext();
         //set the resources and cache
         cacheService = (CacheServiceMBean)ctx.lookup(CONSTANTS.CACHE_SERVICE);
@@ -39,20 +33,20 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
         
         //There's no other way right now to inject the schema manager but to look it up.
         //we need to set this in the sql manager.
-        SchemaMgmtMBean schemaMgmt = (SchemaMgmtMBean)ctx.lookup(CONSTANTS.SCHEMA_MGMT);
+        schemaMgmt = (SchemaMgmtMBean)ctx.lookup(CONSTANTS.SCHEMA_MGMT);
         sqlManager = new MgmtSqlManager();
         
         //attach the schema management in the sql extensions
         sqlManager.getConf().getExtensions().put(SchemaManager.class, schemaMgmt.getSchemaManager());
         
-        JndiUtil.bind(ctx,CONSTANTS.SQLMGMT, this );
+        JndiUtil.bind(ctx,CONSTANTS.PERSISTENCE_MGMT, this );
                 
     }
     
     public void stop() throws Exception {
-        System.out.println("STOPPING SQL MGMT");
+        System.out.println("STOPPING PERSISTENCE MGMT");
         InitialContext ctx = new InitialContext();
-        JndiUtil.unbind(ctx,CONSTANTS.SQLMGMT );
+        JndiUtil.unbind(ctx,CONSTANTS.PERSISTENCE_MGMT );
         flushAll();
         sqlManager.destroy();
         cacheService = null;
@@ -81,7 +75,7 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
     }
     
     public void flushAll() {
-        cacheService.getContext(SQLMGMT_CACHE).clear();
+        cacheService.getContext(CONSTANTS.SQLMGMT_CACHE).clear();
     }
 
     
@@ -105,22 +99,33 @@ public class SqlMgmt implements Serializable, SqlMgmtMBean {
     public class MgmtSqlUnitCache implements SqlUnitCacheProvider, Serializable {
         
         public SqlUnit getCache(String key) {
-            Map map = (Map)cacheService.getContext(SQLMGMT_CACHE);
+            Map map = (Map)cacheService.getContext(CONSTANTS.SQLMGMT_CACHE);
             return (SqlUnit)map.get(key);
         }
 
         public void putCache(String key, SqlUnit sq) {
-            Map map = (Map)cacheService.getContext(SQLMGMT_CACHE);
+            Map map = (Map)cacheService.getContext(CONSTANTS.SQLMGMT_CACHE);
             map.put(key, sq);
         }
 
         public void destroy() {
             //destroy the cache map here.
-            Map map = (Map)cacheService.getContext(SQLMGMT_CACHE);
+            Map map = (Map)cacheService.getContext(CONSTANTS.SQLMGMT_CACHE);
             map.clear();
         }
-        
     }
+    
+    
+    //PERSISTENCE CONTEXT
+    public EntityManager createPersistenceContext(String datasource) {
+        SqlContext sqlContext = null;
+        if( datasource!=null && datasource.trim().length()>0)
+            sqlContext = createSqlContext(datasource);
+        else
+            sqlContext = createSqlContext();
+        return new DefaultEntityManager(schemaMgmt.getSchemaManager(),sqlContext);
+    }
+
     
     
     

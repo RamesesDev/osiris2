@@ -26,10 +26,15 @@ public abstract class SchemaManager {
     public abstract SchemaConf getConf();
     
     
-    public Schema getSchema(String name) {
+    public Schema getSchema(String sname) {
         if(getConf().getPropertyResolver()==null)
             throw new RuntimeException("Property Resolver is not set in the conf");
         
+        String name = sname;
+        if(name.indexOf(":")>0) {
+            name = sname.substring(0, sname.indexOf(":"));
+        }
+
         //find the schema and check in cache
         Schema schema = getConf().getCacheProvider().getCache(name);
         if(schema !=null) return schema;
@@ -83,14 +88,41 @@ public abstract class SchemaManager {
     }
     
     public Map createMap(String name) {
-        return createMap( getSchema(name) );
+        Schema schema = getSchema(name);
+        SchemaElement element = null;
+        if(name.indexOf(":")>0) {
+            String en = name.substring(name.indexOf(":")+1);
+            element = schema.getElement(en);
+        }
+        return createMap( schema, element );
     }
     
-    public Map createMap(Schema schema) {
+    public Map createMap(Schema schema, SchemaElement element) {
         MapBuilderHandler handler = new MapBuilderHandler();
         SchemaScanner scanner = newScanner();
-        scanner.scan(schema,handler);
+        if(element!=null)
+            scanner.scan(schema,element,handler);
+        else
+            scanner.scan(schema,handler);
         return handler.getMap();
     }
     
+    
+    public ValidationResult validate(String schemaName, Object data) {
+        String sname = schemaName;
+        String elementName = null;
+        if(schemaName.indexOf(":")>0) {
+            sname = schemaName.substring(0, schemaName.indexOf(":"));
+            elementName = schemaName.substring(schemaName.indexOf(":")+1);
+        }    
+        
+        Schema schema = getSchema(sname);
+        SchemaValidationHandler handler = new SchemaValidationHandler();
+        SchemaScanner scanner = newScanner();
+        if(elementName==null)
+            scanner.scan(schema, data, handler);
+        else 
+            scanner.scan(schema, schema.getElement(elementName),data,handler);
+        return handler.getResult();
+    }
 }

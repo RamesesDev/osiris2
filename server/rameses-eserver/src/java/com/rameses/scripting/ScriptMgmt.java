@@ -6,6 +6,7 @@ import com.rameses.annotations.After;
 import com.rameses.annotations.Before;
 import com.rameses.eserver.CONSTANTS;
 import com.rameses.eserver.CacheServiceMBean;
+import com.rameses.eserver.HtmlMap;
 import com.rameses.interfaces.ResourceHandler;
 import com.rameses.eserver.ResourceServiceMBean;
 import com.rameses.interfaces.ScriptServiceLocal;
@@ -227,8 +228,8 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
         }
     }
     
-    public Map getLoadedScripts() {
-        return cacheService.getContext(SCRIPT_PREFIX);
+    public Map showLoadedScripts() {
+        return new HtmlMap(cacheService.getContext(SCRIPT_PREFIX));
     }
     
     public void loadInterceptors(ScriptObject so, String serviceName, String method ) {

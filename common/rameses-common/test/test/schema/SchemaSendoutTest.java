@@ -7,9 +7,13 @@
 
 package test.schema;
 
+import com.rameses.persistence.CreatePersistenceHandler;
 import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaManager;
-import java.util.Map;
+import com.rameses.schema.SchemaScanner;
+import com.rameses.sql.SqlExecutor;
+import com.rameses.sql.SqlManager;
+import java.util.Queue;
 import junit.framework.*;
 
 /**
@@ -34,18 +38,20 @@ public class SchemaSendoutTest extends TestCase {
     
     
     public void testMap() throws Exception {
-        Map map = mgr.createMap( "sendout1");
+        //Map map = mgr.createMap( "sendout1");
         
-        for(Object o: map.entrySet()) {
-            Map.Entry me = (Map.Entry)o;
-            System.out.println(me.getKey()+"="+me.getValue());
-        }
+        //for(Object o: map.entrySet()) {
+        //    Map.Entry me = (Map.Entry)o;
+        //    System.out.println(me.getKey()+"="+me.getValue());
+        //}
          
         /*
         SqlManager sq = SqlManager.getInstance();
-        assertNotNull(schema);
-        PersistenceHandler handler = new PersistenceHandler(mgr,sq);
-        SchemaScanner sc = new SchemaScanner(schema, handler, mgr.getConf().getPropertyResolver());
+        Schema schema = sq.
+        PersistenceHandler handler = new PersistenceHandler(mgr,sq.createContext());
+        SchemaScanner scanner = mgr.newScanner();
+        scanner.scan(  )
+       
         
         sc.scan(map);
         
@@ -60,8 +66,8 @@ public class SchemaSendoutTest extends TestCase {
                 i++;
             }
         }
-         */
         
+        */
     }
     
     

@@ -96,13 +96,23 @@ public class InjectionHandler implements AnnotationFieldHandler {
             return ctx;
         }
         else if(annotation instanceof com.rameses.annotations.SqlContext) {
-            SqlMgmtMBean sql = (SqlMgmtMBean)lookup(CONSTANTS.SQLMGMT,null);
+            PersistenceMgmtMBean sql = (PersistenceMgmtMBean)lookup(CONSTANTS.PERSISTENCE_MGMT,null);
             String dsName = correctValue(((com.rameses.annotations.SqlContext)annotation).value());
             if(dsName!=null && dsName.trim().length()>0)
                 return sql.createSqlContext( dsName );
             else
                 return sql.createSqlContext();
         }
+        
+        else if(annotation instanceof com.rameses.annotations.PersistenceContext) {
+            PersistenceMgmtMBean pm = (PersistenceMgmtMBean)lookup(CONSTANTS.PERSISTENCE_MGMT,null);
+            String dsName = correctValue(((com.rameses.annotations.PersistenceContext)annotation).value());
+            if(dsName!=null && dsName.trim().length()>0)
+                return pm.createPersistenceContext(dsName);
+            else    
+                return pm.createPersistenceContext(null);
+        }
+        
         return null;
     }
     

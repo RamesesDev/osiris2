@@ -1,5 +1,4 @@
 /*
- * SqlMgmtMBean.java
  *
  * Created on July 24, 2010, 8:52 AM
  *

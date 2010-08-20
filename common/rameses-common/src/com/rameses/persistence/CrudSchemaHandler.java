@@ -24,7 +24,7 @@ import com.rameses.sql.CrudModel.CrudField;
  *
  * @author elmo
  */
-public class CreateSchemaHandler implements SchemaHandler {
+public class CrudSchemaHandler implements SchemaHandler {
     
     private static final String TABLENAME = "tablename";
     private static final String DBFIELD = "dbfield";
@@ -36,7 +36,9 @@ public class CreateSchemaHandler implements SchemaHandler {
     private String tableName;
     private String prefix;
     
-    public CreateSchemaHandler() {
+    
+    
+    public CrudSchemaHandler() {
     }
     
     public void setStatus(SchemaHandlerStatus status) {

@@ -25,7 +25,7 @@ public interface ScriptMgmtMBean {
     void flushScript(String name);
     
     void loadInterceptors( ScriptObject obj, String serviceName, String method );
-    Map getLoadedScripts();
+    Map showLoadedScripts();
     
     int getInterceptorModifiedVersion(); 
 }

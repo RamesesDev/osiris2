@@ -42,9 +42,15 @@ public class Schema implements Serializable {
     }
 
     public SchemaElement getElement(String n) {
-        if( n.equals(name))
+        //special code. extracts element name from schema:element.
+        String elementName = n;
+        if(elementName.indexOf(":")>0) {
+            elementName = elementName.substring( elementName.indexOf(":")+1 );
+        }
+        
+        if( elementName.equals(name))
             return  rootElement;
-        return elements.get(n);
+        return elements.get(elementName);
     }
     
     /**

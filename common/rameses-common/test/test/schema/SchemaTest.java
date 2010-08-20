@@ -7,12 +7,13 @@
 
 package test.schema;
 
+import com.rameses.persistence.CreatePersistenceHandler;
 import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaScanner;
 import com.rameses.schema.SchemaValidationHandler;
-import com.rameses.persistence.PersistenceHandler;
+import com.rameses.persistence.ReadPersistenceHandler;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
@@ -43,14 +44,14 @@ public class SchemaTest extends TestCase {
     protected void tearDown() throws Exception {
     }
     
-    public void testRoot() throws Exception {
+    public void xtestRoot() throws Exception {
         Schema schema = mgr.getSchema( "customer" );
         assertEquals( schema.getRootElement(), schema.getElement("customer") );
     }
     
     
     // TODO add test methods here. The name must begin with 'test'. For example:
-    public void testScanFields() throws Exception {
+    public void xtestScanFields() throws Exception {
         Schema schema = mgr.getSchema( "customer" );
         assertNotNull(schema);
         SchemaScanner sc = mgr.newScanner();
@@ -63,7 +64,7 @@ public class SchemaTest extends TestCase {
         System.out.println("end scanning fields--------");
     }
     
-    public void testCreateObject() throws Exception {
+    public void xtestCreateObject() throws Exception {
         Map map = mgr.createMap(  "sendout" );
         for(Object o: map.entrySet()) {
             Map.Entry me = (Map.Entry)o;
@@ -77,11 +78,10 @@ public class SchemaTest extends TestCase {
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
 
         assertNotNull(schema);
-        PersistenceHandler handler = new PersistenceHandler(mgr,sq);
-        
+        CreatePersistenceHandler handler = new CreatePersistenceHandler(mgr,sq.createContext());
         SchemaScanner sc = mgr.newScanner();
 
-        Map map = mgr.createMap( schema );
+        Map map = mgr.createMap( "sendout" );
         map.put("remote_address2_city", "capitol city 2");
         map.put("remote_address1_city", "bacguio city 1");
         
@@ -123,7 +123,56 @@ public class SchemaTest extends TestCase {
     }
     
     
-    public void testCrudStatement2() throws Exception {
+     public void xtestRead() throws Exception {
+        Schema schema = mgr.getSchema( "sendout" );
+        SqlManager sq = SqlManager.getInstance();
+        sq.getConf().getExtensions().put( SchemaManager.class, mgr);
+
+        assertNotNull(schema);
+        ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sq.createContext());
+        
+        SchemaScanner sc = mgr.newScanner();
+
+        Map map = mgr.createMap( "sendout" );
+        map.put("objid", "12345");
+        sc.scan(schema, map, handler );
+        
+        SqlQuery se = null;
+        Queue<SqlQuery> q = handler.getQueue();
+        while(!q.isEmpty()) {
+            se = q.remove();
+            int i = 0;
+            //for(String s: se.getParameterNames()) {
+                //System.out.println(s);
+                //i++;
+            //}
+        }
+        
+        /*
+        Map data = new HashMap();
+        data.put("sender", "nazareno, elmo");
+        data.put("receiver", "flores, worgie");
+        data.put("objid", "SND0001");
+        data.put("option_option1", "option1");
+        data.put("option_option2", "option2");
+        
+        sc.scan(data);
+        Queue<ExecutionUnit> q = handler.getQueue();
+        while(! q.isEmpty() ) {
+            ExecutionUnit eu = q.remove();
+            CrudModel c = eu.getCrudModel();
+            SqlUnit su = CrudSqlBuilder.getInstance().getCreateSqlUnit(c);        
+            System.out.println("*******************");
+            System.out.println("statement: " + su.getStatement());
+            for(Object s: su.getParamNames()) {
+                System.out.println("param->"+s+ " "+eu.getData().get(s));
+            }
+        }
+         */
+    }
+    
+     
+    public void xtestCrudStatement2() throws Exception {
         SqlManager sm = SqlManager.getInstance();
         sm.getConf().getExtensions().put( SchemaManager.class, mgr );
         SqlContext ctx = sm.createContext();
@@ -147,7 +196,7 @@ public class SchemaTest extends TestCase {
             throw new Exception(handler.getResult().toString());
     }
     
-    public void testInnerElement() throws Exception {
+    public void xtestInnerElement() throws Exception {
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
         SqlUnit su = sq.getNamedSqlUnit( "branch_agent:branch_create.schema" );

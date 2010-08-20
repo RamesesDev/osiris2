@@ -8,7 +8,6 @@
  */
 package com.rameses.resources.db;
 
-import com.rameses.sql.db.SqlResource;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -45,8 +44,6 @@ public class DBResourceService implements DBResourceServiceLocal {
         } 
     } 
     
-    
-
     public byte[] getTemplateResource(String name) {
         return getResource(ResourceTemplate.class, name);
     }
@@ -55,9 +52,6 @@ public class DBResourceService implements DBResourceServiceLocal {
         return getResource(ResourceScript.class, name);
     }
 
-    public byte[] getPermissionResource(String name) {
-        return getResource(ResourcePermission.class, name);
-    }
     
     public byte[] getDsResource(String name) {
         return getResource(ResourceDs.class, name);
@@ -77,21 +71,6 @@ public class DBResourceService implements DBResourceServiceLocal {
         catch (Exception e) {
             throw new IllegalStateException(e);
         } 
-    }
-
-    public List getPermissions() {
-        String ql = "select o.name from " + ResourcePermission.class.getName() + " o ";
-        return em.createQuery(ql).getResultList();
-        //return getResource(ql, "deployers");
-    }
-
-    public byte[] getConf(String name) {
-        return getResource(ResourceConf.class, name);
-    }
-
-    public List getConfCategory(String category) {
-        String ql = "select o.name from " + ResourceConf.class.getName() + " o where o.category=:category";
-        return em.createQuery(ql).setParameter("category", category).getResultList();
     }
 
     public List getDsList() {

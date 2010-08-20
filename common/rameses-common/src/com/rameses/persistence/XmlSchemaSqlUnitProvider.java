@@ -109,7 +109,7 @@ public class XmlSchemaSqlUnitProvider extends SqlUnitProvider {
         if(element==null)
             throw new RuntimeException("schema element is null " + elementName );
         
-        CreateSchemaHandler crudBuilder = new CreateSchemaHandler();
+        CrudSchemaHandler crudBuilder = new CrudSchemaHandler();
         crudBuilder.setPrefix( contextPath );
         SchemaScanner sc = schemaManager.newScanner();
         

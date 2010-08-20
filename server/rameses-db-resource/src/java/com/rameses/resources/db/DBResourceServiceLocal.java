@@ -17,16 +17,9 @@ import java.util.List;
  */
 public interface DBResourceServiceLocal {
     
-    //byte[] getInfo(String name, String className);
-    
-    byte[] getConf(String name);
-    
     List getInterceptors();
-    List getPermissions();
-    List getConfCategory(String category);
     List getDsList();
     
-    byte[] getPermissionResource(String name);    
     byte[] getTemplateResource(String name);
     byte[] getScriptResource(String name);
     byte[] getDsResource(String name);
