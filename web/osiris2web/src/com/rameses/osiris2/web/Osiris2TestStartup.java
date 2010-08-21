@@ -21,17 +21,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class Osiris2Startup extends HttpServlet {
+public class Osiris2TestStartup extends HttpServlet {
     
     public static String CLIENT_CONF = "CLIENT_CONF";
     public static String APP_ROOT = "APP_ROOT";
     
     private ServletConfig servletConfig;
     
-    private static int version = 0;
     private static String appRoot;
     
-    public Osiris2Startup() {
+    public Osiris2TestStartup() {
     }
     
     //do not remove this. this is important...
@@ -41,14 +40,14 @@ public class Osiris2Startup extends HttpServlet {
     
     public void init(ServletConfig config) throws ServletException {
         servletConfig = config;
-        System.out.println("STARTING OSIRIS2 WEB");
+        System.out.println("STARTING OSIRIS2 WEB (TEST PLATFORM)");
         
         appRoot = getServletContext().getInitParameter(APP_ROOT);
         if(appRoot==null) {
             appRoot = System.getProperty("jboss.server.temp.dir")+"/osiris2";
         }
         
-        appRoot = appRoot + "/modules";
+        appRoot = appRoot + "/testplatform-modules";
         reload();
     }
     
@@ -78,18 +77,8 @@ public class Osiris2Startup extends HttpServlet {
             if(appurl==null)
                 throw new ServletException("app.url does not exist in the client.conf " + conf);
             
-            String appPath = appRoot + "-" + version;
-            if ( version > 0 ) {
-                File next = new File(appPath);
-                File prev = new File(appRoot + "-" + (version - 1));
-                if ( !next.exists() && prev.exists() ) {
-                    copyDirectory(prev, next);
-                }
-            }
-            version++;
-            
             UpdateCenter uc = new UpdateCenter( appurl );
-            uc.setAppPath(appPath);
+            uc.setAppPath(appRoot);
             
             uc.start();
             
@@ -104,7 +93,7 @@ public class Osiris2Startup extends HttpServlet {
             
             getServletContext().setAttribute( AppContext.class.getName(), ctx );
             getServletContext().setAttribute( CacheProvider.class.getName(), new SessionCacheProvider() );
-            System.out.println("OSIRIS2 WEB STARTED");
+            System.out.println("OSIRIS2 WEB (TEST PLATFORM) STARTED");
             
         } catch(Exception ign){
             ign.printStackTrace();

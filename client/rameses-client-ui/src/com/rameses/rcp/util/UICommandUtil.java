@@ -4,6 +4,7 @@ import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.common.MethodResolver;
+import com.rameses.util.BusinessException;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.JComponent;
@@ -66,20 +67,21 @@ public class UICommandUtil {
                 }
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            if ( !(e instanceof BusinessException) ) {
+                e.printStackTrace();
+            }
             ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
-            
         }
     }
     
-    private static void validate(UICommand command, Binding binding) {
+    private static void validate(UICommand command, Binding binding) throws BusinessException {
         if ( binding == null ) return;
         if ( !command.isUpdate() && command.isImmediate() ) return;
         
         ActionMessage am = new ActionMessage();
         binding.validate(am);
         if ( am.hasMessages() ) {
-            throw new IllegalStateException(am.toString());
+            throw new BusinessException(am.toString());
         }
     }
 }

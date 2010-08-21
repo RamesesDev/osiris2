@@ -7,7 +7,7 @@
 
 package com.rameses.osiris2.web;
 
-import com.rameses.util.CacheProvider;
+import com.rameses.common.CacheProvider;
 import javax.servlet.http.HttpServletRequest;
 
 

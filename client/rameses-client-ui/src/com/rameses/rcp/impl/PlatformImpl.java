@@ -61,8 +61,7 @@ public class PlatformImpl implements Platform {
         String title = (String) properties.get("title");
         if ( ValueUtil.isEmpty(title) ) title = id;
         
-        String canClose = (String) properties.get("canclose");
-        String modal = (String) properties.get("modal");
+        String modal = properties.get("modal")+"";
         
         JDialog parent = mainWindow.getComponent();
         if ( actionSource != null ) {
@@ -74,7 +73,7 @@ public class PlatformImpl implements Platform {
         d.setContentPane(comp);
         d.setId( id );
         d.setPlatformImpl(this);
-        d.setModal(false);
+        d.setModal( !"false".equals(modal) );
         d.pack();
         d.setLocationRelativeTo(parent);
         

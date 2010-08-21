@@ -88,12 +88,15 @@ public class NBPlatform implements Platform {
             String title = (String) properties.get("title");
             if (title == null || title.trim().length() == 0) title = id;
             
+            String strModal = properties.get("modal")+"";
+            boolean modal = !(strModal+"").equals("false");
+            
             popup.setTitle(title);
             windows.put(id, popup);
             
             popup.pack();
             popup.setLocationRelativeTo(parent);
-            popup.setModal(true);
+            popup.setModal(modal);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     popup.setVisible(true);

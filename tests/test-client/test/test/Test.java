@@ -18,8 +18,8 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    public void testHello() throws Exception {
-
+    public void test() {
+        
     }
     
 }

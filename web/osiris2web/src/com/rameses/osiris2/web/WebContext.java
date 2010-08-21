@@ -7,13 +7,13 @@
 
 package com.rameses.osiris2.web;
 
+import com.rameses.common.CacheProvider;
 import com.rameses.invoker.client.HttpClientManager;
 import com.rameses.osiris2.AppContext;
 import com.rameses.osiris2.ExpressionProvider;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.WorkUnit;
 import com.rameses.osiris2.WorkUnitInstance;
-import com.rameses.util.CacheProvider;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
@@ -191,21 +191,25 @@ public class WebContext implements Serializable {
     }
     
     public static WebInvokerProxy getInvokerProxy() {
-        ServletContext ctx = getServletContext();
-        WebInvokerProxy proxy = (WebInvokerProxy) ctx.getAttribute(WebInvokerProxy.class.getName());
+        OsirisWebSessionContext sessCtx = (OsirisWebSessionContext) getSessionContext();
+        Map properties = sessCtx.getProperties();
+        
+        WebInvokerProxy proxy = (WebInvokerProxy) properties.get(WebInvokerProxy.class.getName());
         if ( proxy == null ) {
             proxy = new WebInvokerProxy();
-            ctx.setAttribute(WebInvokerProxy.class.getName(), proxy);
+            properties.put(WebInvokerProxy.class.getName(), proxy);
         }
         return proxy;
     }
     
     public static HttpClientManager getHttpClientManager() {
-        ServletContext ctx = getServletContext();
-        HttpClientManager mgr = (HttpClientManager) ctx.getAttribute(HttpClientManager.class.getName());
+        OsirisWebAppContext appCtx = (OsirisWebAppContext) getAppContext();
+        Map properties = appCtx.getProperties();
+        
+        HttpClientManager mgr = (HttpClientManager) properties.get(HttpClientManager.class.getName());
         if ( mgr == null ) {
             mgr = new HttpClientManager();
-            ctx.setAttribute(HttpClientManager.class.getName(), mgr);
+            properties.put(HttpClientManager.class.getName(), mgr);
         }
         return mgr;
     }

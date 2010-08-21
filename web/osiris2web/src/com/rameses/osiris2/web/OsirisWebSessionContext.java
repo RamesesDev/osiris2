@@ -22,6 +22,9 @@ public class OsirisWebSessionContext extends SessionContext {
     protected Map invokersMap = new HashMap();
     protected Map folderInvokers = new HashMap();
     
+    private Map properties = new HashMap();
+    
+    
     protected OsirisWebSessionContext(AppContext ctx) {
         super(ctx);
     }
@@ -74,6 +77,10 @@ public class OsirisWebSessionContext extends SessionContext {
         }
         
         return (List) folderInvokers.get(folderId);
+    }
+
+    public Map getProperties() {
+        return properties;
     }
     
 }

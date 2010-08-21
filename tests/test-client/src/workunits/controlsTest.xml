@@ -28,7 +28,7 @@
             
             def file;
             
-            def lookupHandler = new Opener(name: 'test-client:sampleLookup');
+            def lookupHandler = new Opener(name: 'test-client:sampleLookup', modal: false);
             
             void btnShowInput() {
                 MsgBox.alert("""
