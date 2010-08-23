@@ -23,9 +23,12 @@
             
             def launchSecond() {
                 return new WindowOpener(
-                    id: '1324',
-                    caption: 'second opener', action: 'start'
+                    name: 'test-client:_pageFlowTest_popup', id: '1324', caption: 'Confirm'
                 );
+            }
+            
+            void confirmed() {
+                fireTransition("next");
             }
 
         }

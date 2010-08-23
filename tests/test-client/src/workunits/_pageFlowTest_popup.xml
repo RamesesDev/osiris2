@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+        import com.rameses.osiris2.client.ui.ext.*;
+                
+        public class PageFlowFormTestController {
+        
+            @Caller
+            def caller;
+            
+            def confirm() {
+                caller.confirmed();
+                return "_close";
+            }
+
+        }
+        
+        ]]>
+    </code>
+
+    <pages>
+        <page template="test.os2clientx.pageflow.PopupPage"/>
+    </pages>
+</workunit>

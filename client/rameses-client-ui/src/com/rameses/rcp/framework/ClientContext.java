@@ -26,15 +26,15 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- *
  * @author jaycverg
  */
 public abstract class ClientContext {
     
     private static ClientContext currentContext;
     private TaskManager taskManager;
-    private NavigationHandler navigationHandler = new NavigationHandlerImpl();
+    private NavigationHandler navigationHandler;
     private ControllerProvider controllerProvider;
+    private ActionProvider actionProvider;
     private Map headers = new HashMap();
     
     
@@ -71,8 +71,26 @@ public abstract class ClientContext {
         return controllerProvider;
     }
     
-    public NavigationHandler getNavigationHandler() {
+    public final NavigationHandler getNavigationHandler() {
+        if ( navigationHandler == null ) {
+            Iterator itr = Service.providers(NavigationHandler.class, Thread.currentThread().getContextClassLoader());
+            if ( itr.hasNext() ) {
+                navigationHandler = (NavigationHandler) itr.next();
+            } else {
+                navigationHandler = new NavigationHandlerImpl();
+            }
+        }
         return navigationHandler;
+    }
+    
+    public final ActionProvider getActionProvider() {
+        if ( actionProvider == null ) {
+            Iterator itr = Service.providers(ActionProvider.class, Thread.currentThread().getContextClassLoader());
+            if ( itr.hasNext() ) {
+                actionProvider = (ActionProvider) itr.next();
+            }
+        }
+        return actionProvider;
     }
     
     public static final ClientContext getCurrentContext() {

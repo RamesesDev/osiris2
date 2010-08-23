@@ -57,6 +57,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xButton2.setName("btnShowInput");
 
         formPanel1.setCaptionWidth(100);
+        formPanel1.setCellspacing(1);
         xNumberField1.setCaption("Integer Num");
         xNumberField1.setName("intNum");
         xNumberField1.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -83,7 +84,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xComboBox1.setExpression("#{name}");
         xComboBox1.setItems("itemList");
         xComboBox1.setName("item");
-        xComboBox1.setPreferredSize(new java.awt.Dimension(150, 24));
+        xComboBox1.setPreferredSize(new java.awt.Dimension(150, 19));
         formPanel1.add(xComboBox1);
 
         xComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -91,7 +92,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xComboBox2.setExpression("#{name}");
         xComboBox2.setItems("itemList");
         xComboBox2.setName("entity.item2");
-        xComboBox2.setPreferredSize(new java.awt.Dimension(150, 24));
+        xComboBox2.setPreferredSize(new java.awt.Dimension(150, 19));
         formPanel1.add(xComboBox2);
 
         xComboBox3.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -100,7 +101,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xComboBox3.setExpression("#{name}");
         xComboBox3.setItems("itemList");
         xComboBox3.setName("entity.item3");
-        xComboBox3.setPreferredSize(new java.awt.Dimension(150, 24));
+        xComboBox3.setPreferredSize(new java.awt.Dimension(150, 19));
         formPanel1.add(xComboBox3);
 
         xCheckBox1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -216,17 +217,17 @@ public class ControlsTestPage extends javax.swing.JPanel {
                             .add(layout.createSequentialGroup()
                                 .add(xTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 181, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(xButton4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                                .add(xLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 112, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(165, 165, 165)))
+                                .add(xButton4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap())
                     .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                            .add(xLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(xTextField2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 141, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(xTextField3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 135, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(xLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 135, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                    .add(xLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 101, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(xTextField2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 141, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(xTextField3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 135, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                         .add(128, 128, 128))))
         );
         layout.setVerticalGroup(

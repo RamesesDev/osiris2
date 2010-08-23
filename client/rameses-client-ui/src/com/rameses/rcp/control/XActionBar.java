@@ -8,6 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.Action;
+import com.rameses.rcp.framework.ActionProvider;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.ControlSupport;
@@ -23,8 +24,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.beans.Beans;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
@@ -100,21 +101,37 @@ public class XActionBar extends JPanel implements UIComposite {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void buildButtons() {
-        buttons.clear();
+        buttons.clear();        
+        List<Action> actions = new ArrayList();
         
-        Action[] actions = null;
-        Object value = UIControlUtil.getBeanValue(this);
-        if ( value == null ) return;
+        //--get actions defined from the code bean
+        Object value = null;
+        try {
+            value = UIControlUtil.getBeanValue(this);
+        } catch(Exception e) {;}
         
-        if ( value.getClass().isArray() ) {
-            actions = (Action[]) value;
+        if ( value == null ) {
+            //do nothing
+        } else if ( value.getClass().isArray() ) {
+            for(Action aa: (Action[]) value) {
+                actions.add(aa);
+            }
         } else if ( value instanceof Collection ) {
-            actions = (Action[]) ((Collection) value).toArray(new Action[]{});
+            actions.addAll( (Collection) value );
         }
         
-        if ( actions == null ) return;
+        //--get actions defined from the action provider
+        ActionProvider actionProvider = ClientContext.getCurrentContext().getActionProvider();
+        if ( actionProvider != null ) {
+            List<Action> aa = actionProvider.getActionsByType(getName(), null);
+            if ( aa != null ) {
+                actions.addAll(aa);
+            }
+        }
         
-        Arrays.sort(actions);
+        if ( actions.size() == 0 ) return;
+        
+        Collections.sort(actions);
         
         for( Action action: actions ) {
             //check permission

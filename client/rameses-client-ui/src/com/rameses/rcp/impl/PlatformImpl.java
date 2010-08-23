@@ -34,7 +34,7 @@ public class PlatformImpl implements Platform {
         if ( ValueUtil.isEmpty(title) ) title = id;
         
         String canClose = (String) properties.get("canclose");
-        String modal = (String) properties.get("modal");
+        String modal = properties.get("modal")+"";
         
         JDialog parent = mainWindow.getComponent();
         PopupDialog d = new PopupDialog(parent);

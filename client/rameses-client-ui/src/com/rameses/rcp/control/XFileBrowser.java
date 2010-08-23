@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -47,7 +48,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     private boolean readonly;
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
-    
+        
     private JTextField txtField;
     private JButton btnBrowse;
     
@@ -288,12 +289,32 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
         return property;
     }
 
+    public void requestFocus() {
+        setRequestFocus(true);
+    }
+    
     public void setRequestFocus(boolean focus) {
         if ( focus ) btnBrowse.requestFocus();
     }
 
     public boolean isImmediate() {
         return true;
+    }
+    
+    public String getText() {
+        return btnBrowse.getText();
+    }
+    
+    public void setText(String text) {
+        btnBrowse.setText(text);
+    }
+    
+    public Icon getIcon() {
+        return btnBrowse.getIcon();
+    }
+    
+    public void setIcon(Icon icon) {
+        btnBrowse.setIcon(icon);
     }
     //</editor-fold>
     

@@ -2,6 +2,12 @@
 <workunit>
     <invokers>
         <invoker folderid="/menu/file" caption="Controls Test"/>
+        
+        <!-- form actions -->
+        <invoker type="actions" action="_close" caption="Close" immediate="true"/>
+        <invoker type="actions" action="edit" caption="Edit"/>
+        <invoker type="actions" action="print" caption="Print"/>
+        <invoker type="actions" action="btnToggle" caption="Enable/Disable Controls" immediate="true"/>
     </invokers>
     
     <code>
@@ -44,14 +50,7 @@
             void btnToggle() {
                 readonly = !readonly;
             }
-            
-            def actions = [
-                new Action(name: '_close', caption: 'Close', immediate: true),
-                new Action(name: 'edit', caption: 'Edit'),
-                new Action(name: 'print', caption: 'Print'),
-                new Action(name: 'btnToggle', caption: 'Enable/Disable Controls', immediate: true)
-            ];
-            
+                        
             void testPost() {
                 MsgBox.alert("Posting $entity.testPost");
             }
