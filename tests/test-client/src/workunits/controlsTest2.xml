@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker folderid="/menu/file" caption="Controls Test"/>
+        <invoker folderid="/menu/file" caption="Controls Test 2"/>
         
         <!-- form actions -->
         <invoker type="actions" action="_close" caption="Close" immediate="true"/>
-        <invoker type="actions" action="edit" caption="Edit"/>
-        <invoker type="actions" action="print" caption="Print"/>
-        <invoker type="actions" action="btnToggle" caption="Enable/Disable Controls" immediate="true"/>
     </invokers>
     
     <code>
@@ -58,7 +55,7 @@
             void save() {
             
             }
-
+            
             @Close
             def close() {
                 MsgBox.alert('Closing');

@@ -12,6 +12,6 @@ public interface ActionProvider {
     
     boolean hasItems( String category, Object context );
     List<Action> getActions(String category, Object context);
-    List<Action> getActionsByType(String type, Object context);
+    List<Action> getActionsByType(String type, UIController controller);
     
 }

@@ -16,6 +16,7 @@ import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.common.ExpressionResolver;
+import com.rameses.rcp.framework.UIController;
 import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -101,7 +102,7 @@ public class XActionBar extends JPanel implements UIComposite {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void buildButtons() {
-        buttons.clear();        
+        buttons.clear();
         List<Action> actions = new ArrayList();
         
         //--get actions defined from the code bean
@@ -123,7 +124,8 @@ public class XActionBar extends JPanel implements UIComposite {
         //--get actions defined from the action provider
         ActionProvider actionProvider = ClientContext.getCurrentContext().getActionProvider();
         if ( actionProvider != null ) {
-            List<Action> aa = actionProvider.getActionsByType(getName(), null);
+            UIController controller = binding.getController();
+            List<Action> aa = actionProvider.getActionsByType(getName(), controller);
             if ( aa != null ) {
                 actions.addAll(aa);
             }

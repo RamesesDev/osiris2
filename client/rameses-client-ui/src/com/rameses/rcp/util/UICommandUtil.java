@@ -53,7 +53,7 @@ public class UICommandUtil {
             String action = command.getActionName();
             if ( action != null ) {
                 if ( !action.startsWith("_")) {
-                    outcome = resolver.invoke(binding.getBean(), command.getName(), null, null);
+                    outcome = resolver.invoke(binding.getBean(), action, null, null);
                 } else {
                     outcome = action;
                 }

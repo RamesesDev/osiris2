@@ -1,12 +1,15 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.Action;
+import com.rameses.rcp.framework.ActionProvider;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
+import com.rameses.util.ValueUtil;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.Collection;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -20,7 +23,6 @@ public class XIconPanel extends JPanel implements UIControl {
     private static String ALIGN_RIGHT = "RIGHT";
     private static String ALIGN_CENTER = "CENTER";
     
-    private Collection<Action> actions;
     private String[] depends;
     private int index;
     private Binding binding;
@@ -71,10 +73,15 @@ public class XIconPanel extends JPanel implements UIControl {
     public void refresh() {}
     
     public void load() {
-        Object value = UIControlUtil.getBeanValue(this);
-        if(value == null) return;
-        if(value instanceof Collection)
-            actions = (Collection) value;
+        buildIcons();
+    }
+    
+    private void buildIcons() {
+        if ( ValueUtil.isEmpty(getName()) ) return;
+        
+        ActionProvider ap = ClientContext.getCurrentContext().getActionProvider();
+        List<Action> actions = ap.getActionsByType(getName(), null);
+        
         if(ALIGN_RIGHT.equals(orientation.toUpperCase()))
             flowLayout.setAlignment(FlowLayout.RIGHT);
         else if(ALIGN_CENTER.equals(orientation.toUpperCase()))
@@ -82,6 +89,7 @@ public class XIconPanel extends JPanel implements UIControl {
         else
             flowLayout.setAlignment(FlowLayout.LEFT);
         setLayout(flowLayout);
+        
         for(Action a : actions) {
             IconButton ib = new IconButton(a.getCaption(), a.getIcon());
             ib.setBinding(binding);

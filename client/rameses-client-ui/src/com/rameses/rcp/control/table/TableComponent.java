@@ -1,5 +1,6 @@
 package com.rameses.rcp.control.table;
 
+import com.rameses.common.ExpressionResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.ListItem;
@@ -7,9 +8,11 @@ import com.rameses.rcp.common.ListModelListener;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ChangeLog;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
+import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -69,6 +72,8 @@ public class TableComponent extends JTable implements ListModelListener {
     private Color evenForeground;
     private Color oddForeground;
     private Color errorForeground;
+    
+    private Binding binding;
     
     
     public TableComponent() {
@@ -133,21 +138,15 @@ public class TableComponent extends JTable implements ListModelListener {
         buildColumns();
     }
     
-    public AbstractListModel getListModel() {
-        return listModel;
-    }
+    public AbstractListModel getListModel() { return listModel; }
     
-    public void setListener(TableListener listener) {
-        this.tableListener = listener;
-    }
+    public void setBinding(Binding binding) { this.binding = binding; }
+    public Binding getBinding() { return binding; }
     
-    public boolean isRequired() {
-        return required;
-    }
+    public void setListener(TableListener listener) { this.tableListener = listener; }
     
-    public boolean isEditingMode() {
-        return editingMode;
-    }
+    public boolean isRequired() { return required; }
+    public boolean isEditingMode() { return editingMode; }
     
     public boolean isAutoResize() {
         return getAutoResizeMode() != super.AUTO_RESIZE_OFF;
@@ -161,61 +160,26 @@ public class TableComponent extends JTable implements ListModelListener {
         }
     }
     
-    public boolean isReadonly() {
-        return readonly;
-    }
+    public boolean isReadonly() { return readonly; }
+    public void setReadonly(boolean readonly) { this.readonly = readonly; }
     
-    public void setReadonly(boolean readonly) {
-        this.readonly = readonly;
-    }
+    public Color getEvenBackground() { return evenBackground; }
+    public void setEvenBackground(Color evenBackground) { this.evenBackground = evenBackground; }
     
-    public Color getEvenBackground() {
-        return evenBackground;
-    }
+    public Color getOddBackground() { return oddBackground; }
+    public void setOddBackground(Color oddBackground) { this.oddBackground = oddBackground; }
     
-    public void setEvenBackground(Color evenBackground) {
-        this.evenBackground = evenBackground;
-    }
+    public Color getErrorBackground() { return errorBackground; }
+    public void setErrorBackground(Color errorBackground) { this.errorBackground = errorBackground; }
     
-    public Color getOddBackground() {
-        return oddBackground;
-    }
+    public Color getEvenForeground() { return evenForeground; }
+    public void setEvenForeground(Color evenForeground) { this.evenForeground = evenForeground; }
     
-    public void setOddBackground(Color oddBackground) {
-        this.oddBackground = oddBackground;
-    }
+    public Color getOddForeground() { return oddForeground; }
+    public void setOddForeground(Color oddForeground) { this.oddForeground = oddForeground; }
     
-    public Color getErrorBackground() {
-        return errorBackground;
-    }
-    
-    public void setErrorBackground(Color errorBackground) {
-        this.errorBackground = errorBackground;
-    }
-    
-    public Color getEvenForeground() {
-        return evenForeground;
-    }
-    
-    public void setEvenForeground(Color evenForeground) {
-        this.evenForeground = evenForeground;
-    }
-    
-    public Color getOddForeground() {
-        return oddForeground;
-    }
-    
-    public void setOddForeground(Color oddForeground) {
-        this.oddForeground = oddForeground;
-    }
-    
-    public Color getErrorForeground() {
-        return errorForeground;
-    }
-    
-    public void setErrorForeground(Color errorForeground) {
-        this.errorForeground = errorForeground;
-    }
+    public Color getErrorForeground() { return errorForeground; }
+    public void setErrorForeground(Color errorForeground) { this.errorForeground = errorForeground; }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  buildColumns  ">
@@ -237,14 +201,17 @@ public class TableComponent extends JTable implements ListModelListener {
                 continue;
             }
             
+            if ( !ValueUtil.isEmpty(col.getEditableWhen()) ) {
+                col.setEditable(true);
+            }
             if ( !col.isEditable() ) continue;
             if ( editors.containsKey(i) ) continue;
             
             JComponent editor = TableManager.createCellEditor(col);
             editor.setVisible(false);
             editor.setBounds(-10, -10, 10, 10);
-            editor.addFocusListener( new EditorFocusSupport() );
             
+            editor.addFocusListener( new EditorFocusSupport() );
             addKeyboardAction(editor, KeyEvent.VK_ENTER, true);
             addKeyboardAction(editor, KeyEvent.VK_TAB, true);
             addKeyboardAction(editor, KeyEvent.VK_ESCAPE, false);
@@ -320,14 +287,28 @@ public class TableComponent extends JTable implements ListModelListener {
             if (me.getClickCount() != 2) return false;
         }
         
-        Column dc = tableModel.getColumn(colIndex);
-        if (dc == null) return false;
+        Column col = tableModel.getColumn(colIndex);
+        if (col == null) return false;
         
         ListItem item = listModel.getSelectedItem();
         if ( item.getItem() == null ) return false;
         
         JComponent editor = editors.get(colIndex);
         if ( editor == null ) return false;
+        
+        if ( !ValueUtil.isEmpty(col.getEditableWhen()) ) {
+            String exp = col.getEditableWhen();
+            ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+            try {
+                item.setRoot(binding.getBean());
+                Object o = er.evaluate(item, exp);
+                if ( !"true".equals(o+"") ) return false;
+                
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                return false;
+            }
+        }
         
         showEditor(editor, rowIndex, colIndex, e);
         return false;
@@ -389,7 +370,7 @@ public class TableComponent extends JTable implements ListModelListener {
         return false;
     }
     
-    private void highLight(JComponent comp) {
+    private void selectAll(JComponent comp) {
         if ( comp instanceof JTextComponent ) {
             ((JTextComponent) comp).selectAll();
         }
@@ -462,8 +443,32 @@ public class TableComponent extends JTable implements ListModelListener {
         } else {
             slm.removeErrorMessage(rowIndex);
         }
+        if ( ac.hasMessages() ) return false;
         
-        return !ac.hasMessages();
+        try {
+            slm.validate( slm.getItemList().get(rowIndex) );
+            slm.removeErrorMessage(rowIndex);
+        } catch (Exception e ) {
+            String msg = getMessage(e);
+            slm.addErrorMessage(rowIndex, msg);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private String getMessage(Throwable t) {
+        if (t == null) return null;
+        
+        String msg = t.getMessage();
+        Throwable cause = t.getCause();
+        while (cause != null) {
+            String s = cause.getMessage();
+            if (s != null) msg = s;
+            
+            cause = cause.getCause();
+        }
+        return msg;
     }
     
     private void showEditor(JComponent editor, int rowIndex, int colIndex, EventObject e) {
@@ -486,7 +491,7 @@ public class TableComponent extends JTable implements ListModelListener {
             if ( !refreshed ) {
                 input.refresh();
             }
-            highLight(editor);
+            selectAll(editor);
         } else if ( isPrintableKey() ) {
             input.setValue( currentKeyEvent );
         } else {

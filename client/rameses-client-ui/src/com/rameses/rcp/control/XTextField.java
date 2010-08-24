@@ -23,13 +23,14 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     private int index;
     private String[] depends = new String[]{};
     private Binding binding;
-    private ControlProperty property = new ControlProperty();
-    private ActionMessage actionMessage = new ActionMessage();
     private boolean nullWhenEmpty = true;
     private String onAfterUpdate;
     private boolean readonly;
     
     private TextDocument document = new TextDocument();
+    
+    protected ControlProperty property = new ControlProperty();
+    protected ActionMessage actionMessage = new ActionMessage();
     
     
     public XTextField() {
@@ -60,7 +61,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     }
     
     
-    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setName(String name) {
         super.setName(name);
         super.setText(name);

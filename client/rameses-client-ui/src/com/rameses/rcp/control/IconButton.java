@@ -1,6 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.util.ValueUtil;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -68,6 +69,8 @@ public class IconButton extends XButton {
     }
     
     private URL getImageResource(String path) {
+        if ( ValueUtil.isEmpty(path) ) return null;
+        
         ClassLoader cl = ClientContext.getCurrentContext().getClassLoader();
         return cl.getResource(path);
     }
@@ -75,8 +78,8 @@ public class IconButton extends XButton {
     public void setImage(String imagePath) {
         try {
             URL res = getImageResource(imagePath);
-            if(res == null)
-                res = getImageResource("icons/noIcon.png");
+            if ( res == null ) return;
+            
             ImageIcon imgIcn = new ImageIcon(res);
             image = imgIcn.getImage();
             imgHeight = image.getHeight(null);

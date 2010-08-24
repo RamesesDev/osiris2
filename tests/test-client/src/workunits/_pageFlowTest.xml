@@ -50,7 +50,7 @@
             <transition name="saveNew" caption="Save New" to="page2" action="save" rendered="#{editmode=='create'}"/>
             <transition name="save" caption="Save" to="page2" action="save" rendered="#{editmode=='edit'}"/>
             <transition name="edit" caption="Edit" to="page2" action="edit" rendered="#{editmode=='read'}"/>
-            <transition name="next" caption="Next" to="page3" rendered="#{editmode=='read'}"/>
+            <transition name="next" caption="Next" to="page3"/>
         </page>
         <page name="page3" title="Page 2 Last Page Title">
             <transition name="close" caption="Close" to="end"/>

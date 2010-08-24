@@ -17,16 +17,14 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xRadio1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Component id="xLabel2" alignment="0" max="32767" attributes="1"/>
+                  <Component id="xLabel1" alignment="0" max="32767" attributes="1"/>
+                  <Component id="xFileBrowser1" alignment="0" pref="245" max="32767" attributes="1"/>
                   <Component id="xComboBox1" alignment="0" min="-2" pref="202" max="-2" attributes="0"/>
                   <Component id="xActionBar2" alignment="0" min="-2" pref="214" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="87" max="32767" attributes="0"/>
-          </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="xFileBrowser1" min="-2" pref="245" max="-2" attributes="0"/>
-              <EmptySpace pref="129" max="32767" attributes="0"/>
+              <EmptySpace pref="50" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -41,9 +39,13 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="xComboBox1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="106" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="xFileBrowser1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="145" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xLabel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="xLabel2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="191" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -78,6 +80,32 @@
     <Component class="com.rameses.rcp.control.XFileBrowser" name="xFileBrowser1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Attach"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XLabel" name="xLabel1">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+            <EtchetBorder/>
+          </Border>
+        </Property>
+        <Property name="text" type="java.lang.String" value="xLabel1"/>
+        <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[1, 5, 1, 1]"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XLabel" name="xLabel2">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+            <EtchetBorder/>
+          </Border>
+        </Property>
+        <Property name="text" type="java.lang.String" value="xLabel2"/>
+        <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[1, 5, 1, 1]"/>
+        </Property>
       </Properties>
     </Component>
   </SubComponents>

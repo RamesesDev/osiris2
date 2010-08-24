@@ -19,6 +19,7 @@ public class Column implements Serializable {
     private int maxWidth;
     private boolean resizable = true;
     private boolean editable;
+    private String editableWhen;
     private boolean visible = true;
     private int rowheight;
     private boolean primary;
@@ -238,5 +239,13 @@ public class Column implements Serializable {
         this.fieldType = fieldType;
     }
     //</editor-fold>
+
+    public String getEditableWhen() {
+        return editableWhen;
+    }
+
+    public void setEditableWhen(String editableWhen) {
+        this.editableWhen = editableWhen;
+    }
     
 }

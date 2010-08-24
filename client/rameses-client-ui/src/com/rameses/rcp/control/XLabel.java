@@ -7,11 +7,14 @@ import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
+import java.awt.Insets;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.border.Border;
 
 /**
  *
@@ -24,6 +27,9 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     private Binding binding;
     private ControlProperty property = new ControlProperty();
     private String expression;
+    private Insets padding;
+    
+    private Border origBorder;
     
     /**
      * ActiveControl support fields/properties
@@ -39,6 +45,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     public XLabel() {
         super();
+        setPadding(new Insets(0,0,0,0));
     }
     
     public void refresh() {
@@ -112,6 +119,22 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
         }
     }
     
+    public void setBorder(Border border) {
+        origBorder = border;
+        
+        if ( padding != null ) {
+            Border padBorder = BorderFactory.createEmptyBorder(padding.top, padding.left, padding.bottom, padding.right);
+            Border b = BorderFactory.createCompoundBorder(origBorder, padBorder);
+            super.setBorder(b);
+        } else {
+            super.setBorder(origBorder);
+        }
+    }
+
+    public Border getBorder() {
+        return origBorder;
+    }
+        
     public String getCaption() {
         return property.getCaption();
     }
@@ -163,6 +186,15 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setFor(String name) {
         this.labelFor = name;
     }
+    
+    public Insets getPadding() {
+        return padding;
+    }
+    
+    public void setPadding(Insets padding) {
+        this.padding = padding;
+        this.setBorder(origBorder);
+    }
     //</editor-fold>
     
     
@@ -170,7 +202,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     private class ActiveControlSupport implements PropertyChangeListener {
         
         private Color oldFg;
-                
+        
         public void propertyChange(PropertyChangeEvent evt) {
             String propName = evt.getPropertyName();
             Object value = evt.getNewValue();
@@ -196,4 +228,5 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
         
     }
     //</editor-fold>
+    
 }

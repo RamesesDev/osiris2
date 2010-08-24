@@ -15,6 +15,7 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.MethodResolver;
+import com.rameses.util.BusinessException;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -311,7 +312,7 @@ public class Binding {
             }
             
         } catch(Exception e) {
-            throw new IllegalStateException(e);
+            e.printStackTrace();
         }
         
         return true;
@@ -341,6 +342,7 @@ public class Binding {
      * bean action (emulating a UICommand action) that can
      * trigger a navigation process
      */
+    @Deprecated
     public void fireAction(String action) {
         if ( ValueUtil.isEmpty(action) ) return;
         try {
@@ -352,7 +354,36 @@ public class Binding {
             } else {
                 outcome = action;
             }
+            fireNavigation(outcome);
             
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+    
+    /**
+     * fireNavigation (immediate is false [validates form])
+     */
+    public void fireNavigation(Object outcome) {
+        fireNavigation(outcome, false);
+    }
+    
+    /**
+     * fireNavigation can be used to programmatically trigger the navigation handler
+     * from the controller's code bean
+     */
+    public void fireNavigation(Object outcome, boolean immediate) {
+        try {
+            formCommit();
+            if ( !immediate ) {
+                ActionMessage am = new ActionMessage();
+                validate(am);
+                if ( am.hasMessages() ) {
+                    throw new BusinessException(am.toString());
+                }
+            }
+            
+            ClientContext ctx = ClientContext.getCurrentContext();
             NavigationHandler handler = ctx.getNavigationHandler();
             UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
             NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
@@ -361,7 +392,10 @@ public class Binding {
             }
             
         } catch(Exception e) {
-            throw new IllegalStateException(e);
+            if ( !(e instanceof BusinessException) ) {
+                e.printStackTrace();
+            }
+            ClientContext.getCurrentContext().getPlatform().showError(null, e);
         }
     }
     
@@ -418,8 +452,8 @@ public class Binding {
         
         closeMethods = new ArrayList();
         ClassDefUtil cdu = ClassDefUtil.getInstance();
-        Method[] marr = cdu.findAnnotatedMethods(bean.getClass(), Close.class);
-        for (Method m: marr) {
+        Method[] cm = cdu.findAnnotatedMethods(bean.getClass(), Close.class);
+        for (Method m: cm) {
             closeMethods.add( m.getName() );
         }
     }
