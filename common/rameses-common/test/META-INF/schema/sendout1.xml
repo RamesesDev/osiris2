@@ -1,0 +1,29 @@
+<schema>
+    
+     <element tablename="tblsendout">
+        <field name="objid" type="string" required="true" primary="true" default="SND001"/>
+        <field name="senderlname" dbfield="strsenderlname" type="string" required="true" default="nazareno"/>
+        <field name="senderfname" dbfield="strsenderfname" type="string" required="true" default="elmo"/>
+        <field name="receiverlname" dbfield="strreceiverlname" type="string" required="true" default="flores"/>
+        <field name="receiverfname" dbfield="strreceiverfname" type="string" required="true" default="worgie"/>
+        <field name="principal" dbfield="curprincipal" type="decimal" required="true" default="1000.00"/>
+        <link-field ref="info" exclude="objid" />     
+        <link-field ref="walkin" exclude="objid" />     
+    </element>
+     
+    <element name="info">
+         <field name="objid"  primary="true"/>
+         <field name="currencyid" dbfield="strcurrencyid" default="PHP"/>
+    </element>
+
+    <element name="walkin" tablename="tblwalkin">
+         <field name="objid"  primary="true"/>
+         <field name="id" dbfield="stridtype" default="SSS"/>
+         <field name="idno" dbfield="stridno" default="12332323"/>
+         <field name="walkin_id" dbfield="stridtype" default="SSS"/>
+    </element>
+
+     
+</schema>
+
+

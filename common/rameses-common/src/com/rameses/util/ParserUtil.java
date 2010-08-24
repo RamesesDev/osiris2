@@ -23,7 +23,7 @@ public final class ParserUtil {
     
     public static void loadAttributes( Object o , Map extended, Attributes attributes, PropertyResolver resolver ) {
         if(resolver==null)
-            throw new IllegalStateException("Property resolver must be specified in ParserUtil.loadAttributes");
+            throw new RuntimeException("Property resolver must be specified in ParserUtil.loadAttributes");
         
         for( int i = 0 ; i<attributes.getLength();i++ ) {
             String name = attributes.getQName(i);
@@ -32,14 +32,14 @@ public final class ParserUtil {
 
             try {
                 
-                Class clz = resolver.getPropertyType(o,name);;
+                Class clz = resolver.getPropertyType(o,name);
                 if( clz.equals(Integer.class) ) {
                     val = Integer.valueOf(value);
                 } 
                 else if( clz.equals(Double.class) ) {
                     val = Double.valueOf(value) ;
                 } 
-                else if( clz.equals(Boolean.class) ) {
+                else if( clz.equals(Boolean.class)  ) {
                     val = Boolean.valueOf(value);
                 }
                 /*
@@ -63,7 +63,7 @@ public final class ParserUtil {
     public static void updateAttributes( Object o , Map extended, Map newValues, PropertyResolver resolver ) {
         
          if(resolver==null)
-            throw new IllegalStateException("Property resolver must be specified in ParserUtil.updateAttributes");
+            throw new RuntimeException("Property resolver must be specified in ParserUtil.updateAttributes");
          
         Iterator iter = newValues.entrySet().iterator();
         String name = null;

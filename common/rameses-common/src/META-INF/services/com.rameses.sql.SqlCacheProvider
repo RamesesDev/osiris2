@@ -1,3 +1,0 @@
-com.rameses.sql.DefaultSqlCacheProvider
-com.rameses.sql.SqlxCacheProvider
-com.rameses.sql.CrudSqlCacheProvider

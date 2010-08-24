@@ -9,8 +9,12 @@
 
 package com.rameses.scripting;
 
+import com.rameses.annotations.Param;
 import com.rameses.classutils.ClassDef;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,8 @@ public class ScriptObject implements Serializable {
     private Map<String, List<String>> beforeInterceptors = new HashMap();
     private Map<String, List<String>> afterInterceptors = new HashMap();
     
+    //new addition: parameters will be checked for validitiy.
+    private Map<String, CheckedParameter[]> checkedParameters = new HashMap();
     
     public ScriptObject(Class cp, String name, String proxyInterface, Class proxyClass  ) {
         this.name = name;
@@ -83,4 +89,27 @@ public class ScriptObject implements Serializable {
     public void setInterceptorModifiedVersion( int v ) {
         interceptorModifiedVersion = v;
     }
+    
+    public CheckedParameter[] getCheckedParameters(String method) {
+        if( !checkedParameters.containsKey(method) ) {
+            List<CheckedParameter> params = new ArrayList();
+            //must loop
+            Method m = classDef.findMethodByName( method );
+            int colIndex = 0;
+            for(Annotation[] annots: m.getParameterAnnotations()) {
+                
+                //check if there are annotations
+                for(Annotation a: annots) {
+                    if(a.annotationType() == Param.class) {
+                        Param p = (Param)a;
+                        params.add( new CheckedParameter(p.schema(),colIndex, p.required(), p.types()));
+                    }
+                }
+                colIndex++;
+            }
+            checkedParameters.put( method, params.toArray(new CheckedParameter[]{}) );
+        }
+        return checkedParameters.get(method);
+    }
+    
 }

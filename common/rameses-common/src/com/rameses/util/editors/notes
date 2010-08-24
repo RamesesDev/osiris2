@@ -1,0 +1,5 @@
+Map markers:
+
+_new =    true means this is a new object and should apply all changes
+_{fieldname} = indicates which fields are editied
+_deleted_{fieldname} = applicable to lists. contains a list of deleted items.

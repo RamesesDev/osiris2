@@ -50,7 +50,7 @@ public final class ConfigProperties {
             readConfig( baos );
             writeConfig( new ByteArrayInputStream( baos.toByteArray() ) );
         }catch(Exception ex){
-            throw new IllegalStateException( ex );
+            throw new RuntimeException( ex );
         }finally{
             try{ baos.close(); }catch(Exception ign){;}
         }
@@ -90,7 +90,7 @@ public final class ConfigProperties {
             includeEntry.clear();
             
         }catch(Exception ex){
-            throw new IllegalStateException(ex);
+            throw new RuntimeException(ex);
         }finally{
             try{ reader.close(); }catch(Exception ign){;}
             try{ writer.close(); }catch(Exception ign){;}
@@ -138,7 +138,7 @@ public final class ConfigProperties {
                 writer.flush();
             }
         }catch(Exception ex){
-            throw new IllegalStateException( ex );
+            throw new RuntimeException( ex );
         }finally{
             try{ reader.close(); }catch(Exception ign){;}
             try{ writer.close(); }catch(Exception ign){;}
@@ -150,7 +150,7 @@ public final class ConfigProperties {
             URI uri = url.toURI();
             setFile( new File( uri ) );
         } catch (URISyntaxException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex );
+            throw new RuntimeException(ex.getMessage(), ex );
         }
     }
     

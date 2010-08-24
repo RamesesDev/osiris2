@@ -20,56 +20,20 @@ import java.util.Map;
  *
  * @author elmo
  */
-public class SqlQuery {
+public class SqlQuery extends AbstractSqlTxn {
     
-    private SqlManager sqlManager;
-    protected String statement;
-    
-    private List<String> parameterNames = new ArrayList();
-    protected List parameterValues;
     private FetchHandler fetchHandler;
-    private ParameterHandler parameterHandler;
-    private Connection connection;
     private int firstResult;
     private int maxResults;
     private int rowsFetched = 0;
-    
-    
-    private String origStatement;
-    private List origParamNames;
-    
-    private Map vars;
     
     /***
      * By default, DataSource is passed by the SqlManager
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlQuery(SqlManager sm, String statement, List paramNames) {
-        this.origStatement = statement;
-        this.origParamNames = paramNames;
-        this.sqlManager = sm;
-        clear();
-    }
-    
-    public void clear() {
-        this.statement = origStatement;
-        parameterNames.clear();
-        this.parameterNames.clear();
-        if(origParamNames!=null) {
-            for(Object o : origParamNames) {
-                this.parameterNames.add((String)o);
-            }
-        }
-        if(parameterValues==null)
-            parameterValues = new ArrayList();
-        parameterValues.clear();
-    }
-    
-    
-    public SqlQuery setConnection(Connection connection) {
-        this.connection = connection;
-        return this;
+    SqlQuery(SqlContext sm, String statement, List paramNames) {
+        super( sm, statement, paramNames );
     }
     
     public void setFetchHandler(FetchHandler resultHandler) {
@@ -88,7 +52,7 @@ public class SqlQuery {
             if(connection!=null)
                 conn = connection;
             else
-                conn = sqlManager.getConnection();
+                conn = sqlContext.getConnection();
             
             if(fetchHandler==null)
                 fetchHandler = new MapFetchHandler();
@@ -128,7 +92,7 @@ public class SqlQuery {
             
         } catch(Exception ex) {
             ex.printStackTrace();
-            throw new IllegalStateException(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         } finally {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
@@ -143,65 +107,25 @@ public class SqlQuery {
     }
     
     
-    // <editor-fold defaultstate="collapsed" desc="SET PARAMETER OPTIONS">
     public SqlQuery setParameter( int idx, Object v ) {
-        if(idx<=0)
-            throw new IllegalStateException("Index must be 1 or higher");
-        parameterValues.add(idx-1, v);
+        _setParameter(idx, v);
         return this;
     }
     
     public SqlQuery setParameter( String name, Object v ) {
-        int idx = -1;
-        for(int i=0; i<parameterNames.size();i++) {
-            if(parameterNames.get(i).equals(name)) {
-                parameterValues.add(i, v);
-                return this;
-            }
-        }
-        throw new IllegalStateException("Parameter " + name + " is not found");
-    }
-    
-    
-    /***
-     * This method allows adding of parameters stored as one map.
-     * It requires parameter names must exist. To do this,
-     * your statement must have the $P{param} named parameter.
-     */
-    public SqlQuery setParameters( Map map ) {
-        if(map==null) {
-            //do nothing and return it
-            return this;
-        }
-        if(parameterNames==null)
-            throw new IllegalStateException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
-        int sz = parameterNames.size();
-        parameterValues.clear();
-        for(int i=0;i<sz;i++ ) {
-            parameterValues.add(  i, map.get( parameterNames.get(i)  ));
-        }
+        _setParameter(name, v);
         return this;
     }
     
+    public SqlQuery setParameters( Map map ) {
+        _setParameters(map);
+        return this;
+    }
     
     public SqlQuery setParameters( List params ) {
-        if(params==null) {
-            //do nothing and return it
-            return this;
-        }
-        
-        if(parameterNames!=null && parameterNames.size()>0){
-            if(parameterNames.size()!=params.size())
-                throw new IllegalStateException("Parameter count does not match");
-        }
-        int sz = params.size();
-        parameterValues.clear();
-        for(int i=0;i<sz;i++ ) {
-            parameterValues.add(  i, params.get(i) );
-        }
+        _setParameters(params);
         return this;
     }
-    //</editor-fold>
     
     public SqlQuery setFirstResult(int startRow) {
         this.firstResult = startRow;
@@ -221,36 +145,9 @@ public class SqlQuery {
         return maxResults;
     }
     
-    
-    /***
-     * Apply the correct statments. can be overridden
-     */
-    protected String getFixedSqlStatement() {
-        return statement;
-    }
-    
-    protected void fillParameters( PreparedStatement ps ) throws Exception {
-        
-        int sz = parameterValues.size();
-        for( int i=0; i<sz;i++) {
-            String name = null;
-            if(parameterNames!=null && parameterNames.size()>0) {
-                name = parameterNames.get(i);
-            }
-            int colIndex = i+1;
-            Object value = parameterValues.get(i);
-            parameterHandler.setParameter(ps,colIndex,value,name);
-        }
-    }
-    
-    public void setParameterHandler(ParameterHandler parameterHandler) {
-        this.parameterHandler = parameterHandler;
-    }
-
     public int getRowsFetched() {
         return rowsFetched;
     }
-    
     
     public Object getSingleResult() throws Exception {
         Connection conn = null;
@@ -260,7 +157,7 @@ public class SqlQuery {
             if(connection!=null)
                 conn = connection;
             else
-                conn = sqlManager.getConnection();
+                conn = sqlContext.getConnection();
             
             if(fetchHandler==null)
                 fetchHandler = new MapFetchHandler();
@@ -284,7 +181,7 @@ public class SqlQuery {
             
         } catch(Exception ex) {
             ex.printStackTrace();
-            throw new IllegalStateException(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         } finally {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
@@ -302,27 +199,9 @@ public class SqlQuery {
      * used when setting variables to a statement
      */
     public SqlQuery setVars( Map map ) {
-        this.vars = map;
-        this.statement = SqlUtil.substituteValues( this.origStatement, map );
-        //reparse the statement after parsing to update the parameter names
-        this.statement = SqlUtil.parseStatement(statement, parameterNames);        
+        _setVars(map);
         return this;
     }
     
-    public String getStatement() {
-        return statement;
-    }
-
-    public String getOriginalStatement() {
-        return origStatement;
-    }
-
-    public Map getVars() {
-        return vars;
-    }
-
-    public List<String> getParameterNames() {
-        return parameterNames;
-    }
     
 }

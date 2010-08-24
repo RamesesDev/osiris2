@@ -70,7 +70,7 @@ public class URLDirectory {
             }
             return (URL[])list.toArray(new URL[]{});
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new RuntimeException(ex);
         }
     }
     

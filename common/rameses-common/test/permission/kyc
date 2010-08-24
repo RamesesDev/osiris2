@@ -1,0 +1,6 @@
+customerinfo.create=Create New Customer Information
+customerinfo.photo=Upload Photo
+addresschange_rfc.create=Create RFC [Address]
+addresschange_rfc.approve=Approve RFC [Address] 
+customerinfo_rfc.create=Create RFC [Customer Info]
+customerinfo_rfc.approve=Approve RFC [Customer Info]

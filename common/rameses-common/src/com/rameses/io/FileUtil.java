@@ -38,7 +38,7 @@ public final class FileUtil {
             ois = new ObjectInputStream(fis);
             return ois.readObject();
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         } finally {
             try { fis.close(); } catch (Exception e) {;}
             try { ois.close(); } catch (Exception e) {;}
@@ -55,7 +55,7 @@ public final class FileUtil {
             oos.writeObject( o );
             oos.flush();
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         } finally {
             try { fos.close(); } catch (Exception e) {;}
             try { oos.close(); } catch (Exception e) {;}

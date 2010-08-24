@@ -92,7 +92,7 @@ public class QueryExecutor {
                 }
             }
             catch(Exception e) {
-                throw new IllegalStateException(e);
+                throw new RuntimeException(e);
             }
         }
         

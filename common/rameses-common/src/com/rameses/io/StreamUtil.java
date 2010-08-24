@@ -27,17 +27,17 @@ public final class StreamUtil {
             StringBuffer out = new StringBuffer();
             int i = 0;
             while( (i=is.read())!=-1) {
-                System.out.println((char)i);
                 out.append((char)i);
             }
             return  out.toString();
         }
         catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new RuntimeException(ex);
         }
         finally {
             try { is.close(); } catch(Exception ign){;}
         }
     }
+    
     
 }

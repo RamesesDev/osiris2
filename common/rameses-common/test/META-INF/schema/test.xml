@@ -1,0 +1,22 @@
+<schema>
+    
+     <element name="test" tablename="test1">
+        <field name="id" primary="true" default="TESTID"/>
+        <field name="name1" default="name1"/>
+        <link-field name="test2" ref="test2"/>
+        <link-field name="test3" ref="test3"/>
+    </element>
+     
+    <element name="test2" tablename="test2">
+        <field name="id" primary="true" mapfield="id"/>
+        <field name="name2" default="name2"/>
+    </element>
+
+    <element name="test3" tablename="test3">
+        <field name="id" primary="true" mapfield="id"/>
+        <field name="name3" default="name3"/>
+    </element>
+
+</schema>
+
+

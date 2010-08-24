@@ -30,7 +30,7 @@ public abstract class CacheProvider {
                 instance = (CacheProvider)iter.next();
             }
             if(instance==null)
-                throw new IllegalStateException("There are no Cache Providers installed");
+                throw new RuntimeException("There are no Cache Providers installed");
         }
         return instance;
     }

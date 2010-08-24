@@ -7,11 +7,15 @@
 
 package test.sql;
 
+import com.rameses.sql.SimpleDataSource;
+import com.rameses.sql.SqlContext;
+import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlQuery;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 import junit.framework.*;
 
 /**
@@ -20,19 +24,23 @@ import junit.framework.*;
  */
 public class SqlQueryTest extends TestCase {
     
+    private DataSource ds;
+    private SqlManager factory = SqlManager.getInstance();
+    
     public SqlQueryTest(String testName) {
         super(testName);
     }
-
+    
     protected void setUp() throws Exception {
+        ds = new SimpleDataSource("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/taxpayer", "root", null);
     }
-
+    
     protected void tearDown() throws Exception {
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testQuery() throws Exception {
-        TestSqlManager sm = new TestSqlManager();
+        SqlContext sm = factory.createContext( ds  );
         String sql = "select name from taxpayer where name like $P{name}";
         
         System.out.println("first query--------------");
@@ -51,7 +59,7 @@ public class SqlQueryTest extends TestCase {
         map.put("name", "ABALLE%");
         list = q.setParameters(map).getResultList();
         for(Object o :list) System.out.println(o);
-
+        
         System.out.println("third query - using list -------------");
         q = sm.createQuery(sql);
         List parms = new ArrayList();
@@ -60,10 +68,9 @@ public class SqlQueryTest extends TestCase {
         for(Object o :list) System.out.println(o);
         
     }
-
+    
     public void testAnotherQuery() throws Exception {
-        System.out.println("test basic query");
-        TestSqlManager sm = new TestSqlManager();
+        SqlContext sm = factory.createContext( ds  );
         SqlQuery q = sm.createQuery("select name,taxpayerno from taxpayer where name like ?");
         List list = new ArrayList();
         list.add( "ABALLE%");
@@ -72,7 +79,7 @@ public class SqlQueryTest extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testFetch() throws Exception {
-        TestSqlManager sm = new TestSqlManager();
+        SqlContext sm = factory.createContext( ds  );
         System.out.println("test fetch");
         SqlQuery q = sm.createQuery("select name from taxpayer");
         q.setFirstResult(0);
@@ -92,7 +99,7 @@ public class SqlQueryTest extends TestCase {
     }
     
     public void testFetchQueryByName() throws Exception {
-        TestSqlManager sm = new TestSqlManager();
+        SqlContext sm = factory.createContext( ds  );
         System.out.println("test fetch by name ---- customerlist --------");
         SqlQuery q = sm.createNamedQuery("customerlist");
         q.setMaxResults(10);

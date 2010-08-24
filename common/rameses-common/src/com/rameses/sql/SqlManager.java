@@ -1,7 +1,7 @@
 /*
- * SQLManager.java
+ * SqlUnitFactory.java
  *
- * Created on July 21, 2010, 8:04 PM
+ * Created on August 13, 2010, 2:08 PM
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -9,134 +9,88 @@
 
 package com.rameses.sql;
 
-import com.sun.jmx.remote.util.Service;
-import java.sql.Connection;
-import java.util.Iterator;
+import java.util.Map;
 import javax.sql.DataSource;
 
 /**
- * The sql manager ideally is unique per datasource.
- * however this behavior can be changed
+ * for caching Sql Units, this class must be extended.
+ * 
  */
-public class SqlManager {
+public abstract class SqlManager {
     
-    protected DataSource dataSource;
-    private Connection currentConnection;
-    private SqlCacheResourceHandler sqlCacheResourceHandler = new DefaultSqlCacheResourceHandler();
+    public abstract SqlConf getConf();
     
-    /** Creates a new instance of SQLManager */
-    public SqlManager(DataSource ds) {
-        this.dataSource = ds;
-    }
-    
-    public SqlManager() {;}
-
-    public void setDataSource(DataSource ds) {
-        this.dataSource = ds;
-    }
-    
-    public Connection openConnection() throws Exception {
-        if(dataSource==null)
-            throw new IllegalStateException("Datasource is null");
-        currentConnection = dataSource.getConnection();
-        return currentConnection;
-    }
-    
-    public void closeConnection() {
-        if(currentConnection==null) return;
-        try {
-            currentConnection.close();
+    public SqlUnit getParsedSqlUnit(String statement) {
+        String key = statement.hashCode()+"";
+        SqlUnit su = getConf().getCacheProvider().getCache(key);
+        if(su==null) {
+            su = new SqlUnit(statement);
+            getConf().getCacheProvider().putCache(key, su);
         }
-        catch(Exception ign){;}
-        currentConnection = null;
+        return su;    
+    }
+    
+    public SqlUnit getNamedSqlUnit(String name) {
+        int extIndex = name.lastIndexOf(".");
+        String unitName = name; 
+        //type is represnted in the extension part.
+        String type = name.substring( extIndex+1);
+
+        Map<String, SqlUnitProvider> providers = getConf().getSqlUnitProviders();
+
+
+        SqlUnit su = getConf().getCacheProvider().getCache(unitName);
+        if( su!=null) return su;
+        
+        //extension represents the type of Sql unit.
+        if(!providers.containsKey(type))
+            throw new RuntimeException("Sql unit factory error. There is no Sql Unit provider for type " + type );
+            
+        su = providers.get(type).getSqlUnit(unitName);
+        if(su==null)
+            throw new RuntimeException("Sql unit " + name + " is not found");
+        getConf().getCacheProvider().putCache(name, su);
+        return su;
     }
     
     
-    /**
-     * always create a new connection when requesting from SqlManager
-     */
-    public Connection getConnection() throws Exception {
-        if(dataSource==null)
-            throw new IllegalStateException("Datasource is null");
-        
-        if(currentConnection!=null && currentConnection.isClosed() ) 
-            currentConnection = null;
-        
-        if(currentConnection!=null) {
-            return currentConnection;
-        }    
-        return dataSource.getConnection();
-    }
+    private static SqlManager instance;
     
-    private SqlCache getSqlCache(String statement ) {
-        SqlCache sq = sqlCacheResourceHandler.getCache( statement );
-        if(sq==null) {
-            sq = new SqlCache(statement);
-            sqlCacheResourceHandler.storeCache( statement, sq );
+    public static SqlManager getInstance() {
+        if(instance==null) {
+            instance = new DefaultSqlManager(new SqlConf());
         }
-        return sq;
+        return instance;
     }
     
-    private SqlCache getNamedSqlCache(String name ) {
-        if(name.indexOf(".")<0) name = name + ".sql";
-        SqlCache sq = sqlCacheResourceHandler.getCache( name );
-        if( sq == null ) {
-            Iterator iter = Service.providers( SqlCacheProvider.class, Thread.currentThread().getContextClassLoader() );
-            while(iter.hasNext()) {
-                SqlCacheProvider sp = (SqlCacheProvider)iter.next();
-                if( sp.accept( name )) {
-                    sp.setSqlCacheResourceHandler( sqlCacheResourceHandler );
-                    sq = sp.createSqlCache(name);
-                    sqlCacheResourceHandler.storeCache(name, sq);
-                }
-            }
-        }
-        if(sq ==null)
-            throw new IllegalStateException("Sql Cache " + name + " is not found!");
-        return sq;
-    }
-    
-    
-    
-    public SqlQuery createQuery(String statement) {
-        if(sqlCacheResourceHandler==null)
-            throw new IllegalStateException("SqlCacheProvider must be provided");
+    public static class DefaultSqlManager extends SqlManager {
         
-        SqlCache sq = getSqlCache(statement);
-        return new SqlQuery(this,sq.getStatement(),sq.getParamNames());
-    }
-    
-    public SqlQuery createNamedQuery(String name) {
-        if(sqlCacheResourceHandler==null)
-            throw new IllegalStateException("SqlCacheProvider must be provided");
-        SqlCache sq = getNamedSqlCache(name);
-        return new SqlQuery( this, sq.getStatement(),sq.getParamNames());
-    }
-
-    public SqlExecutor createExecutor(String statement) {
-        if(sqlCacheResourceHandler==null)
-            throw new IllegalStateException("SqlCacheProvider must be provided");
-        SqlCache sq = getSqlCache(statement);
-        return new SqlExecutor(this,sq.getStatement(),sq.getParamNames());
+        private SqlConf conf = new SqlConf();
+        
+        public DefaultSqlManager(SqlConf c) {
+            conf = c;
+        }
+        public SqlConf getConf() {
+            return conf;
+        }
     }
 
-    public SqlExecutor createNamedExecutor( String name ) {
-        if(sqlCacheResourceHandler==null)
-            throw new IllegalStateException("SqlCacheProvider must be provided");
-        SqlCache sq = getNamedSqlCache(name);
-        return new SqlExecutor(this,sq.getStatement(),sq.getParamNames());    
-    }
     
-    public QueryExecutor createQueryExecutor(SqlQuery q, SqlExecutor e) {
-        return new QueryExecutor(q,e);
+    
+    public void destroy() {
+        getConf().destroy();
     }
 
-    public QueryExecutor createQueryExecutor() {
-        return new QueryExecutor();
+    
+    public SqlContext createContext() {
+        SqlContext sm = new SqlContext();
+        sm.setSqlManager(this);
+        return sm;
     }
     
-    public void setSqlCacheResourceHandler(SqlCacheResourceHandler sq) {
-        this.sqlCacheResourceHandler = sq;
+    public SqlContext createContext(DataSource ds) {
+        SqlContext sm = new SqlContext(ds);
+        sm.setSqlManager(this);
+        return sm;
     }
-    
 }

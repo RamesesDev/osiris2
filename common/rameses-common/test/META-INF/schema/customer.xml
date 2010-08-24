@@ -1,0 +1,31 @@
+<schema>
+     <element name="customer" tablename="tblcustomer">
+        <field name="firstname" type="string" required="true" primary="true"/>
+        <field name="lastname" type="string"/>
+        <field name="age" type="integer" required="true"/>
+        <field name="salary" type="decimal" required="true"/>
+        <link-field name="address1" ref="address" exclude="objid|xxx.*"/>
+        <link-field name="address2" ref="address" exclude="objid"/>
+        <link-field name="option" ref="option" prefixed="false"/>
+     </element>
+     
+     <element name="address">
+         <field name="objid" primary="true"/>
+         <field name="street" type="string" required="true"/>
+         <field name="city" type="string" />
+         <field name="province" type="string" />
+         <link-field name="xxx" ref="suboption"/>
+     </element>
+     
+     <element name="option">
+        <field name="option1"/>
+        <field name="option2"/>
+        <link-field name="suboption" ref="suboption"/>
+     </element>
+     
+     <element name="suboption">
+        <field name="option1"/>
+        <field name="option2"/>
+     </element>
+     
+</schema>
