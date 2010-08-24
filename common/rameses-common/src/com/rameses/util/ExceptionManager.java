@@ -1,5 +1,5 @@
 /*
- * ErrorManager.java
+ * ExceptionManager.java
  *
  * Created on August 24, 2010, 4:35 PM
  *
@@ -16,33 +16,42 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public final class ErrorManager {
+public final class ExceptionManager {
     
-    private static ErrorManager instance;
+    private static ExceptionManager instance;
     
-    public static ErrorManager getInstance() {
+    public static ExceptionManager getInstance() {
         if(instance==null) {
-            instance = new ErrorManager();
+            instance = new ExceptionManager();
         }
         return instance;
     }
     
-    private List<ErrorHandler> errorHandlers;
+    private List<ExceptionHandler> errorHandlers;
     
     
     public boolean handleError(Exception e) {
         if(errorHandlers==null) {
             errorHandlers = new ArrayList();
-            Iterator<ErrorHandler> iter = Service.providers(ErrorHandler.class, Thread.currentThread().getContextClassLoader());
+            Iterator<ExceptionHandler> iter = Service.providers(ExceptionHandler.class, Thread.currentThread().getContextClassLoader());
             while(iter.hasNext()) {
                 errorHandlers.add(iter.next());
             }
             Collections.sort(errorHandlers);
         }
-        for(ErrorHandler eh: errorHandlers) {
+
+        for(ExceptionHandler eh: errorHandlers) {
             if( eh.accept(e) ) return true;
         }
         return false;
+    }
+    
+    public Exception getOriginal(Exception ex) {
+        Exception t = ex;
+        while( t.getCause() != null && (t.getCause() instanceof Exception) ) {
+            t = (Exception) t.getCause();
+        }
+        return t;
     }
     
     
