@@ -83,18 +83,22 @@ public class ReadPersistenceHandler implements SchemaHandler {
     
     public void processField(SimpleField sf, String refname, Object value) {
         if(!stack.empty()) {
+            String sname = sf.getName();
             String tbname = (String)sf.getElement().getProperties().get(TABLENAME);
             //if this has no table name, exclude the excluded fields.
-            String sname = sf.getName();
             if(tbname!=null && tbname.trim().length()>0) {
                 if(status.isExcludeField(sf)) {
                     removeFields.add(sf.getName());
                 }
             }
             
+            if(tbname==null || tbname.trim().length()==0) {
+                sname = refname;
+            }
+            
             SqlQuery sq = stack.peek();
             if( sq.getParameterNames().indexOf(sf.getName())>=0) {
-                sq.setParameter( sf.getName(), value );
+                sq.setParameter( sname , value );
             }
             
         }

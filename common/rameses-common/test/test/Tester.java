@@ -61,6 +61,23 @@ public class Tester extends TestCase {
          */
     }
 
+    public void testHashCode() {
+
+        String s1 = "abcdefghijklmnopqrstuvwxyz";
+        String s2 = "a12d34g56j78m9!p@#s$%v^&y*A";
+
+        // compare hash codes
+        System.out.println( "String 1: " + s1 + " s1.hashCode(): " + s1.hashCode() );
+        System.out.println( "String 2: " + s2 + " s2.hashCode(): " + s2.hashCode() );
+        System.out.println( "Equals: " + ( s1.equals( s2 ) ) + " HashCode equals: " + ( s1.hashCode() == s2.hashCode() ) );
+    }
+
     
+    public void testCode() {
+        String f1 = "ABC_MT817777_000123X";
+        String f2 = "ABC_MT817777_000124X";
+        System.out.println("code1->" + f1.hashCode());
+        System.out.println("code2->" + f2.hashCode());
+    }
     
 }

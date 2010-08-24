@@ -8,12 +8,12 @@
 package test.schema;
 
 import com.rameses.persistence.CreatePersistenceHandler;
+import com.rameses.persistence.ReadPersistenceHandler;
 import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaScanner;
 import com.rameses.schema.SchemaValidationHandler;
-import com.rameses.persistence.ReadPersistenceHandler;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
@@ -123,54 +123,33 @@ public class SchemaTest extends TestCase {
     }
     
     
-     public void xtestRead() throws Exception {
+    public void testRead() throws Exception {
         Schema schema = mgr.getSchema( "sendout" );
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
 
         assertNotNull(schema);
         ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sq.createContext());
-        
         SchemaScanner sc = mgr.newScanner();
 
         Map map = mgr.createMap( "sendout" );
-        map.put("objid", "12345");
+        map.put("remote_address2_city", "capitol city 2");
+        map.put("remote_address1_city", "bacguio city 1");
         sc.scan(schema, map, handler );
         
         SqlQuery se = null;
         Queue<SqlQuery> q = handler.getQueue();
         while(!q.isEmpty()) {
-            se = q.remove();
+            se=q.remove();
+            System.out.println(se.getStatement());
             int i = 0;
-            //for(String s: se.getParameterNames()) {
-                //System.out.println(s);
-                //i++;
-            //}
-        }
-        
-        /*
-        Map data = new HashMap();
-        data.put("sender", "nazareno, elmo");
-        data.put("receiver", "flores, worgie");
-        data.put("objid", "SND0001");
-        data.put("option_option1", "option1");
-        data.put("option_option2", "option2");
-        
-        sc.scan(data);
-        Queue<ExecutionUnit> q = handler.getQueue();
-        while(! q.isEmpty() ) {
-            ExecutionUnit eu = q.remove();
-            CrudModel c = eu.getCrudModel();
-            SqlUnit su = CrudSqlBuilder.getInstance().getCreateSqlUnit(c);        
-            System.out.println("*******************");
-            System.out.println("statement: " + su.getStatement());
-            for(Object s: su.getParamNames()) {
-                System.out.println("param->"+s+ " "+eu.getData().get(s));
+            for(String s: se.getParameterNames()) {
+                System.out.println(s + "=" + se.getParameterValues().get(i));
+                i++;
             }
         }
-         */
-    }
-    
+        
+    }    
      
     public void xtestCrudStatement2() throws Exception {
         SqlManager sm = SqlManager.getInstance();

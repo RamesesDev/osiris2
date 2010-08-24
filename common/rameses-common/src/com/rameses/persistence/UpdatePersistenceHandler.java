@@ -81,14 +81,17 @@ public class UpdatePersistenceHandler implements SchemaHandler {
     
     public void processField(SimpleField sf, String refname, Object value) {
         if(!stack.empty()) {
+            String sname = sf.getName();
+
             String tbname = (String)sf.getElement().getProperties().get(TABLENAME);
             //if this has no table name, exclude the excluded fields.
             if(tbname==null || tbname.trim().length()==0) {
                 if(status.isExcludeField(sf)) return;
+                sname = refname;
             }
-            String sname = sf.getName();
+            
             SqlExecutor se = stack.peek();
-            se.setParameter( sf.getName(), value );
+            se.setParameter( sname, value );
         }
     }
     

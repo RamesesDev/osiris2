@@ -38,13 +38,16 @@ public class MapBuilderHandler implements SchemaHandler {
         this.status = status;
     }
     
-    //do not include fields that are excluded.
+    //do not include fields that are excluded. We need to intelligently
+    //check also that a null default value cannot displace a non-empty value
     public void processField(SimpleField f, String refname,  Object value) {
         if( status.isExcludeField( f )) return;
         
         if(!stack.isEmpty()) {
             Map map = stack.peek();
             Object defaultValue = f.getProperties().get("default");
+            if( defaultValue==null && map.containsKey(refname)) return;
+            
             map.put( refname, defaultValue );
         }
     }

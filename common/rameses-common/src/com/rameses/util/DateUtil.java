@@ -114,4 +114,10 @@ public final class DateUtil {
         cal.add( itype, i );
         return cal.getTime();
     }
+    
+    
+    //Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET)) / (60 * 1000)
+    
+    
+    
 }

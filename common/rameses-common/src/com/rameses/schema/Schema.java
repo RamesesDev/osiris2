@@ -13,10 +13,7 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 
-/**
- *
- * @author elmo
- */
+
 public class Schema implements Serializable {
     
     //usually this is the first element or the element with the same schema name.
@@ -25,6 +22,9 @@ public class Schema implements Serializable {
     private String name;
     
     private Map<String,SchemaElement> elements = new Hashtable();
+
+    private Map<String,SchemaField> schemaFields = new Hashtable();
+    
     
     /** Creates a new instance of Schema */
     public Schema(String n) {
@@ -68,6 +68,57 @@ public class Schema implements Serializable {
 
     public String getName() {
         return name;
+    }
+    
+    /**
+     * we follow path : element/fieldname
+     * example: order/customer
+     */
+    private SchemaField _findField( SchemaElement element, String fieldName ) {
+        SchemaField retVal = null;
+        for(SchemaField sf : element.getFields() ) {
+            if(sf instanceof SimpleField) {
+                if(sf.getName().equals(fieldName)) {
+                    retVal = sf;
+                    break;
+                }
+            }
+            else if(sf instanceof LinkField) {
+                LinkField lf = (LinkField)sf;
+                if( (!lf.isPrefixed()) ||
+                        (lf.isPrefixed() && fieldName.startsWith(lf.getName()))) {
+                    String ref = lf.getRef();
+                    if(ref==null)
+                        throw new RuntimeException("Linkfield ref must not be null for element " +element.getName() + "/" + fieldName);
+                    
+                    SchemaElement se = getElement(ref);
+                    if(se==null)
+                        throw new RuntimeException("Linked ref element " +ref + " not found");
+                    
+                    //remove the prefix from the field name.
+                    if(lf.isPrefixed() )
+                        fieldName = fieldName.substring( lf.getName().length()+1 );
+                    retVal = _findField( se, fieldName );
+                    if(retVal!=null) break;
+                }
+            }
+        }    
+        return retVal;
+    }
+    
+    
+    public SchemaField findField( String path ) {
+        if(schemaFields.containsKey(path)) {
+            return schemaFields.get(path);
+        }
+
+        String elementName = path.substring(0, path.indexOf("/"));
+        String fieldName = path.substring(path.indexOf("/")+1 );
+        SchemaElement element = getElement(elementName);
+        SchemaField sf = _findField( element, fieldName );
+        if(sf==null) throw new RuntimeException("schema field " + path + " does not exist!");
+        schemaFields.put(path, sf);
+        return sf;
     }
     
     

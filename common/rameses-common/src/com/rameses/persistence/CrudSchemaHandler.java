@@ -99,11 +99,22 @@ public class CrudSchemaHandler implements SchemaHandler {
      */
     public void processField(SimpleField sf, String refname, Object value) {
         if( status.isExcludeField(sf)) return;
+        
+        
+        String mapfield = sf.getName();
+        
+        //this is very important
+        //if this has no table name, exclude the excluded fields and use the refname instead
+        String tbname = (String)sf.getElement().getProperties().get(TABLENAME);
+        if(tbname==null || tbname.trim().length()==0) {
+            if(status.isExcludeField(sf)) return;
+            mapfield = refname;
+        }
+        
         String fieldName = (String) sf.getProperties().get(DBFIELD);
         if(fieldName==null || fieldName.trim().length()==0) {
-            fieldName = sf.getName();
+            fieldName = mapfield;
         }
-        String mapfield = sf.getName();
         
         CrudField cf = new CrudField();
         String sprimary = (String)sf.getProperties().get(PRIMARY);

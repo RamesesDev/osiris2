@@ -52,15 +52,18 @@ public class SchemaXmlParser extends DefaultHandler{
             ParserUtil.loadAttributes(field,field.getProperties(), attributes, resolver);
             currentElement.addSchemaField(field);
         }
-        else if(qName.equals("link-field")) {
+        else if(qName.equals("link-field") || qName.equals("link")) {
             LinkField field = new LinkField();
             ParserUtil.loadAttributes(field,field.getProperties(), attributes, resolver);
             currentElement.addSchemaField(field);
         }
-        else if(qName.equals("complex-field")) {
+        else if(qName.equals("complex")) {
             ComplexField field = new ComplexField();
             ParserUtil.loadAttributes(field,field.getProperties(), attributes, resolver);
             currentElement.addSchemaField(field);
+        }
+        else {
+            if(!qName.equals("schema")) System.out.println("schema " + qName + " is not supported"); 
         }
     }
 
