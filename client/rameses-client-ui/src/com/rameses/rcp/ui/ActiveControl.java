@@ -4,7 +4,7 @@ package com.rameses.rcp.ui;
  *
  * @author jaycverg
  */
-public interface Containable {
+public interface ActiveControl {
     
     ControlProperty getControlProperty();
     

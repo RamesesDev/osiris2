@@ -30,6 +30,8 @@ public class TaskManager {
     }
     
     public void stop() {
+        if ( !started ) return;
+        
         mainThread.cancel();
         synchronized(activeThreads) {
             for(TaskThread tt: activeThreads) {

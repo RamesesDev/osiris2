@@ -2,6 +2,12 @@
 <workunit>
     <invokers>
         <invoker folderid="/menu/file" caption="Controls Test"/>
+        
+        <!-- form actions -->
+        <invoker type="actions" action="_close" caption="Close" immediate="true"/>
+        <invoker type="actions" action="edit" caption="Edit"/>
+        <invoker type="actions" action="print" caption="Print"/>
+        <invoker type="actions" action="btnToggle" caption="Enable/Disable Controls" immediate="true"/>
     </invokers>
     
     <code>
@@ -14,6 +20,7 @@
         public class ControlsTestController  {
 
             def entity = [ civilStat: 'MARRIED' ];
+            def lnameCaption = 'Lastname (from bean)';
             
             int intNum;
             double doubleNum;
@@ -27,7 +34,7 @@
             
             def file;
             
-            def lookupHandler = new Opener(name: 'test-client:sampleLookup');
+            def lookupHandler = new Opener(name: 'test-client:sampleLookup', modal: false);
             
             void btnShowInput() {
                 MsgBox.alert("""
@@ -43,22 +50,15 @@
             void btnToggle() {
                 readonly = !readonly;
             }
-            
-            def actions = [
-                new Action(name: '_close', caption: 'Close', immediate: true),
-                new Action(name: 'edit', caption: 'Edit'),
-                new Action(name: 'print', caption: 'Print'),
-                new Action(name: 'btnToggle', caption: 'Enable/Disable Controls', immediate: true)
-            ];
-            
+                        
             void testPost() {
                 MsgBox.alert("Posting $entity.testPost");
             }
             
             void save() {
-            
+                throw new Exception('session: Session Expired Error');
             }
-            
+
             @Close
             def close() {
                 MsgBox.alert('Closing');

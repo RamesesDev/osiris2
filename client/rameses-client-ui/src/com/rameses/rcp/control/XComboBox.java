@@ -9,7 +9,7 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -27,7 +27,7 @@ import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-public class XComboBox extends JComboBox implements UIInput, ItemListener, Validatable, Containable {
+public class XComboBox extends JComboBox implements UIInput, ItemListener, Validatable, ActiveControl {
     
     private Binding binding;
     private int index;

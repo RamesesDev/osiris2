@@ -1,4 +1,6 @@
 package test;
+import groovy.lang.GroovyShell;
+import java.sql.Timestamp;
 import junit.framework.*;
 
 /*
@@ -18,7 +20,7 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    public void testHello() throws Exception {
+    public void test() {
 
     }
     

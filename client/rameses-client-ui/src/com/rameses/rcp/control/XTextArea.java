@@ -3,7 +3,7 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.support.TextDocument;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -19,7 +19,7 @@ import javax.swing.JTextArea;
  * @author Windhel
  */
 
-public class XTextArea extends JTextArea implements UIInput, Validatable, Containable {
+public class XTextArea extends JTextArea implements UIInput, Validatable, ActiveControl {
     
     private Binding binding;
     private int index;

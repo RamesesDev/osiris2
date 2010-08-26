@@ -24,6 +24,10 @@ public class OsirisWebBean implements Serializable {
         return WebContext.getExternalContext().getRequestContextPath();
     }
     
+    public OsirisUserPrincipal getUser() {
+        return (OsirisUserPrincipal) WebContext.getUserPrincipal();
+    }
+    
     public String getUsername() {
         Principal p = WebContext.getUserPrincipal();
         if ( p != null )

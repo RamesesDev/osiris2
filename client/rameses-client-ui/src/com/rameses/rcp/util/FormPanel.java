@@ -1,5 +1,5 @@
 package com.rameses.rcp.util;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.util.ValueUtil;
@@ -56,11 +56,11 @@ public class FormPanel extends JPanel {
     protected void addImpl(Component comp, Object constraints, int index) {
         ItemPanel p = null;
         //check if it is a containable component
-        if ( comp instanceof Containable ) {
+        if ( comp instanceof ActiveControl ) {
             p = new ItemPanel(comp);
         } else if ( comp instanceof JScrollPane ) {
             Component view = ((JScrollPane) comp).getViewport().getView();
-            if ( view instanceof Containable ) {
+            if ( view instanceof ActiveControl ) {
                 p = new ItemPanel(view, comp);
             }
         }
@@ -121,7 +121,7 @@ public class FormPanel extends JPanel {
         public ItemPanel(Component editor, Component container) {
             this.editor = editor;
             this.editorWrapper = container;
-            Containable con = (Containable) editor;
+            ActiveControl con = (ActiveControl) editor;
             property = con.getControlProperty();
             
             label = new JLabel();

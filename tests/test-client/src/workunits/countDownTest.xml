@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Count Down Test" action="init"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.rcp.framework.ClientContext;
+                
+        public class CountDownTestController  {
+        
+            @Binding
+            def binding;
+            
+            def timer = new Counter(this);
+            
+            void init() {
+                timer.pause();
+                ClientContext.currentContext.taskManager.addTask( timer );
+            }
+                                                           
+        }
+        
+        public class Counter extends CountDownTimer {
+            
+            def caller;
+        
+            Counter(def con) { 
+                caller = con; 
+            }
+            
+            public void onProgress() { caller?.binding?.refresh(); }
+        
+            public long getMaxSeconds() { 
+                return 5;
+            }
+            
+            public void onTimeout() {
+                MsgBox.alert('Time is up.');
+                caller.binding.fireNavigation('_close');
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.binding.CountDownPage"/>
+    </pages>
+</workunit>

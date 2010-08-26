@@ -19,6 +19,8 @@ public class Opener {
     private Map params = new HashMap();
     private String target;
     private String outcome;
+    private String permission;
+    private boolean modal = true;
     
     private UIController controller;
     private UIController caller;
@@ -104,6 +106,22 @@ public class Opener {
 
     public void setCaller(UIController caller) {
         this.caller = caller;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
+    public boolean isModal() {
+        return modal;
+    }
+
+    public void setModal(boolean modal) {
+        this.modal = modal;
     }
     
 }

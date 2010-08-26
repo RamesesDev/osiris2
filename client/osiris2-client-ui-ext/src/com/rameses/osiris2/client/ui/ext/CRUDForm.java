@@ -21,8 +21,8 @@ public abstract class CRUDForm extends FormViewController {
     public CRUDForm() {
     }
     
-    public abstract String getEntityClass();
-    public abstract Object getEntityId();
+    public String getEntityClass(){ return ""; }
+    public Object getEntityId(){ return null; }
     
     public String getUserName() {
         SessionContext session = OsirisContext.getSession();

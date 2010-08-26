@@ -8,7 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.util.UIControlUtil;
@@ -22,7 +22,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
 
-public class XRadio extends JRadioButton implements UIInput, ItemListener, Containable {
+public class XRadio extends JRadioButton implements UIInput, ItemListener, ActiveControl {
     
     private Binding binding;
     private String[] depends;

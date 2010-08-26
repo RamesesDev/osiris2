@@ -33,7 +33,7 @@
                 getColumns: {
                     return [
                         new Column(name: "rownum", primary: true, width: 30),
-                        new Column(name: "item.name", caption: "Name", editable: true, required: true),
+                        new Column(name: "item.name", caption: "Name", editableWhen: "#{item.name == null}", required: true),
                         new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
                         new Column(name: "item.address", caption: "Address", editable: true, required: true, type: "lookup", handler: "test-client:addressLookup"),
                         new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date", editable: true),
@@ -43,7 +43,7 @@
                 }
 
             ] as SubListModel;
-
+            
             def data = [
                 [name:"11", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50], 
                 [name:"12", address:"CEBU CITY", single: null, date: new Date(), balance: 1000], 

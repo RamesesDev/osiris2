@@ -1,7 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.util.UIControlUtil;
@@ -16,7 +16,7 @@ import javax.swing.JCheckBox;
  *
  * @author jaycverg
  */
-public class XCheckBox extends JCheckBox implements UIInput, Containable {
+public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     
     private Binding binding;
     private String[] depends;

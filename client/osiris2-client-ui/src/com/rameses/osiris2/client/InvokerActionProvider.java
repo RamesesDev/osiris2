@@ -5,14 +5,15 @@ import com.rameses.osiris2.Invoker;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.rcp.common.Action;
 import com.rameses.rcp.framework.ActionProvider;
+import com.rameses.rcp.framework.UIController;
+import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class InvokerActionProvider implements ActionProvider {
     
-    public InvokerActionProvider() {
-        
-    }
+    public InvokerActionProvider() {}
     
     public boolean hasItems(String category, Object context) {
         List list = OsirisContext.getSession().getInvokers( category );
@@ -37,7 +38,7 @@ public class InvokerActionProvider implements ActionProvider {
                     for(Object ff: app.getFolders(pf)) {
                         Folder f = (Folder)ff;
                         if(f.getInvoker()!=null) {
-                            InvokerAction a = new InvokerAction(f.getInvoker(), context);
+                            Action a = createAction(f.getInvoker(), context);
                             if(f.getParent()!=null ) a.setCategory(f.getParent().getCaption());
                             actions.add(a);
                         }
@@ -51,7 +52,7 @@ public class InvokerActionProvider implements ActionProvider {
                 for(Object o: items) {
                     Folder f = (Folder)o;
                     if(f.getInvoker()!=null) {
-                        InvokerAction a = new InvokerAction(f.getInvoker(), context);
+                        Action a = createAction(f.getInvoker(), context);
                         if(f.getParent()!=null ) a.setCategory(f.getParent().getCaption());
                         actions.add(a);
                     }
@@ -61,28 +62,51 @@ public class InvokerActionProvider implements ActionProvider {
         return actions;
     }
     
-    public static class InvokerAction extends Action {
-        private Invoker invoker;
-        private Object context;
-        
-        public InvokerAction(Invoker invoker,Object context) {
-            super(invoker.getName()==null? invoker.getCaption()+"":invoker.getName());
-            super.setCaption(invoker.getCaption());
-            super.setName( invoker.getAction() );
-            if(invoker.getIndex()!=null) {
-                super.setIndex(invoker.getIndex());
+    public List<Action> getActionsByType(String type, UIController controller) {
+        Object context = null;
+        if ( controller != null ) {
+            context = controller.getCodeBean();
+        }
+        List<Invoker> invList = InvokerUtil.lookup(type, context);
+        List<Action> actions = new ArrayList();
+        for(Invoker inv: invList) {
+            if ( controller instanceof WorkUnitUIController ) {
+                String wuId = controller.getName();
+                if ( !wuId.equals(inv.getWorkunitid()) ) {
+                    continue;
+                }
             }
-            
-            super.setIcon((String)invoker.getProperties().get("icon"));
-            this.invoker = invoker;
-            this.context = context;
+            actions.add(createAction(inv, context));
+        }
+        return actions;
+    }
+    
+    private Action createAction(Invoker inv,Object context) {
+        Action a = new Action( inv.getName()==null? inv.getCaption()+"":inv.getName() );
+        
+        a.setName( inv.getAction() );
+        a.setCaption(inv.getCaption());
+        if(inv.getIndex()!=null) {
+            a.setIndex(inv.getIndex());
         }
         
-        public Object doAction(Object context) {
-            InvokerUtil.invoke(invoker, null);
-            return null;
+        Map invProps = inv.getProperties();
+        a.setIcon((String)invProps.get("icon"));
+        a.setImmediate( "true".equals(invProps.get("immediate")+"") );
+        a.setUpdate( "true".equals(invProps.get("update")+"") );
+        a.setVisibleWhen( (String) invProps.get("visibleWhen") );
+        
+        String mnemonic = (String) invProps.get("mnemonic");
+        if ( !ValueUtil.isEmpty(mnemonic) ) {
+            a.setMnemonic(mnemonic.charAt(0));
         }
         
+        Object tooltip = invProps.get("tooltip");
+        if ( !ValueUtil.isEmpty(tooltip) ) {
+            a.setTooltip(tooltip+"");
+        }
+        
+        return a;
     }
     
 }

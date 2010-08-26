@@ -14,7 +14,10 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="formPanel1" min="-2" pref="366" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="xButton1" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="formPanel1" alignment="1" min="-2" pref="366" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace pref="22" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -24,7 +27,9 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="formPanel1" min="-2" pref="154" max="-2" attributes="0"/>
-              <EmptySpace pref="34" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="xButton1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -87,5 +92,11 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="com.rameses.rcp.control.XButton" name="xButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Confirm"/>
+        <Property name="name" type="java.lang.String" value="launchSecond"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

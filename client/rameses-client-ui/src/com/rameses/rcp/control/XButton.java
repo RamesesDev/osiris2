@@ -1,6 +1,6 @@
 package com.rameses.rcp.control;
 
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.util.UICommandUtil;
 import com.rameses.rcp.framework.Binding;
@@ -19,7 +19,7 @@ import javax.swing.JButton;
  *
  * @author jaycverg
  */
-public class XButton extends JButton implements UICommand, ActionListener, Containable {
+public class XButton extends JButton implements UICommand, ActionListener, ActiveControl {
     
     private int index;
     private String[] depends;

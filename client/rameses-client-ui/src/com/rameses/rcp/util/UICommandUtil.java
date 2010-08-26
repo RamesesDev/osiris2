@@ -4,6 +4,8 @@ import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.common.MethodResolver;
+import com.rameses.util.BusinessException;
+import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.JComponent;
@@ -52,7 +54,7 @@ public class UICommandUtil {
             String action = command.getActionName();
             if ( action != null ) {
                 if ( !action.startsWith("_")) {
-                    outcome = resolver.invoke(binding.getBean(), command.getName(), null, null);
+                    outcome = resolver.invoke(binding.getBean(), action, null, null);
                 } else {
                     outcome = action;
                 }
@@ -65,21 +67,26 @@ public class UICommandUtil {
                     handler.navigate(navPanel, command, outcome);
                 }
             }
-        } catch(Exception e) {
-            e.printStackTrace();
-            ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
+        } catch(Exception ex) {
+            Exception e = ExceptionManager.getInstance().getOriginal(ex);
             
+            if ( !ExceptionManager.getInstance().handleError(e) ) {
+                if ( !(ex instanceof BusinessException) ) {
+                    ex.printStackTrace();
+                }
+                ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
+            }
         }
     }
     
-    private static void validate(UICommand command, Binding binding) {
+    private static void validate(UICommand command, Binding binding) throws BusinessException {
         if ( binding == null ) return;
         if ( !command.isUpdate() && command.isImmediate() ) return;
         
         ActionMessage am = new ActionMessage();
         binding.validate(am);
         if ( am.hasMessages() ) {
-            throw new IllegalStateException(am.toString());
+            throw new BusinessException(am.toString());
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.rameses.osiris2.web;
 
 import com.rameses.client.updates.UpdateCenter;
+import com.rameses.common.CacheProvider;
 import com.rameses.osiris2.AppContext;
-import com.rameses.util.CacheProvider;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;

@@ -121,6 +121,11 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         for (Opener opener : openers) {
             addOpener(opener);
         }
+        
+        //register subBindings
+        List<Binding> connectorBindings = bindingConnector.getSubBindings();
+        connectorBindings.clear();
+        connectorBindings.addAll(getSubBindings());
     }
     
     private void addOpener(Opener opener) {

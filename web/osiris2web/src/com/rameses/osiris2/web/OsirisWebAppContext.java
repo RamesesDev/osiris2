@@ -4,6 +4,8 @@ import com.rameses.osiris2.AppContext;
 import com.rameses.osiris2.CodeProvider;
 import com.rameses.osiris2.ExpressionProvider;
 import com.rameses.osiris2.SessionContext;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -14,6 +16,9 @@ public class OsirisWebAppContext extends AppContext {
     private ClassLoader classLoader;
     private ExpressionProvider exprProvider = new WebExpressionProvider();
     private CodeProvider codeProvider;
+    
+    private Map properties = new HashMap();
+    
     
     /** Creates a new instance of OsirisWebAppContext */
     public OsirisWebAppContext(ClassLoader loader) {
@@ -36,6 +41,10 @@ public class OsirisWebAppContext extends AppContext {
 
     public SessionContext createSession() {
         return new OsirisWebSessionContext(this);
+    }
+
+    public Map getProperties() {
+        return properties;
     }
         
 }

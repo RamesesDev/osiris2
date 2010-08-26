@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Controls Test 2"/>
+        
+        <!-- form actions -->
+        <invoker type="actions" action="_close" caption="Close" immediate="true"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class ControlsTestController  {
+
+            def entity = [ civilStat: 'MARRIED' ];
+            def lnameCaption = 'Lastname (from bean)';
+            
+            int intNum;
+            double doubleNum;
+            BigDecimal decimalNum = 10.1;
+            
+            def checkBox1;
+            def checkBox2;
+            
+            def item = [name:"Minglanilla"];
+            def itemList = [[name:"Cebu City"], [name:"Minglanilla"], [name:"Naga"]];
+            
+            def file;
+            
+            def lookupHandler = new Opener(name: 'test-client:sampleLookup', modal: false);
+            
+            void btnShowInput() {
+                MsgBox.alert("""
+                    intNum = $intNum
+                    doubleNum = $doubleNum
+                    decimalNum = $decimalNum
+                    entity = $entity
+                """);
+            }
+        
+            boolean readonly;
+            
+            void btnToggle() {
+                readonly = !readonly;
+            }
+                        
+            void testPost() {
+                MsgBox.alert("Posting $entity.testPost");
+            }
+            
+            void save() {
+            
+            }
+            
+            @Close
+            def close() {
+                MsgBox.alert('Closing');
+            }
+           
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.ControlsTestPage"/>
+    </pages>
+</workunit>

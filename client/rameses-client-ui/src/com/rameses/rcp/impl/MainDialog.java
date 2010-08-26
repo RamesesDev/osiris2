@@ -70,7 +70,6 @@ public class MainDialog implements MainWindow {
             }
         }
         
-        ClientContext.getCurrentContext().getTaskManager().stop();
         dialog.dispose();
     }
     

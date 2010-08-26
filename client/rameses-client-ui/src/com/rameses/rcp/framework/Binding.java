@@ -15,6 +15,7 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.MethodResolver;
+import com.rameses.util.BusinessException;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -145,6 +146,10 @@ public class Binding {
         }
     }
     
+    /**
+     *@description
+     *  refreshes all UIControls in this binding
+     */
     public void refresh() {
         refresh(null);
     }
@@ -154,10 +159,11 @@ public class Binding {
      *  accepts regex expression of filednames
      *  sample usage: refresh("field1|field2|entity.*")
      */
-    public void refresh(String fieldRegEx) {
+    public void refresh(String regEx) {
         Set<UIControl> refreshed = new HashSet();
         for( UIControl uu : controls ) {
-            if ( fieldRegEx != null && !uu.getName().matches(fieldRegEx) ){
+            String name = uu.getName();
+            if ( regEx != null && name != null && !name.matches(regEx) ){
                 continue;
             }
             
@@ -167,7 +173,7 @@ public class Binding {
         refreshed = null;
         
         for (BindingListener bl : listeners) {
-            bl.refresh(fieldRegEx);
+            bl.refresh(regEx);
         }
     }
     
@@ -306,7 +312,7 @@ public class Binding {
             }
             
         } catch(Exception e) {
-            throw new IllegalStateException(e);
+            e.printStackTrace();
         }
         
         return true;
@@ -336,6 +342,7 @@ public class Binding {
      * bean action (emulating a UICommand action) that can
      * trigger a navigation process
      */
+    @Deprecated
     public void fireAction(String action) {
         if ( ValueUtil.isEmpty(action) ) return;
         try {
@@ -347,16 +354,48 @@ public class Binding {
             } else {
                 outcome = action;
             }
+            fireNavigation(outcome);
             
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+    
+    /**
+     * fireNavigation (immediate is false [validates form])
+     */
+    public void fireNavigation(Object outcome) {
+        fireNavigation(outcome, false);
+    }
+    
+    /**
+     * fireNavigation can be used to programmatically trigger the navigation handler
+     * from the controller's code bean
+     */
+    public void fireNavigation(Object outcome, boolean immediate) {
+        UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
+        try {
+            formCommit();
+            if ( !immediate ) {
+                ActionMessage am = new ActionMessage();
+                validate(am);
+                if ( am.hasMessages() ) {
+                    throw new BusinessException(am.toString());
+                }
+            }
+            
+            ClientContext ctx = ClientContext.getCurrentContext();
             NavigationHandler handler = ctx.getNavigationHandler();
-            UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
             NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
             if ( handler != null ) {
                 handler.navigate(navPanel, null, outcome);
             }
             
         } catch(Exception e) {
-            throw new IllegalStateException(e);
+            if ( !(e instanceof BusinessException) ) {
+                e.printStackTrace();
+            }
+            ClientContext.getCurrentContext().getPlatform().showError(panel, e);
         }
     }
     
@@ -371,6 +410,13 @@ public class Binding {
             Component comp = (Component) c;
             comp.requestFocus();
         }
+    }
+    
+    /**
+     * returns the UIControl w/ the specified name
+     */
+    public UIControl find(String name) {
+        return controlsIndex.get(name);
     }
     //</editor-fold>
     
@@ -406,8 +452,8 @@ public class Binding {
         
         closeMethods = new ArrayList();
         ClassDefUtil cdu = ClassDefUtil.getInstance();
-        Method[] marr = cdu.findAnnotatedMethods(bean.getClass(), Close.class);
-        for (Method m: marr) {
+        Method[] cm = cdu.findAnnotatedMethods(bean.getClass(), Close.class);
+        for (Method m: cm) {
             closeMethods.add( m.getName() );
         }
     }

@@ -21,6 +21,10 @@ import java.util.Map;
  */
 public final class OsirisTestPlatform {
     
+    public static void setEnv(Map env) {
+        ClientContext.getCurrentContext().getHeaders().putAll(env);
+    }
+    
     public static void runTest(Map map) throws Exception {
         URL.setURLStreamHandlerFactory(new ResURLStreamHandlerFactory(Thread.currentThread().getContextClassLoader()));
         OsirisAppLoader loader = new OsirisAppLoader();

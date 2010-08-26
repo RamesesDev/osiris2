@@ -36,7 +36,6 @@
                 </library>
                 <library files="1">
                     <file>${libs.rameses-common.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library files="1">
                     <file>${file.reference.jcaptcha-all-1.0-RC6.jar-1}</file>

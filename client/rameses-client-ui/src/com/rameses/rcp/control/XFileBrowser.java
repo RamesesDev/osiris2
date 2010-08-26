@@ -8,7 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -30,7 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 
-public class XFileBrowser extends JPanel implements UIInput, Validatable, Containable, ActionListener {
+public class XFileBrowser extends JPanel implements UIInput, Validatable, ActiveControl, ActionListener {
     
     private Binding binding;
     private String[] depends;
@@ -47,7 +48,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Contai
     private boolean readonly;
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
-    
+        
     private JTextField txtField;
     private JButton btnBrowse;
     
@@ -288,12 +289,32 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Contai
         return property;
     }
 
+    public void requestFocus() {
+        setRequestFocus(true);
+    }
+    
     public void setRequestFocus(boolean focus) {
         if ( focus ) btnBrowse.requestFocus();
     }
 
     public boolean isImmediate() {
         return true;
+    }
+    
+    public String getText() {
+        return btnBrowse.getText();
+    }
+    
+    public void setText(String text) {
+        btnBrowse.setText(text);
+    }
+    
+    public Icon getIcon() {
+        return btnBrowse.getIcon();
+    }
+    
+    public void setIcon(Icon icon) {
+        btnBrowse.setIcon(icon);
     }
     //</editor-fold>
     

@@ -114,7 +114,7 @@ public final class ControlSupport {
         if ( o != null && o instanceof String ) {
             opener.setOutcome( (String)o );
         }
-                
+        
         return opener;
     }
     

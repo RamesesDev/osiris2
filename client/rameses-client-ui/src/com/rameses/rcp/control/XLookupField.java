@@ -48,6 +48,15 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         fireLookup();
     }
     
+    public void validateInput() {
+        actionMessage.clearMessages();
+        property.setErrorMessage(null);
+        if ( isRequired() && ValueUtil.isEmpty( getValue() ) ) {
+            actionMessage.addMessage("1001", "{0} is required.", new Object[] {getCaption()});
+            property.setErrorMessage(actionMessage.toString());
+        }
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  refresh/load  ">
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
@@ -97,7 +106,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
             
             if( !(lookupController.getCodeBean() instanceof LookupModel) )
                 throw new IllegalStateException("Lookup Handler code bean must be an instanceof LookupListModel");
-
+            
             
             lookupController.setTitle( opener.getCaption() );
             lookupController.setId( opener.getId() );
@@ -116,7 +125,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 UIController c = lookupController;
                 if ( c == null ) return; //should use a default lookup handler
                 
-                UIControllerContext uic = new UIControllerContext(c);                
+                UIControllerContext uic = new UIControllerContext(c);
                 Platform platform = ClientContext.getCurrentContext().getPlatform();
                 String conId = uic.getId();
                 if ( conId == null ) conId = getName() + handler;

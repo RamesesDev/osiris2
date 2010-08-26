@@ -150,6 +150,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                 listModel = (AbstractListModel) obj;
                 table.setListModel(listModel);
                 table.setListener(this);
+                table.setBinding(binding);
                 scrollBar.setListModel(listModel);
                 rowHeaderView.setRowCount( listModel.getRows() );
             }

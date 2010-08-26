@@ -9,6 +9,8 @@
 
 package com.rameses.io;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -84,5 +86,30 @@ public final class FileUtil {
             }
         }
         sout.append( charBuffer.subSequence(start, end) );
+    }
+    
+    public static void copy(File source, File dest) {
+        BufferedOutputStream bos = null;
+        BufferedInputStream bis = null;
+        try {
+            if ( dest.isDirectory() ) {
+                dest = new File(dest, source.getName());
+            }
+            bos = new BufferedOutputStream(new FileOutputStream( dest ));
+            bis = new BufferedInputStream(new FileInputStream( source ));
+            byte[] buff = new byte[10240];
+            int bytesRead = -1;
+            while( (bytesRead = bis.read(buff)) != -1 ) {
+                bos.write(buff, 0, bytesRead);
+            }
+            bos.flush();
+        }
+        catch(Exception e) {
+            
+        }
+        finally {
+            try { bos.close(); } catch(Exception e){;}
+            try { bis.close(); } catch(Exception e){;}
+        }
     }
 }

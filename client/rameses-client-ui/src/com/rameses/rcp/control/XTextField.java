@@ -3,7 +3,7 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.support.TextDocument;
-import com.rameses.rcp.ui.Containable;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -18,18 +18,19 @@ import javax.swing.JTextField;
  *
  * @author jaycverg
  */
-public class XTextField extends JTextField implements UIInput, Validatable, Containable {
+public class XTextField extends JTextField implements UIInput, Validatable, ActiveControl {
     
     private int index;
     private String[] depends = new String[]{};
     private Binding binding;
-    private ControlProperty property = new ControlProperty();
-    private ActionMessage actionMessage = new ActionMessage();
     private boolean nullWhenEmpty = true;
     private String onAfterUpdate;
     private boolean readonly;
     
     private TextDocument document = new TextDocument();
+    
+    protected ControlProperty property = new ControlProperty();
+    protected ActionMessage actionMessage = new ActionMessage();
     
     
     public XTextField() {
@@ -60,7 +61,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Cont
     }
     
     
-    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setName(String name) {
         super.setName(name);
         super.setText(name);

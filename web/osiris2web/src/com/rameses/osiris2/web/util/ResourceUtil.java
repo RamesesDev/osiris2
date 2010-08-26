@@ -49,7 +49,7 @@ public class ResourceUtil {
     //<editor-fold defaultstate="collapsed" desc="  ResourceRenderer (class)  ">
     private static class ResourceRenderer {
         
-        private void renderResource(WebResource webRes) {
+        public void renderResource(WebResource webRes) {
             InputStream is = null;
             
             Object resource = webRes.getData();
@@ -132,7 +132,7 @@ public class ResourceUtil {
             }
         }
         
-        private void renderResource(InputStream is, OutputStream os) {
+        public void renderResource(InputStream is, OutputStream os) {
             BufferedOutputStream bos = null;
             BufferedInputStream bis = null;
             try {
