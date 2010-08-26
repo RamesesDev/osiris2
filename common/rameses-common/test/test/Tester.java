@@ -7,8 +7,8 @@
 
 package test;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.rameses.util.KeyGen;
+import java.text.DecimalFormat;
 import junit.framework.*;
 
 /**
@@ -29,11 +29,13 @@ public class Tester extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testSubstitute() throws Exception {
-        List list = new ArrayList();
-        list.add(0, "num1");
-        list.add(0, "num2");
-        System.out.println("array size " + list.size());
-        
+        //List list = new ArrayList();
+        //list.add(0, "num1");
+        //list.add(0, "num2");
+        //System.out.println("array size " + list.size());
+        DecimalFormat dn = new DecimalFormat("000000");
+        System.out.println(dn.format(250));
+        System.out.println("key->"+KeyGen.generateAlphanumKey("",3));
         //String tmp = "/a/b/c";
         //System.out.println( tmp.substring( tmp.indexOf("/", 1)+1) );
         

@@ -123,7 +123,7 @@ public class SchemaTest extends TestCase {
     }
     
     
-    public void testRead() throws Exception {
+    public void xtestRead() throws Exception {
         Schema schema = mgr.getSchema( "sendout" );
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
@@ -163,13 +163,14 @@ public class SchemaTest extends TestCase {
         }
     }
     
-    public void xtestValidate() throws Exception {
+    public void testValidate() throws Exception {
         SchemaValidationHandler handler = new SchemaValidationHandler();
         Schema schema = mgr.getSchema( "customer" );
         assertNotNull(schema);
         SchemaScanner sc = mgr.newScanner();
         Map map = new HashMap();
         map.put("age", "24");
+        map.put("custtype", "PENDING");
         sc.scan(schema, map, handler);
         if( handler.getResult().hasErrors() )
             throw new Exception(handler.getResult().toString());

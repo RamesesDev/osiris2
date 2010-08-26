@@ -21,5 +21,5 @@ public @interface Before {
     String pattern() default "";
     int index() default 0;
     String eval() default "";
-
+    String exclude() default "";
 }

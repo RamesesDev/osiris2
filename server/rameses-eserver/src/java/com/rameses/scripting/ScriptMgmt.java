@@ -171,12 +171,12 @@ public class ScriptMgmt implements ScriptMgmtMBean, Serializable {
                     Method[] beforeMethods = def.findAnnotatedMethods(Before.class);
                     for(Method m: beforeMethods) {
                         Before b = (Before)m.getAnnotation(Before.class);
-                        beforeInterceptors.add(new InterceptorDef(s,m,b.index(),b.pattern(),b.eval()));
+                        beforeInterceptors.add(new InterceptorDef(s,m,b.index(),b.pattern(),b.eval(),b.exclude()));
                     }
                     Method[] afterMethods = def.findAnnotatedMethods(After.class);
                     for(Method m: afterMethods) {
                         After a = (After)m.getAnnotation(After.class);
-                        afterInterceptors.add( new InterceptorDef(s,m,a.index(),a.pattern(), a.eval()) );
+                        afterInterceptors.add( new InterceptorDef(s,m,a.index(),a.pattern(), a.eval(),a.exclude()) );
                     }
                 } catch(Exception ign) {
                     System.out.println(ign.getMessage());

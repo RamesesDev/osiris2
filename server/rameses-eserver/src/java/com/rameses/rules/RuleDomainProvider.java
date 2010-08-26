@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.interfaces;
+package com.rameses.rules;
 
 /**
  * provides facility for serving rule domains

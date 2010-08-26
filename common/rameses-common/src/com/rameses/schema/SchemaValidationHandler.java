@@ -9,7 +9,9 @@
 
 package com.rameses.schema;
 
+import com.sun.jmx.remote.util.Service;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -21,7 +23,7 @@ public class SchemaValidationHandler implements SchemaHandler {
     
     private ValidationResult vr;
     private Stack stack = new Stack();
-    private List<SimpleFieldValidator> fieldValidators = new ArrayList(); 
+    private List<SimpleFieldValidator> fieldValidators; 
     private SchemaHandlerStatus status;
     
     public SchemaValidationHandler() {
@@ -54,8 +56,18 @@ public class SchemaValidationHandler implements SchemaHandler {
                 return;
             }
         }
+        
+        //load validators if it is not yet loaded.
+        if( fieldValidators==null) {
+            fieldValidators = new ArrayList();
+            Iterator iter = Service.providers(SimpleFieldValidator.class, Thread.currentThread().getContextClassLoader());
+            while(iter.hasNext()) {
+                fieldValidators.add( (SimpleFieldValidator) iter.next());
+            }
+        }
+        
         for(SimpleFieldValidator cfv: fieldValidators) {
-            cfv.validate(vr,f,clazz,value);
+            cfv.validate(vr,f,clazz,refname,value);
         }
     }
 

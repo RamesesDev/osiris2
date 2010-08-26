@@ -4,9 +4,10 @@
         <field name="lastname" type="string"/>
         <field name="age" type="integer" required="true"/>
         <field name="salary" type="decimal" required="true"/>
-        <link-field name="address1" ref="address" exclude="objid|xxx.*"/>
-        <link-field name="address2" ref="address" exclude="objid"/>
-        <link-field name="option" ref="option" prefixed="false"/>
+        <link name="address1" ref="address" exclude="objid|xxx.*"/>
+        <link name="address2" ref="address" exclude="objid"/>
+        <link name="option" ref="option" prefixed="false"/>
+        <field name="custtype" pattern="NEW|RENEW"/>
      </element>
      
      <element name="address">
