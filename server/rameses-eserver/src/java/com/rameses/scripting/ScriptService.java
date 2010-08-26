@@ -98,7 +98,8 @@ public class ScriptService implements ScriptServiceLocal {
                         se = new ScriptEval(ae);
                         ScriptServiceLocal  scriptService = (ScriptServiceLocal)context.lookup("ScriptService/local");
                         for(String b: scriptObj.findBeforeInterceptors(method)) {
-                            executeInterceptor(b, ae, se, scriptService, env);    
+                            Object test = executeInterceptor(b, ae, se, scriptService, env);    
+                            if(test!=null && (test instanceof Exception )) return test;
                         }
                         Object retval =  actionMethod.invoke( target, params );
                         
@@ -108,7 +109,8 @@ public class ScriptService implements ScriptServiceLocal {
                         
                         ae.setResult(retval);
                         for(String b: scriptObj.findAfterInterceptors(method)) {
-                            executeInterceptor(b, ae, se, scriptService, env);    
+                            Object test = executeInterceptor(b, ae, se, scriptService, env);    
+                            if(test!=null && (test instanceof Exception )) return test;
                         }
                         return retval;
                     }
@@ -141,7 +143,7 @@ public class ScriptService implements ScriptServiceLocal {
                 if(destinationType.trim().length()==0) destinationType = "queue";
                 String responseHandler = asc.responseHandler();
                 if(responseHandler.trim().length()==0) responseHandler = null;
-                
+                boolean hasReturnType = (!actionMethod.getReturnType().toString().equals("void"));
                 String origin = System.getProperty("jboss.bind.address");
                 boolean loop = asc.loop();
                 
@@ -150,12 +152,16 @@ public class ScriptService implements ScriptServiceLocal {
                 pass.put("params", params);
                 pass.put("origin", origin);
                 pass.put("env", env);
-                if( responseHandler!=null ) pass.put("responseHandler", responseHandler);
-                if( loop ) {
-                    pass.put("loop", true);
-                    pass.put( "loopVar", asc.loopVar() );
-                }
+                pass.put("hasReturnType", hasReturnType);
                 
+                //apply response handler only if there is a return type
+                if(hasReturnType) {
+                    if( responseHandler!=null ) pass.put("responseHandler", responseHandler);
+                    if( loop ) {
+                        pass.put("loop", true);
+                        pass.put( "loopVar", asc.loopVar() );
+                    }
+                }
                 return invokeAsync( pass, destinationType );
             }
         } catch(Exception ex) {
@@ -172,7 +178,7 @@ public class ScriptService implements ScriptServiceLocal {
     
     
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    private void executeInterceptor(String serviceName, ActionEvent ae, ScriptEval se, ScriptServiceLocal scriptService, Map env) {
+    private Object executeInterceptor(String serviceName, ActionEvent ae, ScriptEval se, ScriptServiceLocal scriptService, Map env) {
         boolean hasParm = false;
         boolean passEval = true;
         
@@ -190,12 +196,14 @@ public class ScriptService implements ScriptServiceLocal {
             n = n.substring(1);
         }
         String _action = arr[1];
+        Object retval = null;
         if(passEval) {
             if(hasParm)
-                scriptService.invoke( n,_action,new Object[]{ae},env);
+                retval = scriptService.invoke( n,_action,new Object[]{ae},env);
             else
-                scriptService.invoke(n,_action,new Object[]{},env);
+                retval = scriptService.invoke(n,_action,new Object[]{},env);
         }
+        return retval;
     }
     
     

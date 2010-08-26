@@ -7,11 +7,11 @@
  * and open the template in the editor.
  */
 
-package com.rameses.ruleserver;
+package com.rameses.rules;
 
 import com.rameses.eserver.*;
-import com.rameses.interfaces.RuleDomain;
-import com.rameses.interfaces.RuleDomainProvider;
+import com.rameses.rules.RuleDomain;
+import com.rameses.rules.RuleDomainProvider;
 import com.sun.jmx.remote.util.Service;
 import java.io.Serializable;
 import java.util.Hashtable;

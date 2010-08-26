@@ -20,8 +20,8 @@ public interface CONSTANTS {
     public final static String SCRIPT_SERVICE_LOCAL = "ScriptService/local";
     public final static String SCRIPT_SERVICE = "ScriptService";
     
-    public final static String RESPONSE_SERVICE = "ResponseService";
-    public final static String RESPONSE_SERVICE_LOCAL = "ResponseService/local";
+    public final static String RESPONSE_SERVICE = "AsyncResponseService";
+    public final static String RESPONSE_SERVICE_LOCAL = "AsyncResponseService/local";
     
     
     public final static String SCRIPT_MGMT = "ScriptMgmt";

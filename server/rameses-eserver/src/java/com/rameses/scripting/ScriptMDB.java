@@ -28,6 +28,7 @@ public class ScriptMDB implements MessageListener {
                 String script = (String)map.get("script");
                 String method = (String)map.get("method");
                 Object[] params = (Object[])map.get("params");
+                boolean hasReturnType = Boolean.valueOf(map.get("hasReturnType")+"");
                 Map env = (Map)map.get("env");
                 String origin = (String)map.get("origin");
                 boolean sameServer = true;
@@ -41,7 +42,7 @@ public class ScriptMDB implements MessageListener {
                 //execute the result;
                 if(!loop) {
                     Object result = scriptService.invoke("~" +script,method,params,env);
-                    executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
+                    if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
                 }
                 else {
                     if(env==null) env = new HashMap();
@@ -52,7 +53,7 @@ public class ScriptMDB implements MessageListener {
                         ae.moveNext();
                         Object result = scriptService.invoke("~" +script,method,params,env);
                         if(result!=null) {
-                            executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
+                            if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
                         }
                         else {
                             break;

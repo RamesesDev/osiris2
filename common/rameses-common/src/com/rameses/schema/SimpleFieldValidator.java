@@ -14,5 +14,5 @@ package com.rameses.schema;
  * @author elmo
  */
 public interface SimpleFieldValidator {
-    void validate(ValidationResult result, SimpleField field, Class fieldClass, Object fieldValue );
+    void validate(ValidationResult result, SimpleField field, Class fieldClass, String refname, Object fieldValue );
 }
