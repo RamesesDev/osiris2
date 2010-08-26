@@ -56,7 +56,7 @@
             }
             
             void save() {
-            
+                throw new Exception('session: Session Expired Error');
             }
 
             @Close

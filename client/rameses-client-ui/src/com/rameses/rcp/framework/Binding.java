@@ -373,6 +373,7 @@ public class Binding {
      * from the controller's code bean
      */
     public void fireNavigation(Object outcome, boolean immediate) {
+        UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
         try {
             formCommit();
             if ( !immediate ) {
@@ -385,7 +386,6 @@ public class Binding {
             
             ClientContext ctx = ClientContext.getCurrentContext();
             NavigationHandler handler = ctx.getNavigationHandler();
-            UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
             NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
             if ( handler != null ) {
                 handler.navigate(navPanel, null, outcome);
@@ -395,7 +395,7 @@ public class Binding {
             if ( !(e instanceof BusinessException) ) {
                 e.printStackTrace();
             }
-            ClientContext.getCurrentContext().getPlatform().showError(null, e);
+            ClientContext.getCurrentContext().getPlatform().showError(panel, e);
         }
     }
     

@@ -5,6 +5,7 @@ import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.common.MethodResolver;
 import com.rameses.util.BusinessException;
+import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.JComponent;
@@ -66,11 +67,15 @@ public class UICommandUtil {
                     handler.navigate(navPanel, command, outcome);
                 }
             }
-        } catch(Exception e) {
-            if ( !(e instanceof BusinessException) ) {
-                e.printStackTrace();
+        } catch(Exception ex) {
+            Exception e = ExceptionManager.getInstance().getOriginal(ex);
+            
+            if ( !ExceptionManager.getInstance().handleError(e) ) {
+                if ( !(ex instanceof BusinessException) ) {
+                    ex.printStackTrace();
+                }
+                ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
             }
-            ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
         }
     }
     

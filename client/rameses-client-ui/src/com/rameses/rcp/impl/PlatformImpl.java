@@ -3,7 +3,9 @@ package com.rameses.rcp.impl;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.util.ValueUtil;
-import java.awt.Container;
+import java.awt.EventQueue;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
@@ -37,7 +39,7 @@ public class PlatformImpl implements Platform {
         String modal = properties.get("modal")+"";
         
         JDialog parent = mainWindow.getComponent();
-        PopupDialog d = new PopupDialog(parent);
+        final PopupDialog d = new PopupDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
         d.setCanClose( !"false".equals(canClose) );
@@ -46,7 +48,11 @@ public class PlatformImpl implements Platform {
         d.setModal(false);
         d.pack();
         d.setLocationRelativeTo(parent);
-        d.setVisible(true);
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                d.setVisible(true);
+            }
+        });
         
         windows.put(id, d);
     }
@@ -65,7 +71,10 @@ public class PlatformImpl implements Platform {
         
         JDialog parent = mainWindow.getComponent();
         if ( actionSource != null ) {
-            parent = getParentDialog(actionSource);
+            Window w = getParentWindow(actionSource);
+            if ( w instanceof JDialog ) {
+                parent = (JDialog) w;
+            }
         }
         
         final PopupDialog d = new PopupDialog(parent);
@@ -77,7 +86,7 @@ public class PlatformImpl implements Platform {
         d.pack();
         d.setLocationRelativeTo(parent);
         
-        SwingUtilities.invokeLater(new Runnable() {
+        EventQueue.invokeLater(new Runnable() {
             public void run() {
                 d.setVisible(true);
             }
@@ -87,19 +96,19 @@ public class PlatformImpl implements Platform {
     }
     
     public void showError(JComponent actionSource, Exception e) {
-        JOptionPane.showMessageDialog(null, getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(getParentWindow(actionSource), getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
     }
     
     public boolean showConfirm(JComponent actionSource, Object message) {
-        return JOptionPane.showConfirmDialog(null, message, "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+        return JOptionPane.showConfirmDialog(getParentWindow(actionSource), message, "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
     
     public void showInfo(JComponent actionSource, Object message) {
-        JOptionPane.showMessageDialog(null, message, "Information", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(getParentWindow(actionSource), message, "Information", JOptionPane.INFORMATION_MESSAGE);
     }
     
     public void showAlert(JComponent actionSource, Object message) {
-        JOptionPane.showMessageDialog(null, message, "Warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(getParentWindow(actionSource), message, "Warning", JOptionPane.WARNING_MESSAGE);
     }
     
     public Object showInput(JComponent actionSource, Object message) {
@@ -130,15 +139,11 @@ public class PlatformImpl implements Platform {
     
     public Map getWindows() { return windows; }
     
-    private JDialog getParentDialog(JComponent actionSource) {
-        Container parent = actionSource.getParent();
-        while( parent != null ) {
-            if ( parent instanceof JDialog )
-                return (JDialog) parent;
-            
-            parent = parent.getParent();
+    private Window getParentWindow(JComponent src) {
+        if ( src == null ) {
+            return KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
         }
-        return null;
+        return SwingUtilities.getWindowAncestor(src);
     }
     
     private String getMessage(Throwable t) {
@@ -154,7 +159,7 @@ public class PlatformImpl implements Platform {
         }
         return msg;
     }
-
+    
     public void exit() {
         mainWindow.close();
     }

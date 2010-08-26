@@ -202,7 +202,7 @@ public final class TableManager {
             
             label.setText( ValueUtil.isEmpty(value) ? " " : value + "");
             Border bb = new TableHeaderBorder();
-            Border eb = BorderFactory.createEmptyBorder(2,5,2,1);
+            Border eb = BorderFactory.createEmptyBorder(2,5,2,5);
             label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
             return label;
         }

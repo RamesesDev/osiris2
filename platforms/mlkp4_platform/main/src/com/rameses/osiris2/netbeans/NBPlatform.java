@@ -10,6 +10,8 @@ package com.rameses.osiris2.netbeans;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.platform.interfaces.SubWindow;
+import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.util.Hashtable;
 import java.util.Map;
 import javax.swing.JComponent;
@@ -108,24 +110,24 @@ public class NBPlatform implements Platform {
     }
     
     public void showError(JComponent actionSource, Exception e) {
-        JOptionPane.showMessageDialog(mainWindow.getComponent(), getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(getParent(actionSource), getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
     }
     
     public boolean showConfirm(JComponent actionSource, Object message) {
-        int resp = JOptionPane.showConfirmDialog(mainWindow.getComponent(), message, "Confirm", JOptionPane.YES_NO_OPTION);
+        int resp = JOptionPane.showConfirmDialog(getParent(actionSource), message, "Confirm", JOptionPane.YES_NO_OPTION);
         return resp == JOptionPane.YES_OPTION;
     }
     
     public void showInfo(JComponent actionSource, Object message) {
-        JOptionPane.showMessageDialog(mainWindow.getComponent(), message.toString(), "Message", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(getParent(actionSource), message.toString(), "Message", JOptionPane.INFORMATION_MESSAGE);
     }
     
     public void showAlert(JComponent actionSource, Object message) {
-        JOptionPane.showMessageDialog(mainWindow.getComponent(), message.toString(), "Message", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(getParent(actionSource), message.toString(), "Message", JOptionPane.WARNING_MESSAGE);
     }
     
     public Object showInput(JComponent actionSource, Object message) {
-        return JOptionPane.showInputDialog(mainWindow.getComponent(), message);
+        return JOptionPane.showInputDialog(getParent(actionSource), message);
     }
     
     public MainWindow getMainWindow() {
@@ -152,7 +154,15 @@ public class NBPlatform implements Platform {
         }
         return msg;
     }
-
+    
+    private Component getParent(Component comp) {
+        if ( comp == null ) {
+            KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            return keyboardFocusManager.getActiveWindow();
+        }
+        return SwingUtilities.getRootPane(comp);
+    }
+    
     public void exit() {
         mainWindow.close();
     }

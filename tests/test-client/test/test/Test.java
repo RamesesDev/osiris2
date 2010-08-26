@@ -1,4 +1,5 @@
 package test;
+import java.text.DecimalFormat;
 import junit.framework.*;
 
 /*
@@ -19,7 +20,7 @@ public class Test extends TestCase {
     }
     
     public void test() {
-        System.out.println("sample".hashCode());
-    }
 
+    }
+    
 }
