@@ -1,5 +1,5 @@
 /*
- * ErrorHandler.java
+ * ExceptionHandler.java
  *
  * Created on August 24, 2010, 4:36 PM
  *
@@ -13,7 +13,7 @@ package com.rameses.util;
  *
  * @author elmo
  */
-public abstract class ErrorHandler implements Comparable {
+public abstract class ExceptionHandler implements Comparable {
     
     public abstract boolean accept(Exception e);
     
@@ -22,7 +22,7 @@ public abstract class ErrorHandler implements Comparable {
     }
 
     public int compareTo(Object o) {
-        ErrorHandler eh = (ErrorHandler)o;
+        ExceptionHandler eh = (ExceptionHandler)o;
         if(getIndex()>eh.getIndex()) return 1;
         else if(getIndex()<eh.getIndex()) return -1;
         return 0;
