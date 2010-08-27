@@ -2,6 +2,7 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.rcp.util.ErrorDialog;
 import com.rameses.util.ValueUtil;
 import java.awt.EventQueue;
 import java.awt.KeyboardFocusManager;
@@ -96,7 +97,7 @@ public class PlatformImpl implements Platform {
     }
     
     public void showError(JComponent actionSource, Exception e) {
-        JOptionPane.showMessageDialog(getParentWindow(actionSource), getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
+        ErrorDialog.show(e, actionSource);
     }
     
     public boolean showConfirm(JComponent actionSource, Object message) {

@@ -12,101 +12,89 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="xActionBar1" alignment="0" pref="386" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xRadio1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                  <Component id="xLabel2" alignment="0" max="32767" attributes="1"/>
-                  <Component id="xLabel1" alignment="0" max="32767" attributes="1"/>
-                  <Component id="xFileBrowser1" alignment="0" pref="245" max="32767" attributes="1"/>
-                  <Component id="xComboBox1" alignment="0" min="-2" pref="202" max="-2" attributes="0"/>
-                  <Component id="xActionBar2" alignment="0" min="-2" pref="214" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="xTextField1" alignment="0" min="-2" pref="256" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="50" max="32767" attributes="0"/>
+              <EmptySpace pref="156" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="xActionBar1" min="-2" max="-2" attributes="1"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="xRadio1" min="-2" max="-2" attributes="0"/>
-                  <Component id="xActionBar2" min="-2" max="-2" attributes="1"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xComboBox1" min="-2" max="-2" attributes="0"/>
+              <Component id="xTextField1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xFileBrowser1" min="-2" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xLabel1" min="-2" max="-2" attributes="0"/>
+              <Component id="jScrollPane2" pref="160" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xLabel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="191" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
-    </Component>
-    <Component class="com.rameses.rcp.control.XRadio" name="xRadio1">
+    <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
       <Properties>
-        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
-            <EmptyBorder bottom="0" left="0" right="0" top="0"/>
-          </Border>
-        </Property>
-        <Property name="text" type="java.lang.String" value="xRadio1"/>
-        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[0, 0, 0, 0]"/>
-        </Property>
-        <Property name="name" type="java.lang.String" value="sample"/>
+        <Property name="text" type="java.lang.String" value="xTextField1"/>
       </Properties>
     </Component>
-    <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar2">
+    <Component class="javax.swing.JButton" name="jButton1">
       <Properties>
-        <Property name="useToolBar" type="boolean" value="false"/>
+        <Property name="text" type="java.lang.String" value="jButton1"/>
       </Properties>
     </Component>
-    <Component class="com.rameses.rcp.control.XComboBox" name="xComboBox1">
+    <Component class="javax.swing.JButton" name="jButton2">
       <Properties>
-        <Property name="name" type="java.lang.String" value="entity.country"/>
+        <Property name="text" type="java.lang.String" value="jButton2"/>
       </Properties>
     </Component>
-    <Component class="com.rameses.rcp.control.XFileBrowser" name="xFileBrowser1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Attach"/>
-      </Properties>
-    </Component>
-    <Component class="com.rameses.rcp.control.XLabel" name="xLabel1">
-      <Properties>
-        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-            <EtchetBorder/>
-          </Border>
-        </Property>
-        <Property name="text" type="java.lang.String" value="xLabel1"/>
-        <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[1, 5, 1, 1]"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="com.rameses.rcp.control.XLabel" name="xLabel2">
-      <Properties>
-        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-            <EtchetBorder/>
-          </Border>
-        </Property>
-        <Property name="text" type="java.lang.String" value="xLabel2"/>
-        <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[1, 5, 1, 1]"/>
-        </Property>
-      </Properties>
-    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="com.rameses.rcp.control.XTextArea" name="xTextArea1">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="com.rameses.rcp.control.XTree" name="xTree1">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                <EmptyBorder bottom="1" left="3" right="3" top="1"/>
+              </Border>
+            </Property>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>

@@ -20,7 +20,6 @@ import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.common.ExpressionResolver;
-import com.rameses.util.BusinessException;
 import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
@@ -79,10 +78,7 @@ public final class InvokerUtil {
             Exception e = ExceptionManager.getInstance().getOriginal(ex);
             
             if ( !ExceptionManager.getInstance().handleError(e) ) {
-                if ( !(ex instanceof BusinessException) ) {
-                    ex.printStackTrace();
-                }
-                ClientContext.getCurrentContext().getPlatform().showError(null, e);
+                ClientContext.getCurrentContext().getPlatform().showError(null, ex);
             }
         }
     }

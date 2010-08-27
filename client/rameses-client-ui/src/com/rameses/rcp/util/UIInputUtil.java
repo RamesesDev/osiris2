@@ -15,6 +15,7 @@ import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.common.MethodResolver;
 import com.rameses.common.PropertyResolver;
+import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.InputVerifier;
@@ -73,7 +74,7 @@ public class UIInputUtil {
             }
             
             String method = control.getOnAfterUpdate();
-            if ( !ValueUtil.isEmpty(method) ) {
+            if ( !ValueUtil.isEmpty(method) && !ValueUtil.isEqual(inputValue, beanValue) ) {
                 MethodResolver mr = ctx.getMethodResolver();
                 mr.invoke(bean, method, null, null);
             }
@@ -81,7 +82,11 @@ public class UIInputUtil {
             binding.notifyDepends(control);
             
         } catch(Exception e) {
-            throw new IllegalStateException("UIInputUtil.updateBeanValue: ", e);
+            ExceptionManager emgr = ExceptionManager.getInstance();
+            Exception src = emgr.getOriginal(e);
+            if ( !emgr.handleError(src) ) {
+                ClientContext.getCurrentContext().getPlatform().showError((JComponent) control, e);
+            }
         }
     }
     

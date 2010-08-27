@@ -186,6 +186,8 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         if( selectedItem!=null && selectedItem.getItem()!=null) {
             try {
                 Object outcome = listModel.openSelectedItem();
+                if ( outcome == null ) return;
+                
                 NavigationHandler nh = ClientContext.getCurrentContext().getNavigationHandler();
                 NavigatablePanel navPanel = UIControlUtil.getParentPanel(this, null);
                 nh.navigate(navPanel, this, outcome);

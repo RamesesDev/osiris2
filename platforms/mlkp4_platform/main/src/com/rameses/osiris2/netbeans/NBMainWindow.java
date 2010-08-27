@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
 
 public class NBMainWindow implements MainWindow {
     
-    private List<MainWindowListener> listeners = new ArrayList();
+    private MainWindowListener listener;
     private JFrame window;
     private String mainTitle = "";
     
@@ -25,20 +25,14 @@ public class NBMainWindow implements MainWindow {
     
     public Component getComponent() { return window; }
     
-    public List<MainWindowListener> getListeners() {
-        return listeners;
+    public MainWindowListener getListener() {
+        return listener;
     }
     
-    public void addListener(MainWindowListener listener) {
-        if ( !listeners.contains(listener) ) {
-            listeners.add( listener );
-        }
+    public void setListener(MainWindowListener listener) {
+        this.listener = listener;
     }
-    
-    public void removeListener(MainWindowListener listener) {
-        listeners.remove(listener);
-    }
-    
+
     public void invoke(String name, String action, Map properties) {
         if (name == null) return;
         

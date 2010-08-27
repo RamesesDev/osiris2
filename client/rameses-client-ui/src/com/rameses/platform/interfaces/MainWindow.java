@@ -12,8 +12,7 @@ public interface MainWindow {
     static final String CONTENT = "content";
     static final String STATUSBAR = "statusbar";
     
-    void addListener( MainWindowListener listener );
-    void removeListener( MainWindowListener listener );
+    void setListener( MainWindowListener listener );
     void setComponent( JComponent comp, String constraint );
     void setTitle(String title);
     void close();

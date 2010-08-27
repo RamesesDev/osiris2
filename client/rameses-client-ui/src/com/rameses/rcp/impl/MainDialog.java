@@ -11,13 +11,10 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
-import com.rameses.rcp.framework.ClientContext;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JMenuBar;
@@ -31,7 +28,7 @@ import javax.swing.SwingUtilities;
 public class MainDialog implements MainWindow {
     
     private JDialog dialog = new JDialog();
-    private List<MainWindowListener> listeners = new ArrayList();
+    private MainWindowListener listener;
     
     public MainDialog() {
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -60,13 +57,11 @@ public class MainDialog implements MainWindow {
     }
     
     public void close() {
-        if ( listeners != null ) {
-            for(MainWindowListener mwl: listeners ) {
-                try {
-                    if ( !mwl.onClose() ) return;
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
+        if ( listener != null ) {
+            try {
+                if ( !listener.onClose() ) return;
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         }
         
@@ -77,14 +72,8 @@ public class MainDialog implements MainWindow {
         dialog.setTitle(title);
     }
     
-    public void addListener(MainWindowListener listener) {
-        if ( !listeners.contains(listener) ) {
-            listeners.add( listener );
-        }
-    }
-    
-    public void removeListener(MainWindowListener listener) {
-        listeners.remove(listener);
+    public void setListener(MainWindowListener listener) {
+        this.listener = listener;
     }
     
     public void setComponent(JComponent comp, String constraint) {

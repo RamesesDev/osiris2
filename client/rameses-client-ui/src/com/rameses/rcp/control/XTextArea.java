@@ -11,7 +11,7 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.beans.Beans;
+import java.awt.Font;
 import javax.swing.JTextArea;
 
 /**
@@ -33,7 +33,10 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     private TextDocument textDocument = new TextDocument();
     
     
-    public XTextArea() {}
+    public XTextArea() {
+        super();
+        setFont( Font.decode("") );
+    }
     
     
     public void refresh() {

@@ -45,7 +45,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     public XLabel() {
         super();
-        setPadding(new Insets(0,0,0,0));
+        setPadding(new Insets(1,3,1,1));
     }
     
     public void refresh() {

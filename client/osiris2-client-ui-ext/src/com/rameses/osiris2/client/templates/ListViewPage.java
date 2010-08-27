@@ -41,7 +41,6 @@ public class ListViewPage extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(530, 452));
         pnlHeader.setLayout(new java.awt.BorderLayout());
 
-        pnlHeader.setPreferredSize(new java.awt.Dimension(80, 52));
         pnlHead.setLayout(new java.awt.BorderLayout());
 
         pnlHead.setPreferredSize(new java.awt.Dimension(40, 26));
@@ -55,13 +54,12 @@ public class ListViewPage extends javax.swing.JPanel {
 
         pnlHeader.add(pnlHead, java.awt.BorderLayout.CENTER);
 
-        lblTitle.setBackground(new java.awt.Color(0, 51, 153));
-        lblTitle.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        lblTitle.setBackground(new java.awt.Color(10, 36, 106));
+        lblTitle.setBorder(javax.swing.BorderFactory.createEmptyBorder(7, 7, 7, 5));
         lblTitle.setForeground(new java.awt.Color(255, 255, 255));
         lblTitle.setExpression("#{listHandler.title}");
-        lblTitle.setFont(new java.awt.Font("Dialog", 1, 14));
+        lblTitle.setFont(new java.awt.Font("Tahoma", 0, 20));
         lblTitle.setOpaque(true);
-        lblTitle.setPreferredSize(new java.awt.Dimension(40, 26));
         pnlHeader.add(lblTitle, java.awt.BorderLayout.SOUTH);
 
         add(pnlHeader, java.awt.BorderLayout.NORTH);

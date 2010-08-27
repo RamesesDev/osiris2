@@ -360,30 +360,14 @@ public class Binding {
             throw new IllegalStateException(e);
         }
     }
-    
-    /**
-     * fireNavigation (immediate is false [validates form])
-     */
-    public void fireNavigation(Object outcome) {
-        fireNavigation(outcome, false);
-    }
-    
+
     /**
      * fireNavigation can be used to programmatically trigger the navigation handler
      * from the controller's code bean
      */
-    public void fireNavigation(Object outcome, boolean immediate) {
+    public void fireNavigation(Object outcome) {
         UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
         try {
-            formCommit();
-            if ( !immediate ) {
-                ActionMessage am = new ActionMessage();
-                validate(am);
-                if ( am.hasMessages() ) {
-                    throw new BusinessException(am.toString());
-                }
-            }
-            
             ClientContext ctx = ClientContext.getCurrentContext();
             NavigationHandler handler = ctx.getNavigationHandler();
             NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
@@ -392,9 +376,6 @@ public class Binding {
             }
             
         } catch(Exception e) {
-            if ( !(e instanceof BusinessException) ) {
-                e.printStackTrace();
-            }
             ClientContext.getCurrentContext().getPlatform().showError(panel, e);
         }
     }

@@ -7,6 +7,7 @@
 
 package com.rameses.rcp.control;
 
+import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.ActiveControl;
@@ -44,6 +45,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private String onAfterUpdate;
     private Class fieldType;
     private boolean readonly;
+    private String itemKey;
     
     private DefaultComboBoxModel model;
     
@@ -163,10 +165,16 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public Object getValue() {
         if ( Beans.isDesignTime() ) return null;
         
-        if( super.getSelectedItem() ==null ) {
+        if( super.getSelectedItem() == null ) {
             return null;
         }
-        return ((ComboItem)super.getSelectedItem()).getValue();
+        Object value = ((ComboItem)super.getSelectedItem()).getValue();
+        if ( value != null && !ValueUtil.isEmpty(itemKey) ) {
+            PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+            value = res.getProperty(value, itemKey);
+        }
+        
+        return value;
     }
     
     public void setValue(Object value) {
@@ -178,13 +186,27 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             model.setSelectedItem( c );
             UIInputUtil.updateBeanValue(this);
         } else {
-            ComboItem c = new ComboItem( value );
             for(int i=0; i< getItemCount();i++) {
                 ComboItem ci = (ComboItem) getItemAt(i);
-                if( ci.equals(c)) {
+                if( isSelected(ci, value) ) {
                     model.setSelectedItem(ci);
+                    break;
                 }
             }
+        }
+    }
+    
+    private boolean isSelected(ComboItem ci, Object value) {
+        if ( value != null && !ValueUtil.isEmpty(itemKey) ) {
+            if ( ci.getValue() == null ) return false;
+            
+            PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+            Object key = res.getProperty(ci.getValue(), itemKey);
+            return key != null && value.equals(key);
+            
+        } else {
+            ComboItem c = new ComboItem( value );
+            return ci.equals(c);
         }
     }
     
@@ -313,9 +335,17 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     }
     //</editor-fold>
     
+    public String getItemKey() {
+        return itemKey;
+    }
+    
+    public void setItemKey(String itemKey) {
+        this.itemKey = itemKey;
+    }
+    
     
     //<editor-fold defaultstate="collapsed" desc="  ComboItem (class)  ">
-    public static class ComboItem {
+    public class ComboItem {
         private String text;
         private Object value;
         
@@ -341,14 +371,15 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             if (!(o instanceof ComboItem)) return false;
             
             ComboItem ci = (ComboItem)o;
-            if (value == null && ci.value == null)
+            if (value == null && ci.value == null) {
                 return true;
-            else if (value != null && ci.value == null)
+            } else if (value != null && ci.value == null) {
                 return false;
-            else if (value == null && ci.value != null)
+            } else if (value == null && ci.value != null) {
                 return false;
-            else
-                return value.equals(ci.value);
+            }
+            
+            return value.equals(ci.value);
         }
         
     }

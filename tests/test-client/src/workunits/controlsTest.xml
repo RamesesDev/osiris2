@@ -19,30 +19,10 @@
                 
         public class ControlsTestController  {
 
-            def entity = [ civilStat: 'MARRIED' ];
-            def lnameCaption = 'Lastname (from bean)';
-            
-            int intNum;
-            double doubleNum;
-            BigDecimal decimalNum = 10.1;
-            
-            def checkBox1;
-            def checkBox2;
-            
-            def item = [name:"Minglanilla"];
-            def itemList = [[name:"Cebu City"], [name:"Minglanilla"], [name:"Naga"]];
-            
-            def file;
-            
-            def lookupHandler = new Opener(name: 'test-client:sampleLookup', modal: false);
+            def entity = [ : ];
             
             void btnShowInput() {
-                MsgBox.alert("""
-                    intNum = $intNum
-                    doubleNum = $doubleNum
-                    decimalNum = $decimalNum
-                    entity = $entity
-                """);
+                MsgBox.alert("entity = $entity");
             }
         
             boolean readonly;
@@ -62,6 +42,10 @@
             @Close
             def close() {
                 MsgBox.alert('Closing');
+            }
+            
+            void validateName() {
+                throw new Exception('Error.....');
             }
            
         }

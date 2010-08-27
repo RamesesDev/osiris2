@@ -71,10 +71,7 @@ public class UICommandUtil {
             Exception e = ExceptionManager.getInstance().getOriginal(ex);
             
             if ( !ExceptionManager.getInstance().handleError(e) ) {
-                if ( !(ex instanceof BusinessException) ) {
-                    ex.printStackTrace();
-                }
-                ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, e);
+                ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, ex);
             }
         }
     }
