@@ -50,7 +50,10 @@ public class Schema implements Serializable {
         
         if( elementName.equals(name))
             return  rootElement;
-        return elements.get(elementName);
+        SchemaElement e = elements.get(elementName);
+        if(e==null)
+            throw new RuntimeException("Schema element " + n + " not found in "+name);
+        return e;
     }
     
     /**
