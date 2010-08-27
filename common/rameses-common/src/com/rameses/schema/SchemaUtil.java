@@ -79,4 +79,40 @@ public final class SchemaUtil {
         return true;
     }
     
+    //sends a value, like defaults and transforms it to the expected type
+    public static Object formatType( SimpleField f, Object value ) {
+        if( value == null ) return null;
+        if((value instanceof String) && ((String)value).trim().length()==0 ) return value;
+        
+        String type = f.getType();
+        if(type==null || type.trim().length()==0) return value;
+        
+        if( type.equalsIgnoreCase(SimpleFieldTypes.STRING) ) {
+            return value.toString();
+        } 
+        else if( type.equalsIgnoreCase(SimpleFieldTypes.TIMESTAMP) ) {
+            return Timestamp.valueOf( value.toString() );
+        } 
+        else if( type.equalsIgnoreCase(SimpleFieldTypes.DATE) ) {
+            return java.sql.Date.valueOf( value.toString() );
+        } 
+        else if( type.equalsIgnoreCase(SimpleFieldTypes.DECIMAL) ) {
+            return new BigDecimal(value.toString());
+        } 
+        else if( type.equalsIgnoreCase(SimpleFieldTypes.DOUBLE) ) {
+            return Double.valueOf(value.toString());
+        } 
+        else if( type.equalsIgnoreCase(SimpleFieldTypes.INTEGER) ) {
+            return Integer.valueOf(value.toString());
+        } 
+        else if( type.equalsIgnoreCase(SimpleFieldTypes.BOOLEAN) ) {
+            return Boolean.valueOf(value.toString());
+        }
+        else if( type.equalsIgnoreCase(SimpleFieldTypes.LONG) ) {
+            return Long.valueOf( value.toString() );
+        }
+        return null;
+    }
+    
+    
 }

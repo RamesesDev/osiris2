@@ -17,7 +17,10 @@ public interface PersistenceMgmtMBean {
     SqlContext createSqlContext();
     void flushAll();
     
+    void flush(String name);
+    String showCache();
     
     EntityManager createPersistenceContext(String datasource);
+    
     
 }

@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.interfaces;
+package com.rameses.rules;
 
 import java.util.List;
 import java.util.Map;

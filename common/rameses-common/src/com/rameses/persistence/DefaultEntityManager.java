@@ -32,6 +32,7 @@ public class DefaultEntityManager implements EntityManager {
     private SqlContext sqlContext;
     private SchemaManager schemaManager;
     private boolean debug;
+    private boolean transactionOpen = false;
     
     public DefaultEntityManager(SchemaManager scm, SqlContext sqlContext) {
         this.sqlContext= sqlContext;
@@ -39,6 +40,8 @@ public class DefaultEntityManager implements EntityManager {
     }
     
     public void setSqlContext(SqlContext ctx) {
+        if(transactionOpen)
+            throw new RuntimeException("SqlContext cannot be set at this time because transaction is currently open");
         this.sqlContext = ctx;
     }
     
@@ -60,7 +63,7 @@ public class DefaultEntityManager implements EntityManager {
         }
         
         try {
-            sqlContext.openConnection();
+            if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
                 SqlExecutor se= queue.remove();
                 if(debug) {
@@ -76,12 +79,16 @@ public class DefaultEntityManager implements EntityManager {
             throw new RuntimeException(e);
             
         } finally {
-            sqlContext.closeConnection();
+            if(!transactionOpen) sqlContext.closeConnection();
         }
         
         return data;
     }
     
+    
+    /***
+     * if there are no records found, this function returns null
+     */
     public Object read(String schemaName, Object data) {
         Queue<SqlQuery> queue = null;
         List<String> removeFields = new ArrayList();
@@ -98,7 +105,9 @@ public class DefaultEntityManager implements EntityManager {
         }
         try {
             Map map = new HashMap();
-            sqlContext.openConnection();
+            if(!transactionOpen) {
+                sqlContext.openConnection();
+            }
             while(!queue.isEmpty()) {
                 SqlQuery sq = queue.remove();
                 if(debug) {
@@ -125,12 +134,18 @@ public class DefaultEntityManager implements EntityManager {
                 map.remove(s);
             }
             
-            data = map;
+            if(map.size()==0)
+                data = null;
+            else
+                data = map;
+            
         } catch(Exception e) {
             throw new RuntimeException(e);
             
         } finally {
-            sqlContext.closeConnection();
+            if(!transactionOpen) {
+                sqlContext.closeConnection();
+            }
         }
         return data;
     }
@@ -160,7 +175,7 @@ public class DefaultEntityManager implements EntityManager {
         }
         
         try {
-            sqlContext.openConnection();
+            if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
                 SqlExecutor se= queue.remove();
                 if(debug) {
@@ -176,7 +191,7 @@ public class DefaultEntityManager implements EntityManager {
             throw new RuntimeException(e);
             
         } finally {
-            sqlContext.closeConnection();
+            if(!transactionOpen) sqlContext.closeConnection();
         }
         
         return oldData;
@@ -196,7 +211,7 @@ public class DefaultEntityManager implements EntityManager {
         }
         
         try {
-            sqlContext.openConnection();
+            if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
                 SqlExecutor se= queue.remove();
                 if(debug) {
@@ -212,7 +227,7 @@ public class DefaultEntityManager implements EntityManager {
             throw new RuntimeException(e);
             
         } finally {
-            sqlContext.closeConnection();
+            if(!transactionOpen) sqlContext.closeConnection();
         }
         
     }
@@ -238,5 +253,24 @@ public class DefaultEntityManager implements EntityManager {
         return schemaManager.validate(schemaName, data);
     }
     
+    //returns true if opening transaction was successful.
+    public boolean beginTransaction() throws Exception {
+        if(transactionOpen) 
+            return false;
+        if(sqlContext==null) return false;
+        sqlContext.openConnection();
+        transactionOpen = true;
+        return true;
+    }
+    
+    //returns true if closing transaction was successful.
+    public boolean closeTransaction() throws Exception {
+        if(!transactionOpen) 
+            return false;
+        if(sqlContext==null) return false;
+        transactionOpen = false;
+        sqlContext.closeConnection();
+        return true;
+    }
     
 }

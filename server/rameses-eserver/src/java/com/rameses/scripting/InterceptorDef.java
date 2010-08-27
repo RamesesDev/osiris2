@@ -20,15 +20,16 @@ public class InterceptorDef implements Comparable {
     private String pattern;
     private boolean hasParam;
     private String expr;
+    private String exclude;
     
-    public InterceptorDef() {
-    }
-    
-    public InterceptorDef(String scriptName, Method m, int idx, String pattern, String expr) {
+    public InterceptorDef(String scriptName, Method m, int idx, String pattern, String expr, String exclude) {
         this.pattern = pattern;
         this.scriptName = scriptName;
         this.index = idx;
         this.method = m.getName();
+        if(exclude!=null && exclude.trim().length()>0)
+            this.exclude = exclude;
+        
         if( m.getParameterTypes()!=null && m.getParameterTypes().length>0) {
             this.hasParam = true;
         }
@@ -61,13 +62,18 @@ public class InterceptorDef implements Comparable {
     }
     
     public boolean accept(String name) {
-        if( pattern == null || pattern.trim().length() == 0 )
-            return true;
-        if( name.matches(pattern)) {
-            return true;
-        } else {
-            return false;
+        boolean passPattern = false;
+        if( pattern == null || pattern.trim().length() == 0 ) {
+            passPattern = true;
         }
+        else if( name.matches(pattern)) {
+            passPattern = true;
+        } 
+        
+        if(!passPattern) return false;
+        if(exclude==null) return true;
+        if(name.matches(exclude)) return false;
+        return true;
     }
 
     public String getMethod() {

@@ -47,8 +47,12 @@ public class MapBuilderHandler implements SchemaHandler {
             Map map = stack.peek();
             Object defaultValue = f.getProperties().get("default");
             if( defaultValue==null && map.containsKey(refname)) return;
-            
-            map.put( refname, defaultValue );
+            try {
+                defaultValue = SchemaUtil.formatType(f, defaultValue );
+                map.put( refname, defaultValue );
+            } catch(Exception ign){
+                System.out.println("cannot assign " + defaultValue + " as " + f.getType());
+            }
         }
     }
     
