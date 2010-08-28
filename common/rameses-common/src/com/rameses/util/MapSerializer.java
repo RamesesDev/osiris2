@@ -1,76 +1,121 @@
 /*
  * MapSerializer.java
  *
+ * Created on August 27, 2010, 5:37 PM
  * @author jaycverg
  */
+
 package com.rameses.util;
 
-import java.io.OutputStream;
+import com.rameses.schema.BreakException;
+import com.rameses.util.MapScanner.MapScannerHandler;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Map;
 
-public abstract class MapSerializer {
+/**
+ * @description
+ *    basic implementation of abstract class MapSerializer
+ */
+public class MapSerializer {
     
-    private MapSerializerHandler handler = new DefaultHandler();
+    private MapScannerHandler scanHandler = new ScanHandler();
+    private Writer writer;
+    private String ignorePrefix = "_";
+    
+    
     private static MapSerializer instance;
     
     public static MapSerializer getInstance() {
-        if ( instance == null ) {
-            instance = new BasicMapSerializer();
-        }
+        if ( instance == null ) instance = new MapSerializer();
         return instance;
     }
     
-    public abstract String toString(Map data);
-    public abstract void write(Map data, OutputStream os);
     
-    public MapSerializerHandler getHandler() {
-        return handler;
+    public MapSerializer() {}
+    
+    public String toString(Map data) {
+        writer = new StringWriter();
+        stringifyMap(data);
+        return writer.toString();
     }
     
-    public void setHandler(MapSerializerHandler handler) {
-        this.handler = handler;
-    }
-    
-    
-    protected void signalStartDocument() {
-        handler.startDocument();
-    }
-    
-    protected void signalStartElement(String key, Object value, int rowPos) {
-        handler.startElement(key, value, rowPos);
-    }
-    
-    protected void signalStartProperty(String key, Object value) {
-        handler.startProperty(key, value);
-    }
-    
-    protected void signalEndProperty(String key) {
-        handler.endProperty(key);
-    }
-    
-    protected void signalEndElement(String key) {
-        handler.endElement(key);
-    }
-    
-    protected void signalEndDocument() {
-        handler.endDocument();
-    }
-    
-    /**
-     * @description
-     *   default implementation of MapSerializerHandler interface
-     */
-    public static class DefaultHandler implements MapSerializerHandler {
-        
-        public String getIgnorPrefix() {
-            return "_";
+    public void write(Map data, Writer writer) {
+        try {
+            this.writer = writer;
+            stringifyMap(data);
+            writer.flush();
+            
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            try { writer.close(); }catch(Exception e){}
         }
+    }
+    
+    public String getIgnorePrefix() {
+        return ignorePrefix;
+    }
+    
+    public void setIgnorePrefix(String ignorePrefix) {
+        this.ignorePrefix = ignorePrefix;
+    }
+    
+    
+    private void stringifyMap(Map data) {
+        MapScanner scanner = new MapScanner(scanHandler);
+        scanner.scan(data);
+    }
+    
+    private class ScanHandler implements MapScannerHandler {
+        
         public void startDocument() {}
-        public void startElement(String key, Object value, int rowPos) {}
-        public void startProperty(String key, Object value) {}
-        public void endProperty(String key) {}
-        public void endElement(String key) {}
+        
+        public void startElement(String name, int pos) {
+            if ( !ValueUtil.isEmpty(ignorePrefix) && (name+"").startsWith(ignorePrefix) ) {
+                throw new BreakException();
+            }
+            
+            try {
+                if(pos>0) writer.write(",");
+                if( name!=null ) writer.write(name+":");
+                writer.write("[");
+                
+            } catch(Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        
+        public void property(String name, Object value, int pos) {
+            if ( !ValueUtil.isEmpty(ignorePrefix) && (name+"").startsWith(ignorePrefix) ) {
+                throw new BreakException();
+            }
+            
+            try {
+                if(pos>0) writer.write(",");
+                if(name!=null) writer.write(name+":");
+                
+                if ( value == null ) {
+                    writer.write("null");
+                } else {
+                    writer.write( ValueUtil.getValueAsString(value.getClass(), value) );
+                }
+                
+            } catch(Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        
+        public void endElement(String name) {
+            try {
+                writer.write("]");
+            } catch(Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        
         public void endDocument() {}
+        
         
     }
     
