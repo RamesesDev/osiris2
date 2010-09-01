@@ -80,7 +80,9 @@ public class XDateField extends XTextField {
             }
         } else {
             if ( value != null ) {
-                value = outputFormatter.format(value);
+                try{
+                    value = outputFormatter.parse(value.toString());
+                }catch(Exception ex) { ex.printStackTrace(); }
             }
             setText( value==null? "" : value.toString() );
         }
