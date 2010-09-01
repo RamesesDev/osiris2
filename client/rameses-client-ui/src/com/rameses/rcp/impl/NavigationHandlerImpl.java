@@ -65,6 +65,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 }
                 
                 UIControllerContext controller = new UIControllerContext(opCon);
+                controller.setId(opener.getId());
                 if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
                     controller.setCurrentView( opener.getOutcome() );
                 }
@@ -76,7 +77,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     UIControllerPanel uic = new UIControllerPanel(controller);
                     
                     Map props = new HashMap();
-                    props.put("id", opener.getId());
+                    props.put("id", controller.getId());
                     props.put("title", controller.getTitle());
                     props.put("modal", opener.isModal());
                     

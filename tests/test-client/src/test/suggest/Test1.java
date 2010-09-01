@@ -1,27 +1,24 @@
-package example;
-//-*- mode:java; encoding:utf8n; coding:utf-8 -*-
-// vim:set fileencoding=utf-8:
-//http://terai.xrea.jp/Swing/ComboBoxSuggestion.html
+package test.suggest;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-public class MainPanel extends JPanel{
+public class Test1 extends JPanel{
     private final JTextField field;
     private final JComboBox combo = new JComboBox();
     private final Vector<String> model = new Vector<String>();
     
-    public MainPanel() {
+    public Test1() {
         super(new BorderLayout());
         combo.setEditable(true);
         field = (JTextField) combo.getEditor().getEditorComponent();
         field.addKeyListener(new KeyAdapter() {
-            @Override
+            
             public void keyTyped(KeyEvent e) {
                 keyTypedInCombo(e);
             }
-            @Override
+            
             public void keyPressed(KeyEvent e) {
                 keyPressedInCombo(e);
             }
@@ -179,7 +176,7 @@ public class MainPanel extends JPanel{
         
         JFrame frame = new JFrame("ComboBoxSuggestion");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new MainPanel());
+        frame.getContentPane().add(new Test1());
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

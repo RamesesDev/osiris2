@@ -12,9 +12,9 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="formPanel1" alignment="0" pref="424" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="xButton3" min="-2" max="-2" attributes="0"/>
@@ -24,6 +24,11 @@
                       <Component id="xButton5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xButton1" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="xLabel1" min="-2" pref="111" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xTextField2" min="-2" pref="181" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -35,7 +40,12 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="formPanel1" min="-2" pref="110" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="xLabel1" alignment="3" min="-2" max="-2" attributes="1"/>
+                  <Component id="xTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="73" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton5" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -76,6 +86,17 @@
             </Property>
           </Properties>
         </Component>
+        <Component class="com.rameses.rcp.control.XNumberField" name="xNumberField1">
+          <Properties>
+            <Property name="fieldType" type="java.lang.Class" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="Integer.class" type="code"/>
+            </Property>
+            <Property name="name" type="java.lang.String" value="entity.number"/>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[100, 19]"/>
+            </Property>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Component class="com.rameses.rcp.control.XButton" name="xButton3">
@@ -90,6 +111,18 @@
         <Property name="text" type="java.lang.String" value="Save"/>
         <Property name="immediate" type="boolean" value="true"/>
         <Property name="name" type="java.lang.String" value="save"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XLabel" name="xLabel1">
+      <Properties>
+        <Property name="displayedMnemonic" type="int" value="78"/>
+        <Property name="text" type="java.lang.String" value="Normal Label :"/>
+        <Property name="for" type="java.lang.String" value="entity.address"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XTextField" name="xTextField2">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="entity.address"/>
       </Properties>
     </Component>
   </SubComponents>

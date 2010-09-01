@@ -1,4 +1,5 @@
 package com.rameses.rcp.util;
+
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.Validatable;
@@ -126,6 +127,7 @@ public class FormPanel extends JPanel {
             
             label = new JLabel();
             label.setBorder(BorderFactory.createEmptyBorder(3,3,3,2));
+            label.setLabelFor(editor);
             
             setOpaque(false);
             setLayout(new ItemPanelLayout(property));

@@ -72,12 +72,18 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void load() {
         if ( !ValueUtil.isEmpty(labelFor) ) {
             UIControl c = binding.find(labelFor);
+            if ( c == null ) return;
+            if (c instanceof JComponent) {
+                activeComponent = (JComponent) c;
+                setLabelFor(activeComponent);
+            }
             if ( c instanceof ActiveControl ) {
                 ActiveControl ac = (ActiveControl) c;
-                if (ac instanceof JComponent) {
-                    activeComponent = (JComponent) ac;
-                }
                 activeProperty = ac.getControlProperty();
+                String acCaption = activeProperty.getCaption();
+                if ( !ValueUtil.isEmpty(acCaption) && !acCaption.equals("Caption") ) {
+                    super.setText(activeProperty.getCaption() + " :");
+                }
                 
                 activeControlSupport = new ActiveControlSupport();
                 activeProperty.addPropertyChangeListener(activeControlSupport);
@@ -89,7 +95,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
         return UIControlUtil.compare(this, o);
     }
     
-    public void doSetText(String text, boolean required) {
+    private void doSetText(String text, boolean required) {
         StringBuffer sb = new StringBuffer(text);
         if ( required ) {
             if ( !formatted || dynamic ) {
@@ -130,11 +136,11 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
             super.setBorder(origBorder);
         }
     }
-
+    
     public Border getBorder() {
         return origBorder;
     }
-        
+    
     public String getCaption() {
         return property.getCaption();
     }
