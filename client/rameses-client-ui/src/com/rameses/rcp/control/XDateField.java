@@ -25,6 +25,8 @@ import java.util.Date;
 
 public class XDateField extends XTextField {
     
+    private static int CURRENT_MILLENIUM = 2000;
+    
     private Date currentDate;
     private SimpleDateFormat inputFormatter;
     private SimpleDateFormat outputFormatter;
@@ -84,7 +86,7 @@ public class XDateField extends XTextField {
                     value = outputFormatter.parse(value.toString());
                 }catch(Exception ex) { ex.printStackTrace(); }
             }
-            setText( value==null? "" : value.toString() );
+            setText( value==null? "" : outputFormatter.format(value) );
         }
     }
     
