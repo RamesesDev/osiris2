@@ -43,12 +43,14 @@ public class XDateField extends XTextField {
     public XDateField() {
         setOutputFormat("yyyy-MM-dd");
         setInputFormat("yyyy-MM-dd");
+        setValueFormat("yyyy-MM-dd");
         DateFieldSupport dateFieldSupport = new DateFieldSupport();
         addFocusListener(dateFieldSupport);
         addKeyListener(dateFieldSupport);
         guideFormat = getInputFormat();
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  Getter / Setter  ">
     public Object getValue() {
         if( Beans.isDesignTime())
             return "";
@@ -56,7 +58,7 @@ public class XDateField extends XTextField {
         try {
             if ( !ValueUtil.isEmpty(getText()) ) {
                 date = inputFormatter.parse(getText());
-                formattedString = inputFormatter.format(date);
+                formattedString = valueFormatter.format(date);
             }
         } catch(Exception e) {
             formattedString = null;
@@ -142,6 +144,8 @@ public class XDateField extends XTextField {
         else
             valueFormatter = null;
     }
+    //</editor-fold>
+    
     
     private final void showFormattedValue(boolean formatted) throws ParseException {
         Object value = UIControlUtil.getBeanValue(this);
@@ -180,6 +184,10 @@ public class XDateField extends XTextField {
             calculatePosition();
             g.drawString(guideFormat, txtXPos, txtYPos);
         }
+    }
+    
+    public void autoComplete(String str) {
+        
     }
     
     
