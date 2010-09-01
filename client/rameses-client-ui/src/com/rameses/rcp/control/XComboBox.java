@@ -27,16 +27,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.SwingUtilities;
 
 public class XComboBox extends JComboBox implements UIInput, ItemListener, Validatable, ActiveControl {
     
-    private Binding binding;
+    protected Binding binding;
+    
     private int index;
     private String[] depends;
     private String caption;
     private String items;
-    private boolean immediate = false;
-    private boolean isEnum = false;
+    private boolean immediate;
+    private boolean dynamic;
     private String expression;
     private String emptyText = "-";
     private boolean allowNull = true;
@@ -47,7 +49,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private boolean readonly;
     private String itemKey;
     
-    private DefaultComboBoxModel model;
+    protected DefaultComboBoxModel model;
     
     
     public XComboBox() {
@@ -64,7 +66,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     //</editor-fold>
     
     public void refresh() {
-        if ( immediate && !isEnum ) {
+        if ( dynamic ) {
             buildList();
         }
         Object value = UIControlUtil.getBeanValue(this);
@@ -75,22 +77,22 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
         model = new DefaultComboBoxModel();
         super.setModel(model);
         
+        if ( !dynamic ) {
+            buildList();
+        }
+        
         if ( immediate ) {
             super.addItemListener(this);
         } else {
             super.setInputVerifier(UIInputUtil.VERIFIER);
-            buildList();
         }
     }
     
     //<editor-fold defaultstate="collapsed" desc="  buildList  ">
-    private void buildList() {
-        model.removeAllElements(); //clear combo model
-        
+    private Collection fetchItems() {
         Object beanItems = UIControlUtil.getBeanValue(this, getItems());
         Collection list = null;
         Class type = null;
-        isEnum = false;
         if ( beanItems != null ) {
             type = beanItems.getClass();
             if ( type.isArray() ) {
@@ -114,15 +116,20 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             }
             if ( type != null && type.isEnum()) {
                 list = Arrays.asList(type.getEnumConstants());
-                isEnum = true;
             }
         }
-        
-        if ( list == null ) return;
+        return list;
+    }
+    
+    private void buildList() {
+        model.removeAllElements(); //clear combo model
         
         if ( allowNull ) {
             addItem(null, emptyText);
         }
+        
+        Collection list = fetchItems();
+        if ( list == null ) return;
         
         ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
         for ( Object o: list ) {
@@ -134,6 +141,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             
             addItem(o, caption+"");
         }
+        SwingUtilities.updateComponentTreeUI(this);
     }
     
     private void addItem(Object value, String text) {
@@ -196,7 +204,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
         }
     }
     
-    private boolean isSelected(ComboItem ci, Object value) {
+    protected boolean isSelected(ComboItem ci, Object value) {
         if ( value != null && !ValueUtil.isEmpty(itemKey) ) {
             if ( ci.getValue() == null ) return false;
             
@@ -333,7 +341,6 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public void setImmediate(boolean immediate) {
         this.immediate = immediate;
     }
-    //</editor-fold>
     
     public String getItemKey() {
         return itemKey;
@@ -343,6 +350,22 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
         this.itemKey = itemKey;
     }
     
+    public String getEmptyText() {
+        return emptyText;
+    }
+    
+    public void setEmptyText(String emptyText) {
+        this.emptyText = emptyText;
+    }
+    
+    public boolean isDynamic() {
+        return dynamic;
+    }
+    
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  ComboItem (class)  ">
     public class ComboItem {

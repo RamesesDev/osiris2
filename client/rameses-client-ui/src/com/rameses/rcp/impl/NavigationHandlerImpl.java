@@ -76,7 +76,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     UIControllerPanel uic = new UIControllerPanel(controller);
                     
                     Map props = new HashMap();
-                    props.put("id", controller.getId());
+                    props.put("id", opener.getId());
                     props.put("title", controller.getTitle());
                     props.put("modal", opener.isModal());
                     
