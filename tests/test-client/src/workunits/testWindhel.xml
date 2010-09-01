@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class TestWindhelController  {
+            def image = "/home/rameses/Desktop/mlglobal2z2.png";
+            def date;
+            def text;
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="testWindhel.TestWindhelPage"/>
+    </pages>
+</workunit>
