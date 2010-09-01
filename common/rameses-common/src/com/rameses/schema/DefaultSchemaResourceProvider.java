@@ -38,7 +38,9 @@ public class DefaultSchemaResourceProvider implements SchemaResourceProvider  {
         for(SchemaResourceProvider sp : providers) {
             try {
                 is = sp.getResource( name );
-            } catch (Exception ign){;}
+            } catch (Exception ign){
+                ign.printStackTrace();
+            }
             if(is!=null) return is;
         }
         

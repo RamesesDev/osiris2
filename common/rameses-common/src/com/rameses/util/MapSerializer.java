@@ -7,7 +7,6 @@
 
 package com.rameses.util;
 
-import com.rameses.schema.BreakException;
 import com.rameses.util.MapScanner.MapScannerHandler;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -21,8 +20,6 @@ public class MapSerializer {
     
     private MapScannerHandler scanHandler = new ScanHandler();
     private Writer writer;
-    private String ignorePrefix = "_";
-    
     
     private static MapSerializer instance;
     
@@ -53,15 +50,6 @@ public class MapSerializer {
         }
     }
     
-    public String getIgnorePrefix() {
-        return ignorePrefix;
-    }
-    
-    public void setIgnorePrefix(String ignorePrefix) {
-        this.ignorePrefix = ignorePrefix;
-    }
-    
-    
     private void stringifyMap(Map data) {
         MapScanner scanner = new MapScanner(scanHandler);
         scanner.scan(data);
@@ -72,10 +60,6 @@ public class MapSerializer {
         public void startDocument() {}
         
         public void startElement(String name, int pos) {
-            if ( !ValueUtil.isEmpty(ignorePrefix) && (name+"").startsWith(ignorePrefix) ) {
-                throw new BreakException();
-            }
-            
             try {
                 if(pos>0) writer.write(",");
                 if( name!=null ) writer.write(name+":");
@@ -87,10 +71,6 @@ public class MapSerializer {
         }
         
         public void property(String name, Object value, int pos) {
-            if ( !ValueUtil.isEmpty(ignorePrefix) && (name+"").startsWith(ignorePrefix) ) {
-                throw new BreakException();
-            }
-            
             try {
                 if(pos>0) writer.write(",");
                 if(name!=null) writer.write(name+":");

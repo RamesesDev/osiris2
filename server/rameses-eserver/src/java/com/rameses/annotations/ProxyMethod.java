@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value=ElementType.METHOD)
 public @interface ProxyMethod {
-
+    boolean local() default false;
 }

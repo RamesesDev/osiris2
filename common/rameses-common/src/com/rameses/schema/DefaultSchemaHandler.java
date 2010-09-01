@@ -28,14 +28,12 @@ public class DefaultSchemaHandler implements SchemaHandler {
     public void processField(SimpleField f, String refname, Object value) {
     }
 
-    public void startLinkField(LinkField f) {
+    public void startLinkField(LinkField f, String refname, SchemaElement element) {
     }
 
     public void endLinkField(LinkField f) {
     }
 
-    public void startComplexField(ComplexField cf) {
-    }
 
     public void endComplexField(ComplexField cf) {
     }
@@ -47,6 +45,9 @@ public class DefaultSchemaHandler implements SchemaHandler {
     }
 
     public void setStatus(SchemaHandlerStatus status) {
+    }
+
+    public void startComplexField(ComplexField cf,String refname, SchemaElement element,Object data) {
     }
     
 }

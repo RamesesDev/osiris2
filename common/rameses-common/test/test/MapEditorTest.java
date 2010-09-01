@@ -7,7 +7,7 @@
 
 package test;
 
-import com.rameses.util.editors.MapEditor;
+import com.rameses.util.MapEditor;
 import java.util.HashMap;
 import java.util.Map;
 import junit.framework.*;

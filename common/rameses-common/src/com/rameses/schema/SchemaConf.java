@@ -27,11 +27,15 @@ public class SchemaConf {
     private PropertyResolver propertyResolver;
     private SchemaResourceProvider resourceProvider = new DefaultSchemaResourceProvider();
     private SchemaCacheProvider cacheProvider = new DefaultSchemaCacheProvider();
+    
+    private SchemaScriptProvider scriptProvider;
 
     private List<SchemaProvider> providers ;
+    private SchemaManager schemaManager;
     
     /** Creates a new instance of SchemaConf */
-    public SchemaConf() {
+    public SchemaConf(SchemaManager sm) {
+        this.schemaManager = sm;
     }
     
     public PropertyResolver getPropertyResolver() {
@@ -64,12 +68,12 @@ public class SchemaConf {
             Iterator iter = Service.providers(SchemaProvider.class, Thread.currentThread().getContextClassLoader());
             while(iter.hasNext()) {
                 SchemaProvider sp = (SchemaProvider)iter.next();
-                sp.setConf( this );
+                sp.setSchemaManager( schemaManager );
                 providers.add( sp );
             }
             //add the default schema def provider
             SchemaProvider d = new XmlSchemaProvider();
-            d.setConf(this);
+            d.setSchemaManager(schemaManager);
             providers.add(d);
         }
         return providers;
@@ -81,6 +85,16 @@ public class SchemaConf {
         if(providers!=null) providers.clear();
         if(cacheProvider!=null) cacheProvider.destroy();
         cacheProvider = null;
+        scriptProvider = null;
+        schemaManager = null;
+    }
+
+    public SchemaScriptProvider getScriptProvider() {
+        return scriptProvider;
+    }
+
+    public void setScriptProvider(SchemaScriptProvider scriptProvider) {
+        this.scriptProvider = scriptProvider;
     }
     
 }

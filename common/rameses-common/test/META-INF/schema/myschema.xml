@@ -1,0 +1,11 @@
+<schema>
+    
+     <element name="test" tablename="test1">
+        <field name="id" primary="true" default="TESTID"/>
+        <field name="name1" default="name1"/>
+    </element>
+     
+
+</schema>
+
+

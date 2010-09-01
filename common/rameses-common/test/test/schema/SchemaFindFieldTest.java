@@ -7,6 +7,7 @@
 
 package test.schema;
 
+import com.rameses.schema.LinkField;
 import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaField;
@@ -43,7 +44,8 @@ public class SchemaFindFieldTest extends TestCase {
         assertEquals(sf.getName(),"sender");
         sf = schema.findField( "sendout/remote/address2/city" );
         assertEquals(sf.getName(), "city");
-        
+        sf = schema.findField("sendout/remote");
+        assertEquals(sf.getClass(), LinkField.class);
     }
     
     

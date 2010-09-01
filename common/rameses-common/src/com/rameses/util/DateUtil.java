@@ -9,8 +9,10 @@
 
 package com.rameses.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public final class DateUtil {
     
@@ -117,7 +119,48 @@ public final class DateUtil {
     
     
     //Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET)) / (60 * 1000)
+    public static String getFormattedTime( Date d, String timezone ) {
+        final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+        TimeZone tz = TimeZone.getTimeZone(timezone);
+        if(tz==null)
+            throw new RuntimeException("Timezone " +timezone + " is not available");
+        sdf.setTimeZone(tz);
+        return sdf.format(d);
+    }
     
+    public static String getFormattedTime( Date d, String dtformat, String timezone ) {
+        if(dtformat==null) dtformat = "yyyy-MM-dd HH:mm:ss";
+        final String DATE_TIME_FORMAT = dtformat;
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+        TimeZone tz = TimeZone.getTimeZone(timezone);
+        if(tz==null)
+            throw new RuntimeException("Timezone " +timezone + " is not available");
+        sdf.setTimeZone(tz);
+        return sdf.format(d);
+    }
+    
+    public static String convertTime(String time, String sourceTZ, String destTZ) {
+        final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT);
+        if (sourceTZ != null)
+            sdf.setTimeZone(TimeZone.getTimeZone(sourceTZ));
+        else
+            sdf.setTimeZone(TimeZone.getDefault()); // default to server's timezone
+        Date specifiedTime;
+        try {
+            specifiedTime = sdf.parse(time);
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+        // switch timezone
+        if (destTZ != null)
+            sdf.setTimeZone(TimeZone.getTimeZone(destTZ));
+        else
+            sdf.setTimeZone(TimeZone.getDefault()); // default to server's timezone
+        return sdf.format(specifiedTime);
+    }
     
     
 }

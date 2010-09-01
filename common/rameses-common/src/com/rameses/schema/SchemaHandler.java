@@ -20,8 +20,8 @@ public interface SchemaHandler {
     void startSchema(Schema schema);
     void startElement( SchemaElement element, Object data);
     void processField(SimpleField f, String refname, Object value);
-    void startLinkField(LinkField f);
-    void startComplexField(ComplexField cf);
+    void startLinkField(LinkField f, String refname, SchemaElement linkedElement);
+    void startComplexField(ComplexField cf, String refname, SchemaElement element, Object data );
     void endLinkField(LinkField f);
     void endComplexField(ComplexField cf);
     void endElement(SchemaElement element);

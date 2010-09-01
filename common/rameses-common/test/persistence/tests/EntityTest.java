@@ -63,10 +63,10 @@ public class EntityTest extends TestCase {
         
         
         SqlExecutor se = null;
-        Queue<SqlExecutor> q = handler.getQueue();
+        Queue q= handler.getQueue();
         assertEquals(q.size(),3);
         while(!q.isEmpty()) {
-            se=q.remove();
+            se=(SqlExecutor )q.remove();
             System.out.println(se.getStatement());
             int i = 0;
             for(String s: se.getParameterNames()) {

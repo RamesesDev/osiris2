@@ -1,0 +1,21 @@
+<schema>
+
+    <element name="person-info">
+        <field name="firstname" default="patricia"/> 
+        <field name="lastname" default="nazareno"/> 
+    </element>    
+
+    <element name="addresstype">
+        <field name="street" default="orchid st."/>
+        <field name="city" default="cebu"/>
+        <field name="country" default="ph"/>
+    </element>
+    
+    <element name="idtype">
+        <field name="type" default="DRIVERS LICENSE"/>
+        <field name="number" default="09128888811"/>
+        <field name="expirydate" default="2011-01-01"/>
+    </element>    
+    
+</schema>
+

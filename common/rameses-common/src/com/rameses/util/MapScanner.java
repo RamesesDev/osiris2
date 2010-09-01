@@ -9,7 +9,6 @@
 
 package com.rameses.util;
 
-import com.rameses.schema.BreakException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,8 @@ import java.util.Map;
  * @author elmo
  */
 public final class MapScanner {
+    
+    private String excludeMatch = "_.*";
     
     private MapScannerHandler handler;
     
@@ -40,48 +41,33 @@ public final class MapScanner {
             handler.property(name, o, pos);
         } else if( o instanceof Map ) {
             Map map = (Map)o;
-            try {
-                handler.startElement(name,pos);
-                int i = 0;
-                for(Object m : map.entrySet()) {
-                    Map.Entry me = (Map.Entry)m;
-                    String key = me.getKey()+"";
+            handler.startElement(name,pos);
+            int i = 0;
+            for(Object m : map.entrySet()) {
+                Map.Entry me = (Map.Entry)m;
+                String key = me.getKey()+"";
+                if(excludeMatch==null || !key.matches(excludeMatch)) {
                     Object value = me.getValue();
-                    
-                    try {
-                        scanObject(key, value, i);
-                        i++;
-                    } catch(BreakException ign){;}
+                    scanObject(key, value,i++);
                 }
-                handler.endElement(name);
-            } 
-            catch(BreakException ign) {;}
-            catch(Exception e) {
-                throw new RuntimeException(e);
             }
-            
-        } else if( (o instanceof List) || o.getClass().isArray() ) {
+            handler.endElement(name);
+        }
+        else if( (o instanceof List) || o.getClass().isArray() ) {
             List list = null;
             if ( o.getClass().isArray() ) {
                 list = Arrays.asList((Object[])o);
             } else {
                 list = (List) o;
             }
-            try {
-                handler.startElement(name, 0);
-                int i = 0;
-                for(Object item: list) {
-                    try {
-                        scanObject( null, item, i );
-                        i++;
-                    } catch(BreakException ign){;}
-                }
-                handler.endElement(name);
-            } 
-            catch(BreakException ign) {;}
-            catch(Exception e) {
-                throw new RuntimeException(e);
+            
+            handler.startElement(name, pos);
+            int i = 0;
+            for(Object item: list) {
+                scanObject( null, item, i++ );
             }
+            handler.endElement(name);
+            
         } else {
             handler.property(name, o, pos);
         }
@@ -121,6 +107,15 @@ public final class MapScanner {
         }
         
     }
+    
+    public String getExcludeMatch() {
+        return excludeMatch;
+    }
+    
+    public void setExcludeMatch(String excludeMatch) {
+        this.excludeMatch = excludeMatch;
+    }
+    
     
     
 }

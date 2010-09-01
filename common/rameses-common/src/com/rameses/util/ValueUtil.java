@@ -95,4 +95,14 @@ public class ValueUtil {
         return sb;
     }
 
+    public static String repeat(String val, int repeat ) {
+        if(val==null) val = " ";
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i<repeat;i++) {
+            sb.append( val );
+        }
+        return sb.toString();
+    }
+    
+    
 }

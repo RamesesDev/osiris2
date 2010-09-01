@@ -1,15 +1,17 @@
 <schema>
     
-     <element name="test" tablename="test1">
+     <element name="test" tablename="test.tblcustomer">
         <field name="id" primary="true" default="TESTID"/>
         <field name="name1" default="name1"/>
-        <link-field name="test2" ref="test2"/>
-        <link-field name="test3" ref="test3"/>
+        <link name="test2" ref="test2"  />
+        <link ref="test3"  tablename="test2"/>
     </element>
-     
-    <element name="test2" tablename="test2">
+    
+    <element name="test2" tablename="test.tbladdress">
         <field name="id" primary="true" mapfield="id"/>
         <field name="name2" default="name2"/>
+        <field name="test2" default="name2" tablename="test2"/>
+        
     </element>
 
     <element name="test3" tablename="test3">

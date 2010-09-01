@@ -27,15 +27,16 @@ public class SchemaXmlParser extends DefaultHandler{
     private PropertyResolver resolver;
     private SchemaElement currentElement;
     private Schema schema; 
-    
+    private SchemaManager schemaManager;
     
     /** Creates a new instance of XmlSchemaParser */
-    public SchemaXmlParser(PropertyResolver r) {
-        resolver = r;
+    public SchemaXmlParser(SchemaManager sm) {
+        schemaManager = sm;
+        resolver = sm.getConf().getPropertyResolver();
     }
     
     public Schema parse(InputStream is, String name ) throws Exception {
-        schema = new Schema(name);
+        schema = new Schema(name,schemaManager);
         SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
         parser.parse( is, this );
         return schema;

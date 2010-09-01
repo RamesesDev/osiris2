@@ -44,7 +44,7 @@ public class SchemaTest extends TestCase {
     protected void tearDown() throws Exception {
     }
     
-    public void xtestRoot() throws Exception {
+    public void testRoot() throws Exception {
         Schema schema = mgr.getSchema( "customer" );
         assertEquals( schema.getRootElement(), schema.getElement("customer") );
     }
@@ -88,9 +88,9 @@ public class SchemaTest extends TestCase {
         sc.scan(schema, map, handler );
         
         SqlExecutor se = null;
-        Queue<SqlExecutor> q = handler.getQueue();
+        Queue q = handler.getQueue();
         while(!q.isEmpty()) {
-            se=q.remove();
+            se=(SqlExecutor)q.remove();
             System.out.println(se.getStatement());
             int i = 0;
             for(String s: se.getParameterNames()) {
@@ -138,9 +138,9 @@ public class SchemaTest extends TestCase {
         sc.scan(schema, map, handler );
         
         SqlQuery se = null;
-        Queue<SqlQuery> q = handler.getQueue();
+        Queue q = handler.getQueue();
         while(!q.isEmpty()) {
-            se=q.remove();
+            se=(SqlQuery)q.remove();
             System.out.println(se.getStatement());
             int i = 0;
             for(String s: se.getParameterNames()) {

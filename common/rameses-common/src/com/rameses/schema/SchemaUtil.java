@@ -20,14 +20,9 @@ import java.util.Date;
 public final class SchemaUtil {
     
     //if it returns true, then the required rule passes. 
-    public static boolean checkRequired( SchemaField f, Class clazz, Object value ) {
+    public static boolean checkRequired( SchemaField f, Object value ) {
         if(!f.isRequired()) return true;
         
-        if( clazz==null ) {
-            return false;
-        }
-        //if class is not null, check the object
-       
         
         if( value==null ) {
             return false;

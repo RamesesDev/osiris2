@@ -13,10 +13,12 @@ import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaElement;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaScanner;
+import com.rameses.schema.SchemaScriptProvider;
 import com.rameses.schema.ValidationResult;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlQuery;
+import com.rameses.util.MapSerializer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +52,7 @@ public class DefaultEntityManager implements EntityManager {
     }
     
     public Object create(String schemaName, Object data) {
-        Queue<SqlExecutor> queue = null;
+        Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
             CreatePersistenceHandler handler = new CreatePersistenceHandler(schemaManager,sqlContext);
@@ -65,7 +67,7 @@ public class DefaultEntityManager implements EntityManager {
         try {
             if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
-                SqlExecutor se= queue.remove();
+                SqlExecutor se= (SqlExecutor)queue.remove();
                 if(debug) {
                     System.out.println(se.getStatement());
                     int i = 0;
@@ -90,7 +92,7 @@ public class DefaultEntityManager implements EntityManager {
      * if there are no records found, this function returns null
      */
     public Object read(String schemaName, Object data) {
-        Queue<SqlQuery> queue = null;
+        Queue queue = null;
         List<String> removeFields = new ArrayList();
         try {
             SchemaScanner scanner = schemaManager.newScanner();
@@ -109,7 +111,7 @@ public class DefaultEntityManager implements EntityManager {
                 sqlContext.openConnection();
             }
             while(!queue.isEmpty()) {
-                SqlQuery sq = queue.remove();
+                SqlQuery sq = (SqlQuery)queue.remove();
                 if(debug) {
                     System.out.println(sq.getStatement());
                     int i =0;
@@ -162,7 +164,7 @@ public class DefaultEntityManager implements EntityManager {
         Map oldData = (Map) read( schemaName, data );
         oldData.putAll( (Map)data );
         
-        Queue<SqlExecutor> queue = null;
+        Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
             UpdatePersistenceHandler handler = new UpdatePersistenceHandler(schemaManager,sqlContext);
@@ -177,7 +179,7 @@ public class DefaultEntityManager implements EntityManager {
         try {
             if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
-                SqlExecutor se= queue.remove();
+                SqlExecutor se= (SqlExecutor)queue.remove();
                 if(debug) {
                     System.out.println(se.getStatement());
                     int i = 0;
@@ -198,7 +200,7 @@ public class DefaultEntityManager implements EntityManager {
     }
     
     public void delete(String schemaName, Object data) {
-        Queue<SqlExecutor> queue = null;
+        Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
             DeletePersistenceHandler handler = new DeletePersistenceHandler(schemaManager,sqlContext);
@@ -213,7 +215,7 @@ public class DefaultEntityManager implements EntityManager {
         try {
             if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
-                SqlExecutor se= queue.remove();
+                SqlExecutor se= (SqlExecutor)queue.remove();
                 if(debug) {
                     System.out.println(se.getStatement());
                     int i = 0;
@@ -245,13 +247,7 @@ public class DefaultEntityManager implements EntityManager {
         this.debug = debug;
     }
     
-    public Object createModel(String schemaName) {
-        return schemaManager.createMap(schemaName);
-    }
-    
-    public ValidationResult validateModel(String schemaName, Object data) {
-        return schemaManager.validate(schemaName, data);
-    }
+   
     
     //returns true if opening transaction was successful.
     public boolean beginTransaction() throws Exception {
@@ -271,6 +267,28 @@ public class DefaultEntityManager implements EntityManager {
         transactionOpen = false;
         sqlContext.closeConnection();
         return true;
+    }
+    
+    public Object createModel(String schemaName) {
+        return schemaManager.createMap(schemaName);
+    }
+    
+    public ValidationResult validateModel(String schemaName, Object data) {
+        return schemaManager.validate(schemaName, data);
+    }
+    
+    /**
+     * add a map serializer also later.
+     */
+    public MapSerializer createSerializer() {
+        return new MapSerializer();
+    }
+    
+    public Object parseData( Map vars, String data ) {
+        SchemaScriptProvider scriptProvider = schemaManager.getConf().getScriptProvider();
+        if( scriptProvider == null )
+            throw new RuntimeException("Script provider is not set");
+        return scriptProvider.eval(vars, data);    
     }
     
 }

@@ -11,17 +11,17 @@ package com.rameses.schema;
 
 public abstract class SchemaProvider {
     
-    private SchemaConf conf;
+    private SchemaManager schemaManager;
     
     
     public abstract Schema getSchema(String name);
 
-    public SchemaConf getConf() {
-        return conf;
+    public SchemaManager getSchemaManager() {
+        return schemaManager;
     }
 
-    public void setConf(SchemaConf conf) {
-        this.conf = conf;
+    public void setSchemaManager(SchemaManager sm) {
+        this.schemaManager = sm;
     }
     
     

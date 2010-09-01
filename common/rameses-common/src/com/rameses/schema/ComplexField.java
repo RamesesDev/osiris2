@@ -16,25 +16,21 @@ package com.rameses.schema;
 public class ComplexField extends SchemaField {
     
     private String name;
-    private boolean required;
-    private String multiplicity = ComplexFieldMultiplicity.MANY;
-    private SchemaElement schema;
+    private boolean required = true;
+    private String type;
+    private String ref;
+    private int min;
+    private int max;
     
-    public String getMultiplicity() {
-        return multiplicity;
+   
+    public String getType() {
+        return type;
     }
 
-    public void setMultiplicity(String multiplicity) {
-        this.multiplicity = multiplicity;
+    public void setType(String t) {
+        this.type = t;
     }
 
-    public SchemaElement getSchema() {
-        return schema;
-    }
-
-    public void setSchema(SchemaElement schema) {
-        this.schema = schema;
-    }
 
     public String getName() {
         return name;
@@ -50,6 +46,30 @@ public class ComplexField extends SchemaField {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public int getMin() {
+        return min;
+    }
+
+    public void setMin(int min) {
+        this.min = min;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    public String getRef() {
+        return ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
     }
     
     

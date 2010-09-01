@@ -32,19 +32,21 @@ public class TestSchemaHandler implements SchemaHandler {
     public void endSchema(Schema schema) {
     }
 
-    public void startLinkField(LinkField f) {
+    public void startLinkField(LinkField f, String refname, SchemaElement element) {
     }
 
     public void endLinkField(LinkField f) {
     }
 
-    public void startComplexField(ComplexField cf) {
-    }
 
     public void endComplexField(ComplexField cf) {
     }
 
     public void setStatus(SchemaHandlerStatus status) {
     }
+
+    public void startComplexField(ComplexField cf, String refname, SchemaElement element,Object data) {
+    }
+
     
 }

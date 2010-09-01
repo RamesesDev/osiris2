@@ -10,6 +10,7 @@
 package com.rameses.eserver;
 
 import com.rameses.interfaces.DateServiceLocal;
+import com.rameses.util.DateUtil;
 import java.util.Date;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -37,6 +38,11 @@ public class DateService implements DateServiceLocal {
         Query q = em.createQuery("select current_timestamp() from DateBean");
         return (Date) q.getSingleResult();
     }
+
+    public String getFormattedTime(Date d, String timezone) {
+        return DateUtil.getFormattedTime(d, timezone);
+    }
+
 
    
 }
