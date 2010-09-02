@@ -1,22 +1,23 @@
 package com.rameses.rcp.control;
 
+import bsh.This;
+import com.rameses.rcp.support.DateDocument;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.beans.Beans;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
 
 /**
  *
@@ -24,9 +25,7 @@ import java.util.Date;
  */
 
 public class XDateField extends XTextField {
-    
-    private static int CURRENT_MILLENIUM = 2000;
-    
+        
     private Date currentDate;
     private SimpleDateFormat inputFormatter;
     private SimpleDateFormat outputFormatter;
@@ -40,17 +39,21 @@ public class XDateField extends XTextField {
     private int txtXPos;
     private String guideFormat;
     private char dateSeparator;
-    private boolean autoComplete;
     
+    private DateDocument dateDocument;
+    private Document oldDocument;
+    
+        
     public XDateField() {
         setOutputFormat("yyyy-MM-dd");
         setInputFormat("yyyy-MM-dd");
         setValueFormat("yyyy-MM-dd");
         DateFieldSupport dateFieldSupport = new DateFieldSupport();
         addFocusListener(dateFieldSupport);
-        addKeyListener(dateFieldSupport);
         guideFormat = getInputFormat();
+        super.setShowHint(false);
     }
+    
     
     //<editor-fold defaultstate="collapsed" desc="  Getter / Setter  ">
     public Object getValue() {
@@ -83,25 +86,10 @@ public class XDateField extends XTextField {
                 setText( text );
             }
         } else {
-            if ( value != null ) {
-                try{
-                    value = outputFormatter.parse(value.toString());
-                }catch(Exception ex) { ex.printStackTrace(); }
-            }
-            setText( value==null? "" : outputFormatter.format(value) );
+            showFormattedValue(true);
         }
     }
-    
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
-    }
-    
-    public void load() {
-        setInputVerifier(UIInputUtil.VERIFIER);
-        guideFormat = getInputFormat();
-    }
-    
+        
     public String getOutputFormat() {
         return outputFormat;
     }
@@ -126,15 +114,6 @@ public class XDateField extends XTextField {
             inputFormatter = null;
     }
     
-    
-    public boolean isAutoComplete() {
-        return autoComplete;
-    }
-    
-    public void setAutoComplete(boolean autoComplete) {
-        this.autoComplete = autoComplete;
-    }
-    
     public String getValueFormat() {
         return valueFormat;
     }
@@ -146,30 +125,47 @@ public class XDateField extends XTextField {
         else
             valueFormatter = null;
     }
-    //</editor-fold>
+    //</editor-fold>    
     
-    
-    private final void showFormattedValue(boolean formatted) throws ParseException {
+    public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
-        if( formatted && outputFormatter !=null && value!=null ) {
-            setText( outputFormatter.format(outputFormatter.parse(value.toString())) );
-        } else {
-            if( value == null )
-                setText("");
-            else {
-                setText( inputFormatter.format(inputFormatter.parse(value.toString())) );
+        setValue(value);
+    }
+    
+    public void load() {
+        setInputVerifier(UIInputUtil.VERIFIER);
+        guideFormat = getInputFormat();
+        for(char c : getInputFormat().toCharArray()) {
+            if(c != 'y' && c != 'M' && c != 'd') {
+                dateSeparator = c;                
+                break;
             }
         }
+        
+        oldDocument = getDocument();
+        dateDocument = new DateDocument(dateSeparator, inputFormat);
+        super.setShowHint(false);
+    }
+    
+    private final void showFormattedValue(boolean formatted) {
+        try {
+            Object value = UIControlUtil.getBeanValue(this);
+            date = valueFormatter.parse(value.toString());
+            if( formatted && outputFormatter !=null && value!=null ) {
+                setText( outputFormatter.format(date) );
+            } else {
+                if( value == null )
+                    setText("");
+                else {
+                    setText( inputFormatter.format(date) );
+                }
+            }
+        } catch(Exception ex) {}
     }
     
     public void calculatePosition() {
         txtYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
-        for(char c : getInputFormat().toCharArray()) {
-            if(c != 'y' && c != 'M' && c != 'd') {
-                dateSeparator = c;
-            }
-        }
-        
+                
         if(super.getText().length() <= getInputFormat().length())
             guideFormat = getInputFormat().substring(super.getText().length());
         txtXPos = getInsets().left;
@@ -180,58 +176,34 @@ public class XDateField extends XTextField {
     
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
         if(Beans.isDesignTime() == false) {
             g.setColor(Color.LIGHT_GRAY);
             g.setFont(getFont());
             calculatePosition();
-            g.drawString(guideFormat, txtXPos, txtYPos);
+            g.drawString("" + guideFormat, txtXPos, txtYPos);
         }
     }
     
     
     //<editor-fold defaultstate="collapsed" desc="  DateFieldSupport (class)  ">
-    private class DateFieldSupport implements FocusListener, KeyListener {
+    private class DateFieldSupport implements FocusListener {
         
         public void focusGained(FocusEvent e){
             try {
                 showFormattedValue(false);
+                setDocument(dateDocument);
             }catch(Exception ex) { ex.printStackTrace(); }
         }
         
         public void focusLost(FocusEvent e) {
             if ( e.isTemporary() ) return;
             
-            //insert autocomplete here
-            
-            
             try{
+                setDocument(oldDocument);
                 showFormattedValue(true);
             }catch(Exception ex) { ex.printStackTrace(); }
-        }
-        
-        public void keyTyped(KeyEvent e) {}
-        
-        public void keyPressed(KeyEvent e) {
-            if(e.getKeyChar() != dateSeparator &&
-                    e.getKeyChar() != KeyEvent.VK_BACK_SPACE &&
-                    e.getKeyChar() != KeyEvent.VK_HOME &&
-                    e.getKeyChar() != KeyEvent.VK_END &&
-                    e.getKeyChar() != KeyEvent.VK_LEFT &&
-                    e.getKeyChar() != KeyEvent.VK_KP_RIGHT &&
-                    e.getKeyChar() != KeyEvent.VK_KP_LEFT &&
-                    e.getKeyCode() != 37 &&
-                    e.getKeyCode() != 39) {
-                if(XDateField.this.getInputFormat().length() > XDateField.this.getText().length() ) {
-                    if(XDateField.this.getInputFormat().charAt(XDateField.this.getText().length()) == '-')
-                        XDateField.this.setText(XDateField.this.getText() + dateSeparator);
-                }
-            }
-        }
-        
-        public void keyReleased(KeyEvent e) {
-            
-        }
-        
+        }        
     }
     //</editor-fold>
     
