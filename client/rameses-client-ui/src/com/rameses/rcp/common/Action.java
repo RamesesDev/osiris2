@@ -22,7 +22,7 @@ public class Action implements Comparable {
     private String caption;
     private String category;
     private String icon;
-    private char mnemonic = ' ';
+    private char mnemonic;
     private boolean immediate;
     private Map properties = new Hashtable();
     private String permission;

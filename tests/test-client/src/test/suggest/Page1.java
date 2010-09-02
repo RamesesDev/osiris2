@@ -33,17 +33,13 @@ public class Page1 extends javax.swing.JPanel {
         xComboBox1.setPreferredSize(new java.awt.Dimension(150, 24));
         formPanel1.add(xComboBox1);
 
-        xSuggest1.setAllowNew(false);
         xSuggest1.setCaption("Country");
-        xSuggest1.setExpression("#{name}");
         xSuggest1.setName("entity.country");
         xSuggest1.setOnSuggest("queryCountryList");
         xSuggest1.setPreferredSize(new java.awt.Dimension(200, 24));
         formPanel1.add(xSuggest1);
 
-        xSuggest2.setAllowNew(false);
         xSuggest2.setCaption("Currency");
-        xSuggest2.setExpression("#{description}");
         xSuggest2.setName("entity.currency");
         xSuggest2.setOnSuggest("queryCurrencyList");
         xSuggest2.setPreferredSize(new java.awt.Dimension(200, 24));

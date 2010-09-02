@@ -155,7 +155,15 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     public void setCaption(String caption) {
         property.setCaption( caption );
     }
-        
+    
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
     public boolean isImmediate() {
         return true;
     }

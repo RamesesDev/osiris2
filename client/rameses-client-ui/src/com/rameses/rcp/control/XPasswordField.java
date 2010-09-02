@@ -187,6 +187,14 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
         controlProperty.setCaption(caption);
     }
     
+    public char getCaptionMnemonic() {
+        return controlProperty.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        controlProperty.setCaptionMnemonic(c);
+    }
+    
     public boolean isRequired() {
         return controlProperty.isRequired();
     }
@@ -219,21 +227,21 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public void setOnAfterUpdate(String onAfterUpdate) {
         this.onAfterUpdate = onAfterUpdate;
     }
-
+    
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEditable(!readonly);
         setFocusable(!readonly);
     }
-
+    
     public boolean isReadonly() {
         return readonly;
     }
-
+    
     public void setRequestFocus(boolean focus) {
         if ( focus ) requestFocus();
     }
-
+    
     public boolean isImmediate() {
         return false;
     }

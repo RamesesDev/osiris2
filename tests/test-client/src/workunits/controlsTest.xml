@@ -21,6 +21,8 @@
 
             def entity = [ : ];
             
+            def items = ["one", "two", "three"];
+            
             void btnShowInput() {
                 MsgBox.alert("entity = $entity");
             }
@@ -45,7 +47,7 @@
             }
             
             void validateName() {
-                throw new Exception('Error.....');
+                //throw new Exception('Error.....');
             }
            
         }

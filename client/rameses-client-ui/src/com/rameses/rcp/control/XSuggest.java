@@ -57,7 +57,6 @@ public class XSuggest extends XComboBox {
     }
     
     public void load() {
-        updateSuggestions();
         setEditable(true);
         ComboBoxEditor cboxEditor = getEditor();
         editor = (JTextField) cboxEditor.getEditorComponent();
@@ -78,6 +77,7 @@ public class XSuggest extends XComboBox {
             
         });
         
+        updateSuggestions();
         setEditor(new EditorWrapper(cboxEditor));
         
         if ( isImmediate() ) {
@@ -92,11 +92,13 @@ public class XSuggest extends XComboBox {
         if ( code == KeyEvent.VK_ESCAPE ) {
             showSuggestions = false;
         } else if (code == KeyEvent.VK_ENTER) {
-            if ( getSelectedIndex() < 0 ) {
-                setSelectedIndex(0);
+            if ( suggestions != null && suggestions.size() > 0 ) {
+                if ( getSelectedIndex() < 0 ) {
+                    setSelectedIndex(0);
+                }
+                updateSuggestions();
             }
             showSuggestions = false;
-            updateSuggestions();
         } else {
             showSuggestions = true;
         }
@@ -111,7 +113,7 @@ public class XSuggest extends XComboBox {
     }
     
     private void fetchSuggestions(String text) {
-        if ( text != null && text.trim().length() > 0 ) {
+        if ( !ValueUtil.isEmpty(onSuggest) && text != null && text.trim().length() > 0 ) {
             ClientContext ctx = ClientContext.getCurrentContext();
             try {
                 MethodResolver mr = ctx.getMethodResolver();
@@ -189,6 +191,16 @@ public class XSuggest extends XComboBox {
             if ( getSelectedIndex() < 0 ) {
                 editor.setText("");
             }
+        }
+    }
+    
+    public void setSelectedItem(Object object) {
+        ComboItem ci = (ComboItem) object;
+        if (ci != null && ci.getValue() != null ) {
+            super.setSelectedItem(object);
+        } else {
+            super.setSelectedItem(null);
+            editor.setText("");
         }
     }
     

@@ -23,7 +23,7 @@ import javax.swing.border.Border;
 public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     private int index;
-    private String[] depends = new String[]{};
+    private String[] depends;
     private Binding binding;
     private ControlProperty property = new ControlProperty();
     private String expression;
@@ -82,7 +82,10 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
                 activeProperty = ac.getControlProperty();
                 String acCaption = activeProperty.getCaption();
                 if ( !ValueUtil.isEmpty(acCaption) && !acCaption.equals("Caption") ) {
+                    setName(null);
+                    setExpression(null);
                     super.setText(activeProperty.getCaption() + " :");
+                    super.setDisplayedMnemonic(activeProperty.getCaptionMnemonic());
                 }
                 
                 activeControlSupport = new ActiveControlSupport();
@@ -123,6 +126,10 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
         } else {
             return super.getText();
         }
+    }
+    
+    public void setText(String text) {
+        setExpression(text);
     }
     
     public void setBorder(Border border) {

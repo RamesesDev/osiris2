@@ -110,6 +110,9 @@ public class FormPanel extends JPanel {
     //<editor-fold defaultstate="collapsed" desc=" ItemPanel (Class) ">
     private class ItemPanel extends JPanel {
         
+        /**
+         * wrapper is usually JScrollPane 
+         */
         private Component editorWrapper;
         private Component editor;
         private JLabel label;

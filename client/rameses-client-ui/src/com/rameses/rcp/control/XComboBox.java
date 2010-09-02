@@ -28,6 +28,7 @@ import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class XComboBox extends JComboBox implements UIInput, ItemListener, Validatable, ActiveControl {
     
@@ -58,6 +59,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     //<editor-fold defaultstate="collapsed" desc="  initComponents method  ">
     private void initComponents() {
+        UIManager.put("ComboBox.disabledForeground", getForeground()); 
         if ( Beans.isDesignTime() ) {
             model = new DefaultComboBoxModel(new Object[]{"Item 1"});
             super.setModel( model );
@@ -276,6 +278,14 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void setCaption(String caption) {
         property.setCaption(caption);
+    }
+    
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
     }
     
     public boolean isRequired() {

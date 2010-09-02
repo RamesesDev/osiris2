@@ -19,15 +19,17 @@
             def entity = [:];
             
             def queryCountryList( searchTxt ) {
-                return svc.queryCountries( searchTxt );
+                return svc.queryCountries( searchTxt ).collect{ it.name };
             }
             
             def queryCurrencyList( searchTxt ) {
-                return svc.queryCurrencies( searchTxt );
+                return svc.queryCurrencies( searchTxt ).collect{ it.description };
             }
             
             def queryStreets( searchTxt ) {
-                return [];
+                return streets.findAll{ 
+                    it.toLowerCase().startsWith(searchTxt.toLowerCase()) 
+                };
             }
             
             void display() {
@@ -39,6 +41,9 @@
                 'dhel', 'jayrome', 'joy', 'mike', 'magz'
             ];
             
+            def streets = [
+                'Sanciangko St.', 'Colon St.', 'Pelaez St.', 'B. Rodriguez St.'
+            ];
         }
         
         ]]>

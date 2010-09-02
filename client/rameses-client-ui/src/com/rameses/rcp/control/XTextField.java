@@ -131,6 +131,14 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         property.setCaption(caption);
     }
     
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
     public int getCaptionWidth() {
         return property.getCaptionWidth();
     }

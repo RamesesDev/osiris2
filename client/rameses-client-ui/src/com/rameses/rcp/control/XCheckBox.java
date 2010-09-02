@@ -78,6 +78,14 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
         property.setCaption(caption);
     }
     
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
     public boolean isNullWhenEmpty() {
         return false;
     }
