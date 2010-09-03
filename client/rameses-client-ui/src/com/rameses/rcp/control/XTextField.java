@@ -42,9 +42,6 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     protected ControlProperty property = new ControlProperty();
     protected ActionMessage actionMessage = new ActionMessage();
     
-    
-    
-    
     public XTextField() {
         document.setTextCase(TextCase.UPPER);
         XTextFieldSupport xTextFieldSupport = new XTextFieldSupport();
@@ -59,6 +56,8 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public void load() {
         setInputVerifier(UIInputUtil.VERIFIER);
         setDocument(document);
+        if(showHint)
+            isHintShown = true;
     }
     
     public int compareTo(Object o) {
@@ -76,17 +75,14 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
-        if( showHint && isHintShown ) {
-            g.setColor(Color.LIGHT_GRAY);
-            g.setFont(getFont());
-            hintYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
-            hintXPos = getInsets().left;
-            g.drawString(" " + getHint(), hintXPos, hintYPos);
-            g.dispose();
-        } else {
-            g.drawString(" ",0,0);
-            g.dispose();
+        if( showHint ) {
+            if( isHintShown ) {
+                g.setColor(Color.LIGHT_GRAY);
+                g.setFont(getFont());
+                hintYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
+                hintXPos = getInsets().left;
+                g.drawString(" " + getHint(), hintXPos, hintYPos);
+            }
         }
     }
     
@@ -231,34 +227,29 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         return false;
     }
     
-    public boolean isShowHint() {
-        return showHint;
-    }
-    
-    public void setShowHint(boolean showHint) {
-        this.showHint = showHint;
-    }
-    
     public String getHint() {
         return hint;
     }
     
     public void setHint(String hint) {
         this.hint = hint;
+        showHint = !ValueUtil.isEmpty(hint);
     }
     
     //</editor-fold>
     
     
     //<editor-fold defaultstate="collapsed" desc="  XTextFieldSupport  ">
-    private class XTextFieldSupport implements FocusListener {                
+    private class XTextFieldSupport implements FocusListener {
         public void focusGained(FocusEvent e) {
-           isHintShown = false;
-           repaint();
+            if(showHint) {
+                isHintShown = false;
+                repaint();
+            }
         }
         
         public void focusLost(FocusEvent e) {
-           if(showHint) {
+            if(showHint) {
                 if(ValueUtil.isEmpty(getText()))
                     isHintShown = true;
                 else
