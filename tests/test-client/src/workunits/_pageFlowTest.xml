@@ -30,6 +30,10 @@
             void confirmed() {
                 fireTransition("next");
             }
+            
+            void submitName() {
+                println "submitting name......";
+            }
 
         }
         
@@ -42,7 +46,9 @@
         </start>
         <page name="page1" title="Page 1">
             <transition name="close" caption="Close" to="end"/>
-            <transition name="next" caption="Next" to="page2"/>
+            <transition name="next" caption="Next" to="page2" 
+                        confirm="Are you sure you want to proceed?"
+                        action="submitName"/>
         </page>
         <page name="page2" title="Page 2 Title">
             <transition name="close" caption="Close" to="end"/>

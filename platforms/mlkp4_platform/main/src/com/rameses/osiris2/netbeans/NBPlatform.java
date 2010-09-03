@@ -110,7 +110,7 @@ public class NBPlatform implements Platform {
     }
     
     public void showError(JComponent actionSource, Exception e) {
-        JOptionPane.showMessageDialog(getParent(actionSource), getMessage(e), "Error", JOptionPane.ERROR_MESSAGE);
+        ErrorDialog.show(e, actionSource);
     }
     
     public boolean showConfirm(JComponent actionSource, Object message) {

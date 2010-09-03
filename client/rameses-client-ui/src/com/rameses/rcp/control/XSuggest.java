@@ -15,8 +15,8 @@ import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.awt.Component;
-import java.awt.event.ActionListener;
+import java.awt.Container;
+import java.awt.Rectangle;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -29,6 +29,9 @@ import javax.swing.ComboBoxEditor;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.plaf.ComboBoxUI;
 
 public class XSuggest extends XComboBox {
     
@@ -38,10 +41,11 @@ public class XSuggest extends XComboBox {
     
     /**
      * @description
-     *  - this property (if true) allows input that is not in the list of suggestions
-     *  - this is only availabe to String type input values
+     *  - <code>allowNew</code> property (if true) allows input that is not in the list of suggestions
+     *  - <code>allowNew</code> is only availabe to String type input values
      */
     private boolean allowNew = true;
+    private boolean showArrowButton = false;
     
     private boolean searching;
     private boolean showSuggestions;
@@ -49,7 +53,44 @@ public class XSuggest extends XComboBox {
     
     public XSuggest() {
         super();
+        init();
     }
+    
+    //<editor-fold defaultstate="collapsed" desc="  initialize  ">
+    private void init() {
+        super.setEditable(true);
+        super.setUI(new javax.swing.plaf.metal.MetalComboBoxUI(){
+            
+            public void layoutComboBox(Container parent, MetalComboBoxLayoutManager manager) {
+                if ( showArrowButton ) {
+                    super.layoutComboBox(parent, manager);
+                } else {
+                    if ( isEditable() ) {
+                        Rectangle rb = XSuggest.this.getPreferredBounds();
+                        editor.setBounds(0, 0, rb.width, rb.height);
+                    } else {
+                        super.layoutComboBox(parent, manager);
+                    }
+                    arrowButton.setBounds(0,0,0,0);
+                }
+            }
+            
+        });
+    }
+    
+    private Rectangle getPreferredBounds() {
+        Rectangle r = super.getBounds();
+        int w = super.getWidth();
+        int h = super.getHeight();
+        w = Math.max(w, r.width);
+        h = Math.max(h, r.height);
+        return new Rectangle(r.x, r.y, w, h);
+    }
+    
+    //</editor-fold>
+    
+    public void setUI(ComboBoxUI ui) {}
+    public void setEditable(boolean editable) {}
     
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
@@ -57,9 +98,10 @@ public class XSuggest extends XComboBox {
     }
     
     public void load() {
-        setEditable(true);
         ComboBoxEditor cboxEditor = getEditor();
         editor = (JTextField) cboxEditor.getEditorComponent();
+        editor.setBounds(super.getBounds());
+        editor.setBorder( (Border) UIManager.get("TextField.border") );
         editor.addKeyListener(new KeyAdapter() {
             
             public void keyPressed(KeyEvent e) { processKeyPressed(e); }
@@ -78,15 +120,16 @@ public class XSuggest extends XComboBox {
         });
         
         updateSuggestions();
-        setEditor(new EditorWrapper(cboxEditor));
         
         if ( isImmediate() ) {
             super.addItemListener(this);
         } else {
             super.setInputVerifier(UIInputUtil.VERIFIER);
         }
+        
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void processKeyPressed(KeyEvent e) {
         int code = e.getKeyCode();
         if ( code == KeyEvent.VK_ESCAPE ) {
@@ -151,8 +194,9 @@ public class XSuggest extends XComboBox {
             setSelectedIndex(-1);
         }
     }
+    //</editor-fold>
     
-    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public Object getValue() {
         if ( Beans.isDesignTime() ) return null;
         if ( getSelectedIndex() < 0 )  {
@@ -199,8 +243,9 @@ public class XSuggest extends XComboBox {
         if (ci != null && ci.getValue() != null ) {
             super.setSelectedItem(object);
         } else {
+            String text = editor.getText();
             super.setSelectedItem(null);
-            editor.setText("");
+            editor.setText(text);
         }
     }
     
@@ -229,6 +274,15 @@ public class XSuggest extends XComboBox {
         this.allowNew = allowNew;
     }
     
+    public boolean isShowArrowButton() {
+        return showArrowButton;
+    }
+    
+    public void setShowArrowButton(boolean showArrowButton) {
+        this.showArrowButton = showArrowButton;
+        super.revalidate();
+    }
+    //</editor-fold>
     
     
     //<editor-fold defaultstate="collapsed" desc="  SearchTask (class)  ">
@@ -261,37 +315,6 @@ public class XSuggest extends XComboBox {
                 
             } catch(Exception ign) {
             } finally { setEnded(true); }
-        }
-        
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  EditorWrapper (class)  ">
-    private class EditorWrapper implements ComboBoxEditor {
-        
-        private ComboBoxEditor orig;
-        
-        EditorWrapper(ComboBoxEditor orig) {
-            this.orig = orig;
-        }
-        
-        public void addActionListener(ActionListener l) {
-            orig.addActionListener(l);
-        }
-        public Component getEditorComponent() {
-            return orig.getEditorComponent();
-        }
-        public Object getItem() {
-            return orig.getItem();
-        }
-        public void removeActionListener(ActionListener l) {
-            orig.removeActionListener(l);
-        }
-        public void selectAll() {
-            orig.selectAll();
-        }
-        public void setItem(Object object) {
-            orig.setItem(object);
         }
         
     }

@@ -37,6 +37,8 @@ public abstract class ClientContext {
     private ActionProvider actionProvider;
     private Map headers = new HashMap();
     
+    private Map properties = new HashMap();
+    
     
     //<editor-fold defaultstate="collapsed" desc="  abstract properties  ">
     public abstract ValueResolver getValueResolver();
@@ -116,6 +118,10 @@ public abstract class ClientContext {
     
     public void setHeaders(Map headers) {
         this.headers = headers;
+    }
+    
+    public Map getProperties() {
+        return properties;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  ControllerProviderWrapper (class)  ">

@@ -19,6 +19,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -45,7 +46,6 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private boolean allowNull = true;
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
-    private String onAfterUpdate;
     private Class fieldType;
     private boolean readonly;
     private String itemKey;
@@ -59,7 +59,11 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     //<editor-fold defaultstate="collapsed" desc="  initComponents method  ">
     private void initComponents() {
-        UIManager.put("ComboBox.disabledForeground", getForeground()); 
+        try {
+            super.setFont((Font) UIManager.get("TextField.font"));
+            UIManager.put("ComboBox.disabledForeground", getForeground());
+        } catch(Exception e) {;}
+        
         if ( Beans.isDesignTime() ) {
             model = new DefaultComboBoxModel(new Object[]{"Item 1"});
             super.setModel( model );
@@ -312,14 +316,6 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public ControlProperty getControlProperty() {
         return property;
-    }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
     }
     
     public Class getFieldType() {

@@ -60,15 +60,6 @@ public class WorkUnitUIController extends UIController {
     public String getTitle() {
         return title;
     }
-    
-    private Class pageToClass(String name) {
-        try {
-            SessionContext app = OsirisContext.getSession();
-            return app.getClassLoader().loadClass(name);
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     public Object init(Map properties, String action) {
         //set the properties

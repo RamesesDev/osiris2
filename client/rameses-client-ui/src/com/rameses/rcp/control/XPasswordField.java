@@ -46,7 +46,6 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     private char passwordChar = '*';
     private ActionMessage actionMessage = new ActionMessage();
     private ControlProperty controlProperty = new ControlProperty();
-    private String onAfterUpdate;
     private boolean readonly;
     
     
@@ -219,15 +218,7 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public ControlProperty getControlProperty() {
         return controlProperty;
     }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEditable(!readonly);

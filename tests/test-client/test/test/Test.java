@@ -1,8 +1,9 @@
 package test;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import javax.swing.UIManager;
 import junit.framework.*;
 
 /*
@@ -23,17 +24,12 @@ public class Test extends TestCase {
     }
     
     public void test() throws ParseException {
-        Date d = new Date();
-        //SimpleDateFormat sdf = new SimpleDateFormat("(EEEE) MMM dd, yyyy");
-        //System.out.println( sdf.format(d) );
-        
-        String reg = "(\\d{4}\\D+\\d{2}\\D+\\d{2})|(\\d{2}\\D+\\d{2}\\D+\\d{4})";
-        Pattern p = Pattern.compile(reg);
-        
-        Matcher m = p.matcher("01 01 2010");
-        if ( m.matches() ) {
-            System.out.println("1 - " + m.group(1));
-            System.out.println("2 - " + m.group(2));
+        Set s = UIManager.getLookAndFeel().getDefaults().entrySet();
+        for(Object o: s) {
+            Map.Entry me = (Entry) o;
+            if ( (me.getKey()+"").indexOf("Box") != -1 ) {
+                System.out.println( me );
+            }
         }
         
     }

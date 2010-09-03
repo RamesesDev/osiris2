@@ -24,7 +24,6 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     private Object checkValue = true;
     private Object uncheckValue = false;
     private ControlProperty property = new ControlProperty();
-    private String onAfterUpdate;
     private boolean readonly;
     
     
@@ -145,15 +144,7 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
         String expr = exp.toString();
         return expr.matches(".*#\\{[^\\{\\}]+\\}.*");
     }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEnabled(!readonly);

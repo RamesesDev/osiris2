@@ -24,7 +24,6 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     private String[] depends = new String[]{};
     private Binding binding;
     private boolean nullWhenEmpty = true;
-    private String onAfterUpdate;
     private boolean readonly;
     
     private TextDocument document = new TextDocument();
@@ -174,15 +173,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public void setTextCase(TextCase textCase) {
         document.setTextCase(textCase);
     }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public int getMaxLength() {
         return document.getMaxlength();
     }

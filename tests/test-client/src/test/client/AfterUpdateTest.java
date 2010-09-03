@@ -19,7 +19,6 @@ public class AfterUpdateTest extends javax.swing.JPanel {
     private void initComponents() {
         xButton1 = new com.rameses.rcp.control.XButton();
         formPanel1 = new com.rameses.rcp.util.FormPanel();
-        xTextField1 = new com.rameses.rcp.control.XTextField();
         xLabel1 = new com.rameses.rcp.control.XLabel();
         xLabel2 = new com.rameses.rcp.control.XLabel();
 
@@ -28,13 +27,6 @@ public class AfterUpdateTest extends javax.swing.JPanel {
 
         formPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         formPanel1.setCaptionWidth(100);
-        xTextField1.setCaption("Name");
-        xTextField1.setMaxLength(10);
-        xTextField1.setName("name");
-        xTextField1.setOnAfterUpdate("search");
-        xTextField1.setPreferredSize(new java.awt.Dimension(100, 19));
-        formPanel1.add(xTextField1);
-
         xLabel1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createEtchedBorder(), javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1)));
         xLabel1.setDepends(new String[] {"name"});
         xLabel1.setName("address");
@@ -75,7 +67,6 @@ public class AfterUpdateTest extends javax.swing.JPanel {
     private com.rameses.rcp.control.XButton xButton1;
     private com.rameses.rcp.control.XLabel xLabel1;
     private com.rameses.rcp.control.XLabel xLabel2;
-    private com.rameses.rcp.control.XTextField xTextField1;
     // End of variables declaration//GEN-END:variables
     
 }

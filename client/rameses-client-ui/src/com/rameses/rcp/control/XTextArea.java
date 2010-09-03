@@ -11,8 +11,8 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.awt.Font;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
 /**
  *
@@ -27,7 +27,6 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     private String[] depends;
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
-    private String onAfterUpdate;
     private boolean readonly;
     
     private TextDocument textDocument = new TextDocument();
@@ -35,7 +34,9 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public XTextArea() {
         super();
-        setFont( Font.decode("") );
+        try {
+            super.setFont(UIManager.getFont("TextField.font"));
+        } catch(Exception ign){;}
     }
     
     
@@ -151,14 +152,6 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public void setTextCase(TextCase textCase) {
         textDocument.setTextCase(textCase);
-    }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
     }
     
     public void setReadonly(boolean readonly) {

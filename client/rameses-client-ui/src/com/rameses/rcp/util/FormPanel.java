@@ -1,9 +1,8 @@
 package com.rameses.rcp.util;
 
+import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
-import com.rameses.rcp.ui.Validatable;
-import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -14,7 +13,6 @@ import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,7 +21,7 @@ import javax.swing.SwingConstants;
 public class FormPanel extends JPanel {
     
     private int cellspacing = 3;
-    private int captionWidth;
+    private int captionWidth = 80;
     
     // (NUM-PAD ARRANGEMENT) 2-top  5-center  8-bottom
     private int captionVAlignment = 2;
@@ -111,7 +109,7 @@ public class FormPanel extends JPanel {
     private class ItemPanel extends JPanel {
         
         /**
-         * wrapper is usually JScrollPane 
+         * wrapper is usually JScrollPane
          */
         private Component editorWrapper;
         private Component editor;
@@ -128,8 +126,7 @@ public class FormPanel extends JPanel {
             ActiveControl con = (ActiveControl) editor;
             property = con.getControlProperty();
             
-            label = new JLabel();
-            label.setBorder(BorderFactory.createEmptyBorder(3,3,3,2));
+            label = new XLabel(true);
             label.setLabelFor(editor);
             
             setOpaque(false);
@@ -140,11 +137,7 @@ public class FormPanel extends JPanel {
             } else {
                 add(editor, "editor");
             }
-            
-            String caption = property.getCaption();
-            boolean req = property.isRequired();
-            label.setText(getCaption(req, caption));
-            
+
             PropertyChangeListener listener = new ContainablePropetyListener(this);
             property.addPropertyChangeListener(listener);
         }
@@ -160,39 +153,6 @@ public class FormPanel extends JPanel {
         public JLabel getLabelComponent() { return label; }
         public ControlProperty getControlProperty() { return property; }
         
-        public String getCaption(boolean required, String caption) {
-            return getCaption(required, caption, false);
-        }
-        
-        public String getCaption(boolean required, String caption, boolean error) {
-            if ( ValueUtil.isEmpty(caption) ) return " ";
-            
-            //required property is only applicable to Validatable controls
-            required = required && editor instanceof Validatable;
-            
-            StringBuffer sb = new StringBuffer("<html>");
-            String color = getCaptionColor();
-            
-            if( error ) {
-                sb.append("<font color=\"" + color + "\">" + caption + "</font>");
-            } else {
-                sb.append(caption);
-            }
-            sb.append(" : ");
-            if(required) {
-                sb.append("<font color=\"" + color + "\">*</font></html>");
-            }
-            return sb.toString();
-        }
-        
-        private String getCaptionColor() {
-            StringBuffer color = new StringBuffer("rgb(");
-            color.append( errorCaptionColor.getRed() + ",");
-            color.append( errorCaptionColor.getGreen() + ",");
-            color.append( errorCaptionColor.getBlue());
-            color.append(")");
-            return color.toString();
-        }
     }
     //</editor-fold>
     
@@ -208,26 +168,11 @@ public class FormPanel extends JPanel {
         public void propertyChange(PropertyChangeEvent evt) {
             String propName = evt.getPropertyName();
             Object value = evt.getNewValue();
-            
-            JComponent editor = (JComponent) panel.getEditorComponent();
-            JLabel label = panel.getLabelComponent();
-            ControlProperty prop = panel.getControlProperty();;
-            
-            if ( "caption".equals(propName) ) {
-                label.setText( panel.getCaption(prop.isRequired(), value.toString()));
-            } else if ( "required".equals(propName) ) {
-                boolean req = Boolean.parseBoolean(value.toString());
-                label.setText( panel.getCaption( req, prop.getCaption()) );
-            } else if ( "captionWidth".equals(propName) ) {
+
+            if ( "captionWidth".equals(propName) ) {
                 panel.revalidate();
             } else if ( "showCaption".equals(propName)) {
                 panel.revalidate();
-            } else if ( "errorMessage".equals(propName) ) {
-                String message = value != null? value.toString() : null;
-                boolean error = !ValueUtil.isEmpty(message);
-                label.setText( panel.getCaption(prop.isRequired(), prop.getCaption(), error) );
-                label.setToolTipText(message);
-                editor.setToolTipText(message);
             }
         }
         

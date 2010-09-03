@@ -65,7 +65,6 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     private String handler;
     private ActionMessage actionMessage = new ActionMessage();
     private boolean dynamic;
-    private String onAfterUpdate;
     
     
     public XTable() {
@@ -295,15 +294,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public boolean isAutoResize() {
         return table.isAutoResize();
     }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public void setRequestFocus(boolean focus) {
         if ( focus ) table.requestFocus();
     }

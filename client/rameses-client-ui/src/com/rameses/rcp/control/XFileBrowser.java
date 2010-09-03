@@ -36,7 +36,6 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     private Binding binding;
     private String[] depends;
     private int index;
-    private String onAfterUpdate;
     private JFileChooser fchooser;
     private FileFilter filter;
     private String customFilter;
@@ -182,15 +181,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     
     public void setValue(Object value) {}
     public boolean isNullWhenEmpty() { return true; }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public String getCustomFilter() {
         return customFilter;
     }

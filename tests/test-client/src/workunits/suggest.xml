@@ -42,7 +42,12 @@
             ];
             
             def streets = [
-                'Sanciangko St.', 'Colon St.', 'Pelaez St.', 'B. Rodriguez St.'
+                'Sanciangko St.', 
+                'San Juan',
+                'San Pedro',
+                'Colon St.', 
+                'Pelaez St.', 
+                'B. Rodriguez St.'
             ];
         }
         
