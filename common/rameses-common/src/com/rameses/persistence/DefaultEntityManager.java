@@ -13,12 +13,11 @@ import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaElement;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaScanner;
-import com.rameses.schema.SchemaScriptProvider;
+import com.rameses.schema.SchemaSerializer;
 import com.rameses.schema.ValidationResult;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlQuery;
-import com.rameses.util.MapSerializer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +54,7 @@ public class DefaultEntityManager implements EntityManager {
         Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            CreatePersistenceHandler handler = new CreatePersistenceHandler(schemaManager,sqlContext);
+            CreatePersistenceHandler handler = new CreatePersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,data,handler);
@@ -96,7 +95,7 @@ public class DefaultEntityManager implements EntityManager {
         List<String> removeFields = new ArrayList();
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            ReadPersistenceHandler handler = new ReadPersistenceHandler(schemaManager,sqlContext);
+            ReadPersistenceHandler handler = new ReadPersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,data,handler);
@@ -167,7 +166,7 @@ public class DefaultEntityManager implements EntityManager {
         Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            UpdatePersistenceHandler handler = new UpdatePersistenceHandler(schemaManager,sqlContext);
+            UpdatePersistenceHandler handler = new UpdatePersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,oldData,handler);
@@ -203,7 +202,7 @@ public class DefaultEntityManager implements EntityManager {
         Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            DeletePersistenceHandler handler = new DeletePersistenceHandler(schemaManager,sqlContext);
+            DeletePersistenceHandler handler = new DeletePersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,data,handler);
@@ -277,18 +276,32 @@ public class DefaultEntityManager implements EntityManager {
         return schemaManager.validate(schemaName, data);
     }
     
+    public void validate(String schemaName, Object data) {
+        ValidationResult vr = schemaManager.validate(schemaName, data);
+        if(vr.hasErrors()) 
+            throw new RuntimeException(vr.toString());
+    }
+    
     /**
      * add a map serializer also later.
      */
-    public MapSerializer createSerializer() {
-        return new MapSerializer();
+    public SchemaSerializer getSerializer() {
+        return schemaManager.getSerializer();
     }
     
-    public Object parseData( Map vars, String data ) {
-        SchemaScriptProvider scriptProvider = schemaManager.getConf().getScriptProvider();
-        if( scriptProvider == null )
-            throw new RuntimeException("Script provider is not set");
-        return scriptProvider.eval(vars, data);    
+
+    public SchemaManager getSchemaManager() {
+        return schemaManager;
     }
+    
+    public Aggregator getAggregator() {
+        return new Aggregator(this);
+    }
+    
+    public Indexer getIndexer() {
+        return new Indexer(this);
+    }
+    
+    
     
 }

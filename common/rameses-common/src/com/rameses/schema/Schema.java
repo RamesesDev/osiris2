@@ -10,7 +10,9 @@
 package com.rameses.schema;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 
@@ -135,6 +137,24 @@ public class Schema implements Serializable {
 
     public SchemaManager getSchemaManager() {
         return schemaManager;
+    }
+    
+    //this searches for elements that match attributes
+    public List<SchemaElement> lookup(String attribute, String matchPattern) {
+        List<SchemaElement> list = new ArrayList();
+        for(SchemaElement element : elements.values() ) {
+            String attrValue = null;
+            if( attribute.equals("name")) {
+                attrValue = element.getName();
+            }
+            else {
+                attrValue = (String)element.getProperties().get(attribute);
+            }
+            if(attrValue!=null && attrValue.matches(matchPattern)) {
+                list.add(element);
+            }
+        }
+        return list;
     }
     
     

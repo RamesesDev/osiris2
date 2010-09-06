@@ -9,9 +9,7 @@
 
 package com.rameses.sql;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +24,7 @@ public final class SqlUtil {
     }
     
     private static Pattern pattern = Pattern.compile("\\$P\\{.+?\\}"); 
-    private static Pattern substitute = Pattern.compile("\\$\\{.+?\\}");
+    
     
     /***
      * This method parses a statement and stores parameters in the
@@ -59,46 +57,5 @@ public final class SqlUtil {
         return sb.toString();
     }
     
-    
-    public static String substituteValues( String sql, Map xvalues ) {
-        if(! sql.contains("{") ) return sql;
-
-        Map values = new SystemMap(xvalues);
-        Matcher m = substitute.matcher(sql);
-        int start = 0;
-        StringBuffer sb = new StringBuffer();
-        while(m.find()) {
-            int end = m.start();
-            String name = m.group().replaceAll( "\\$\\{|\\}", "").trim();
-            
-            Object val = values.get(name);
-            if( val == null ) val = "${"+name+"}";
-            sb.append( sql.substring(start, end ) + val );
-            start = end + m.group().length();
-        }
-        sb.append( sql.substring(start) );
-        return sb.toString();
-    }
-    
-    
-    private static class SystemMap extends HashMap {
-        private Map map;
-        
-        public SystemMap(Map map) {
-            this.map = map;
-        }
-
-        public Object get(Object key) {
-            if(map.containsKey(key)) {
-                return map.get(key);
-            }
-            else {
-                return System.getProperty(key+"");
-            }
-        }
-        
-
-        
-    }
     
 }

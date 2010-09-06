@@ -83,6 +83,7 @@ public class SchemaValidationHandler implements SchemaHandler {
             vr.addError("", refname + " is required ");
             return;
         }
+        if(element==null) return;
         
         //start scanner
         if(data!=null && cf.getType()!=null && cf.getType().equals("list")) {

@@ -17,7 +17,6 @@ import com.rameses.sql.SqlManager;
 import java.util.Map;
 import java.util.Queue;
 import junit.framework.*;
-import test.schema.*;
 
 /**
  *
@@ -47,9 +46,10 @@ public class EntityTest extends TestCase {
         Schema schema = mgr.getSchema( "test1" );
         assertNotNull(schema);
         
-        UpdatePersistenceHandler handler = new UpdatePersistenceHandler(mgr,sq.createContext());
-        SchemaScanner sc = mgr.newScanner();
         Map m = mgr.createMap(schema, null);
+        UpdatePersistenceHandler handler = new UpdatePersistenceHandler(mgr,sq.createContext(),m);
+        SchemaScanner sc = mgr.newScanner();
+        
         
         //this is null if 
         

@@ -118,6 +118,24 @@ public class CrudSchemaHandler implements SchemaHandler {
         crudModel.getFields().add(cf);
     }
     
+    public void startComplexField(ComplexField cf, String refname, SchemaElement element, Object data) {
+        String serializer = cf.getSerializer();
+        
+        //serialize object if serializer is mentioned.
+        //lookup appropriate serializer if not exist use default
+        if(serializer!=null) {
+            String fieldName = (String)cf.getProperties().get(DBFIELD);
+            if( fieldName == null ) {
+                fieldName = cf.getName();
+            }
+            CrudField crf = new CrudField();
+            crf.setName( cf.getName() );
+            crf.setFieldName( fieldName );
+            crudModel.getFields().add(crf);
+        }
+    }
+    
+    
     public void endElement(SchemaElement element) {
         
     }
@@ -138,14 +156,11 @@ public class CrudSchemaHandler implements SchemaHandler {
         return crudModel;
     }
     
-
-    public void startComplexField(ComplexField cf, String refname, SchemaElement element,Object data) {
-    }
-
+    
     public String getPrefix() {
         return prefix;
     }
-
+    
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }

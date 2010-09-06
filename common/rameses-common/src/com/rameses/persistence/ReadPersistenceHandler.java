@@ -29,8 +29,8 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
     
     private List<String> removeFields = new ArrayList();
     
-    public ReadPersistenceHandler(SchemaManager schemaManager, SqlContext context) {
-        super(schemaManager,context);
+    public ReadPersistenceHandler(SchemaManager schemaManager, SqlContext context, Object rootData) {
+        super(schemaManager,context,rootData);
     }
     
     public void startSchema(Schema schema) {
@@ -69,6 +69,7 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
             
         }
     }
+    
     
     public List<String> getRemoveFields() {
         return removeFields;

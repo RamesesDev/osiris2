@@ -10,6 +10,8 @@
 package com.rameses.schema;
 
 import com.rameses.common.PropertyResolver;
+import com.rameses.util.ExprUtil;
+import java.util.Map;
 
 /**
  *
@@ -57,12 +59,18 @@ public final class SchemaScanner {
                 String refname = status.getFixedFieldName( sf );
                 
                 String mapfield = sf.getMapfield();
-                if(mapfield!=null && mapfield.trim().length()>0) refname = mapfield;
+                //if(mapfield!=null && mapfield.trim().length()>0) refname = mapfield;
                 
                 //check if linked field
                 Object val = null;
-                if(data!=null)
-                    val = propertyResolver.getProperty( data, refname );
+                if(data!=null) {
+                    if( mapfield!=null && mapfield.trim().length()>0) {
+                        val = propertyResolver.getProperty( data, mapfield );
+                    }    
+                    else {
+                        val = propertyResolver.getProperty( data, refname );
+                    }    
+                }
                 
                 handler.processField(sf, refname, val);
             } else if( fld instanceof LinkField ) {
@@ -95,35 +103,38 @@ public final class SchemaScanner {
             } else if( fld instanceof ComplexField ) {
                 ComplexField cf = (ComplexField)fld;
                 try {
-                    String ref = cf.getRef();
-                    if(ref==null)
-                        throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
                     SchemaElement refElement = null;
                     String refname = cf.getName();
-
-                    //add dynamic ref. Dynamic ref are marked with $ and enclosed with braces e.g.:  ${ref-name}
-                    if( data!=null && ref.trim().startsWith("$")) {
-                        String dref = ref.replaceAll("\\$|\\{|\\}", "");
-                        ref = (String)propertyResolver.getProperty( data, dref );
-                    }
-                    
-                    if(ref!=null && !ref.trim().startsWith("$")) {
-                        if(ref.indexOf(":")>0) {
-                            refElement = schema.getSchemaManager().getElement(ref);
-                        } else {
-                            refElement = schema.getElement(ref);
-                        }
-                        if(refname==null) refname = refElement.getName();
-                    }
-                    
                     Object val = null;
-                    if(data!=null)
-                        val = propertyResolver.getProperty( data, refname );
-
+                    String ref = cf.getRef();
+                    
+                    if(cf.getSerializer()==null) {
+                        //bypass ref checks if it is a serializer
+                        if(ref==null )
+                            throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
+                        
+                        //add dynamic ref. Dynamic ref are marked with $ and enclosed with braces e.g.:  ${ref-name}
+                        if( data!=null && ref.indexOf("$")>=0) {
+                            ref = ExprUtil.substituteValues(ref, (Map)data, propertyResolver );
+                        }
+                        
+                        
+                        if(ref!=null && ref.indexOf("$")<0) {
+                            if(ref.indexOf(":")>0) {
+                                refElement = schema.getSchemaManager().getElement(ref);
+                            } else {
+                                refElement = schema.getElement(ref);
+                            }
+                            if(refname==null) refname = refElement.getName();
+                        }
+                        
+                        
+                        if(data!=null)
+                            val = propertyResolver.getProperty( data, refname );
+                    }
                     handler.startComplexField( cf, refname, refElement,val );
                     handler.endComplexField( cf );
-                } 
-                catch(BreakException be) {;}
+                } catch(BreakException be) {;}
             }
         }
         handler.endElement( element );

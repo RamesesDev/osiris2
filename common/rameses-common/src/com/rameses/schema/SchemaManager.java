@@ -9,6 +9,7 @@
 
 package com.rameses.schema;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -132,4 +133,16 @@ public abstract class SchemaManager {
         scanner.scan(element.getSchema(),element,data,handler);
         return handler.getResult();
     }
+     
+    public SchemaSerializer getSerializer() {
+        if( getConf().getSerializer()==null)
+            throw new RuntimeException("There is no SchemaSerializer defined in SchemaConf");
+        return getConf().getSerializer();    
+    } 
+     
+    public List<SchemaElement> lookup(String schemaName, String attribute, String matchPattern ) {
+        return getSchema(schemaName).lookup(attribute,matchPattern);
+    }
+    
+    
 }

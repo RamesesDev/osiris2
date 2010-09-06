@@ -8,6 +8,8 @@
  */
 package com.rameses.persistence;
 
+import com.rameses.schema.ComplexField;
+import com.rameses.schema.SchemaElement;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SimpleField;
 import com.rameses.sql.AbstractSqlTxn;
@@ -23,18 +25,18 @@ import com.rameses.sql.SqlUnit;
  */
 public class UpdatePersistenceHandler extends AbstractPersistenceHandler {
     
-    public UpdatePersistenceHandler(SchemaManager schemaManager, SqlContext context) {
-        super(schemaManager,context);
+    public UpdatePersistenceHandler(SchemaManager schemaManager, SqlContext context, Object rootData) {
+        super(schemaManager,context,rootData);
     }
     
     protected String getAction() {
         return "update";
     }
-
+    
     protected SqlUnit getSqlUnit(CrudModel model) {
         return CrudSqlBuilder.getInstance().getUpdateSqlUnit(model);
     }
-
+    
     protected AbstractSqlTxn getSqlTransaction(String name) {
         return sqlContext.createNamedExecutor(name);
     }
@@ -55,5 +57,28 @@ public class UpdatePersistenceHandler extends AbstractPersistenceHandler {
             se.setParameter( sname , value );
         }
     }
+    
+    public void startComplexField(ComplexField cf, String refname, SchemaElement element, Object data) {
+        String serializer = cf.getSerializer();
+        
+        //serialize object if serializer is mentioned.
+        //lookup appropriate serializer if not exist use default
+        
+        if(serializer!=null) {
+            if(!stack.empty()) {
+                Object d = super.rootData;
+                String mapfield = (String)cf.getProperties().get("mapfield");
+                if(mapfield!=null) {
+                    d = schemaManager.getConf().getPropertyResolver().getProperty(d, mapfield);
+                }
+                String svalue = super.schemaManager.getSerializer().write( d );
+                DbElementContext dbec = stack.peek();
+                SqlExecutor se = (SqlExecutor)dbec.getSqlTxn();
+                se.setParameter( cf.getName() , svalue );
+            }
+        }
+    }
+    
+    
     
 }

@@ -9,6 +9,7 @@
 
 package com.rameses.schema;
 
+import com.rameses.common.ExpressionResolver;
 import com.rameses.common.PropertyResolver;
 import com.sun.jmx.remote.util.Service;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ public class SchemaConf {
 
     private List<SchemaProvider> providers ;
     private SchemaManager schemaManager;
+    private SchemaSerializer serializer;
+    private ExpressionResolver expressionResolver;
     
     /** Creates a new instance of SchemaConf */
     public SchemaConf(SchemaManager sm) {
@@ -87,6 +90,8 @@ public class SchemaConf {
         cacheProvider = null;
         scriptProvider = null;
         schemaManager = null;
+        serializer = null;
+        expressionResolver = null;
     }
 
     public SchemaScriptProvider getScriptProvider() {
@@ -95,6 +100,22 @@ public class SchemaConf {
 
     public void setScriptProvider(SchemaScriptProvider scriptProvider) {
         this.scriptProvider = scriptProvider;
+    }
+
+    public SchemaSerializer getSerializer() {
+        return serializer;
+    }
+
+    public void setSerializer(SchemaSerializer serializer) {
+        this.serializer = serializer;
+    }
+
+    public ExpressionResolver getExpressionResolver() {
+        return expressionResolver;
+    }
+
+    public void setExpressionResolver(ExpressionResolver expressionResolver) {
+        this.expressionResolver = expressionResolver;
     }
     
 }

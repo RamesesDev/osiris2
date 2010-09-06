@@ -16,7 +16,6 @@ import com.rameses.sql.SqlManager;
 import java.util.HashMap;
 import java.util.Map;
 import junit.framework.*;
-import test.schema.*;
 
 /**
  *
@@ -55,8 +54,10 @@ public class DynaSchemaTest extends TestCase {
     
     private Map createMap(SchemaElement element) {
         Map map = mgr.createMap(element);
-        map.put("address_type", "address");
         
+        Map country = new HashMap();
+        country.put("code", "us");
+        map.put("country",country);
         Map addr1 = new HashMap();
         addr1.put("street", "street1");
         map.put("address1", addr1);

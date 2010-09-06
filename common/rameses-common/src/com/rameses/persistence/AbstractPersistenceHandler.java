@@ -42,12 +42,13 @@ public abstract class AbstractPersistenceHandler implements SchemaHandler {
     protected SqlManager sqlManager;
     
     protected Stack<DbElementContext> stack = new Stack();
+    protected Object rootData;
     
-    
-    public AbstractPersistenceHandler(SchemaManager schemaManager, SqlContext context) {
+    public AbstractPersistenceHandler(SchemaManager schemaManager, SqlContext context, Object rootData) {
         this.sqlManager = context.getSqlManager();
         this.schemaManager = schemaManager;
         this.sqlContext = context;
+        this.rootData = rootData;
     }
     
     public void setStatus(SchemaHandlerStatus status) {

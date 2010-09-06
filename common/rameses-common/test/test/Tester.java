@@ -8,6 +8,7 @@
 package test;
 
 import com.rameses.util.KeyGen;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -104,6 +105,14 @@ public class Tester extends TestCase {
         String s = "#{cat}";
         String dref = s.replaceAll("#|\\{|\\}", "");
         assertEquals(dref,"cat");
+    }
+    
+    
+    public void testAddNumber() {
+        String c = "cat";
+        Date d = new Date();
+        BigDecimal a = new BigDecimal("100");
+        assertTrue( a instanceof Number );
     }
     
 }

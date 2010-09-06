@@ -23,8 +23,8 @@ import com.rameses.sql.SqlUnit;
  */
 public class DeletePersistenceHandler extends AbstractPersistenceHandler {
   
-    public DeletePersistenceHandler(SchemaManager schemaManager, SqlContext context) {
-        super(schemaManager, context);
+    public DeletePersistenceHandler(SchemaManager schemaManager, SqlContext context, Object rootData) {
+        super(schemaManager, context, rootData);
     }
     
     protected String getAction() {

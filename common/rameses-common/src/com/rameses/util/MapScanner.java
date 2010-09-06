@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public final class MapScanner {
     
-    private String excludeMatch = "_.*";
+    private String excludeMatch = "_.*[^_]$";
     
     private MapScannerHandler handler;
     

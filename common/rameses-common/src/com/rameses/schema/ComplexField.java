@@ -21,6 +21,7 @@ public class ComplexField extends SchemaField {
     private String ref;
     private int min;
     private int max;
+    private String serializer;
     
    
     public String getType() {
@@ -70,6 +71,14 @@ public class ComplexField extends SchemaField {
 
     public void setRef(String ref) {
         this.ref = ref;
+    }
+
+    public String getSerializer() {
+        return serializer;
+    }
+
+    public void setSerializer(String serializer) {
+        this.serializer = serializer;
     }
     
     

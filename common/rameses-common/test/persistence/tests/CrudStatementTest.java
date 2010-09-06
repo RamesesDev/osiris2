@@ -21,7 +21,6 @@ import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlQuery;
 import java.util.Map;
 import junit.framework.*;
-import test.schema.*;
 
 /**
  *
@@ -39,6 +38,7 @@ public class CrudStatementTest extends TestCase {
     protected void setUp() throws Exception {
         SchemaConf conf = mgr.getConf();
         conf.setPropertyResolver( new BeanResolver() );
+        conf.setSerializer(new TestSerializer());
         SqlManager sqlm = SqlManager.getInstance();
         sqlCtx = sqlm.createContext();
         //sqlm.getConf().getExtensions().put(SchemaManager.class, mgr);
@@ -56,7 +56,7 @@ public class CrudStatementTest extends TestCase {
         System.out.println("******************************");
     }
     
-    private final String TEST_SCHEMA = "test1";
+    private final String TEST_SCHEMA = "singletable";
     
     private Map createMap(SchemaElement element) {
         Map map = mgr.createMap(element);
@@ -72,7 +72,7 @@ public class CrudStatementTest extends TestCase {
         SchemaElement element = mgr.getElement(TEST_SCHEMA);
         Map map = createMap(element);
         
-        CreatePersistenceHandler handler = new CreatePersistenceHandler(mgr,sqlCtx);
+        CreatePersistenceHandler handler = new CreatePersistenceHandler(mgr,sqlCtx,map);
         SchemaScanner s = mgr.newScanner();
         s.scan( element.getSchema(),element, map, handler );
         for(Object o : handler.getQueue() ) {
@@ -90,7 +90,7 @@ public class CrudStatementTest extends TestCase {
         SchemaElement element = mgr.getElement(TEST_SCHEMA);
         Map map = createMap(element);
 
-        ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sqlCtx);
+        ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sqlCtx,map);
         SchemaScanner s = mgr.newScanner();
         s.scan( element.getSchema(),element, map, handler );
         for(Object o : handler.getQueue() ) {
@@ -111,7 +111,7 @@ public class CrudStatementTest extends TestCase {
         SchemaElement element = mgr.getElement(TEST_SCHEMA);
         Map map = createMap(element);
         
-        UpdatePersistenceHandler handler = new UpdatePersistenceHandler(mgr,sqlCtx);
+        UpdatePersistenceHandler handler = new UpdatePersistenceHandler(mgr,sqlCtx,map);
         SchemaScanner s = mgr.newScanner();
         s.scan( element.getSchema(),element, map, handler );
         for(Object o: handler.getQueue() ) {
@@ -128,7 +128,7 @@ public class CrudStatementTest extends TestCase {
         SchemaElement element = mgr.getElement(TEST_SCHEMA);
         Map map = createMap(element);
         
-        DeletePersistenceHandler handler = new DeletePersistenceHandler(mgr,sqlCtx);
+        DeletePersistenceHandler handler = new DeletePersistenceHandler(mgr,sqlCtx,map);
         SchemaScanner s = mgr.newScanner();
         s.scan( element.getSchema(),element, map, handler );
         for(Object o: handler.getQueue() ) {

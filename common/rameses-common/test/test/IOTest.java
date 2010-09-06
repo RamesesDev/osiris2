@@ -34,7 +34,7 @@ public class IOTest extends TestCase {
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
-    public void testTransfer() throws Exception {
+    public void xtestTransfer() throws Exception {
         File f = new File("e:/mytest.txt");
         FileTransferInputStream sis = null;
         FileTransferInfo fileInfo = null;
@@ -91,6 +91,19 @@ public class IOTest extends TestCase {
         
     }
     
+    public void testRegex() {
+        String pattern = "_.*[^_]$";
+        String a = "_cat_";
+        String b = "_cat";
+        String c = "mandalay_cat";
+        String d = "mandalay_cat_";
+        String e = "mandalaycat_";
+        System.out.println("a"+ a.matches(pattern) );
+        System.out.println("b"+ b.matches(pattern) );
+        System.out.println("c"+ c.matches(pattern) );
+        System.out.println("e"+ d.matches(pattern) );
+        System.out.println("f"+ e.matches(pattern) );
+    }
     
 }
 

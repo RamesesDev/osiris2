@@ -15,6 +15,8 @@ package com.rameses.schema;
  */
 public class DefaultSchemaHandler implements SchemaHandler {
     
+    protected SchemaHandlerStatus status;
+    
     /** Creates a new instance of DefaultSchemaHandler */
     public DefaultSchemaHandler() {
     }
@@ -45,6 +47,7 @@ public class DefaultSchemaHandler implements SchemaHandler {
     }
 
     public void setStatus(SchemaHandlerStatus status) {
+        this.status = status;
     }
 
     public void startComplexField(ComplexField cf,String refname, SchemaElement element,Object data) {

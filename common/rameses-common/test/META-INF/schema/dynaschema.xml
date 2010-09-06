@@ -2,18 +2,9 @@
 
     <element name="test" tablename="test.tblcustomer">
         <field name="id" primary="true" default="PERSON00001"/>
-        <complex name="sender" ref="personinfo"/>
+        <field name="country" required="true"/>
+        <complex name="address1" required="true" ref="address:${country.code}"/>
     </element>
 
-    <element name="personinfo">
-        <complex name="address1" required="true" ref="${address_type}"/>
-        <complex name="address2" required="true" ref="${address_type}"/>
-    </element>
-        
-    <element name="address">
-        <field name="street" required="true"/>
-        <field name="city" required="true"/>
-    </element>
-    
 </schema>
 

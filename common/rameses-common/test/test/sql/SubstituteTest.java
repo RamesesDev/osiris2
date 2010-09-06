@@ -7,7 +7,7 @@
 
 package test.sql;
 
-import com.rameses.sql.SqlUtil;
+import com.rameses.util.ExprUtil;
 import java.util.HashMap;
 import java.util.Map;
 import junit.framework.*;
@@ -34,7 +34,7 @@ public class SubstituteTest extends TestCase {
         map.put("condition", c);
         //String sql = "${xcondition} select from o ${xcondition} ${fields}";
         String sql  ="select * from data where p=$P{data} ${condition}";
-        System.out.println( SqlUtil.substituteValues( sql, map ));
+        System.out.println( ExprUtil.substituteValues( sql, map ));
     }
     
     public void xtestAlias() throws Exception {
@@ -49,7 +49,7 @@ public class SubstituteTest extends TestCase {
         map.put("condition", c);
         //String sql = "${xcondition} select from o ${xcondition} ${fields}";
         String sql  ="select * from data where p in  (${condition})";
-        System.out.println( SqlUtil.substituteValues( sql, map ));
+        System.out.println( ExprUtil.substituteValues( sql, map ));
     }
     
 }

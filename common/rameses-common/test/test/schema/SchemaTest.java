@@ -76,14 +76,15 @@ public class SchemaTest extends TestCase {
         Schema schema = mgr.getSchema( "sendout" );
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
-
-        assertNotNull(schema);
-        CreatePersistenceHandler handler = new CreatePersistenceHandler(mgr,sq.createContext());
-        SchemaScanner sc = mgr.newScanner();
-
         Map map = mgr.createMap( "sendout" );
         map.put("remote_address2_city", "capitol city 2");
         map.put("remote_address1_city", "bacguio city 1");
+        
+        assertNotNull(schema);
+        CreatePersistenceHandler handler = new CreatePersistenceHandler(mgr,sq.createContext(), map);
+        SchemaScanner sc = mgr.newScanner();
+
+        
         
         sc.scan(schema, map, handler );
         
@@ -127,15 +128,18 @@ public class SchemaTest extends TestCase {
         Schema schema = mgr.getSchema( "sendout" );
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
-
+        
         assertNotNull(schema);
-        ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sq.createContext());
-        SchemaScanner sc = mgr.newScanner();
-
+        
         Map map = mgr.createMap( "sendout" );
         map.put("remote_address2_city", "capitol city 2");
         map.put("remote_address1_city", "bacguio city 1");
+
+        ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sq.createContext(),map);
+        SchemaScanner sc = mgr.newScanner();
         sc.scan(schema, map, handler );
+
+        
         
         SqlQuery se = null;
         Queue q = handler.getQueue();
