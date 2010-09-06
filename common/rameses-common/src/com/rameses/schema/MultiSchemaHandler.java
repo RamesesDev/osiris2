@@ -47,12 +47,8 @@ public class MultiSchemaHandler implements SchemaHandler {
         for(SchemaHandler h: handlers) h.processField(f, refname, value);        
     }
 
-    public void startLinkField(LinkField f) {
-        for(SchemaHandler h: handlers) h.startLinkField(f);        
-    }
-
-    public void startComplexField(ComplexField cf) {
-        for(SchemaHandler h: handlers) h.startComplexField(cf);
+    public void startLinkField(LinkField f, String refname, SchemaElement element) {
+        for(SchemaHandler h: handlers) h.startLinkField(f,refname,element);        
     }
 
     public void endLinkField(LinkField f) {
@@ -69,6 +65,10 @@ public class MultiSchemaHandler implements SchemaHandler {
 
     public void endSchema(Schema schema) {
         for(SchemaHandler h: handlers) h.endSchema(schema);        
+    }
+
+    public void startComplexField(ComplexField cf, String refname, SchemaElement element,Object data) {
+        for(SchemaHandler h: handlers) h.startComplexField(cf,refname,element,data);
     }
     
 }

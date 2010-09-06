@@ -9,6 +9,7 @@
 
 package com.rameses.sql;
 
+import com.rameses.util.ExprUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -142,7 +143,7 @@ public abstract class AbstractSqlTxn {
      */
     protected final void _setVars( Map map ) {
         this.vars = map;
-        this.statement = SqlUtil.substituteValues( this.origStatement, map );
+        this.statement = ExprUtil.substituteValues( this.origStatement, map );
         //reparse the statement after parsing to update the parameter names
         this.statement = SqlUtil.parseStatement(statement, parameterNames);  
         reallocate();

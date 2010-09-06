@@ -13,6 +13,7 @@ import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaElement;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaScanner;
+import com.rameses.schema.SchemaSerializer;
 import com.rameses.schema.ValidationResult;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
@@ -50,10 +51,10 @@ public class DefaultEntityManager implements EntityManager {
     }
     
     public Object create(String schemaName, Object data) {
-        Queue<SqlExecutor> queue = null;
+        Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            CreatePersistenceHandler handler = new CreatePersistenceHandler(schemaManager,sqlContext);
+            CreatePersistenceHandler handler = new CreatePersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,data,handler);
@@ -65,7 +66,7 @@ public class DefaultEntityManager implements EntityManager {
         try {
             if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
-                SqlExecutor se= queue.remove();
+                SqlExecutor se= (SqlExecutor)queue.remove();
                 if(debug) {
                     System.out.println(se.getStatement());
                     int i = 0;
@@ -90,11 +91,11 @@ public class DefaultEntityManager implements EntityManager {
      * if there are no records found, this function returns null
      */
     public Object read(String schemaName, Object data) {
-        Queue<SqlQuery> queue = null;
+        Queue queue = null;
         List<String> removeFields = new ArrayList();
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            ReadPersistenceHandler handler = new ReadPersistenceHandler(schemaManager,sqlContext);
+            ReadPersistenceHandler handler = new ReadPersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,data,handler);
@@ -109,7 +110,7 @@ public class DefaultEntityManager implements EntityManager {
                 sqlContext.openConnection();
             }
             while(!queue.isEmpty()) {
-                SqlQuery sq = queue.remove();
+                SqlQuery sq = (SqlQuery)queue.remove();
                 if(debug) {
                     System.out.println(sq.getStatement());
                     int i =0;
@@ -162,10 +163,10 @@ public class DefaultEntityManager implements EntityManager {
         Map oldData = (Map) read( schemaName, data );
         oldData.putAll( (Map)data );
         
-        Queue<SqlExecutor> queue = null;
+        Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            UpdatePersistenceHandler handler = new UpdatePersistenceHandler(schemaManager,sqlContext);
+            UpdatePersistenceHandler handler = new UpdatePersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,oldData,handler);
@@ -177,7 +178,7 @@ public class DefaultEntityManager implements EntityManager {
         try {
             if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
-                SqlExecutor se= queue.remove();
+                SqlExecutor se= (SqlExecutor)queue.remove();
                 if(debug) {
                     System.out.println(se.getStatement());
                     int i = 0;
@@ -198,10 +199,10 @@ public class DefaultEntityManager implements EntityManager {
     }
     
     public void delete(String schemaName, Object data) {
-        Queue<SqlExecutor> queue = null;
+        Queue queue = null;
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            DeletePersistenceHandler handler = new DeletePersistenceHandler(schemaManager,sqlContext);
+            DeletePersistenceHandler handler = new DeletePersistenceHandler(schemaManager,sqlContext,data);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,data,handler);
@@ -213,7 +214,7 @@ public class DefaultEntityManager implements EntityManager {
         try {
             if(!transactionOpen) sqlContext.openConnection();
             while(!queue.isEmpty()) {
-                SqlExecutor se= queue.remove();
+                SqlExecutor se= (SqlExecutor)queue.remove();
                 if(debug) {
                     System.out.println(se.getStatement());
                     int i = 0;
@@ -245,13 +246,7 @@ public class DefaultEntityManager implements EntityManager {
         this.debug = debug;
     }
     
-    public Object createModel(String schemaName) {
-        return schemaManager.createMap(schemaName);
-    }
-    
-    public ValidationResult validateModel(String schemaName, Object data) {
-        return schemaManager.validate(schemaName, data);
-    }
+   
     
     //returns true if opening transaction was successful.
     public boolean beginTransaction() throws Exception {
@@ -272,5 +267,41 @@ public class DefaultEntityManager implements EntityManager {
         sqlContext.closeConnection();
         return true;
     }
+    
+    public Object createModel(String schemaName) {
+        return schemaManager.createMap(schemaName);
+    }
+    
+    public ValidationResult validateModel(String schemaName, Object data) {
+        return schemaManager.validate(schemaName, data);
+    }
+    
+    public void validate(String schemaName, Object data) {
+        ValidationResult vr = schemaManager.validate(schemaName, data);
+        if(vr.hasErrors()) 
+            throw new RuntimeException(vr.toString());
+    }
+    
+    /**
+     * add a map serializer also later.
+     */
+    public SchemaSerializer getSerializer() {
+        return schemaManager.getSerializer();
+    }
+    
+
+    public SchemaManager getSchemaManager() {
+        return schemaManager;
+    }
+    
+    public Aggregator getAggregator() {
+        return new Aggregator(this);
+    }
+    
+    public Indexer getIndexer() {
+        return new Indexer(this);
+    }
+    
+    
     
 }

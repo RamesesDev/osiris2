@@ -1,0 +1,30 @@
+<schema>
+    
+    <element name="customer">
+        <field name="objid"/>
+        <link ref="person-info"/>
+        <complex name="primaryaddress" ref="address" multiplicity="one"/>
+        <complex ref="id"/>
+    </element>
+     
+    <element name="person-info">
+        <field name="firstname"/>
+        <field name="lastname"/>
+        <field name="middlename"/>
+    </element>
+    
+    <element name="address">
+        <field name="street"/>
+        <field name="city"/>
+        <field name="province"/>
+    </element>
+    
+    <element name="id">
+        <field name="type"/>
+        <field name="number"/>
+        <field name="expirydate"/>
+    </element>
+    
+</schema>
+
+

@@ -72,20 +72,20 @@ public class XmlSchemaSqlUnitProvider extends SqlUnitProvider {
         //    context: delivery/address
         String schemaName = null;
         String elementName = null;
-        String contextPath = null;
+        //String contextPath = null;
         
         if( source.indexOf(":")>0) {
             schemaName = source.substring( 0, source.indexOf(":") );
             String tmp = source.substring( source.indexOf(":")+1 );
             if( tmp.startsWith("/") ) {
                 elementName = schemaName;
-                contextPath = tmp.substring(1);
-                contextPath = contextPath.replaceAll("/", "_");                
+                //contextPath = tmp.substring(1);
+                //contextPath = contextPath.replaceAll("/", "_");                
             }    
             else if(tmp.indexOf("/")>1) { 
                 elementName = tmp.substring( 0, tmp.indexOf("/") );
-                contextPath = tmp.substring( tmp.indexOf("/")+1 );
-                contextPath = contextPath.replaceAll("/", "_");
+                //contextPath = tmp.substring( tmp.indexOf("/")+1 );
+                //contextPath = contextPath.replaceAll("/", "_");
             }    
             else {
                 elementName = tmp;
@@ -110,11 +110,10 @@ public class XmlSchemaSqlUnitProvider extends SqlUnitProvider {
             throw new RuntimeException("schema element is null " + elementName );
         
         CrudSchemaHandler crudBuilder = new CrudSchemaHandler();
-        crudBuilder.setPrefix( contextPath );
         SchemaScanner sc = schemaManager.newScanner();
         
         sc.scan(schema, element, crudBuilder ) ;
-        //CrudModel crudModel = crudBuilder.getCrudModel();
+
         CrudModel crudModel = crudBuilder.getCrudModel();
         if(action.equals(CREATE))
             return CrudSqlBuilder.getInstance().getCreateSqlUnit(crudModel);

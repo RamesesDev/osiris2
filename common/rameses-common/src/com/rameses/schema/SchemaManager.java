@@ -9,6 +9,7 @@
 
 package com.rameses.schema;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,6 +50,11 @@ public abstract class SchemaManager {
         throw new RuntimeException("Schema " + name +  " cannot be found from provided resources");
     }
     
+    public SchemaElement getElement(String name) {
+        Schema schema = getSchema(name);
+        return schema.getElement(name);
+    }
+    
     public void destroy() {
         getConf().destroy();
     }
@@ -69,15 +75,11 @@ public abstract class SchemaManager {
         private SchemaConf conf;
         
         public DefaultSchemaFactory() {
-            conf = new SchemaConf();
+            conf = new SchemaConf(this);
         }
         
         public SchemaConf getConf() {
             return conf;
-        }
-        
-        public void setConf(SchemaConf conf) {
-            this.conf = conf;
         }
     }
     
@@ -88,13 +90,12 @@ public abstract class SchemaManager {
     }
     
     public Map createMap(String name) {
-        Schema schema = getSchema(name);
-        SchemaElement element = null;
-        if(name.indexOf(":")>0) {
-            String en = name.substring(name.indexOf(":")+1);
-            element = schema.getElement(en);
-        }
-        return createMap( schema, element );
+        SchemaElement element = getElement(name);
+        return createMap( element.getSchema(), element );
+    }
+    
+    public Map createMap(SchemaElement element) {
+        return createMap( element.getSchema(), element );
     }
     
     public Map createMap(Schema schema, SchemaElement element) {
@@ -125,4 +126,23 @@ public abstract class SchemaManager {
             scanner.scan(schema, schema.getElement(elementName),data,handler);
         return handler.getResult();
     }
+    
+     public ValidationResult validate(SchemaElement element, Object data) {
+        SchemaValidationHandler handler = new SchemaValidationHandler();
+        SchemaScanner scanner = newScanner();
+        scanner.scan(element.getSchema(),element,data,handler);
+        return handler.getResult();
+    }
+     
+    public SchemaSerializer getSerializer() {
+        if( getConf().getSerializer()==null)
+            throw new RuntimeException("There is no SchemaSerializer defined in SchemaConf");
+        return getConf().getSerializer();    
+    } 
+     
+    public List<SchemaElement> lookup(String schemaName, String attribute, String matchPattern ) {
+        return getSchema(schemaName).lookup(attribute,matchPattern);
+    }
+    
+    
 }

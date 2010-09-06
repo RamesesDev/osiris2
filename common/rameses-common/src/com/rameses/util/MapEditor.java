@@ -1,4 +1,4 @@
-package com.rameses.util.editors;
+package com.rameses.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

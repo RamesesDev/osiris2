@@ -76,9 +76,12 @@ public class ScriptService implements ScriptServiceLocal {
                 injectionHandler = new InjectionHandler(name, context,env);
                 classDef.injectFields( target, injectionHandler );
                 
-                //check if interceptors should fire. This is applied only to all proxy methods.
+                //check if interceptors should fire. This is applied only to all proxy methods that are no local
                 boolean applyInterceptors = false;
-                if(actionMethod.isAnnotationPresent(ProxyMethod.class)) applyInterceptors = true;
+                if(actionMethod.isAnnotationPresent(ProxyMethod.class)) {
+                    ProxyMethod pm = actionMethod.getAnnotation(ProxyMethod.class);
+                    if(!pm.local()) applyInterceptors = true;
+                }
                 
                 
                 //fire before interceptors;

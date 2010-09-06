@@ -1,3 +1,4 @@
+import java.sql.Timestamp;
 import junit.framework.*;
 /*
  * NewEmptyJUnitTest.java
@@ -31,7 +32,12 @@ public class NewEmptyJUnitTest extends TestCase {
         
        //String d = "a/b/b/c/d/e/f/g/";
        //System.out.println( d.substring(0,d.length()-1)  );
-        System.out.println("module:workunit.fire".matches(".*:.*\\..*"));
+       // System.out.println("module:workunit.fire".matches(".*:.*\\..*"));
+        //TimeZone tz = TimeZone.getTimeZone("us");
+        //System.out.println(tz);
+        Timestamp tv = Timestamp.valueOf("2008-01-01 00:00:01");
+        System.out.println(tv.toString());
     }
 
+    
 }

@@ -17,7 +17,6 @@ import com.rameses.sql.SqlManager;
 import java.util.Map;
 import java.util.Queue;
 import junit.framework.*;
-import test.schema.*;
 
 /**
  *
@@ -47,9 +46,10 @@ public class EntityTest extends TestCase {
         Schema schema = mgr.getSchema( "test1" );
         assertNotNull(schema);
         
-        UpdatePersistenceHandler handler = new UpdatePersistenceHandler(mgr,sq.createContext());
-        SchemaScanner sc = mgr.newScanner();
         Map m = mgr.createMap(schema, null);
+        UpdatePersistenceHandler handler = new UpdatePersistenceHandler(mgr,sq.createContext(),m);
+        SchemaScanner sc = mgr.newScanner();
+        
         
         //this is null if 
         
@@ -63,10 +63,10 @@ public class EntityTest extends TestCase {
         
         
         SqlExecutor se = null;
-        Queue<SqlExecutor> q = handler.getQueue();
+        Queue q= handler.getQueue();
         assertEquals(q.size(),3);
         while(!q.isEmpty()) {
-            se=q.remove();
+            se=(SqlExecutor )q.remove();
             System.out.println(se.getStatement());
             int i = 0;
             for(String s: se.getParameterNames()) {

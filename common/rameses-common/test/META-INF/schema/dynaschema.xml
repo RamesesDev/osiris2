@@ -1,0 +1,10 @@
+<schema>
+
+    <element name="test" tablename="test.tblcustomer">
+        <field name="id" primary="true" default="PERSON00001"/>
+        <field name="country" required="true"/>
+        <complex name="address1" required="true" ref="address:${country.code}"/>
+    </element>
+
+</schema>
+

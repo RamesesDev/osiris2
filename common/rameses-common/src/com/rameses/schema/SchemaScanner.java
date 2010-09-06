@@ -10,6 +10,8 @@
 package com.rameses.schema;
 
 import com.rameses.common.PropertyResolver;
+import com.rameses.util.ExprUtil;
+import java.util.Map;
 
 /**
  *
@@ -18,7 +20,7 @@ import com.rameses.common.PropertyResolver;
 public final class SchemaScanner {
     
     private PropertyResolver propertyResolver;
-   
+    
     
     public SchemaScanner(PropertyResolver resolver) {
         this.propertyResolver = resolver;
@@ -57,43 +59,82 @@ public final class SchemaScanner {
                 String refname = status.getFixedFieldName( sf );
                 
                 String mapfield = sf.getMapfield();
-                if(mapfield!=null && mapfield.trim().length()>0) refname = mapfield;
+                //if(mapfield!=null && mapfield.trim().length()>0) refname = mapfield;
                 
                 //check if linked field
                 Object val = null;
-                if(data!=null)
-                    val = propertyResolver.getProperty( data, refname );
+                if(data!=null) {
+                    if( mapfield!=null && mapfield.trim().length()>0) {
+                        val = propertyResolver.getProperty( data, mapfield );
+                    }    
+                    else {
+                        val = propertyResolver.getProperty( data, refname );
+                    }    
+                }
                 
-                handler.processField(sf, refname, val );
+                handler.processField(sf, refname, val);
             } else if( fld instanceof LinkField ) {
                 LinkField lf = (LinkField)fld;
                 String ref = lf.getRef();
                 if(ref==null) {
-                    throw new RuntimeException("SchemaScanner error. link-field requires a ref attribute for schema " + schema.getName() );
+                    throw new RuntimeException("SchemaScanner error. link field requires a ref attribute for schema " + schema.getName() );
                 }
-                    
-                status.pushLinkField( lf );
                 
+                //extract context field before pushing this linkfield.
+                LinkField contextField = status.getFieldContext();
+                status.pushLinkField( lf );
                 try {
-                    handler.startLinkField( lf );
-                    //link to element and scan it.
-                    SchemaElement linkElement = schema.getElement(ref);
+                    //link to element and scan it. if there is a : then access schema manager
+                    SchemaElement linkElement = null;
+                    if(ref.indexOf(":")>0) {
+                        linkElement = schema.getSchemaManager().getElement(ref);
+                    } else {
+                        linkElement = schema.getElement(ref);
+                    }
                     if( linkElement == null ) {
                         System.out.println("ERROR LINK FIELD -> " + ref + " element does not exist");
                     } else {
+                        handler.startLinkField( lf, lf.getName(), linkElement );
                         scanElement( schema, status, linkElement, data, handler );
+                        handler.endLinkField( lf );
                     }
-                    handler.endLinkField( lf );
-                } 
-                catch(BreakException be) {;}
+                } catch(BreakException be) {;}
                 status.popLinkField();
             } else if( fld instanceof ComplexField ) {
                 ComplexField cf = (ComplexField)fld;
                 try {
-                    handler.startComplexField( cf );
+                    SchemaElement refElement = null;
+                    String refname = cf.getName();
+                    Object val = null;
+                    String ref = cf.getRef();
+                    
+                    if(cf.getSerializer()==null) {
+                        //bypass ref checks if it is a serializer
+                        if(ref==null )
+                            throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
+                        
+                        //add dynamic ref. Dynamic ref are marked with $ and enclosed with braces e.g.:  ${ref-name}
+                        if( data!=null && ref.indexOf("$")>=0) {
+                            ref = ExprUtil.substituteValues(ref, (Map)data, propertyResolver );
+                        }
+                        
+                        
+                        if(ref!=null && ref.indexOf("$")<0) {
+                            if(ref.indexOf(":")>0) {
+                                refElement = schema.getSchemaManager().getElement(ref);
+                            } else {
+                                refElement = schema.getElement(ref);
+                            }
+                            if(refname==null) refname = refElement.getName();
+                        }
+                        
+                        
+                        if(data!=null)
+                            val = propertyResolver.getProperty( data, refname );
+                    }
+                    handler.startComplexField( cf, refname, refElement,val );
                     handler.endComplexField( cf );
-                }
-                catch(BreakException be) {;}
+                } catch(BreakException be) {;}
             }
         }
         handler.endElement( element );

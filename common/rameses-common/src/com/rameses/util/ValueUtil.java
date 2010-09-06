@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,4 +97,15 @@ public class ValueUtil {
         return sb;
     }
 
+    public static String repeat(String val, int repeat ) {
+        if(val==null) val = " ";
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i<repeat;i++) {
+            sb.append( val );
+        }
+        return sb.toString();
+    }
+    
+    
+   
 }

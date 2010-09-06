@@ -9,6 +9,7 @@
 
 package com.rameses.schema;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -69,11 +70,29 @@ public class MapBuilderHandler implements SchemaHandler {
     }
     
     public void startSchema(Schema schema) {;}
-    public void startLinkField(LinkField f) {;}
+    public void startLinkField(LinkField f, String refname,SchemaElement element) {;}
     public void endLinkField(LinkField f) {;}
-    public void startComplexField(ComplexField cf) {;}
-    public void endComplexField(ComplexField cf) {;}
     public void endSchema(Schema schema) {;}
+    
+    public void startComplexField(ComplexField cf, String refname, SchemaElement element,Object data) {
+        if(element==null) throw new BreakException();
+        
+        Map map = stack.peek();
+        if(cf.getType()==null || cf.getType().trim().length()==0) {
+            if(cf.isRequired()) {
+                Schema s = element.getSchema();
+                Map subData = element.getSchema().getSchemaManager().createMap(s, element);
+                map.put(refname, subData);
+            }
+        } else {
+            if(cf.isRequired()) {
+                map.put(refname, new ArrayList());
+            }
+        }
+    }
+    
+    public void endComplexField(ComplexField cf) {
+    }
     
     
     

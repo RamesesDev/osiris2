@@ -10,11 +10,18 @@
 package com.rameses.schema;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 
 public class Schema implements Serializable {
+    
+    /**
+     * this is the manager that created this schema.
+     */
+    private SchemaManager schemaManager;
     
     //usually this is the first element or the element with the same schema name.
     //or it is the first and the name is null.
@@ -27,12 +34,13 @@ public class Schema implements Serializable {
     
     
     /** Creates a new instance of Schema */
-    public Schema(String n) {
+    Schema(String n, SchemaManager sm) {
         this.name = n;
         //remove if any extensions
         if( this.name.indexOf(".")>0 ) {
             this.name = this.name.substring(0, this.name.lastIndexOf("."));
         }
+        this.schemaManager = sm;
     }
     
     
@@ -88,7 +96,10 @@ public class Schema implements Serializable {
             }
             else if(sf instanceof LinkField) {
                 LinkField lf = (LinkField)sf;
-                if( (!lf.isPrefixed()) ||
+                if(fieldName.equals(lf.getName()) || fieldName.equals(lf.getRef())) {
+                    return lf;
+                }
+                else if( (!lf.isPrefixed()) ||
                         (lf.isPrefixed() && fieldName.startsWith(lf.getName()))) {
                     String ref = lf.getRef();
                     if(ref==null)
@@ -122,6 +133,28 @@ public class Schema implements Serializable {
         if(sf==null) throw new RuntimeException("schema field " + path + " does not exist!");
         schemaFields.put(path, sf);
         return sf;
+    }
+
+    public SchemaManager getSchemaManager() {
+        return schemaManager;
+    }
+    
+    //this searches for elements that match attributes
+    public List<SchemaElement> lookup(String attribute, String matchPattern) {
+        List<SchemaElement> list = new ArrayList();
+        for(SchemaElement element : elements.values() ) {
+            String attrValue = null;
+            if( attribute.equals("name")) {
+                attrValue = element.getName();
+            }
+            else {
+                attrValue = (String)element.getProperties().get(attribute);
+            }
+            if(attrValue!=null && attrValue.matches(matchPattern)) {
+                list.add(element);
+            }
+        }
+        return list;
     }
     
     

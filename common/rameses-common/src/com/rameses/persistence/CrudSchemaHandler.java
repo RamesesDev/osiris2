@@ -34,9 +34,8 @@ public class CrudSchemaHandler implements SchemaHandler {
     private CrudModel crudModel;
     private Schema schema;
     private String tableName;
+    
     private String prefix;
-    
-    
     
     public CrudSchemaHandler() {
     }
@@ -75,8 +74,8 @@ public class CrudSchemaHandler implements SchemaHandler {
      * if reference table has a tablename do not proceed.
      * This means the referenced element is another table.
      */
-    public void startLinkField(LinkField f) {
-        SchemaElement e = schema.getElement( f.getRef() );
+    public void startLinkField(LinkField f, String refname, SchemaElement e) {
+        //SchemaElement e = schema.getElement( f.getRef() );
         String tblname =  (String)e.getProperties().get(TABLENAME);
         if( tblname != null  && tblname.trim().length()>0)
             throw new BreakException();
@@ -98,24 +97,13 @@ public class CrudSchemaHandler implements SchemaHandler {
      *   then check if the fieldname is excluded there.
      */
     public void processField(SimpleField sf, String refname, Object value) {
-        if( status.isExcludeField(sf)) return;
+        LinkField lf = status.getFieldContext();
+        String fieldName = (String)sf.getProperties().get(DBFIELD);
+        String paramName = status.getFixedFieldName( sf );
         
-        
-        String mapfield = sf.getName();
-        
-        //this is very important
-        //if this has no table name, exclude the excluded fields and use the refname instead
-        String tbname = (String)sf.getElement().getProperties().get(TABLENAME);
-        if(tbname==null || tbname.trim().length()==0) {
-            if(status.isExcludeField(sf)) return;
-            mapfield = refname;
+        if( fieldName == null ) {
+            fieldName = paramName;
         }
-        
-        String fieldName = (String) sf.getProperties().get(DBFIELD);
-        if(fieldName==null || fieldName.trim().length()==0) {
-            fieldName = mapfield;
-        }
-        
         CrudField cf = new CrudField();
         String sprimary = (String)sf.getProperties().get(PRIMARY);
         boolean primary = false;
@@ -124,11 +112,29 @@ public class CrudSchemaHandler implements SchemaHandler {
                 primary = Boolean.parseBoolean(sprimary);
             } catch(Exception ign){;}
         }
-        cf.setName(mapfield);
+        cf.setName(paramName);
         cf.setFieldName(fieldName);
         cf.setPrimary(primary);
         crudModel.getFields().add(cf);
     }
+    
+    public void startComplexField(ComplexField cf, String refname, SchemaElement element, Object data) {
+        String serializer = cf.getSerializer();
+        
+        //serialize object if serializer is mentioned.
+        //lookup appropriate serializer if not exist use default
+        if(serializer!=null) {
+            String fieldName = (String)cf.getProperties().get(DBFIELD);
+            if( fieldName == null ) {
+                fieldName = cf.getName();
+            }
+            CrudField crf = new CrudField();
+            crf.setName( cf.getName() );
+            crf.setFieldName( fieldName );
+            crudModel.getFields().add(crf);
+        }
+    }
+    
     
     public void endElement(SchemaElement element) {
         
@@ -139,8 +145,6 @@ public class CrudSchemaHandler implements SchemaHandler {
     public void endLinkField(LinkField f) {
     }
     
-    public void startComplexField(ComplexField cf) {
-    }
     
     public void endComplexField(ComplexField cf) {
     }
@@ -151,6 +155,7 @@ public class CrudSchemaHandler implements SchemaHandler {
     public CrudModel getCrudModel() {
         return crudModel;
     }
+    
     
     public String getPrefix() {
         return prefix;

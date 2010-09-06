@@ -26,11 +26,12 @@ public class XmlSchemaProvider extends SchemaProvider {
     public Schema getSchema(String name) {
         InputStream is = null;
         try {
-            is = getConf().getResourceProvider().getResource(name);
-            SchemaXmlParser parser = new SchemaXmlParser( getConf().getPropertyResolver() );
+            is = getSchemaManager().getConf().getResourceProvider().getResource(name);
+            if(is==null) return null;
+            SchemaXmlParser parser = new SchemaXmlParser( getSchemaManager() );
             return parser.parse( is, name );
         } catch(Exception e) {
-            return null;
+            throw new RuntimeException(e);
         } finally {
             try { is.close(); } catch(Exception ign){;}
         }

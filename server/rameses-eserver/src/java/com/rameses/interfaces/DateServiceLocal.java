@@ -13,5 +13,8 @@ import java.util.Date;
 
 
 public interface DateServiceLocal {
+
     Date getServerDate();
+    String getFormattedTime(Date d, String timezone);
+    
 }

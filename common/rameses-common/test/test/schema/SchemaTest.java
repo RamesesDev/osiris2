@@ -44,7 +44,7 @@ public class SchemaTest extends TestCase {
     protected void tearDown() throws Exception {
     }
     
-    public void xtestRoot() throws Exception {
+    public void testRoot() throws Exception {
         Schema schema = mgr.getSchema( "customer" );
         assertEquals( schema.getRootElement(), schema.getElement("customer") );
     }
@@ -76,21 +76,22 @@ public class SchemaTest extends TestCase {
         Schema schema = mgr.getSchema( "sendout" );
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
-
-        assertNotNull(schema);
-        CreatePersistenceHandler handler = new CreatePersistenceHandler(mgr,sq.createContext());
-        SchemaScanner sc = mgr.newScanner();
-
         Map map = mgr.createMap( "sendout" );
         map.put("remote_address2_city", "capitol city 2");
         map.put("remote_address1_city", "bacguio city 1");
         
+        assertNotNull(schema);
+        CreatePersistenceHandler handler = new CreatePersistenceHandler(mgr,sq.createContext(), map);
+        SchemaScanner sc = mgr.newScanner();
+
+        
+        
         sc.scan(schema, map, handler );
         
         SqlExecutor se = null;
-        Queue<SqlExecutor> q = handler.getQueue();
+        Queue q = handler.getQueue();
         while(!q.isEmpty()) {
-            se=q.remove();
+            se=(SqlExecutor)q.remove();
             System.out.println(se.getStatement());
             int i = 0;
             for(String s: se.getParameterNames()) {
@@ -127,20 +128,23 @@ public class SchemaTest extends TestCase {
         Schema schema = mgr.getSchema( "sendout" );
         SqlManager sq = SqlManager.getInstance();
         sq.getConf().getExtensions().put( SchemaManager.class, mgr);
-
+        
         assertNotNull(schema);
-        ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sq.createContext());
-        SchemaScanner sc = mgr.newScanner();
-
+        
         Map map = mgr.createMap( "sendout" );
         map.put("remote_address2_city", "capitol city 2");
         map.put("remote_address1_city", "bacguio city 1");
+
+        ReadPersistenceHandler handler = new ReadPersistenceHandler(mgr,sq.createContext(),map);
+        SchemaScanner sc = mgr.newScanner();
         sc.scan(schema, map, handler );
+
+        
         
         SqlQuery se = null;
-        Queue<SqlQuery> q = handler.getQueue();
+        Queue q = handler.getQueue();
         while(!q.isEmpty()) {
-            se=q.remove();
+            se=(SqlQuery)q.remove();
             System.out.println(se.getStatement());
             int i = 0;
             for(String s: se.getParameterNames()) {

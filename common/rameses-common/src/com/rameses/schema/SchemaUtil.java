@@ -19,26 +19,48 @@ import java.util.Date;
  */
 public final class SchemaUtil {
     
-    //if it returns true, then the required rule passes. 
-    public static boolean checkRequired( SchemaField f, Class clazz, Object value ) {
+    //if it returns true, then the required rule passes.
+    public static boolean checkRequired( SchemaField f, Object value ) {
         if(!f.isRequired()) return true;
         
-        if( clazz==null ) {
-            return false;
-        }
-        //if class is not null, check the object
-       
         
         if( value==null ) {
             return false;
-        } 
-        else if( value instanceof String ) {
+        } else if( value instanceof String ) {
             if( ((String)value).trim().length()==0 ) {
                 return false;
             }
         }
         return true;
     }
+    
+    public static Class getFieldClass(SimpleField f, Object testValue) {
+        String type = f.getType();
+        if(type!=null && type.trim().length()>0) {
+            if( type.equalsIgnoreCase(SimpleFieldTypes.STRING) ) {
+                return String.class;
+            } else if( type.equalsIgnoreCase(SimpleFieldTypes.TIMESTAMP) ) {
+                return Timestamp.class;
+            } else if( type.equalsIgnoreCase(SimpleFieldTypes.DATE) ) {
+                return Date.class;
+            } else if( type.equalsIgnoreCase(SimpleFieldTypes.DECIMAL) ) {
+                return BigDecimal.class;
+            } else if( type.equalsIgnoreCase(SimpleFieldTypes.DOUBLE) ) {
+                return Double.class;
+            } else if( type.equalsIgnoreCase(SimpleFieldTypes.INTEGER) ) {
+                return Integer.class;
+            } else if( type.equalsIgnoreCase(SimpleFieldTypes.BOOLEAN) ) {
+                return Integer.class;
+            } else if( type.equalsIgnoreCase(SimpleFieldTypes.LONG) ) {
+                return Long.class;
+            }
+        }
+        if(testValue !=null) 
+            return testValue.getClass();
+        else
+            return Object.class;
+    }
+    
     
     //if this function returns true, the class type against the field is matched.
     public static boolean checkType( SimpleField f, Class clazz ) {
@@ -48,32 +70,24 @@ public final class SchemaUtil {
         Boolean pass = null;
         if( type.equalsIgnoreCase(SimpleFieldTypes.STRING) ) {
             pass = (clazz == String.class);
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.TIMESTAMP) ) {
-            pass = (clazz==Timestamp.class); 
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.DATE) ) {
-            pass = (clazz==Date.class ) || (clazz==java.sql.Date.class); 
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.DECIMAL) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.TIMESTAMP) ) {
+            pass = (clazz==Timestamp.class);
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.DATE) ) {
+            pass = (clazz==Date.class ) || (clazz==java.sql.Date.class);
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.DECIMAL) ) {
             pass = (clazz==BigDecimal.class);
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.DOUBLE) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.DOUBLE) ) {
             pass = (clazz==Double.class) || (clazz==double.class);
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.INTEGER) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.INTEGER) ) {
             pass = (clazz==Integer.class) || (clazz==int.class);
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.BOOLEAN) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.BOOLEAN) ) {
             pass = (clazz==Integer.class) || (clazz==int.class);
-        }
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.LONG) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.LONG) ) {
             pass = (clazz==Long.class) || (clazz==long.class);
         }
         if(pass==null) {
             return false;
-        }
-        else if(!pass) {
+        } else if(!pass) {
             return false;
         }
         return true;
@@ -89,30 +103,24 @@ public final class SchemaUtil {
         
         if( type.equalsIgnoreCase(SimpleFieldTypes.STRING) ) {
             return value.toString();
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.TIMESTAMP) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.TIMESTAMP) ) {
             return Timestamp.valueOf( value.toString() );
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.DATE) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.DATE) ) {
             return java.sql.Date.valueOf( value.toString() );
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.DECIMAL) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.DECIMAL) ) {
             return new BigDecimal(value.toString());
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.DOUBLE) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.DOUBLE) ) {
             return Double.valueOf(value.toString());
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.INTEGER) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.INTEGER) ) {
             return Integer.valueOf(value.toString());
-        } 
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.BOOLEAN) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.BOOLEAN) ) {
             return Boolean.valueOf(value.toString());
-        }
-        else if( type.equalsIgnoreCase(SimpleFieldTypes.LONG) ) {
+        } else if( type.equalsIgnoreCase(SimpleFieldTypes.LONG) ) {
             return Long.valueOf( value.toString() );
         }
         return null;
     }
+    
     
     
 }

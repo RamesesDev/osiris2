@@ -9,6 +9,7 @@
 
 package com.rameses.schema;
 
+import com.rameses.common.ExpressionResolver;
 import com.rameses.common.PropertyResolver;
 import com.sun.jmx.remote.util.Service;
 import java.util.ArrayList;
@@ -27,11 +28,17 @@ public class SchemaConf {
     private PropertyResolver propertyResolver;
     private SchemaResourceProvider resourceProvider = new DefaultSchemaResourceProvider();
     private SchemaCacheProvider cacheProvider = new DefaultSchemaCacheProvider();
+    
+    private SchemaScriptProvider scriptProvider;
 
     private List<SchemaProvider> providers ;
+    private SchemaManager schemaManager;
+    private SchemaSerializer serializer;
+    private ExpressionResolver expressionResolver;
     
     /** Creates a new instance of SchemaConf */
-    public SchemaConf() {
+    public SchemaConf(SchemaManager sm) {
+        this.schemaManager = sm;
     }
     
     public PropertyResolver getPropertyResolver() {
@@ -64,12 +71,12 @@ public class SchemaConf {
             Iterator iter = Service.providers(SchemaProvider.class, Thread.currentThread().getContextClassLoader());
             while(iter.hasNext()) {
                 SchemaProvider sp = (SchemaProvider)iter.next();
-                sp.setConf( this );
+                sp.setSchemaManager( schemaManager );
                 providers.add( sp );
             }
             //add the default schema def provider
             SchemaProvider d = new XmlSchemaProvider();
-            d.setConf(this);
+            d.setSchemaManager(schemaManager);
             providers.add(d);
         }
         return providers;
@@ -81,6 +88,34 @@ public class SchemaConf {
         if(providers!=null) providers.clear();
         if(cacheProvider!=null) cacheProvider.destroy();
         cacheProvider = null;
+        scriptProvider = null;
+        schemaManager = null;
+        serializer = null;
+        expressionResolver = null;
+    }
+
+    public SchemaScriptProvider getScriptProvider() {
+        return scriptProvider;
+    }
+
+    public void setScriptProvider(SchemaScriptProvider scriptProvider) {
+        this.scriptProvider = scriptProvider;
+    }
+
+    public SchemaSerializer getSerializer() {
+        return serializer;
+    }
+
+    public void setSerializer(SchemaSerializer serializer) {
+        this.serializer = serializer;
+    }
+
+    public ExpressionResolver getExpressionResolver() {
+        return expressionResolver;
+    }
+
+    public void setExpressionResolver(ExpressionResolver expressionResolver) {
+        this.expressionResolver = expressionResolver;
     }
     
 }

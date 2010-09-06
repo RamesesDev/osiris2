@@ -1,0 +1,30 @@
+<schema>
+
+    <element name="test" tablename="test.tblcustomer">
+        <field name="id" primary="true" default="PERSON00001"/>
+        <link ref="person-info"/>
+        <link name="primaryaddress" ref="address" exclude="ownerid" />
+        <link name="primaryid" ref="id" exclude="ownerid"/>
+        <link name="secondaryid" ref="id" exclude="ownerid"/>
+    </element>
+
+    <element name="address">
+        <field name="street" default="orchid st."/>
+        <field name="city" default="cebu"/>
+        <field name="country" default="ph"/>
+    </element>
+
+    <element name="id">
+        <field name="type" default="DRIVERS LICENSE"/>
+        <field name="number" default="09128888811"/>
+        <field name="expirydate" default="2011-01-01"/>
+    </element>
+
+    <!--reusable elements -->
+    <element name="person-info">
+        <field name="firstname" default="elmo"/> 
+        <field name="lastname" default="nazareno"/> 
+    </element>    
+    
+</schema>
+

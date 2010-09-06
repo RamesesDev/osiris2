@@ -1,0 +1,9 @@
+<schema>
+
+    <element name="us">
+        <field name="street" required="true"/>
+        <field name="city" required="true"/>
+    </element>
+    
+</schema>
+

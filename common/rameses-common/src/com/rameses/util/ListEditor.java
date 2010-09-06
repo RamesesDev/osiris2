@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.util.editors;
+package com.rameses.util;
 
 import java.util.Collection;
 import java.util.Iterator;

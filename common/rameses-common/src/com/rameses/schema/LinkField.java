@@ -63,5 +63,12 @@ public class LinkField extends SchemaField {
         else
             return true;
     }
+    
+    public boolean isExcludeField( SchemaField sf ) {
+        boolean exclude = false;
+        String excludeNames = getExclude();
+        if(excludeNames!=null && sf.getName().matches(excludeNames)) exclude = true;
+        return exclude;    
+    }
 
 }

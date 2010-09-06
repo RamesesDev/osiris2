@@ -1,8 +1,10 @@
 package com.rameses.common;
 
+import java.util.Map;
+
 public interface ExpressionResolver 
 {
     
-    Object evaluate(Object bean, String expression);
+    Object evaluate(String expression,Map resources);
     
 }

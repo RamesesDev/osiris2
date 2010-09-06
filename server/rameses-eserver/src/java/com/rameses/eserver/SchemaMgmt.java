@@ -83,7 +83,7 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
         private SchemaConf conf;
         
         public MgmtSchemaManager() {
-            conf = new MgmtSchemaConf();
+            conf = new MgmtSchemaConf(this);
             conf.setCacheProvider( new MgmtSchemaCache());
             conf.setPropertyResolver( new BeanUtilPropertyResolver() );
         }
@@ -93,7 +93,11 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
         }
     }
     
-    public class MgmtSchemaConf extends SchemaConf implements Serializable {;}
+    public class MgmtSchemaConf extends SchemaConf implements Serializable {
+        MgmtSchemaConf(SchemaManager sm) {
+            super(sm);
+        }
+    }
         
     
     public class MgmtSchemaCache implements SchemaCacheProvider, Serializable {
