@@ -5,6 +5,6 @@ import java.util.Map;
 public interface ExpressionResolver 
 {
     
-    Object evaluate(String expression,Map resources);
+    public Object evaluate(Object bean, String expression);
     
 }
