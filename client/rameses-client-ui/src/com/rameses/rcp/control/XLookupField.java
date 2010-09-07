@@ -140,7 +140,6 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 platform.showPopup(this, lookupPanel, props);
             }
         } catch(Exception e) {
-            e.printStackTrace();
             MsgBox.err(e);
         }
     }

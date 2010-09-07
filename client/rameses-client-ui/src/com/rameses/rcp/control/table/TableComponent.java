@@ -124,8 +124,7 @@ public class TableComponent extends JTable implements ListModelListener {
             }
             
         }, ctrlZ, JComponent.WHEN_FOCUSED);
-        
-        setAutoResize(true);
+
     }
     //</editor-fold>
     

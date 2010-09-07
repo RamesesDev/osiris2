@@ -11,7 +11,7 @@ import javax.swing.UIManager;
 
 public class Main {
     
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {        
         try {
             UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
         } catch (Exception e) {;}
@@ -21,4 +21,14 @@ public class Main {
         //m.put("default.host", "localhost:8080");
         OsirisTestPlatform.runTest(m);
     }
+    
+//    public static class OsirisLookAndFeel extends PlasticXPLookAndFeel {
+//        
+//        public OsirisLookAndFeel() {
+//            super();
+//            UIManager.put("Table.evenBackground", Color.WHITE);
+//            UIManager.put("Table.oddBackground", Color.decode("#e3e3e3"));
+//        }
+//        
+//    }
 }

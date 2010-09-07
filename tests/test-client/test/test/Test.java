@@ -27,7 +27,7 @@ public class Test extends TestCase {
         Set s = UIManager.getLookAndFeel().getDefaults().entrySet();
         for(Object o: s) {
             Map.Entry me = (Entry) o;
-            if ( (me.getKey()+"").indexOf("Box") != -1 ) {
+            if ( (me.getKey()+"").indexOf("Menu") != -1 ) {
                 System.out.println( me );
             }
         }

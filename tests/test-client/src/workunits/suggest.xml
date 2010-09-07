@@ -27,6 +27,7 @@
             }
             
             def queryStreets( searchTxt ) {
+                Thread.sleep(500);
                 return streets.findAll{ 
                     it.toLowerCase().startsWith(searchTxt.toLowerCase()) 
                 };

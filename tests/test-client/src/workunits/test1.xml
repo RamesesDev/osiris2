@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Test 1"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test1Controller  {
+        
+            @Binding
+            def binding;
+        
+            def doNext() {
+                return new Opener(name: 'test-client:test2');
+            }
+            
+            void select( data ) {
+                if ( data == null ) {
+                    binding.fireNavigation(
+                        new Opener(name: 'test-client:_crudFormTest')
+                    );
+                }
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.Page1"/>
+        <page name="page2" template="test1.Page2"/>
+    </pages>
+</workunit>

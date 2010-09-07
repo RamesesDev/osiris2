@@ -14,8 +14,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" pref="210" max="32767" attributes="0"/>
-              <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
+              <Component id="xActionBar1" pref="376" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -23,17 +23,26 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="268" max="32767" attributes="0"/>
+              <Component id="xActionBar1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="263" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="jLabel1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Page 2"/>
-      </Properties>
-    </Component>
+    <Container class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
+      <SubComponents>
+        <Component class="com.rameses.rcp.control.XButton" name="xButton1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="F1-Add Sender"/>
+          </Properties>
+        </Component>
+        <Component class="com.rameses.rcp.control.XButton" name="xButton2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="F2-Add Receiver"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>

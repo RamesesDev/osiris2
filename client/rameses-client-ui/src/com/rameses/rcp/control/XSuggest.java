@@ -10,8 +10,10 @@ import com.rameses.common.ExpressionResolver;
 import com.rameses.common.MethodResolver;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.Task;
+import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.control.XComboBox.ComboItem;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.support.TextDocument;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
@@ -49,6 +51,7 @@ public class XSuggest extends XComboBox {
     
     private boolean searching;
     private boolean showSuggestions;
+    private TextDocument document;
     
     
     public XSuggest() {
@@ -58,6 +61,9 @@ public class XSuggest extends XComboBox {
     
     //<editor-fold defaultstate="collapsed" desc="  initialize  ">
     private void init() {
+        document = new TextDocument();
+        document.setTextCase(TextCase.UPPER);
+        
         super.setEditable(true);
         super.setUI(new javax.swing.plaf.metal.MetalComboBoxUI(){
             
@@ -102,6 +108,7 @@ public class XSuggest extends XComboBox {
         editor = (JTextField) cboxEditor.getEditorComponent();
         editor.setBounds(super.getBounds());
         editor.setBorder( (Border) UIManager.get("TextField.border") );
+        editor.setDocument(document);
         editor.addKeyListener(new KeyAdapter() {
             
             public void keyPressed(KeyEvent e) { processKeyPressed(e); }
@@ -282,6 +289,14 @@ public class XSuggest extends XComboBox {
         this.showArrowButton = showArrowButton;
         super.revalidate();
     }
+    
+    public TextCase getTextCase() {
+        return document.getTextCase();
+    }
+    
+    public void setTextCase(TextCase textcase) {
+        document.setTextCase(textcase);
+    }
     //</editor-fold>
     
     
@@ -294,22 +309,28 @@ public class XSuggest extends XComboBox {
         
         public void execute() {
             try {
-                String text = editor.getText();
+                String search = editor.getText();
                 suggestions = null;
-                if ( text.trim().length() > 0 ) {
-                    fetchSuggestions(text);
+                if ( search.trim().length() > 0 ) {
+                    fetchSuggestions(search);
                 }
                 
-                text = editor.getText();
-                setSelectedIndex(-1);
-                updateSuggestions();
-                editor.setText(text);
-                editor.setCaretPosition( text.length() );
-                
-                if ( suggestions == null || suggestions.size() == 0) {
-                    hidePopup();
+                String text = editor.getText();
+                //if the response took so long, dont display the result
+                //if the text typed is no longer equal to the current typed text
+                if ( search.equals(text) ) {
+                    setSelectedIndex(-1);
+                    updateSuggestions();
+                    editor.setText(text);
+                    editor.setCaretPosition( text.length() );
+                    
+                    if ( suggestions == null || suggestions.size() == 0) {
+                        hidePopup();
+                    } else {
+                        showPopup();
+                    }
                 } else {
-                    showPopup();
+                    hidePopup();
                 }
                 searching = false;
                 

@@ -24,6 +24,10 @@
                 return "_close";
             }
             
+            def opener3() {
+                return new Opener(name: "test-client:navTest3");
+            }
+            
             @Close
             void formClosing() {
                 println 'caller is ' + caller;

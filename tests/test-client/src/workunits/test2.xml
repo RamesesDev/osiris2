@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test1Controller  {
+        
+            @Caller
+            def caller;
+            
+            @Binding
+            def binding;        
+        
+            void select() {
+                binding.fireNavigation('_close');
+                caller.select( [:] );
+            }
+            
+            void cancel() {
+                binding.fireNavigation('_close');
+                caller.select( null );
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.Page2"/>
+    </pages>
+</workunit>

@@ -15,7 +15,6 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.MethodResolver;
-import com.rameses.util.BusinessException;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -229,7 +228,7 @@ public class Binding {
     
     //<editor-fold defaultstate="collapsed" desc="  utility methods  ">
     public void validate(ActionMessage actionMessage) {
-        boolean first = true;
+        boolean first = !actionMessage.hasMessages();
         for ( Validatable vc: validatables ) {
             Component comp = (Component) vc;
             if ( !comp.isFocusable() || !comp.isEnabled() ) {

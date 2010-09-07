@@ -20,6 +20,7 @@
         public class ControlsTestController  {
 
             def entity = [ : ];
+            boolean required;
             
             def items = ["one", "two", "three"];
             
@@ -31,6 +32,10 @@
             
             void btnToggle() {
                 readonly = !readonly;
+            }
+            
+            void toggleRequired() {
+                required = !required;
             }
             
             void setAddress(addr) { 
@@ -52,7 +57,7 @@
             void save() {
                 throw new Exception('session: Session Expired Error');
             }
-
+            
             @Close
             def close() {
                 MsgBox.alert('Closing');

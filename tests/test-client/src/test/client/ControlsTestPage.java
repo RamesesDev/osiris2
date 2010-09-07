@@ -34,9 +34,9 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xLabel3 = new com.rameses.rcp.control.XLabel();
         xTextField3 = new com.rameses.rcp.control.XTextField();
 
-        xButton1.setText("Close");
+        xButton1.setText("Toggle Required");
         xButton1.setImmediate(true);
-        xButton1.setName("_close");
+        xButton1.setName("toggleRequired");
 
         xButton2.setText("Show Input");
         xButton2.setName("btnShowInput");
@@ -51,7 +51,6 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xComboBox1.setItems("items");
         xComboBox1.setName("entity.item");
         xComboBox1.setPreferredSize(new java.awt.Dimension(150, 24));
-        xComboBox1.setRequired(true);
         formPanel1.add(xComboBox1);
 
         xButton3.setText("Toggle Readonly");
@@ -59,12 +58,12 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xButton3.setName("btnToggle");
 
         xButton5.setText("Save");
-        xButton5.setImmediate(true);
         xButton5.setName("save");
 
         xTextField2.setCaption("Address");
         xTextField2.setCaptionMnemonic('d');
-        xTextField2.setName("address");
+        xTextField2.setHint("Address");
+        xTextField2.setName("entity.address");
         xTextField2.setRequired(true);
 
         xLabel2.setText("#{entity.name}");
@@ -80,6 +79,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
 
         xTextField3.setCaption("Address 2");
         xTextField3.setCaptionMnemonic('e');
+        xTextField3.setHint("Secondary Address");
         xTextField3.setName("entity.address2");
         xTextField3.setRequired(true);
 
@@ -90,8 +90,8 @@ public class ControlsTestPage extends javax.swing.JPanel {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(xLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
-                    .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
+                    .add(xLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
+                    .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(xButton3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -103,7 +103,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(xTextField2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                                .add(xTextField2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED))
                             .add(layout.createSequentialGroup()
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
