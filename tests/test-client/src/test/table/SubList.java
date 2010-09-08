@@ -13,7 +13,7 @@ import com.rameses.rcp.ui.annotations.StyleSheet;
  * @author  compaq
  */
 
-@StyleSheet("META-INF/sublist")
+//@StyleSheet("META-INF/sublist")
 public class SubList extends javax.swing.JPanel {
     
     /** Creates new form TestPage */

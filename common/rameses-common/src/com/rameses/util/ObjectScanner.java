@@ -1,5 +1,5 @@
 /*
- * MapScanner.java
+ * ObjectScanner.java
  *
  * Created on August 28, 2010, 8:52 AM
  *
@@ -17,19 +17,19 @@ import java.util.Map;
  *
  * @author elmo
  */
-public final class MapScanner {
+public final class ObjectScanner {
     
     private String excludeMatch = "_.*[^_]$";
     
-    private MapScannerHandler handler;
+    private ObjectScannerHandler handler;
     
-    public MapScanner() {;}
+    public ObjectScanner() {;}
     
-    public MapScanner(MapScannerHandler h) {
+    public ObjectScanner(ObjectScannerHandler h) {
         this.handler = h;
     }
     
-    public void scan( Map data ) {
+    public void scan( Object data ) {
         if(handler==null) handler = new DefaultHandler();
         handler.startDocument();
         scanObject(null, data, 0);
@@ -74,10 +74,11 @@ public final class MapScanner {
     }
     
     /**
-     * @description
-     *   scan event handler of MapScanner
+     * 
+     * 
+     * @description scan event handler of ObjectScanner
      */
-    public static interface MapScannerHandler {
+    public static interface ObjectScannerHandler {
         void startDocument();
         void startElement(String name, int pos);
         void property(String name, Object value, int pos);
@@ -87,10 +88,11 @@ public final class MapScanner {
     
     
     /**
-     * @description
-     *   default implementation of MapScannerHandler interface
+     * 
+     * 
+     * @description default implementation of ObjectScannerHandler interface
      */
-    public static class DefaultHandler implements MapScannerHandler {
+    public static class DefaultHandler implements ObjectScannerHandler {
         public void startDocument() {
         }
         

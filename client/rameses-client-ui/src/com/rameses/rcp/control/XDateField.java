@@ -148,7 +148,6 @@ public class XDateField extends XTextField {
     }
     //</editor-fold>
     
-    
     private final void showFormattedValue(boolean formatted) throws ParseException {
         Object value = UIControlUtil.getBeanValue(this);
         if( formatted && outputFormatter !=null && value!=null ) {

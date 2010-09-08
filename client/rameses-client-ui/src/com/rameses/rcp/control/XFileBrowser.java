@@ -36,7 +36,6 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     private Binding binding;
     private String[] depends;
     private int index;
-    private String onAfterUpdate;
     private JFileChooser fchooser;
     private FileFilter filter;
     private String customFilter;
@@ -48,7 +47,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     private boolean readonly;
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
-        
+    
     private JTextField txtField;
     private JButton btnBrowse;
     
@@ -144,14 +143,14 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
     }
-
-  
+    
+    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setName(String name) {
         super.setName(name);
         txtField.setText(name);
     }
-
+    
     public String[] getDepends() {
         return depends;
     }
@@ -182,15 +181,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     
     public void setValue(Object value) {}
     public boolean isNullWhenEmpty() { return true; }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public String getCustomFilter() {
         return customFilter;
     }
@@ -244,34 +235,42 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     public void setDialogType(String dialogType) {
         this.dialogType = dialogType;
     }
-
+    
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         btnBrowse.setEnabled(!readonly);
         btnBrowse.setFocusable(!readonly);
         txtField.setFocusable(!readonly);
     }
-
+    
     public boolean isReadonly() {
         return readonly;
     }
-
+    
     public String getCaption() {
         return property.getCaption();
     }
-
+    
     public void setCaption(String caption) {
         property.setCaption(caption);
     }
-
+    
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
     public boolean isRequired() {
         return property.isRequired();
     }
-
+    
     public void setRequired(boolean required) {
         property.setRequired(required);
     }
-
+    
     public void validateInput() {
         actionMessage.clearMessages();
         property.setErrorMessage(null);
@@ -280,15 +279,15 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
             property.setErrorMessage( actionMessage.toString() );
         }
     }
-
+    
     public ActionMessage getActionMessage() {
         return actionMessage;
     }
-
+    
     public ControlProperty getControlProperty() {
         return property;
     }
-
+    
     public void requestFocus() {
         setRequestFocus(true);
     }
@@ -296,7 +295,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     public void setRequestFocus(boolean focus) {
         if ( focus ) btnBrowse.requestFocus();
     }
-
+    
     public boolean isImmediate() {
         return true;
     }

@@ -11,7 +11,12 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 
 /**
@@ -24,17 +29,22 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     private String[] depends = new String[]{};
     private Binding binding;
     private boolean nullWhenEmpty = true;
-    private String onAfterUpdate;
     private boolean readonly;
+    private boolean showHint;
+    private String hint;
+    private boolean isHintShown;
+    private int hintYPos;
+    private int hintXPos;
     
     private TextDocument document = new TextDocument();
     
     protected ControlProperty property = new ControlProperty();
     protected ActionMessage actionMessage = new ActionMessage();
     
-    
     public XTextField() {
         document.setTextCase(TextCase.UPPER);
+        XTextFieldSupport xTextFieldSupport = new XTextFieldSupport();
+        addFocusListener(xTextFieldSupport);
     }
     
     public void refresh() {
@@ -45,6 +55,8 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public void load() {
         setInputVerifier(UIInputUtil.VERIFIER);
         setDocument(document);
+        if(showHint)
+            isHintShown = true;
     }
     
     public int compareTo(Object o) {
@@ -57,6 +69,19 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         if ( isRequired() && ValueUtil.isEmpty( getText() ) ) {
             actionMessage.addMessage("1001", "{0} is required.", new Object[] {getCaption()});
             property.setErrorMessage(actionMessage.toString());
+        }
+    }
+    
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if( showHint ) {
+            if( isHintShown ) {
+                g.setColor(Color.LIGHT_GRAY);
+                g.setFont(getFont());
+                hintYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
+                hintXPos = getInsets().left;
+                g.drawString(" " + getHint(), hintXPos, hintYPos);
+            }
         }
     }
     
@@ -131,6 +156,14 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         property.setCaption(caption);
     }
     
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
     public int getCaptionWidth() {
         return property.getCaptionWidth();
     }
@@ -166,15 +199,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public void setTextCase(TextCase textCase) {
         document.setTextCase(textCase);
     }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public int getMaxLength() {
         return document.getMaxlength();
     }
@@ -200,6 +225,39 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public boolean isImmediate() {
         return false;
     }
+    
+    public String getHint() {
+        return hint;
+    }
+    
+    public void setHint(String hint) {
+        this.hint = hint;
+        showHint = !ValueUtil.isEmpty(hint);
+    }
+    
     //</editor-fold>
     
+    
+    //<editor-fold defaultstate="collapsed" desc="  XTextFieldSupport  ">
+    private class XTextFieldSupport implements FocusListener {
+        public void focusGained(FocusEvent e) {
+            if(showHint) {
+                isHintShown = false;
+                repaint();
+            }
+        }
+        
+        public void focusLost(FocusEvent e) {
+            if(showHint) {
+                if(ValueUtil.isEmpty(getText()))
+                    isHintShown = true;
+                else
+                    isHintShown = false;
+                
+                repaint();
+            }
+        }
+        
+    }
+    //</editor-fold>
 }

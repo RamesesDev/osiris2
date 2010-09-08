@@ -24,7 +24,7 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     public UIControllerPanel() {
         super.setLayout(new BorderLayout());
         
-        //attach the default button when this panel is already 
+        //attach the default button when this panel is already
         //attached to its rootpane
         addAncestorListener(new AncestorListener() {
             public void ancestorAdded(AncestorEvent event) {
@@ -96,7 +96,12 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     }
     
     public boolean close() {
-        return getCurrentController().getCurrentView().getBinding().close();
+        try {
+            return getCurrentController().getCurrentView().getBinding().close();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return true;
+        }
     }
     
     public void display() {
@@ -106,5 +111,5 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
             p.getBinding().focusFirstInput();
         }
     }
-        
+    
 }

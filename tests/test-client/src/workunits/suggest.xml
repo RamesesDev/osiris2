@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Suggest Test" index="-1"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class SuggestTestController  {
+
+            @Service("CountryService")
+            def svc;
+        
+            def entity = [:];
+            
+            def queryCountryList( searchTxt ) {
+                return svc.queryCountries( searchTxt ).collect{ it.name };
+            }
+            
+            def queryCurrencyList( searchTxt ) {
+                return svc.queryCurrencies( searchTxt ).collect{ it.description };
+            }
+            
+            def queryStreets( searchTxt ) {
+                Thread.sleep(500);
+                return streets.findAll{ 
+                    it.toLowerCase().startsWith(searchTxt.toLowerCase()) 
+                };
+            }
+            
+            void display() {
+                MsgBox.alert( entity );
+            }
+            
+            def list = [
+                'arnel', 'armand', 'archie', 'alberto', 'dandee', 'donie',
+                'dhel', 'jayrome', 'joy', 'mike', 'magz'
+            ];
+            
+            def streets = [
+                'Sanciangko St.', 
+                'San Juan',
+                'San Pedro',
+                'Colon St.', 
+                'Pelaez St.', 
+                'B. Rodriguez St.'
+            ];
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.suggest.Page1"/>
+    </pages>
+</workunit>

@@ -1,5 +1,5 @@
 /*
- * MapSerializer.java
+ * ObjectSerializer.java
  *
  * Created on August 27, 2010, 5:37 PM
  * @author jaycverg
@@ -7,37 +7,37 @@
 
 package com.rameses.util;
 
-import com.rameses.util.MapScanner.MapScannerHandler;
+import com.rameses.util.ObjectScanner.ObjectScannerHandler;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Map;
 
 /**
- * @description
- *    basic implementation of abstract class MapSerializer
+ * 
+ * 
+ * @description basic implementation of abstract class ObjectSerializer
  */
-public class MapSerializer {
+public class ObjectSerializer {
     
-    private MapScannerHandler scanHandler = new ScanHandler();
+    private ObjectScannerHandler scanHandler = new ScanHandler();
     private Writer writer;
     
-    private static MapSerializer instance;
+    private static ObjectSerializer instance;
     
-    public static MapSerializer getInstance() {
-        if ( instance == null ) instance = new MapSerializer();
+    public static ObjectSerializer getInstance() {
+        if ( instance == null ) instance = new ObjectSerializer();
         return instance;
     }
     
     
-    public MapSerializer() {}
+    public ObjectSerializer() {}
     
-    public String toString(Map data) {
+    public String toString(Object data) {
         writer = new StringWriter();
         stringifyMap(data);
         return writer.toString();
     }
     
-    public void write(Map data, Writer writer) {
+    public void write(Object data, Writer writer) {
         try {
             this.writer = writer;
             stringifyMap(data);
@@ -50,12 +50,12 @@ public class MapSerializer {
         }
     }
     
-    private void stringifyMap(Map data) {
-        MapScanner scanner = new MapScanner(scanHandler);
+    private void stringifyMap(Object data) {
+        ObjectScanner scanner = new ObjectScanner(scanHandler);
         scanner.scan(data);
     }
     
-    private class ScanHandler implements MapScannerHandler {
+    private class ScanHandler implements ObjectScannerHandler {
         
         public void startDocument() {}
         

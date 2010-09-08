@@ -72,7 +72,7 @@ public class ErrorDialog
         String msg = getMessage(throwable);
         cd.setMessage((msg != null ? msg : ""));
         cd.setTitle("Error");
-        cd.setResizable(false);
+        cd.setResizable(true);
         cd.pack();
 
         if (component != null) cd.setLocationRelativeTo(component);

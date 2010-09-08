@@ -1,6 +1,9 @@
 package test;
-import groovy.lang.GroovyShell;
-import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import javax.swing.UIManager;
 import junit.framework.*;
 
 /*
@@ -20,8 +23,15 @@ public class Test extends TestCase {
         super(testName);
     }
     
-    public void test() {
-
+    public void test() throws ParseException {
+        Set s = UIManager.getLookAndFeel().getDefaults().entrySet();
+        for(Object o: s) {
+            Map.Entry me = (Entry) o;
+            if ( (me.getKey()+"").indexOf("Menu") != -1 ) {
+                System.out.println( me );
+            }
+        }
+        
     }
     
 }

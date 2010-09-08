@@ -22,36 +22,36 @@
             String address;
             boolean single;
             EmployeeType employeeType;
+            
         
-            public String next() {
+            def next() {
                 return "page2";
             }
 
-            public Object launch() {
+            def launch() {
                 return new PopupOpener(name: "test-client:navTest2", action: 'init', 
                 params: [
                     firstname: firstname, lastname: lastname
                 ]);
             }
-
-            public Object launch2() {
+            
+            def launch2() {
                 return new Opener(name: "test-client:navTest2", params: [
                     firstname: firstname, lastname: lastname
                 ]);
             }
-
             
-            public String back() {
+            def back() {
                 return "default";
             }
 
-            public void greet() {
+            void greet() {
                 MsgBox.alert("Hi " + getFullname());
                 System.out.println("single is " + single);
                 System.out.println("employee type is " + employeeType);
             }
 
-            public String getFullname() {
+            def getFullname() {
                 return (firstname == null? "" : firstname + " ") + (lastname == null? "": lastname);
             }
             

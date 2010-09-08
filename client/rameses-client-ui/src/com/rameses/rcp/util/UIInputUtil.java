@@ -13,8 +13,8 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
-import com.rameses.common.MethodResolver;
 import com.rameses.common.PropertyResolver;
+import com.rameses.rcp.control.XTable;
 import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
@@ -67,19 +67,20 @@ public class UIInputUtil {
             
             Object inputValue = control.getValue();
             Object beanValue = resolver.getProperty(bean, name);
-            resolver.setProperty(bean, name, inputValue);
-            
-            if ( addLog ) {
-                binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
+            boolean forceUpdate = false;
+            if ( control instanceof JComponent ) {
+                Object value = ((JComponent) control).getClientProperty(XTable.class);
+                forceUpdate = (value != null);
             }
             
-            String method = control.getOnAfterUpdate();
-            if ( !ValueUtil.isEmpty(method) && !ValueUtil.isEqual(inputValue, beanValue) ) {
-                MethodResolver mr = ctx.getMethodResolver();
-                mr.invoke(bean, method, null, null);
+            if ( forceUpdate || !ValueUtil.isEqual(inputValue, beanValue) ) {
+                resolver.setProperty(bean, name, inputValue);
+                if ( addLog ) {
+                    binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
+                }
+                
+                binding.notifyDepends(control);
             }
-            
-            binding.notifyDepends(control);
             
         } catch(Exception e) {
             ExceptionManager emgr = ExceptionManager.getInstance();

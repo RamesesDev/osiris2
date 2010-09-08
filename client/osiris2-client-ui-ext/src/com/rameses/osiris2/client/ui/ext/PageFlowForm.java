@@ -15,6 +15,7 @@ import com.rameses.osiris2.flow.SubProcessNode;
 import com.rameses.osiris2.flow.Transition;
 import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.common.Action;
+import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
@@ -132,6 +133,11 @@ public class PageFlowForm {
     }
     
     public final Object signal() {
+        String confirmMsg = transition.getConfirm();
+        if ( !ValueUtil.isEmpty(confirmMsg) ) {
+            if ( !MsgBox.confirm(confirmMsg) ) return null;
+        }
+        
         WorkUnitInstance wu = controller.getWorkunit();
         if( transition.getTo() == null ) {
             wu.signal( null );
@@ -141,8 +147,15 @@ public class PageFlowForm {
         if( wu.isPageFlowCompleted()) {
             return "_close";
         } else if( wu.getCurrentNode() instanceof SubProcessNode ) {
-            String expr = wu.getCurrentNode().getName();
+            SubProcessNode spn = (SubProcessNode) wu.getCurrentNode();
+            String expr = null;
+            if ( !ValueUtil.isEmpty(spn.getProcess()) ) {
+                expr = spn.getProcess();
+            } else {
+                expr = spn.getName();
+            }
             String value = (String) evaluateExpression(this, expr);
+            
             return callSubProcess( value );
         } else {
             return wu.getCurrentPage().getName();
@@ -151,17 +164,18 @@ public class PageFlowForm {
     
     public void fireTransition(String name) {
         WorkUnitInstance wu = controller.getWorkunit();
-        wu.signal( name );
-        Object outcome = null;
-        if( wu.isPageFlowCompleted()) {
-            outcome = "_close";
-        } else if( wu.getCurrentNode() instanceof SubProcessNode ) {
-            String expr = wu.getCurrentNode().getName();
-            String value = (String) evaluateExpression(this, expr);
-            outcome = callSubProcess( value );
-        } else {
-            outcome = wu.getCurrentPage().getName();
+        List trans = wu.getTransitions();
+        if ( name != null ) {
+            for(Object o : trans ) {
+                Transition t = (Transition)o;
+                if ( name.equals(t.getName()) ) {
+                    transition = t;
+                    break;
+                }
+            }
         }
+        
+        Object outcome = signal();
         
         UIViewPanel panel = (UIViewPanel) getBinding().getProperties().get(UIViewPanel.class);
         NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
@@ -178,7 +192,11 @@ public class PageFlowForm {
     
     //helper
     private Object evaluateExpression(Object bean, String expr) {
-        return ClientContext.getCurrentContext().getExpressionResolver().evaluate(bean, expr);
+        try {
+            return ClientContext.getCurrentContext().getExpressionResolver().evaluate(bean, expr);
+        } catch(Exception ign) {
+            return null;
+        }
     }
     
     public Binding getBinding() {

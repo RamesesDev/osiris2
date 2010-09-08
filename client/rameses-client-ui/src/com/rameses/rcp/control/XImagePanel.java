@@ -145,9 +145,11 @@ public class XImagePanel extends JPanel implements UIControl{
     }
     //</editor-fold>
     
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
+    public void refresh() {}
+    
+    public void load() {
         try {
+            Object value = UIControlUtil.getBeanValue(this);
             if(value instanceof String) {
                 image = ImageIO.read(new File(value.toString()));
             } else if(value instanceof byte[]) {
@@ -177,13 +179,10 @@ public class XImagePanel extends JPanel implements UIControl{
                 jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
             }
-            
         } catch(Exception e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
     }
-    
-    public void load() {}
     
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
@@ -195,7 +194,10 @@ public class XImagePanel extends JPanel implements UIControl{
         
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if(isFitImage() == true && Beans.isDesignTime() == false) {
+            
+            if ( image == null ) return;
+            
+            if( isFitImage() && !Beans.isDesignTime() ) {
                 calculateFit();
                 Graphics2D g2 = (Graphics2D)g.create();
                 at = AffineTransform.getTranslateInstance(fitPercentageWidth, fitPercentageHeight);
@@ -209,11 +211,14 @@ public class XImagePanel extends JPanel implements UIControl{
         }
         
         public Dimension getPreferredSize() {
-            if(isFitImage() == true && Beans.isDesignTime() == false) {
+            if ( image == null ) {
+                return super.getPreferredSize();
+            } else if( isFitImage() && !Beans.isDesignTime() ) {
                 calculateFit();
                 return new Dimension( image.getWidth(), image.getHeight());
-            }else
+            } else {
                 return new Dimension(width, height);
+            }
         }
         
         public void calculateFit() {
@@ -222,7 +227,7 @@ public class XImagePanel extends JPanel implements UIControl{
             scale = Math.min(scaleWidth, scaleHeight);
             fitPercentageWidth = (jsp.getViewport().getExtentSize().getWidth() - (scale * image.getWidth()))/2;
             fitPercentageHeight = (jsp.getViewport().getExtentSize().getHeight() - (scale * image.getHeight()))/2;
-         }
+        }
         //</editor-fold>
     }
 }

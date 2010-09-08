@@ -27,7 +27,6 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     private Binding binding;
     private String[] depends;
     private int index;
-    private String onAfterUpdate;
     private boolean readonly;
     
     private Object optionValue;
@@ -85,15 +84,7 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     }
     
     public boolean isNullWhenEmpty() { return true; }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
-    }
-    
+
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEnabled(!readonly);
@@ -155,7 +146,15 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     public void setCaption(String caption) {
         property.setCaption( caption );
     }
-        
+    
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
     public boolean isImmediate() {
         return true;
     }

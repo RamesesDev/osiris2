@@ -11,8 +11,8 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.awt.Font;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
 /**
  *
@@ -25,9 +25,8 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     private int index;
     private boolean nullWhenEmpty = true;
     private String[] depends;
-    private ControlProperty controlProperty = new ControlProperty();
+    private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
-    private String onAfterUpdate;
     private boolean readonly;
     
     private TextDocument textDocument = new TextDocument();
@@ -35,7 +34,9 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public XTextArea() {
         super();
-        setFont( Font.decode("") );
+        try {
+            super.setFont(UIManager.getFont("TextField.font"));
+        } catch(Exception ign){;}
     }
     
     
@@ -55,10 +56,10 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public void validateInput() {
         actionMessage.clearMessages();
-        controlProperty.setErrorMessage(null);
+        property.setErrorMessage(null);
         if( isRequired() && ValueUtil.isEmpty(getText()) ) {
             actionMessage.addMessage("", "{0} is required", new Object[]{ getCaption() });
-            controlProperty.setErrorMessage(actionMessage.toString());
+            property.setErrorMessage(actionMessage.toString());
         }
     }
     
@@ -114,19 +115,27 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     }
     
     public String getCaption() {
-        return controlProperty.getCaption();
+        return property.getCaption();
     }
     
     public void setCaption(String caption) {
-        controlProperty.setCaption(caption);
+        property.setCaption(caption);
+    }
+    
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
     }
     
     public boolean isRequired() {
-        return controlProperty.isRequired();
+        return property.isRequired();
     }
     
     public void setRequired(boolean required) {
-        controlProperty.setRequired(required);
+        property.setRequired(required);
     }
     
     public ActionMessage getActionMessage() {
@@ -134,7 +143,7 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     }
     
     public ControlProperty getControlProperty() {
-        return controlProperty;
+        return property;
     }
     
     public TextCase getTextCase() {
@@ -143,14 +152,6 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public void setTextCase(TextCase textCase) {
         textDocument.setTextCase(textCase);
-    }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
     }
     
     public void setReadonly(boolean readonly) {

@@ -65,6 +65,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 }
                 
                 UIControllerContext controller = new UIControllerContext(opCon);
+                controller.setId(opener.getId());
                 if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
                     controller.setCurrentView( opener.getOutcome() );
                 }
@@ -77,7 +78,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     
                     Map props = new HashMap();
                     props.put("id", controller.getId());
-                    props.put("title", controller.getTitle());
+                    props.put("title", opener.getCaption());
                     props.put("modal", opener.isModal());
                     
                     if ( "_popup".equals(opener.getTarget()) ) {
@@ -89,17 +90,24 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 
             } else if( outcome instanceof String ) {
                 String oc = outcome+"";
-                if ( oc.equals("_close") ) {
+                if ( oc.startsWith("_close") ) {
                     if ( !conStack.isEmpty() ) {
                         if ( conStack.size() > 1 ) {
                             conStack.pop();
+                            
+                            if( oc.contains(":") ) {
+                                oc = oc.substring(oc.indexOf(":")+1);
+                                navigate(panel, source, oc);
+                                return;
+                            }
+                            
                         } else {
                             String conId = curController.getId();
                             platform.closeWindow(conId);
                         }
                     }
-                    
-                } else if ( oc.equals("_exit")) {
+                                        
+                } else if ( oc.startsWith("_exit")) {
                     //get the original owner of he window
                     while ( conStack.size() > 1 ) {
                         conStack.pop();

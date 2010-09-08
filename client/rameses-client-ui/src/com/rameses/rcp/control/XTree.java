@@ -21,7 +21,6 @@ import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,7 +34,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 
@@ -109,7 +107,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         });
         
         
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,InputEvent.CTRL_MASK), "openNode");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0), "openNode");
         getActionMap().put("openNode", new AbstractAction(){
             public void actionPerformed(ActionEvent e) {
                 openNode(selectedNode);

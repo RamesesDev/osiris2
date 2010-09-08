@@ -10,7 +10,7 @@
 package persistence.tests;
 
 import com.rameses.schema.SchemaSerializer;
-import com.rameses.util.MapSerializer;
+import com.rameses.util.ObjectSerializer;
 import java.util.Map;
 
 /**
@@ -18,7 +18,7 @@ import java.util.Map;
  * @author elmo
  */
 public class TestSerializer implements SchemaSerializer {
-    private MapSerializer serializer = new MapSerializer();
+    private ObjectSerializer serializer = new ObjectSerializer();
     
     public Object read(String s) {
         return null;

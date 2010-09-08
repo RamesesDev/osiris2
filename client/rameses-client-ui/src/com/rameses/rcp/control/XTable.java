@@ -51,6 +51,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
@@ -65,7 +66,6 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     private String handler;
     private ActionMessage actionMessage = new ActionMessage();
     private boolean dynamic;
-    private String onAfterUpdate;
     
     
     public XTable() {
@@ -98,6 +98,20 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         add(new ScrollBarPanel(scrollBar), BorderLayout.EAST);
         setBorder(new TableBorder());
         
+        Color bg = (Color) UIManager.get("Table.evenBackground");
+        if ( bg == null ) bg = Color.WHITE;
+        table.setEvenBackground(bg);
+        
+        Color fg = (Color) UIManager.get("Table.evenForeground");
+        if ( fg != null ) table.setEvenForeground(fg);
+        
+        bg = (Color) UIManager.get("Table.oddBackground");
+        if ( bg == null ) bg = new Color(225, 232, 246);
+        table.setOddBackground(bg);
+        
+        fg = (Color) UIManager.get("Table.oddForeground");
+        if ( fg != null ) table.setOddForeground(fg);
+        
         if ( Beans.isDesignTime() ) {
             rowHeaderView.setRowCount(1);
             setPreferredSize(new Dimension(200,80));
@@ -106,6 +120,10 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                     new String [] { "Title 1", "Title 2" }
             ));
         }
+        
+        table.setAutoResize(true);
+        table.getColumnModel().setColumnMargin(0);
+        table.setRowMargin(0);
     }
     //</editor-fold>
     
@@ -294,14 +312,6 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public boolean isAutoResize() {
         return table.isAutoResize();
-    }
-    
-    public String getOnAfterUpdate() {
-        return onAfterUpdate;
-    }
-    
-    public void setOnAfterUpdate(String onAfterUpdate) {
-        this.onAfterUpdate = onAfterUpdate;
     }
     
     public void setRequestFocus(boolean focus) {

@@ -11,7 +11,7 @@
         import com.rameses.rcp.common.*;
                 
         public class TestWindhelController  {
-            def image = "/home/rameses/Desktop/mlglobal2z2.png";
+            def image = "/home/rameses/wallpapers/sky.png";
             def date;
             def text;
         }

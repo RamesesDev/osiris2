@@ -22,14 +22,22 @@ public class UIControllerContext {
     private Map<String, View> viewSource = new Hashtable();
     private UIViewPanel currentView;
     
+    private String id;
+    private String title;
+    private String name;
     
     public UIControllerContext(UIController controller) {
         setController(controller);
     }
     
-    public String getId() { return controller.getId(); }
-    public String getName() { return controller.getName(); }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+            
     public String getTitle() { return controller.getTitle(); }
+    public void setTitle(String title) { this.title = title; }
     
     public UIViewPanel getDefaultView() {
         return getView(controller.getDefaultView());
@@ -61,6 +69,9 @@ public class UIControllerContext {
     
     public void setController(UIController controller) {
         this.controller = controller;
+        if ( id == null ) id = controller.getId();
+        if ( name == null ) name = controller.getName();
+        if ( title == null ) title = controller.getTitle();
         indexViews();
     }
     
