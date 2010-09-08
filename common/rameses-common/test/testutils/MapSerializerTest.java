@@ -1,5 +1,5 @@
 /*
- * MapSerializer.java
+ * ObjectSerializer.java
  * JUnit based test
  *
  * Created on August 28, 2010, 7:55 AM
@@ -7,7 +7,7 @@
 
 package testutils;
 
-import com.rameses.util.MapSerializer;
+import com.rameses.util.ObjectSerializer;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -69,7 +69,7 @@ public class MapSerializerTest extends TestCase {
     }
     
     public void testScanner() {
-        MapSerializer mp = new MapSerializer();
+        ObjectSerializer mp = new ObjectSerializer();
         StringWriter w = new StringWriter();
         mp.write( createMapData(), w );
         System.out.println(w.toString()); 
