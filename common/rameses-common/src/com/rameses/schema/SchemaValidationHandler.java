@@ -84,9 +84,10 @@ public class SchemaValidationHandler implements SchemaHandler {
             return;
         }
         if(element==null) return;
+        if(data==null) return;
         
         //start scanner
-        if(data!=null && cf.getType()!=null && cf.getType().equals("list")) {
+        if(cf.getType()!=null && cf.getType().equals("list")) {
             if((data instanceof List) || data.getClass().isArray()) {
                 List list = null;
                 if( data instanceof List) {

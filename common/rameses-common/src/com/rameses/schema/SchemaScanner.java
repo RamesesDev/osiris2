@@ -108,13 +108,13 @@ public final class SchemaScanner {
                     Object val = null;
                     String ref = cf.getRef();
                     
-                    if(cf.getSerializer()==null) {
+                    //if(cf.getSerializer()==null) {
                         //bypass ref checks if it is a serializer
-                        if(ref==null )
+                        if(cf.getSerializer()==null && ref==null )
                             throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
                         
                         //add dynamic ref. Dynamic ref are marked with $ and enclosed with braces e.g.:  ${ref-name}
-                        if( data!=null && ref.indexOf("$")>=0) {
+                        if( data!=null && ref!=null && ref.indexOf("$")>=0) {
                             ref = ExprUtil.substituteValues(ref, (Map)data, propertyResolver );
                         }
                         
@@ -129,9 +129,10 @@ public final class SchemaScanner {
                         }
                         
                         
-                        if(data!=null)
+                        if(data!=null && refname!=null)
                             val = propertyResolver.getProperty( data, refname );
-                    }
+                    //}
+                    
                     handler.startComplexField( cf, refname, refElement,val );
                     handler.endComplexField( cf );
                 } catch(BreakException be) {;}

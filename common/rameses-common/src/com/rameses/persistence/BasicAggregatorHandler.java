@@ -96,15 +96,14 @@ public class BasicAggregatorHandler implements AggregateHandler {
         }
         else if(aggtype != null && aggtype.equalsIgnoreCase(AGGTYPE_CONCAT)) {
             String delimiter = (String)properties.get("delimiter");
-            if(delimiter==null) delimiter = "\n";
             
             StringBuffer sb = new StringBuffer();
             if(oldValue!=null) sb.append( (String)oldValue);
-            if( newValue!=null )sb.append(delimiter+ (String)newValue );
+            if(delimiter!=null) sb.append(delimiter);
+            if( newValue!=null )sb.append((String)newValue );
             retValue = sb.toString();
         }
         return retValue;
-        
     }
     
     

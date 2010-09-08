@@ -1,4 +1,5 @@
 import java.sql.Timestamp;
+import java.util.TimeZone;
 import junit.framework.*;
 /*
  * NewEmptyJUnitTest.java
@@ -37,6 +38,7 @@ public class NewEmptyJUnitTest extends TestCase {
         //System.out.println(tz);
         Timestamp tv = Timestamp.valueOf("2008-01-01 00:00:01");
         System.out.println(tv.toString());
+        System.out.println(TimeZone.getDefault().getID());
     }
 
     

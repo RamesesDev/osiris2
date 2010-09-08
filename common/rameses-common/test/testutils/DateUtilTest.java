@@ -8,7 +8,12 @@
 package testutils;
 
 import com.rameses.util.DateUtil;
+import groovy.lang.Binding;
+import groovy.lang.GroovyObjectSupport;
+import groovy.lang.GroovyShell;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import junit.framework.*;
 
 /**
@@ -33,6 +38,17 @@ public class DateUtilTest extends TestCase {
         Timestamp tp = Timestamp.valueOf("2000-01-01 00:01:01");
         System.out.println(DateUtil.getFormattedTime(tp, "US"));
     }
+    
+    public void testGroovyBinding() {
+        Map map = new HashMap();
+        Map person = new HashMap();
+        person.put("name","elmo");
+        map.put("person", person);
+        
+        
+    }
+    
+    
     
     
 }

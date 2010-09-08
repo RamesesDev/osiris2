@@ -9,6 +9,7 @@
 
 package com.rameses.persistence;
 
+import com.rameses.common.PropertyResolver;
 import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaElement;
 import com.rameses.schema.SchemaManager;
@@ -93,6 +94,8 @@ public class DefaultEntityManager implements EntityManager {
     public Object read(String schemaName, Object data) {
         Queue queue = null;
         List<String> removeFields = new ArrayList();
+        List<String> serializedFields = new ArrayList();
+        
         try {
             SchemaScanner scanner = schemaManager.newScanner();
             ReadPersistenceHandler handler = new ReadPersistenceHandler(schemaManager,sqlContext,data);
@@ -101,6 +104,7 @@ public class DefaultEntityManager implements EntityManager {
             scanner.scan(schema,element,data,handler);
             queue = handler.getQueue();
             removeFields = handler.getRemoveFields();
+            serializedFields = handler.getSerializedFields();
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -125,14 +129,30 @@ public class DefaultEntityManager implements EntityManager {
             
             //print excluded fields
             if(debug) {
-                System.out.println("excluded fields:");
+                if(removeFields.size()>0)System.out.println("excluded fields:");
                 for(String s: removeFields) {
+                    System.out.println("       " +s);
+                }
+                if(serializedFields.size()>0) System.out.println("serialized fields:");
+                for(String s: serializedFields) {
                     System.out.println("       " +s);
                 }
             }
             
+            
             for(String s: removeFields) {
                 map.remove(s);
+            }
+            
+            if(serializedFields.size()>0) {
+                PropertyResolver resolver = schemaManager.getConf().getPropertyResolver();
+                for(String s: serializedFields) {
+                    String o = (String)resolver.getProperty(map, s);
+                    if(o!=null) {
+                        Object x = schemaManager.getSerializer().read(o);
+                        resolver.setProperty(map,s,x);
+                    }
+                }
             }
             
             if(map.size()==0)
@@ -300,6 +320,41 @@ public class DefaultEntityManager implements EntityManager {
     
     public Indexer getIndexer() {
         return new Indexer(this);
+    }
+    
+    
+    /**
+     * This is a generic save routine merged as one call.
+     * create = if true will insert the record.
+     * update = if true will update the record.
+     * if create=true and update=false, this is insert only. you get the picture.
+     */
+    public Object save( String schemaName, Object data) {
+        return save(schemaName, data,true,true);
+    }
+    
+    public Object save( String schemaName, Object data, boolean create, boolean update) {
+        if(create==true && update==true) {
+            Object test = read(schemaName, data);
+            if(test==null) {
+                return create(schemaName, data );
+            }
+            else {
+                return update(schemaName, data);
+            }
+        }
+        else if(create==true  && update==false) {
+            return create(schemaName, data );
+        }
+        else if(create==false  && update==true) {
+            Object test = read(schemaName, data);
+            if(test==null)
+                throw new RuntimeException("Record for update does not exist");
+            return update(schemaName, data);
+        }
+        else {
+            return data;
+        }
     }
     
     

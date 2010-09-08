@@ -29,10 +29,18 @@ public class DBResourceService implements DBResourceServiceLocal {
     
     public byte[] getResource(Class clazz, String name) {
         try {
-            String ql = "select o.content from " + clazz.getName() + " o where o.name=:name";
+            String ql = "select o from " + clazz.getName() + " o where o.name=:name";
             Object o = em.createQuery(ql).setParameter("name",name).getSingleResult();
-            if(o!=null) 
-                return o.toString().getBytes();
+            if(o!=null) {
+                AbstractResource a = (AbstractResource)o;
+                if(!a.getName().equals(name))
+                    throw new RuntimeException("Service name " + name + " does not exist. Please check the case");
+                String content = a.getContent();
+                if(content!=null)
+                    return content.toString().getBytes();
+                else
+                    return null;
+            }    
             else
                 return null;
         } 
