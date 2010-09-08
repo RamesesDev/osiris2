@@ -17,10 +17,11 @@ import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaSerializer;
 import com.rameses.schema.ValidationResult;
-import com.rameses.util.MapSerializer;
+import com.rameses.util.ObjectSerializer;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import javax.naming.InitialContext;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -131,7 +132,7 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
     // <editor-fold defaultstate="collapsed" desc="SERIALIZER">
     public class SchemaMgmtSerializer implements SchemaSerializer, Serializable {
         
-        private MapSerializer serializer = new MapSerializer();
+        private ObjectSerializer serializer = new ObjectSerializer();
         
         public Object read(String s) {
             GroovyShell shell = null;
@@ -146,9 +147,7 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
         }
         
         public String write(Object o) {
-            if(!(o instanceof Map))
-                throw new RuntimeException("SchemaMgmt error. write serialization must accept a Map object");
-            return serializer.toString( (Map)o );
+            return serializer.toString( o );
         }
     }
     //</editor-fold>
@@ -185,10 +184,18 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
     
     public class SchemaMgmtExpressionResolver implements ExpressionResolver {
         
-        public Object evaluate(String expression, Map vars) {
+        public Object evaluate(Object bean, String expression) {
             GroovyShell shell = null;
             try {
-                Binding b = new Binding(vars);
+                Binding b = null;
+                if(bean instanceof Map) {
+                    b = new Binding( (Map)bean );
+                }
+                else {
+                    Map m = new HashMap();
+                    m.put("bean", bean);
+                    b = new Binding(m);
+                }
                 shell = new GroovyShell(b);
                 return shell.evaluate( expression );
             } catch(Exception e) {
