@@ -91,7 +91,7 @@ public class Module {
         try {
             return getResource(name).openStream();
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     
@@ -100,7 +100,7 @@ public class Module {
             if(!name.startsWith("/")) name = "/" + name;
             return new URL( this.contextPath + name );
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

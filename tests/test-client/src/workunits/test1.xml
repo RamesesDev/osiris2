@@ -13,11 +13,15 @@
                 
         public class Test1Controller  {
         
+            @Script("Invoker")
+            def invoker;
+        
             @Binding
             def binding;
         
             def doNext() {
-                return new Opener(name: 'test-client:test2');
+                //return new Opener(name: 'test-client:test2');
+                return invoker.lookupOpener('test2');
             }
             
             void select( data ) {
@@ -26,6 +30,11 @@
                         new Opener(name: 'test-client:_crudFormTest')
                     );
                 }
+            }
+            
+            void fetchOpenerData() {
+                def op = invoker.lookupOpener('test2Init');
+                MsgBox.alert( invoker.invokeOpener(op, binding));
             }
             
         }

@@ -3,7 +3,6 @@ package com.rameses.osiris2.netbeans;
 import com.rameses.client.updates.UpdateCenter;
 import com.rameses.platform.interfaces.AppLoader;
 import com.rameses.platform.interfaces.MainWindow;
-import com.rameses.platform.interfaces.MainWindowListener;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -157,10 +156,9 @@ public class NBInstaller extends ModuleInstall {
         //set the plaf
         try {
             String plaf = (String)env.get("plaf");
-            if(plaf==null || plaf.trim().length()==0) {
-                plaf = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
+            if(plaf!=null && plaf.trim().length()>0) {
+                UIManager.setLookAndFeel(plaf);
             }
-            UIManager.setLookAndFeel(plaf);
         } catch(Exception ign){;}
         
         nbMainWindow = new NBMainWindow(mainWindow);

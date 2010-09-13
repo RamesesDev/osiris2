@@ -113,7 +113,7 @@ public class PlatformImpl implements Platform {
     }
     
     public Object showInput(JComponent actionSource, Object message) {
-        return null;
+        return JOptionPane.showInputDialog(getParentWindow(actionSource), message);
     }
     
     public MainWindow getMainWindow() {

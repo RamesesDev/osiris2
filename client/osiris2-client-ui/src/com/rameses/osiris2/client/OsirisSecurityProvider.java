@@ -31,9 +31,9 @@ public class OsirisSecurityProvider implements SecurityProvider, ClientSecurityP
     }
 
     public boolean checkPermission(String name) {
-        if(name==null) return true;
-        for(String s: permissions) {
-            if(name.matches(s)) return true;
+        if (name == null) return true;
+        for (String s: permissions) {
+            if (name.matches(s)) return true;
         }
         return false;
     }

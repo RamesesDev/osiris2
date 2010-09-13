@@ -43,6 +43,7 @@
                           <Component id="xLabel3" min="-2" pref="149" max="-2" attributes="1"/>
                       </Group>
                   </Group>
+                  <Component id="xActionBar1" alignment="0" min="-2" pref="383" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -65,7 +66,9 @@
                   <Component id="xLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="31" max="32767" attributes="0"/>
+              <EmptySpace pref="68" max="32767" attributes="0"/>
+              <Component id="xActionBar1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="xButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="xButton5" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -88,6 +91,7 @@
     <Component class="com.rameses.rcp.control.XButton" name="xButton2">
       <Properties>
         <Property name="text" type="java.lang.String" value="Show Input"/>
+        <Property name="accelerator" type="java.lang.String" value="F1"/>
         <Property name="name" type="java.lang.String" value="btnShowInput"/>
       </Properties>
     </Component>
@@ -122,6 +126,7 @@
     <Component class="com.rameses.rcp.control.XButton" name="xButton3">
       <Properties>
         <Property name="text" type="java.lang.String" value="Toggle Readonly"/>
+        <Property name="accelerator" type="java.lang.String" value="ctrl ENTER"/>
         <Property name="immediate" type="boolean" value="true"/>
         <Property name="name" type="java.lang.String" value="btnToggle"/>
       </Properties>
@@ -172,6 +177,12 @@
         <Property name="hint" type="java.lang.String" value="Secondary Address"/>
         <Property name="name" type="java.lang.String" value="entity.address2"/>
         <Property name="required" type="boolean" value="true"/>
+      </Properties>
+    </Component>
+    <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="actions"/>
+        <Property name="useToolBar" type="boolean" value="false"/>
       </Properties>
     </Component>
   </SubComponents>

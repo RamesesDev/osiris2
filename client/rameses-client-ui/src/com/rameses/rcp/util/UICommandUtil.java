@@ -40,7 +40,7 @@ public class UICommandUtil {
             
             String target = ValueUtil.isEmpty(command.getTarget())? "parent": command.getTarget();
             NavigatablePanel navPanel = UIControlUtil.getParentPanel((JComponent)command, target);
-            if ( "root".equals(target) ) {
+            if ( !"parent".equals(target) ) {
                 UIControllerContext rootCon = (UIControllerContext) navPanel.getControllers().peek();
                 Binding rootBinding = rootCon.getCurrentView().getBinding();
                 validate(command, rootBinding);

@@ -62,10 +62,10 @@ public final class ScriptProvider {
                 scriptMap.put( name, clazz );
             }
             catch(Exception e) {
-                throw new IllegalStateException("Error loading " + name + "." + e.getMessage() );
-            }
-            finally {
-                try { is.close(); } catch(Exception ign){;}
+                throw new IllegalStateException("Error loading " + name + "." + e.getMessage(), e); 
+            } 
+            finally { 
+                try { is.close(); } catch(Exception ign){;} 
             }
         }
         
@@ -77,7 +77,7 @@ public final class ScriptProvider {
             return obj;
         }
         catch(Exception e) {
-            throw new IllegalStateException(e.getMessage());
+            throw new IllegalStateException(e.getMessage(), e);
         }
         
     }

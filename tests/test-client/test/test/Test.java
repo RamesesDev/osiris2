@@ -1,9 +1,8 @@
 package test;
+import com.rameses.rcp.common.Opener;
+import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ControlSupport;
 import java.text.ParseException;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import javax.swing.UIManager;
 import junit.framework.*;
 
 /*
@@ -24,14 +23,10 @@ public class Test extends TestCase {
     }
     
     public void test() throws ParseException {
-        Set s = UIManager.getLookAndFeel().getDefaults().entrySet();
-        for(Object o: s) {
-            Map.Entry me = (Entry) o;
-            if ( (me.getKey()+"").indexOf("Menu") != -1 ) {
-                System.out.println( me );
-            }
-        }
-        
+        Opener op = new Opener();
+        Binding b = new Binding();
+        ControlSupport.initOpener(op, b.getController());
+        Object o = ControlSupport.init(op.getController(), op.getParams(), op.getAction());
     }
     
 }

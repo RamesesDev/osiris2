@@ -92,6 +92,12 @@ public final class ControlSupport {
             opener.setController( caller );
             
         } else {
+            if ( opener.getName().indexOf(":") < 0 && caller != null ) {
+                String name = caller.getName();
+                String mod = name.substring(0, name.indexOf(":"));
+                opener.setName( mod + ":" + opener.getName() );
+            }
+            
             ControllerProvider provider = ClientContext.getCurrentContext().getControllerProvider();
             UIController controller = provider.getController(opener.getName());
             controller.setId( opener.getId() );
@@ -150,6 +156,10 @@ public final class ControlSupport {
         } else {
             return true;
         }
+    }
+
+    public static void initOpener() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     
 }

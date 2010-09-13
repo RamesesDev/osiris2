@@ -27,7 +27,7 @@ public class DefaultPropertyResolver implements PropertyResolver  {
         try {
             PropertyUtils.setNestedProperty(bean,propertyName,value);
         } catch(Exception e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
     
@@ -35,7 +35,7 @@ public class DefaultPropertyResolver implements PropertyResolver  {
         try {
             return PropertyUtils.getPropertyType( bean, propertyName);
         } catch(Exception e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
     
@@ -43,7 +43,7 @@ public class DefaultPropertyResolver implements PropertyResolver  {
         try{
             return PropertyUtils.getNestedProperty(bean, propertyName);
         } catch(Exception e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
     

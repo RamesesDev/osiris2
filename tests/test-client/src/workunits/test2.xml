@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
-
+    <invokers>
+        <invoker type="test2" caption="Test 2"/>
+        <invoker type="test2Init" caption="Test 2 - init" action="fetchData"/>
+    </invokers>
     <code>
         <![CDATA[
         
@@ -8,13 +11,17 @@
         import com.rameses.rcp.common.*;
         
                 
-        public class Test1Controller  {
+        public class Test2Controller  {
         
             @Caller
             def caller;
             
             @Binding
-            def binding;        
+            def binding;
+            
+            def fetchData() {
+                return 'init from test 2 workunit.';
+            }
         
             void select() {
                 binding.fireNavigation('_close');

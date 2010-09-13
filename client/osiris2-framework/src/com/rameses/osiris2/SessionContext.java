@@ -79,16 +79,18 @@ public class SessionContext {
     }
     
     public List getInvokers( String type, boolean applySecurity ) {
-        if(!invokers.containsKey(type)) {
-            List list = new ArrayList();
-            if(type == null) type = "folder";
+        if (!invokers.containsKey(type)) { 
+            List list = new ArrayList(); 
+            if (type == null) type = "folder"; 
+            
             Iterator iter = context.getInvokers().iterator();
-            while( iter.hasNext() ) {
-                Invoker inv = (Invoker)iter.next();
+            while (iter.hasNext()) {
+                Invoker inv = (Invoker)iter.next(); 
                 String itype = (inv.getType() == null) ? "folder" : inv.getType();
-                if( itype.matches(type) ) {
-                    if( applySecurity==false || checkSecurity( inv.getWorkunitid(), inv.getRoles(), inv.getPermission() ) ) {
-                        list.add( inv );
+                
+                if (itype.matches(type)) {
+                    if (applySecurity == false || checkSecurity(inv.getWorkunitid(), inv.getRoles(), inv.getPermission())) {
+                        list.add(inv);
                     }
                 }
             }
@@ -157,5 +159,6 @@ public class SessionContext {
     public ClassLoader getClassLoader() {
         return context.getClassLoader();
     }
+    
     
 }

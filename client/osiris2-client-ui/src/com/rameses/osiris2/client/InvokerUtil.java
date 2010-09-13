@@ -105,12 +105,12 @@ public final class InvokerUtil {
             
             for(Object o: list) {
                 Invoker inv = (Invoker)o;
-                if( inv.getProperties().get("cond")!=null) {
+                if( inv.getProperties().get("eval")!=null) {
                     Map params = new HashMap();
                     params.put("param", obj);
                     params.put( "context", inv );
                     
-                    String cond = (String)inv.getProperties().get("cond");
+                    String cond = (String)inv.getProperties().get("eval");
                     if( cond.trim().length()>0) {
                         boolean b = false;
                         try {

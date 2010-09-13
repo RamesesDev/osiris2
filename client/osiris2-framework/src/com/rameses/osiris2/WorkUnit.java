@@ -179,7 +179,7 @@ public class WorkUnit implements Serializable {
             return provider.createObject(sourceClass);
         }
         catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
    
