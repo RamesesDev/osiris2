@@ -35,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
-
 public class XActionBar extends JPanel implements UIComposite 
 {   
     private Binding binding;
@@ -44,7 +43,10 @@ public class XActionBar extends JPanel implements UIComposite
     private boolean dynamic;
     private int spacing = 2;
     private int index;
-    private Insets padding = new Insets(0,0,0,0); 
+    private Insets padding = new Insets(0,0,0,0);
+    
+    //XButton target
+    private String target;
     
     private List<XButton> buttons = new ArrayList();
     private JComponent toolbarComponent;
@@ -131,10 +133,18 @@ public class XActionBar extends JPanel implements UIComposite
             btn.setIcon(ControlSupport.getImageIcon(action.getIcon()));
             btn.putClientProperty("visibleWhen", action.getVisibleWhen());
             btn.setBinding(binding);
-            btn.setTarget(action.getProperties().get("target")+"");
+            
+            Map props = action.getProperties();
+            if ( !ValueUtil.isEmpty(props.get("target")) ) {
+                btn.setTarget(props.get("target")+"");
+            }
+            else if ( !ValueUtil.isEmpty(target) ) {
+                btn.setTarget( target );
+            }
+            
             
             try {
-                btn.setAccelerator(action.getProperties().get("shortcut")+""); 
+                btn.setAccelerator(props.get("shortcut")+""); 
             } catch(Exception ign){;} 
             
             Map params = action.getParameters();
@@ -218,6 +228,10 @@ public class XActionBar extends JPanel implements UIComposite
     
     public int getHorizontalAlignment() { return 0; }
     public void setHorizontalAlignment(int horizontalAlignment) {}
+    
+    
+    public String getTarget() { return target; }
+    public void setTarget(String target) { this.target = target; }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" OuterLayout (Class) ">    

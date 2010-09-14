@@ -23,6 +23,7 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     
     public UIControllerPanel() {
         super.setLayout(new BorderLayout());
+        setName("root");
         
         //attach the default button when this panel is already
         //attached to its rootpane
