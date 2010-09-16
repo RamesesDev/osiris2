@@ -13,8 +13,10 @@ package com.rameses.schema;
  *
  * @author elmo
  */
-public class MatchPatternFieldValidator implements SimpleFieldValidator {
+public class MatchPatternFieldValidator implements com.rameses.schema.SimpleFieldValidator {
 
+    public static long serialVersionUID = 1L;
+    
     public void validate(ValidationResult result, SimpleField field, Class fieldClass, String refname, Object fieldValue) {
         String pattern = (String)field.getProperties().get("pattern");
         if( (pattern!=null) && (pattern.trim().length()>0) &&  (fieldValue != null)  && (fieldValue instanceof String)) {

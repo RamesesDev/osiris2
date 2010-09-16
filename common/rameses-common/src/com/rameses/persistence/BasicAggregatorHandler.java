@@ -93,6 +93,7 @@ public class BasicAggregatorHandler implements AggregateHandler {
             else {
                 retValue = _old;
             }
+            return retValue;
         }
         else if(aggtype != null && aggtype.equalsIgnoreCase(AGGTYPE_CONCAT)) {
             String delimiter = (String)properties.get("delimiter");
@@ -102,8 +103,11 @@ public class BasicAggregatorHandler implements AggregateHandler {
             if(delimiter!=null) sb.append(delimiter);
             if( newValue!=null )sb.append((String)newValue );
             retValue = sb.toString();
+            return retValue;
         }
-        return retValue;
+        else {
+            return newValue;
+        }
     }
     
     

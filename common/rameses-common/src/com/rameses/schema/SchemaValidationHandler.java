@@ -29,6 +29,7 @@ public class SchemaValidationHandler implements SchemaHandler {
     private Schema schema;
     
     public SchemaValidationHandler() {
+        
     }
     
     public void startSchema(Schema schema) {
@@ -60,12 +61,19 @@ public class SchemaValidationHandler implements SchemaHandler {
             }
         }
         
-        //load validators if it is not yet loaded.
-        if( fieldValidators==null) {
+        
+        if(fieldValidators==null) {
             fieldValidators = new ArrayList();
             Iterator iter = Service.providers(SimpleFieldValidator.class, Thread.currentThread().getContextClassLoader());
-            while(iter.hasNext()) {
-                fieldValidators.add( (SimpleFieldValidator) iter.next());
+            try {
+                while(iter.hasNext()) {
+                    SimpleFieldValidator d = (com.rameses.schema.SimpleFieldValidator)iter.next();
+                    System.out.println("adding validator " + d + " " + d.getClass().getClassLoader());
+                    fieldValidators.add( d);
+                }
+                fieldValidators.add(new MatchPatternFieldValidator());
+            } catch(Exception e) {
+                //e.printStackTrace();
             }
         }
         

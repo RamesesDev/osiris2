@@ -79,5 +79,4 @@ public class URLDirectory {
         boolean accept(URL u, String filter);
     }
 
-    
 }

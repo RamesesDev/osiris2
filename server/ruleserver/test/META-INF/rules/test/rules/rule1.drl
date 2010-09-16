@@ -1,0 +1,19 @@
+package rule1;
+
+import org.Person;
+
+
+rule "rule1"
+when
+   Person( name == "elmo" )
+then     
+   System.out.println( "Elmo was fired in package 1" );
+end
+
+
+rule "rule2"
+when
+   Person( name == "alex" )
+then     
+   System.out.println( "Firing alex from package 1" );
+end

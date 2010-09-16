@@ -33,6 +33,7 @@ public class HttpInvoker extends HttpServlet {
             
             InitialContext ctx = new InitialContext();
             Object bean = ctx.lookup(pathInfos[0].substring(1) + "/local");
+            
             Method[] methods = getMethodByName(bean, pathInfos[1], values.length);
             boolean methodFound = false;
             Object response = null;
@@ -54,12 +55,15 @@ public class HttpInvoker extends HttpServlet {
             out = new ObjectOutputStream(res.getOutputStream());
             out.writeObject(response);
         } catch (Exception ex) {
+            
+            //ex.printStackTrace();
             Throwable t = ex;
             while( t.getCause() != null ) t = t.getCause();
             Exception ne = new Exception(t.getMessage());
             out = new ObjectOutputStream(res.getOutputStream());
             out.writeObject(ne);
-        } finally {
+        } 
+        finally {
             try { out.close(); } catch (Exception ex) {;}
         }
     }

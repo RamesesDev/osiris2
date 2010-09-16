@@ -112,4 +112,17 @@ public final class FileUtil {
             try { bis.close(); } catch(Exception e){;}
         }
     }
+    
+    public static boolean deleteRecursive( File path ) {
+        if( !path.exists() ) return false;
+        if( path.isDirectory() ) {
+            File[] files = path.listFiles();
+            for( int i=0; i<files.length; i++) {
+                deleteRecursive( files[i] );
+            }
+        }
+        return path.delete();
+    }
+    
+    
 }
