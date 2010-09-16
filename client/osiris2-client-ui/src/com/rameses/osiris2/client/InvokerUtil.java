@@ -37,6 +37,16 @@ public final class InvokerUtil {
         invoke(invoker,null);
     }
     
+    public static void showWindow(Invoker invoker, String target, Map winParams) {
+        if ( !ValueUtil.isEmpty(target) ) {
+            invoker.getProperties().put("windowmode", target);
+        }
+        if ( winParams != null ) {
+            invoker.getProperties().putAll(winParams);
+        }
+        invoke(invoker, null);
+    }
+    
     public static void invoke(Invoker invoker, Map params) {
         try {
             //check if window already exists
@@ -67,12 +77,18 @@ public final class InvokerUtil {
                 }
                 UIControllerPanel panel = new UIControllerPanel( uic );
                 Map winParams = new HashMap();
-                if ( params != null ) {
-                    winParams.putAll(params);
+                if ( invoker.getProperties() != null ) {
+                    winParams.putAll( invoker.getProperties() );
                 }
                 winParams.put("id", u.getId());
                 winParams.put("title", u.getTitle());
-                ClientContext.getCurrentContext().getPlatform().showWindow(null, panel, winParams);
+                
+                String windowmode = winParams.get("windowmode")+"";
+                if ( !"popup".equals(windowmode) ) {
+                    platform.showWindow(null, panel, winParams);
+                } else {
+                    platform.showPopup(null, panel, winParams);
+                }
             }
         } catch(Exception ex) {
             Exception e = ExceptionManager.getInstance().getOriginal(ex);

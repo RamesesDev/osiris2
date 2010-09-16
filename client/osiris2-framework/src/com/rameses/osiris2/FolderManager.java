@@ -54,7 +54,7 @@ public class FolderManager implements Serializable {
             }
             return folder;
         } else {
-            return (Folder) folders.get(folder.getFullId());
+            return (Folder) folders.get(fullId);
         }
     }
 
