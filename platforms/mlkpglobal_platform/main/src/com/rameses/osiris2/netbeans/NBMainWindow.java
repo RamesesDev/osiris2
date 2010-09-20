@@ -3,6 +3,7 @@ package com.rameses.osiris2.netbeans;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
 import java.awt.Component;
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import javax.swing.JOptionPane;
 
 public class NBMainWindow implements MainWindow {
     
-    private MainWindowListener listener;
+    private List<MainWindowListener> listeners = new ArrayList();
     private JFrame window;
     private String mainTitle = "";
     
@@ -25,14 +26,20 @@ public class NBMainWindow implements MainWindow {
     
     public Component getComponent() { return window; }
     
-    public MainWindowListener getListener() {
-        return listener;
+    public List<MainWindowListener> getListeners() {
+        return listeners;
     }
     
-    public void setListener(MainWindowListener listener) {
-        this.listener = listener;
+    public void addListener(MainWindowListener listener) {
+        if ( !listeners.contains(listener) ) {
+            listeners.add( listener );
+        }
     }
-
+    
+    public void removeListener(MainWindowListener listener) {
+        listeners.remove(listener);
+    }
+    
     public void invoke(String name, String action, Map properties) {
         if (name == null) return;
         
@@ -61,15 +68,26 @@ public class NBMainWindow implements MainWindow {
         NBLifecycleManager.getInstance().exit();
     }
     
-    public void setComponent(JComponent comp, String constraint) {
-        if ( MainWindow.TOOLBAR.equals(constraint) ) {
+    public void setComponent(JComponent comp, String constraint) 
+    {
+        if (MainWindow.TOOLBAR.equals(constraint)) 
+        {
             NBHeaderBar headerBar = NBManager.getInstance().getHeaderBar();
             headerBar.setBottomView(comp);
-        } else if ( MainWindow.MENUBAR.equals(constraint) ) {
+        } 
+        else if (MainWindow.MENUBAR.equals(constraint)) 
+        {
             JMenuBar m = (JMenuBar) comp;
             setMenuBar(m);
         }
-    }
+        else if (MainWindow.STATUSBAR.equals(constraint)) 
+        {
+            Container con = NBManager.getInstance().getStatusView();
+            con.removeAll();
+            con.add(comp);
+            comp.setName("statuspanel"); 
+        } 
+    } 
     
     private void setMenuBar(JMenuBar m) {
         if (m == null) m = new JMenuBar();
@@ -95,6 +113,8 @@ public class NBMainWindow implements MainWindow {
         if ( jm.getMenuComponentCount() == 0 )
             return false;
         
+        System.out.println(jm.getText() + "=" + jm.getMenuComponentCount());
+        
         boolean hasChildren = false;
         List emptyMenus = new ArrayList();
         for(int i=0; i<jm.getMenuComponentCount(); ++i) {
@@ -104,7 +124,7 @@ public class NBMainWindow implements MainWindow {
                 if ( !hasChildren(subMenu) ) {
                     emptyMenus.add(subMenu);
                 } else {
-                    hasChildren = true;
+                    hasChildren = true; 
                 }
             } else {
                 hasChildren = true;
@@ -120,6 +140,9 @@ public class NBMainWindow implements MainWindow {
     }
     
     public void show() {
+    }
+
+    public void setListener(MainWindowListener paramMainWindowListener) {
     }
     
 }

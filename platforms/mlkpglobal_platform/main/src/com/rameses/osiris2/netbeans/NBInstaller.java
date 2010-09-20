@@ -42,17 +42,21 @@ public class NBInstaller extends ModuleInstall {
     private ClassLoader classLoader;
     private Map env;
     
-    public void restored() {
-        try {
+    public void restored() 
+    {
+        try 
+        {
             WindowManager.getDefault().addPropertyChangeListener(new WindowManagerPropertyListener());
             loadHttpsBypass();
             loadApplication();
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
+        } 
+        catch(Exception e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
     
-    private void loadApplication() throws Exception{
+    private void loadApplication() throws Exception
+    {
         String filename = System.getProperty("user.dir") + "/client.conf";
         File f = new File(filename);
         if (!f.exists())
@@ -71,9 +75,11 @@ public class NBInstaller extends ModuleInstall {
         
         env = uc.getEnv();
         Iterator keys = env.keySet().iterator();
-        while (keys.hasNext()) {
+        while (keys.hasNext()) 
+        {
             String key = keys.next().toString();
-            if (key.startsWith("app.")) {
+            if (key.startsWith("app.")) 
+            {
                 Object val = env.get(key);
                 if (val != null) System.getProperties().put(key, val);
             }
@@ -85,10 +91,10 @@ public class NBInstaller extends ModuleInstall {
             throw new NullPointerException("app.loader must be provided in the ENV");
         
         appLoader = (AppLoader) classLoader.loadClass(apploader).newInstance();
-        
     }
     
-    private void loadHttpsBypass() throws Exception {
+    private void loadHttpsBypass() throws Exception 
+    {
         TrustManager[] tm = new TrustManager[]
         {
             new X509TrustManager() {
@@ -108,28 +114,33 @@ public class NBInstaller extends ModuleInstall {
         });
     }
     
-    private void onactiveMode() throws Exception {
+    private void onactiveMode() throws Exception 
+    {
         File f = new File("netbeans.conf");
-        if( f.exists()) {
+        if (f.exists()) 
+        {
             FileInputStream fis = null;
-            
-            try {
+            try 
+            {
                 fis = new FileInputStream(f);
                 Properties props = new Properties();
                 props.load( fis );
-                for( Object o : props.entrySet()) {
+                for (Object o : props.entrySet()) 
+                {
                     Map.Entry me = (Map.Entry)o;
                     System.setProperty( me.getKey()+"", me.getValue()+"" );
                 }
-            } catch(Exception ex) {
+            } 
+            catch(Exception ex) {
                 ex.printStackTrace();
-            } finally {
+            } 
+            finally {
                 try { fis.close(); } catch(Exception ign){;}
             }
         }
         
         mainWindow = (JFrame) WindowManager.getDefault().getMainWindow();
-        mainWindow.setTitle("Rameses Client Platform");
+        mainWindow.setTitle("Rameses Client Platform"); 
         mainWindow.addWindowListener(new WindowOpenAdapter());
         
         NBManager.getInstance().setMainWindow(mainWindow);
@@ -137,46 +148,58 @@ public class NBInstaller extends ModuleInstall {
         
         System.getProperties().put("StartupModuleDispatched", "false");
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            public void run() 
+            {
                 try {
                     startBootProcess2();
-                    
-                } catch(Exception ex) {
+                } 
+                catch(Exception ex) 
+                {
                     alert(ex.getMessage());
                     ex.printStackTrace();
                 }
             }
         });
-        
     }
     
-    
-    
-    private void startBootProcess2() throws Exception {
+    private void startBootProcess2() throws Exception 
+    {
         Thread.currentThread().setContextClassLoader(classLoader);
         //set the plaf
-        try {
-            String plaf = (String)env.get("plaf");
-            if(plaf!=null && plaf.trim().length()>0) {
-                UIManager.setLookAndFeel(plaf);
+        try 
+        {
+            String plaf = (String) env.get("plaf");
+            if (plaf != null && plaf.trim().length() > 0) { 
+                UIManager.setLookAndFeel(plaf); 
             }
-        } catch(Exception ign){;}
+            else if (System.getProperty("os.name","").toLowerCase().indexOf("windows") >= 0) {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); 
+            } 
+            else {
+                //plaf = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";    
+            } 
+        } 
+        catch(Exception ign) {;} 
         
         nbMainWindow = new NBMainWindow(mainWindow);
         nbPlatform = new NBPlatform(nbMainWindow);
         mainWindow.getRootPane().putClientProperty(MainWindow.class, nbMainWindow);
         appLoader.load(classLoader, env, nbPlatform);
+        
         //setting application icon
-        try {
+        try 
+        {
             File fileIcon = new File(System.getProperty("user.dir") + "/icon.gif");
             System.getProperties().put("app.icon.url", fileIcon.toURL());
             ImageIcon iicon = new ImageIcon(fileIcon.toURL());
             mainWindow.setIconImage(iicon.getImage());
-        } catch(Exception ign) {;}
+        } 
+        catch(Exception ign) {;}
         
     }
     
-    private void alert( final String msg ) {
+    private void alert(final String msg) 
+    {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JOptionPane.showMessageDialog(mainWindow, msg);
@@ -184,12 +207,16 @@ public class NBInstaller extends ModuleInstall {
         });
     }
     
-    public boolean closing() {
-        if (nbMainWindow != null) {
-            if(nbMainWindow.getListener() != null) {
+    public boolean closing() 
+    {
+        if (nbMainWindow != null) 
+        {
+            for (MainWindowListener mwl : nbMainWindow.getListeners()) 
+            {
                 try {
-                    return nbMainWindow.getListener().onClose();
-                } catch(Exception e) {
+                    if (!mwl.onClose()) return false;
+                } 
+                catch(Exception e) {
                     e.printStackTrace();
                 }
             }

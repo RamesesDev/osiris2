@@ -2,7 +2,8 @@
 <workunit>
     
     <invokers>
-        <invoker folderid="/menu/smack" caption="Client 2" action="init"/>
+        <invoker folderid="/menu/smack" caption="Client 2" action="init"
+                 permission="smack-client:chat.open"/>
     </invokers>
     
     <code>

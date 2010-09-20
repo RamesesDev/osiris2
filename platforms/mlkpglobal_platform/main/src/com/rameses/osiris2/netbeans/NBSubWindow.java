@@ -11,16 +11,16 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import org.openide.windows.TopComponent;
 
-public class NBSubWindow extends TopComponent implements SubWindow {
-    
+public class NBSubWindow extends TopComponent implements SubWindow 
+{
     private NBPlatform nbPlatform;
     private NBMainWindow mainWindow;
     private String preferredID;
     private boolean closeable = true;
     private boolean bypassVerifyClose;
     
-    
-    public NBSubWindow(NBPlatform nbPlatform, NBMainWindow mainWindow, String preferredID) {
+    public NBSubWindow(NBPlatform nbPlatform, NBMainWindow mainWindow, String preferredID) 
+    {
         this.nbPlatform = nbPlatform;
         this.mainWindow = mainWindow;
         this.preferredID = preferredID;
@@ -32,16 +32,20 @@ public class NBSubWindow extends TopComponent implements SubWindow {
         registerKeyboardAction(closeAction, KeyStroke.getKeyStroke("ctrl W"), JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
     
-    public void setCloseable(boolean closeable) { this.closeable = closeable; }
+    public void setCloseable(boolean closeable) 
+    { 
+        this.closeable = closeable; 
+    }
     
     protected String preferredID() { return preferredID; }
     
     public int getPersistenceType() { return PERSISTENCE_NEVER; }
     
-    public void open() {
+    public void open() 
+    {
         super.open();
         
-        if ( getViewContext() == null ) return;
+        if (getViewContext() == null) return;
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -50,42 +54,50 @@ public class NBSubWindow extends TopComponent implements SubWindow {
         });
     }
     
-    public boolean canClose() {
+    public boolean canClose() 
+    {
         if (!closeable) return false;
-        if (!bypassVerifyClose) {
+        if (!bypassVerifyClose) 
+        {
             ViewContext vc = getViewContext();
-            if ( vc != null ) {
-                return vc.close();
-            }
+            if (vc != null) return vc.close();
         }
         return true;
     }
     
-    protected void componentClosed() {
+    protected void componentClosed() 
+    {
         super.componentClosed();
         nbPlatform.removeWindow(preferredID);
     }
     
-    public void closeWindow() {
-        if (canClose()) {
-            try {
+    public void closeWindow() 
+    {
+        if (canClose()) 
+        {
+            try 
+            {
                 bypassVerifyClose = true;
                 close();
-            } catch(RuntimeException rex) { throw rex; } catch(Exception ex) {
+            } 
+            catch(RuntimeException rex) { 
+                throw rex; 
+            } 
+            catch(Exception ex) {
                 throw new RuntimeException(ex.getMessage(), ex);
-            } finally {
+            } 
+            finally {
                 bypassVerifyClose = false;
             }
         }
     }
     
-    private ViewContext getViewContext() {
+    private ViewContext getViewContext() 
+    {
         Component c = getComponent(0);
         if (c instanceof ViewContext) {
             return ((ViewContext) c);
         }
-        
         return null;
-    }
-    
+    }   
 }

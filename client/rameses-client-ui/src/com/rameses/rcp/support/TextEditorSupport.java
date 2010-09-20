@@ -1,36 +1,49 @@
 package com.rameses.rcp.support;
 
-import com.rameses.rcp.ui.UIInput;
+import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import javax.swing.JComponent;
+import javax.swing.JPasswordField;
+import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
 
 
-public class TextEditorSupport implements FocusListener, KeyListener {
+public class TextEditorSupport 
+{
+    public static TextEditorSupport install(JTextComponent component)
+    {
+        TextEditorSupport s = new TextEditorSupport(component); 
+        component.putClientProperty(TextEditorSupport.class, s); 
+        return s; 
+    } 
     
-    public void focusGained(FocusEvent focusEvent) {
-        if( focusEvent.getComponent() instanceof JTextComponent ) {
-            JTextComponent c = (JTextComponent)focusEvent.getComponent();
-            if( c!=null) {
-                c.selectAll();
-            }
-        }
+    private JTextComponent component;
+    private FocusListener focusListener; 
+    
+    private TextEditorSupport(JTextComponent component) 
+    {
+        this.component = component; 
+        
+        focusListener = new SupportFocusListener(); 
+        component.addFocusListener(focusListener); 
+        
+        Insets margin = UIManager.getInsets("TextField.margin");
+        if (margin != null) 
+        {
+            Insets ins = new Insets(margin.top, margin.left, margin.bottom, margin.right);
+            component.setMargin(ins);
+        } 
     }
     
-    public void focusLost(FocusEvent focusEvent) {}    
-    public void keyTyped(KeyEvent keyEvent) {}    
-    public void keyPressed(KeyEvent keyEvent) {}
-    
-    public void keyReleased(KeyEvent keyEvent) {
-        if( keyEvent.getKeyCode() == keyEvent.VK_ESCAPE) {
-            JComponent jc = (JComponent)keyEvent.getComponent();
-            if( jc == null || !(jc instanceof UIInput) ) return;
-            UIInput ui = (UIInput) jc;
-            ui.refresh();
-        }
-    }
-    
+    private class SupportFocusListener implements FocusListener  
+    {
+        public void focusGained(FocusEvent focusEvent) 
+        {
+            try {
+                component.selectAll();
+            } catch(Exception ign) {;} 
+        } 
+
+        public void focusLost(FocusEvent focusEvent) {}    
+    }    
 }

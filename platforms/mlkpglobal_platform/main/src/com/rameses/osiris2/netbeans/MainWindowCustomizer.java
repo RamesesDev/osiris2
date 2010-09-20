@@ -86,7 +86,7 @@ class MainWindowCustomizer
                 else if ("statusLine".equals(c.getName()))
                 {
                     //statusLine component
-                    //initStatus((JComponent) c);
+                    initStatus((JComponent) c);
                 }
             }
         }
@@ -95,19 +95,10 @@ class MainWindowCustomizer
         {
         }
         
-        private void initStatus(JComponent con)
+        private void initStatus(JComponent comp)
         {
-            JComponent statusBar = null;
-            for (int i=0; i<con.getComponentCount(); i++)
-            {
-                Component c = con.getComponent(i);
-                if (c.getClass().getName().indexOf("StatusLine") > 0)
-                {
-                    statusBar = (JComponent) c;
-                    break;
-                }
-            }
-            NBManager.getInstance().setStatusView(statusBar);
+            comp.setLayout(new StatusbarLayout()); 
+            NBManager.getInstance().setStatusView(comp);
         }
     }
     //</editor-fold>            
@@ -344,5 +335,70 @@ class MainWindowCustomizer
         }
     }
     //</editor-fold>    
+    
+    //<editor-fold defaultstate="collapsed" desc=" StatusbarLayout (Class) ">
+    private class StatusbarLayout implements LayoutManager
+    {
+        public void addLayoutComponent(String name, Component comp) {}
+        public void removeLayoutComponent(Component comp) {}
+
+        public Dimension preferredLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+
+        public Dimension minimumLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+        
+        private Component getComponent(Component[] comps)
+        {
+            for (int i=0; i<comps.length; i++)
+            {
+                if ("statuspanel".equals(comps[i].getName())) 
+                    return comps[i]; 
+            }
+            return null; 
+        }
+
+        public void layoutContainer(Container parent) 
+        {
+            synchronized (parent.getTreeLock())
+            {
+                Component c = getComponent(parent.getComponents()); 
+                if (c != null && c.isVisible())
+                {
+                    Insets margin = parent.getInsets();
+                    int x = margin.left;
+                    int y = margin.top;
+                    int w = parent.getWidth() - (margin.left + margin.right);
+                    int h = parent.getHeight() - (margin.top + margin.bottom);
+                    
+                    Dimension dim = c.getPreferredSize();
+                    c.setBounds(x, y, w, dim.height);
+                }
+            }
+        }
+
+        public Dimension getLayoutSize(Container parent) 
+        {
+            synchronized (parent.getTreeLock())
+            {
+                int w=0, h=0;
+                Component c = getComponent(parent.getComponents()); 
+                if (c != null && c.isVisible())
+                {
+                    Dimension dim = c.getPreferredSize();
+                    w = dim.width;
+                    h = dim.height; 
+                    
+                    Insets margin = parent.getInsets();
+                    w += (margin.left + margin.right);
+                    h += (margin.top + margin.bottom);
+                }                
+                return new Dimension(w, h);
+            }
+        }
+    }
+    //</editor-fold>        
     
 }

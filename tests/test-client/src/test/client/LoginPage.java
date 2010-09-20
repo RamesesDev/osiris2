@@ -42,6 +42,7 @@ public class LoginPage extends javax.swing.JPanel {
         xButton1.setText("Cancel");
 
         xButton2.setText("Login");
+        xButton2.setDefaultCommand(true);
         xButton2.setName("doLogin");
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
