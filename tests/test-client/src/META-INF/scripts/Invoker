@@ -1,0 +1,60 @@
+import com.rameses.osiris2.client.*;
+import com.rameses.rcp.common.*;
+import com.rameses.rcp.framework.ControlSupport;
+
+public class Invoker {
+
+    def lookup( String type ) {
+        return  InvokerUtil.lookup( type );
+    }
+
+    def getActions( type, closureParams = null ) {
+        def list = [];
+        lookup(type).each { list.add(createAction(it, closureParams)) }
+        return list;
+    }
+
+    private def createAction(inv, closureParams) {
+        def a = [
+            execute: {
+                def o = new Opener(
+                    id: inv.caption, name: inv.workunitid, 
+                    caption: inv.caption, action: inv.action
+                );
+                if ( closureParams ) {
+                    o.params = closureParams();
+                }
+                if ( inv.properties.openerType ) {
+                    o.target = inv.properties.openerType;
+                }
+                else {
+                    o.target = "_window";
+                }
+                return o;
+            }
+        ] as Action;
+
+        a.properties.putAll( inv.properties );
+        return a;
+    }
+
+    def lookupOpener( invType ) {
+        def list = lookup( invType );
+        if ( !list ) {
+            throw new Exception('No invoker found for type [' + invType + ']');
+        }
+
+        def inv = list[0];
+        return new Opener(
+            name: inv.workunitid, caption: inv.caption, action: inv.action
+        );
+    }
+
+    def invokeOpener( opener, binding ) {
+        ControlSupport.initOpener(opener, binding.controller);
+        return ControlSupport.init(opener.controller.codeBean, opener.params, opener.action);
+    }
+
+}
+
+

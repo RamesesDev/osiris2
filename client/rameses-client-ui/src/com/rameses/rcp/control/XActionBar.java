@@ -147,9 +147,13 @@ public class XActionBar extends JPanel implements UIComposite
                 btn.setAccelerator(props.get("shortcut")+""); 
             } catch(Exception ign){;} 
             
-            Map params = action.getParameters();
+            Map params = action.getParams();
             if (params != null && params.size() > 0) {
                 btn.getParams().putAll(params);
+            }
+            
+            if ( !action.getClass().getName().equals(Action.class.getName()) ) {
+                btn.putClientProperty(Action.class.getName(), action);
             }
             
             buttons.add(btn);

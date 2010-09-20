@@ -9,6 +9,7 @@
 
 package com.rameses.rcp.common;
 
+import com.rameses.util.ValueUtil;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -66,8 +67,16 @@ public class Action implements Comparable {
         return index - a.index;
     }
     
+    //overridable
+    public Object execute() {
+        return null;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String getCaption() {
+        if ( ValueUtil.isEmpty(caption) && !ValueUtil.isEmpty(properties.get("caption")))
+            return properties.get("caption")+"";
+            
         return caption;
     }
     
@@ -76,6 +85,9 @@ public class Action implements Comparable {
     }
     
     public String getIcon() {
+        if( ValueUtil.isEmpty(icon) && !ValueUtil.isEmpty(properties.get("icon")))
+            return properties.get("icon")+"";
+        
         return icon;
     }
     
@@ -126,6 +138,9 @@ public class Action implements Comparable {
     }
     
     public char getMnemonic() {
+        if ( mnemonic == '\u0000' && !ValueUtil.isEmpty(properties.get("mnemonic")))
+            return (properties.get("mnemonic")+"").charAt(0);
+            
         return mnemonic;
     }
     
@@ -149,12 +164,22 @@ public class Action implements Comparable {
         this.permission = permission;
     }
     
+    @Deprecated
     public Map getParameters() {
         return parameters;
     }
     
+    @Deprecated
     public void setParameters(Map parameters) {
         this.parameters = parameters;
+    }
+    
+    public Map getParams() {
+        return parameters;
+    }
+    
+    public void setParams(Map p) {
+        this.parameters = p;
     }
     
     public boolean isUpdate() {
@@ -167,10 +192,10 @@ public class Action implements Comparable {
     
     public String getTooltip() {
         if(tooltip==null) {
-            if( caption == null )
-                return name;
+            if ( !ValueUtil.isEmpty(properties.get("tooltip")) )
+                return properties.get("tooltip")+"";
             else
-                return caption;
+                return getCaption();
         }
         
         return tooltip;
@@ -181,6 +206,9 @@ public class Action implements Comparable {
     }
     
     public String getVisibleWhen() {
+        if ( ValueUtil.isEmpty(visibleWhen) && !ValueUtil.isEmpty(properties.get("visibleWhen")) ) {
+            return properties.get("visibleWhen")+"";
+        }
         return visibleWhen;
     }
     
