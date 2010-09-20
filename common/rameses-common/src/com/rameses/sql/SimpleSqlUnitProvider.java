@@ -78,7 +78,7 @@ public class SimpleSqlUnitProvider extends SqlUnitProvider {
                 if( line.trim().startsWith("#" )) continue;
                 if( line.trim().startsWith("[")){
                     if(started) break;
-                    if(line.trim().matches("\\[.*"+subName+".*\\]" )) {
+                    if(line.trim().replaceAll("\\[|\\]", "").trim().equals(subName)) {
                         started = true;
                     } 
                     continue;                    

@@ -13,6 +13,7 @@ import com.rameses.schema.LinkField;
 import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaElement;
+import com.rameses.schema.SchemaField;
 import com.rameses.schema.SchemaHandler;
 import com.rameses.schema.SchemaHandlerStatus;
 import com.rameses.schema.SchemaManager;
@@ -144,5 +145,22 @@ public abstract class AbstractPersistenceHandler implements SchemaHandler {
         return queue;
     }
     
+    
+    
+    protected Object passSerializer( SchemaField sf, Object value, String refname ) {
+        String serializer = (String)sf.getProperties().get("serializer");
+        if(serializer==null || serializer.trim().length()==0) return value;
+        
+        Object d = rootData;
+        String mapfield = (String)sf.getProperties().get("mapfield");
+        if(mapfield==null) mapfield = refname;
+                
+        if(!mapfield.equals(".")) {
+            d = schemaManager.getConf().getPropertyResolver().getProperty(d, mapfield);
+        }
+        if(d==null) return null;
+        return schemaManager.getSerializer().write( d );
+    }
+
     
 }

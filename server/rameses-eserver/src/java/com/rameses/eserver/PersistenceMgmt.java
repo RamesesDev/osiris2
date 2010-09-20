@@ -1,6 +1,6 @@
 package com.rameses.eserver;
 
-import com.rameses.persistence.DefaultEntityManager;
+import com.rameses.persistence.EntityManager;
 import com.rameses.persistence.EntityManager;
 import com.rameses.schema.SchemaManager;
 import com.rameses.sql.SqlUnit;
@@ -150,7 +150,7 @@ public class PersistenceMgmt implements Serializable, PersistenceMgmtMBean {
             sqlContext = createSqlContext(datasource);
         else
             sqlContext = createSqlContext();
-        return new DefaultEntityManager(schemaMgmt.getSchemaManager(),sqlContext);
+        return new EntityManager(schemaMgmt.getSchemaManager(),sqlContext);
     }
 
     public String showCache() {

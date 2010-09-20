@@ -9,13 +9,19 @@
 
 package com.rameses.eserver;
 
+import com.rameses.common.ExpressionResolver;
 import com.rameses.schema.Schema;
 import com.rameses.common.PropertyResolver;
 import com.rameses.schema.SchemaCacheProvider;
 import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaManager;
+import com.rameses.schema.SchemaSerializer;
 import com.rameses.schema.ValidationResult;
+import com.rameses.util.ObjectSerializer;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import javax.naming.InitialContext;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -28,7 +34,7 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
     
     private static final String SCHEMA_CACHE = "schemacache";
     private String jndiName = CONSTANTS.SCHEMA_MGMT;
-
+    
     private CacheServiceMBean cacheService;
     private ResourceServiceMBean resourceService;
     private SchemaManager schemaManager;
@@ -40,7 +46,7 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
         System.out.println("STARTING SCHEMA MGMT");
         InitialContext ctx = new InitialContext();
         cacheService = (CacheServiceMBean)ctx.lookup(CONSTANTS.CACHE_SERVICE);
-        resourceService = (ResourceServiceMBean)ctx.lookup(CONSTANTS.RESOURCE_SERVICE);        
+        resourceService = (ResourceServiceMBean)ctx.lookup(CONSTANTS.RESOURCE_SERVICE);
         schemaManager = new MgmtSchemaManager();
         JndiUtil.bind( ctx, jndiName, this);
     }
@@ -60,34 +66,36 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
     }
     
     public void flushAll() {
-         cacheService.getContext(SCHEMA_CACHE).clear();
+        cacheService.getContext(SCHEMA_CACHE).clear();
     }
     
     public void flush(String name) {
         cacheService.getContext(SCHEMA_CACHE).remove(name);
     }
-
+    
     public void validate(String schemaName, Object value) throws Exception {
         ValidationResult vr = schemaManager.validate(schemaName, value);
         if(vr.hasErrors()) {
             throw new Exception(vr.toString());
         }
     }
-
+    
     public SchemaManager getSchemaManager() {
         return schemaManager;
     }
-
+    
     public class MgmtSchemaManager extends SchemaManager implements Serializable {
         
         private SchemaConf conf;
         
         public MgmtSchemaManager() {
             conf = new MgmtSchemaConf(this);
-            conf.setCacheProvider( new MgmtSchemaCache());
+            conf.setCacheProvider( new SchemaMgmtCache());
             conf.setPropertyResolver( new BeanUtilPropertyResolver() );
+            conf.setSerializer(new SchemaMgmtSerializer());
+            conf.setExpressionResolver(new SchemaMgmtExpressionResolver() );
         }
-
+        
         public SchemaConf getConf() {
             return conf;
         }
@@ -98,20 +106,20 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
             super(sm);
         }
     }
-        
     
-    public class MgmtSchemaCache implements SchemaCacheProvider, Serializable {
+    // <editor-fold defaultstate="collapsed" desc="CACHE PROVIDER">
+    public class SchemaMgmtCache implements SchemaCacheProvider, Serializable {
         
         public Schema getCache(String key) {
             Map map = (Map)cacheService.getContext(SCHEMA_CACHE);
             return (Schema)map.get(key);
         }
-
+        
         public void putCache(String key, Schema schema) {
             Map map = (Map)cacheService.getContext(SCHEMA_CACHE);
             map.put(key, schema);
         }
-
+        
         public void destroy() {
             //destroy the cache map here.
             Map map = (Map)cacheService.getContext(SCHEMA_CACHE);
@@ -119,7 +127,32 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
         }
         
     }
+    //</editor-fold>
     
+    // <editor-fold defaultstate="collapsed" desc="SERIALIZER">
+    public class SchemaMgmtSerializer implements SchemaSerializer, Serializable {
+        
+        private ObjectSerializer serializer = new ObjectSerializer();
+        
+        public Object read(String s) {
+            GroovyShell shell = null;
+            try {
+                shell = new GroovyShell();
+                return shell.evaluate( s );
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                shell = null;
+            }
+        }
+        
+        public String write(Object o) {
+            return serializer.toString( o );
+        }
+    }
+    //</editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="PROPERTY RESOLVER">
     public class BeanUtilPropertyResolver implements PropertyResolver {
         
         public void setProperty(Object bean, String propertyName, Object value) {
@@ -147,5 +180,31 @@ public class SchemaMgmt implements SchemaMgmtMBean, Serializable {
             }
         }
     }
-
+//</editor-fold>
+    
+    public class SchemaMgmtExpressionResolver implements ExpressionResolver {
+        
+        public Object evaluate(Object bean, String expression) {
+            GroovyShell shell = null;
+            try {
+                Binding b = null;
+                if(bean instanceof Map) {
+                    b = new Binding( (Map)bean );
+                }
+                else {
+                    Map m = new HashMap();
+                    m.put("bean", bean);
+                    b = new Binding(m);
+                }
+                shell = new GroovyShell(b);
+                return shell.evaluate( expression );
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                shell = null;
+            }
+        }
+        
+    }
+    
 }

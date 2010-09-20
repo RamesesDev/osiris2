@@ -11,6 +11,7 @@ package com.rameses.eserver;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -34,11 +35,27 @@ public class HtmlMap extends HashMap {
         Iterator iter = keys.iterator();
         while (iter.hasNext()) {
             String key = (String) iter.next();
-            buff.append("<tr><td align=\"left\"><b>")
-            .append(key)
-            .append("</b></td><td align=\"left\">")
-            .append(this.get(key))
-            .append("</td></tr>\n\r");
+            buff.append("<tr><td align=\"left\"><b>");
+            buff.append(key);
+            buff.append("</b></td><td align=\"left\">");
+            Object val = this.get(key);
+            if(val instanceof Map) {
+                buff.append( new HtmlMap((Map)val)) ;
+            }
+            else if(val instanceof List) {
+                List list = (List)val;
+                for(Object o : list) {
+                    buff.append("<br>");
+                    if(o instanceof Map) {
+                        buff.append( new HtmlMap((Map)val)) ;
+                    }
+                    else {
+                        buff.append(o);
+                    }
+                }
+            }
+            buff.append(this.get(key));
+            buff.append("</td></tr>\n\r");
         }
         
         buff.append("</table>");

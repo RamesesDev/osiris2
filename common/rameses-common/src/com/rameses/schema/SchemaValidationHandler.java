@@ -29,6 +29,7 @@ public class SchemaValidationHandler implements SchemaHandler {
     private Schema schema;
     
     public SchemaValidationHandler() {
+        
     }
     
     public void startSchema(Schema schema) {
@@ -60,12 +61,19 @@ public class SchemaValidationHandler implements SchemaHandler {
             }
         }
         
-        //load validators if it is not yet loaded.
-        if( fieldValidators==null) {
+        
+        if(fieldValidators==null) {
             fieldValidators = new ArrayList();
             Iterator iter = Service.providers(SimpleFieldValidator.class, Thread.currentThread().getContextClassLoader());
-            while(iter.hasNext()) {
-                fieldValidators.add( (SimpleFieldValidator) iter.next());
+            try {
+                while(iter.hasNext()) {
+                    SimpleFieldValidator d = (com.rameses.schema.SimpleFieldValidator)iter.next();
+                    System.out.println("adding validator " + d + " " + d.getClass().getClassLoader());
+                    fieldValidators.add( d);
+                }
+                fieldValidators.add(new MatchPatternFieldValidator());
+            } catch(Exception e) {
+                //e.printStackTrace();
             }
         }
         
@@ -84,9 +92,10 @@ public class SchemaValidationHandler implements SchemaHandler {
             return;
         }
         if(element==null) return;
+        if(data==null) return;
         
         //start scanner
-        if(data!=null && cf.getType()!=null && cf.getType().equals("list")) {
+        if(cf.getType()!=null && cf.getType().equals("list")) {
             if((data instanceof List) || data.getClass().isArray()) {
                 List list = null;
                 if( data instanceof List) {

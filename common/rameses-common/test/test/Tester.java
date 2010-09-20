@@ -115,4 +115,11 @@ public class Tester extends TestCase {
         assertTrue( a instanceof Number );
     }
     
+    public void testReplace() {
+        String s = "[ cat ]";
+        assertEquals( s.replaceAll( "\\[|\\]", "").trim(), "cat" );
+                
+    }
+    
+    
 }
