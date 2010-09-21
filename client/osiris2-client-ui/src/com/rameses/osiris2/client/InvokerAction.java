@@ -30,8 +30,7 @@ public class InvokerAction extends Action  {
         if ( invParam != null ) {
             p = invParam.getParams();
         }
-        InvokerUtil.invoke(invoker, p);
-        return null;
+        return InvokerUtil.invokeAction(this);
     }
 
     public Invoker getInvoker() {

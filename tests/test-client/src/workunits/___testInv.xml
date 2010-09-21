@@ -13,22 +13,28 @@
         
                 
         public class TestInvokerController  {
-        
-            //@Script("Invoker")
-            //def invoker;
+
             
             def name;
             
             def getPageActions() {
-                def actions = InvokerUtil.lookupActions("test.actions", [
+                return InvokerUtil.lookupActions("test.actions", [
                     getParams: { [name: name] }
                 ] as InvokerParameter );
-                
-                println actions;
-                
-                return actions;
-                //return invoker.getActions("test.actions", { [name: name] });
+
             }
+            
+            def listhandler = [
+            
+                getColumns: { [new Column(name:'item', caption:'Name')] },
+                fetchList: {
+                    println 'fetching list.....';
+                    return [
+                        'item 1', 'item 2', 'item 3'
+                    ];
+                }
+            
+            ] as PageListModel;
             
         }
         

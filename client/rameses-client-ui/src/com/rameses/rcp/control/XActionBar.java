@@ -135,14 +135,6 @@ public class XActionBar extends JPanel implements UIComposite
             btn.setBinding(binding);
             
             Map props = action.getProperties();
-            if ( !ValueUtil.isEmpty(props.get("target")) ) {
-                btn.setTarget(props.get("target")+"");
-            }
-            else if ( !ValueUtil.isEmpty(target) ) {
-                btn.setTarget( target );
-            }
-            
-            
             try {
                 btn.setAccelerator(props.get("shortcut")+""); 
             } catch(Exception ign){;} 

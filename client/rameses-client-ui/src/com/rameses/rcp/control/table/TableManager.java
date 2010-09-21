@@ -282,6 +282,7 @@ public final class TableManager {
                 if (errmsg != null) {
                     if (!hasFocus) {
                         comp.setBackground( xtable.getErrorBackground() );
+                        comp.setForeground( xtable.getErrorForeground() );
                         comp.setOpaque(true);
                     }
                 }

@@ -1,33 +1,18 @@
 package com.rameses.rcp.control.table;
 
 import com.rameses.common.ExpressionResolver;
-import com.rameses.rcp.common.AbstractListModel;
-import com.rameses.rcp.common.Column;
-import com.rameses.rcp.common.ListItem;
-import com.rameses.rcp.common.ListModelListener;
-import com.rameses.rcp.common.SubListModel;
+import com.rameses.rcp.common.*;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ChangeLog;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.ui.UIInput;
-import com.rameses.rcp.ui.Validatable;
+import com.rameses.rcp.ui.*;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.event.*;
+import java.util.*;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTable;
@@ -37,7 +22,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
-import java.awt.event.FocusListener;
 import javax.swing.JButton;
 import javax.swing.JRootPane;
 
@@ -124,7 +108,7 @@ public class TableComponent extends JTable implements ListModelListener {
             }
             
         }, ctrlZ, JComponent.WHEN_FOCUSED);
-
+        
     }
     //</editor-fold>
     
@@ -289,17 +273,17 @@ public class TableComponent extends JTable implements ListModelListener {
         Column col = tableModel.getColumn(colIndex);
         if (col == null) return false;
         
-        ListItem item = listModel.getSelectedItem();
-        if ( item.getItem() == null ) return false;
-        
         JComponent editor = editors.get(colIndex);
         if ( editor == null ) return false;
+        
+        ListItem item = listModel.getSelectedItem();
+        if ( item.getItem() == null ) return false;
+        item.setRoot(binding.getBean());
         
         if ( !ValueUtil.isEmpty(col.getEditableWhen()) ) {
             String exp = col.getEditableWhen();
             ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
             try {
-                item.setRoot(binding.getBean());
                 Object o = er.evaluate(item, exp);
                 if ( !"true".equals(o+"") ) return false;
                 
@@ -550,7 +534,7 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     public void refreshSelectedItem() {
-        
+        tableListener.rowChanged();
     }
     //</editor-fold>
     
