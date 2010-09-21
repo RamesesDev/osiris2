@@ -39,7 +39,7 @@ public final class InvokerUtil {
     
     public static void showWindow(Invoker invoker, String target, Map winParams) {
         if ( !ValueUtil.isEmpty(target) ) {
-            invoker.getProperties().put("windowmode", target);
+            invoker.setType(target);
         }
         if ( winParams != null ) {
             invoker.getProperties().putAll(winParams);
@@ -86,11 +86,10 @@ public final class InvokerUtil {
                 winParams.put("id", uic.getId());
                 winParams.put("title", uic.getTitle());
                 
-                String windowmode = winParams.get("windowmode")+"";
-                if ( !"popup".equals(windowmode) ) {
-                    platform.showWindow(null, panel, winParams);
+                if ( "_popup".equals(target) || "popup".equals(target) ) {
+                    platform.showPopup(null, panel, winParams);                    
                 } else {
-                    platform.showPopup(null, panel, winParams);
+                    platform.showWindow(null, panel, winParams);
                 }
             }
         } catch(Exception ex) {
