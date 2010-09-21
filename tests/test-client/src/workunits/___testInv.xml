@@ -9,17 +9,25 @@
         
         import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
+        import com.rameses.osiris2.client.*;
         
                 
         public class TestInvokerController  {
         
-            @Script("Invoker")
-            def invoker;
+            //@Script("Invoker")
+            //def invoker;
             
             def name;
             
             def getPageActions() {
-                return invoker.getActions("test.actions", { [name: name] });
+                def actions = InvokerUtil.lookupActions("test.actions", [
+                    getParams: { [name: name] }
+                ] as InvokerParameter );
+                
+                println actions;
+                
+                return actions;
+                //return invoker.getActions("test.actions", { [name: name] });
             }
             
         }

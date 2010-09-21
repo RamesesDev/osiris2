@@ -49,13 +49,15 @@ public final class InvokerUtil {
     
     public static void invoke(Invoker invoker, Map params) {
         try {
-            //check if window already exists
             ClientContext ctx = ClientContext.getCurrentContext();
             Platform platform = ctx.getPlatform();
             
             String wuId = invoker.getWorkunitid();
-            if ( platform.isWindowExists( wuId )) {
-                platform.activateWindow( wuId );
+            
+            //check if window id already exists
+            String windowId = wuId + invoker.getCaption();
+            if ( platform.isWindowExists( windowId )) {
+                platform.activateWindow( windowId );
                 return;
             }
             
@@ -72,6 +74,7 @@ public final class InvokerUtil {
                 //do nothing
             } else {
                 UIControllerContext uic = new UIControllerContext( u );
+                uic.setId(windowId);
                 if ( !ValueUtil.isEmpty(outcome) ) {
                     uic.setCurrentView(outcome);
                 }
@@ -80,8 +83,8 @@ public final class InvokerUtil {
                 if ( invoker.getProperties() != null ) {
                     winParams.putAll( invoker.getProperties() );
                 }
-                winParams.put("id", u.getId());
-                winParams.put("title", u.getTitle());
+                winParams.put("id", uic.getId());
+                winParams.put("title", uic.getTitle());
                 
                 String windowmode = winParams.get("windowmode")+"";
                 if ( !"popup".equals(windowmode) ) {
@@ -97,6 +100,20 @@ public final class InvokerUtil {
                 ClientContext.getCurrentContext().getPlatform().showError(null, ex);
             }
         }
+    }
+    
+    public static List lookupActions(String type, InvokerParameter param) {
+        List actions = new ArrayList();
+        List invList = lookup(type);
+        for(Object o: invList) {
+            Invoker inv = (Invoker)  o;
+            InvokerAction ia = new InvokerAction(inv, param);
+            ia.setCaption(inv.getCaption());
+            ia.getProperties().putAll(inv.getProperties());
+            
+            actions.add(ia);
+        }
+        return actions;
     }
     
     public static List lookup(String type) {

@@ -175,16 +175,11 @@ public abstract class AbstractListModel {
             ListItem li = items.get(i);
             li.setIndex(i);
             li.setRownum(toprow+i);
-            li.initSelected();
             if( i < sz ) {
                 Object item = list.get(i);
                 li.loadItem( item );
                 li.setState(1);
-                
-                //check if item is selected
-                if( checkedItems.contains(item) ) {
-                    li.setSelected(true);
-                }
+                li.initSelected(checkSelected(item) );
             } else {
                 li.loadItem(null);
                 li.setState(0);
@@ -193,6 +188,7 @@ public abstract class AbstractListModel {
                     newRowadded = true;
                     li.loadItem(newItem);
                 }
+                li.initSelected(false);
             }
         }
     }
@@ -319,6 +315,15 @@ public abstract class AbstractListModel {
         return null;
     }
     
+    /**
+     * overridable
+     * @description
+     *    this is used when you want explicitly set the selected items
+     */
+    public boolean checkSelected(Object obj) {
+        return checkedItems.contains(obj); 
+    }
+    
     public abstract void addItem( Object item );
     public abstract void removeItem( Object item );
     
@@ -358,7 +363,7 @@ public abstract class AbstractListModel {
         listener = null;
     }
     
-    public final void checkItem( Object item, boolean checked ) {
+    public void checkItem( Object item, boolean checked ) {
         if( checked ) {
             checkedItems.add( item );
         } else {
