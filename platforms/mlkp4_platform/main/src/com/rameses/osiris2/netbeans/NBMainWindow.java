@@ -103,6 +103,8 @@ public class NBMainWindow implements MainWindow {
                 JMenu subMenu = (JMenu) c;
                 if ( !hasChildren(subMenu) ) {
                     emptyMenus.add(subMenu);
+                } else {
+                    hasChildren = true;
                 }
             } else {
                 hasChildren = true;

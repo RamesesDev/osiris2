@@ -114,6 +114,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         //check if is a multi form
         if ( multiForm ) {
             multiPanel = new JPanel();
+            multiPanel.setOpaque(false);
             multiPanel.setLayout( new BoxLayout(multiPanel, BoxLayout.Y_AXIS) );
             super.add(multiPanel, BorderLayout.NORTH);
         }
@@ -224,6 +225,8 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         
         SubFormContext(UIControllerContext controller) {
             super(controller);
+            setOpaque(false);
+            setName(XSubFormPanel.this.getName());
         }
         
         public void renderView() {

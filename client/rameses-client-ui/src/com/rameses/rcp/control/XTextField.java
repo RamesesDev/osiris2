@@ -1,8 +1,10 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.constant.TextCase;
+import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.support.TextDocument;
+import com.rameses.rcp.support.TextEditorSupport;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
@@ -16,7 +18,6 @@ import java.awt.Graphics;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 
 /**
@@ -41,10 +42,12 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     protected ControlProperty property = new ControlProperty();
     protected ActionMessage actionMessage = new ActionMessage();
     
-    public XTextField() {
+    public XTextField() 
+    {
         document.setTextCase(TextCase.UPPER);
-        XTextFieldSupport xTextFieldSupport = new XTextFieldSupport();
-        addFocusListener(xTextFieldSupport);
+        TextEditorSupport.install(this); 
+        
+        addFocusListener(new XTextFieldSupport());
     }
     
     public void refresh() {
@@ -206,6 +209,14 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     public void setMaxLength(int length) {
         document.setMaxlength(length);
+    }
+    
+    public TrimSpaceOption getTrimSpaceOption() {
+        return document.getTrimSpaceOption();
+    }
+    
+    public void setTrimSpaceOption(TrimSpaceOption option) {
+        document.setTrimSpaceOption(option);
     }
     
     public void setReadonly(boolean readonly) {

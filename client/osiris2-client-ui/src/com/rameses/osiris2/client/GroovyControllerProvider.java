@@ -19,7 +19,7 @@ public class GroovyControllerProvider implements CodeProvider {
         try {
             return loader.parseClass( new ByteArrayInputStream(source.getBytes()) );
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

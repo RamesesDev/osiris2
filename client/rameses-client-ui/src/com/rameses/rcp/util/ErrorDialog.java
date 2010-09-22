@@ -184,11 +184,11 @@ public class ErrorDialog
             boxTop.add(lblMessage);
             
             JPanel pnlSouth = new JPanel(new BorderLayout());
-            container.add(pnlSouth, BorderLayout.SOUTH);
+            container.add(pnlSouth, BorderLayout.CENTER);
             
             Box boxButtons = new Box(BoxLayout.LINE_AXIS);
             pnlSouth.add(boxButtons, BorderLayout.NORTH);
-            pnlSouth.add(pnlView, BorderLayout.SOUTH);
+            pnlSouth.add(pnlView, BorderLayout.CENTER);
             
             boxButtons.setBorder(BorderFactory.createEmptyBorder(10,15,10,20));
             boxButtons.add(createButton("Details >>", "showDetails", 'd', true));

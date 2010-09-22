@@ -56,7 +56,7 @@ public class PageFlowInstance {
                 return tempNode;
             }
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     
@@ -153,7 +153,7 @@ public class PageFlowInstance {
             m.invoke( o, new Object[]{} );
         } 
         catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

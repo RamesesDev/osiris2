@@ -38,7 +38,7 @@ public class WorkUnitInstance implements Serializable {
             try {
                 controller = workunit.getCodeInstance();
             } catch (Exception ex) {
-                throw new IllegalStateException(ex);
+                throw new IllegalStateException(ex.getMessage(), ex);
             }
         }
         return controller;
@@ -201,7 +201,7 @@ public class WorkUnitInstance implements Serializable {
                     setCurrentPage("default");
                 }
             } catch (Exception ex) {
-                throw new IllegalStateException(ex);
+                throw new IllegalStateException(ex.getMessage(), ex);
             }
         }
     }
@@ -210,7 +210,7 @@ public class WorkUnitInstance implements Serializable {
         try {
             PropertyUtils.setNestedProperty( getController(), name, value );
         } catch(Exception ex){
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

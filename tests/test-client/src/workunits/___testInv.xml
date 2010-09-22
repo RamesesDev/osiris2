@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Invoker Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TestInvokerController  {
+        
+            @Script("Invoker")
+            def invoker;
+            
+            def name;
+            
+            def getPageActions() {
+                return invoker.getActions("test.actions", { [name: name] });
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.InvPage"/>
+    </pages>
+</workunit>

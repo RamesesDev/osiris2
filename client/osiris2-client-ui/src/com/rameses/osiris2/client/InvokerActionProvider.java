@@ -106,6 +106,8 @@ public class InvokerActionProvider implements ActionProvider {
             a.setTooltip(tooltip+"");
         }
         
+        a.getProperties().putAll( invProps );
+        
         return a;
     }
     

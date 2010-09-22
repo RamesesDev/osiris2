@@ -1,9 +1,7 @@
 package test;
 import java.text.ParseException;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import javax.swing.UIManager;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import junit.framework.*;
 
 /*
@@ -24,14 +22,19 @@ public class Test extends TestCase {
     }
     
     public void test() throws ParseException {
-        Set s = UIManager.getLookAndFeel().getDefaults().entrySet();
-        for(Object o: s) {
-            Map.Entry me = (Entry) o;
-            if ( (me.getKey()+"").indexOf("Menu") != -1 ) {
-                System.out.println( me );
+        String workunitid = "module1:sample";
+        
+        String name = "create";
+        Matcher m = Pattern.compile("(?:(.*):)?[^\\.]*\\.[^\\.]*$").matcher(name);
+        if ( m.matches() ) {
+            if ( m.group(1) == null ) {
+                name = workunitid.split(":")[0] + ":" + name;
             }
         }
-        
+        else {
+            name = workunitid + "." + name;
+        }
+        System.out.println( name );
     }
     
 }

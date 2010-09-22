@@ -52,7 +52,7 @@ public class ModuleParser implements URLFilter {
             URLDirectory u = new URLDirectory(url);
             u.list( this, loader );
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

@@ -61,9 +61,9 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private void initComponents() {
         try {
             super.setFont((Font) UIManager.get("TextField.font"));
-            UIManager.put("ComboBox.disabledForeground", getForeground());
         } catch(Exception e) {;}
         
+        UIManager.put("ComboBox.disabledForeground", getForeground());
         if ( Beans.isDesignTime() ) {
             model = new DefaultComboBoxModel(new Object[]{"Item 1"});
             super.setModel( model );

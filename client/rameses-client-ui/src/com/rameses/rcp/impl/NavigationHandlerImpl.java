@@ -43,7 +43,9 @@ public class NavigationHandlerImpl implements NavigationHandler {
             if( outcome instanceof Opener )  {
                 Opener opener = (Opener) outcome;
                 opener = ControlSupport.initOpener( opener, curController.getController() );
-                boolean self = ValueUtil.isEmpty(opener.getTarget());
+                
+                String opTarget = opener.getTarget()+"";
+                boolean self = !opTarget.matches("_window|_popup");
                 String id = opener.getId();
                 
                 if ( !self && platform.isWindowExists( id ) ) {

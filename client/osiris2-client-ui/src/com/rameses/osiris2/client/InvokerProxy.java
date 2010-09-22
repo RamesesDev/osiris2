@@ -81,7 +81,7 @@ public class InvokerProxy {
                 try {
                     machineKey = MachineInfo.getInstance().getMacAddress().hashCode()+"";
                 } catch (Exception ex) {
-                    throw new IllegalStateException(ex);
+                    throw new IllegalStateException(ex.getMessage(), ex);
                 }
             }
             return machineKey;

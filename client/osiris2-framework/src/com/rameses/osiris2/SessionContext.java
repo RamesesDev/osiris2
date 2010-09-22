@@ -15,12 +15,24 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * this is a package level class created only by
  * the AppContext
  */
 public class SessionContext {
+    
+    /**
+     * extended permission pattern
+     * @description
+     *    this expression matches permission name written in formats shown below:
+     *    a. <module_name>:<workunit_name>.<action_name>
+     *    b. <workunit_name>.<action_name>
+     */
+    public static final Pattern EXT_PERM_PATTERN = Pattern.compile("(?:(.*):)?[^\\.]*\\.[^\\.]*$");
+    
     
     private AppContext context;
     private Map env = new EnvMap();
@@ -54,7 +66,19 @@ public class SessionContext {
     //the default permission is allow true. The exception is false.
     public boolean checkPermission(String workunitid, String name) {
         if( name == null ) return true;
-        return securityProvider.checkPermission(workunitid + "." + name);
+
+        String perm = null;
+        Matcher m = EXT_PERM_PATTERN.matcher(name);
+        if ( m.matches() ) {
+            if ( m.group(1) == null ) {
+                perm = workunitid.split(":")[0] + ":" + name;
+            } else {
+                perm = name;
+            }
+        } else {
+            perm = workunitid + "." + name;
+        }
+        return securityProvider.checkPermission(perm);
     }
     
     public boolean checkRoles(String name) {
@@ -79,16 +103,18 @@ public class SessionContext {
     }
     
     public List getInvokers( String type, boolean applySecurity ) {
-        if(!invokers.containsKey(type)) {
+        if (!invokers.containsKey(type)) {
             List list = new ArrayList();
-            if(type == null) type = "folder";
+            if (type == null) type = "folder";
+            
             Iterator iter = context.getInvokers().iterator();
-            while( iter.hasNext() ) {
+            while (iter.hasNext()) {
                 Invoker inv = (Invoker)iter.next();
                 String itype = (inv.getType() == null) ? "folder" : inv.getType();
-                if( itype.matches(type) ) {
-                    if( applySecurity==false || checkSecurity( inv.getWorkunitid(), inv.getRoles(), inv.getPermission() ) ) {
-                        list.add( inv );
+                
+                if (itype.matches(type)) {
+                    if (applySecurity == false || checkSecurity(inv.getWorkunitid(), inv.getRoles(), inv.getPermission())) {
+                        list.add(inv);
                     }
                 }
             }
@@ -157,5 +183,6 @@ public class SessionContext {
     public ClassLoader getClassLoader() {
         return context.getClassLoader();
     }
+    
     
 }

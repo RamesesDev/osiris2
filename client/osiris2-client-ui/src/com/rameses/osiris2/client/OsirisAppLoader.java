@@ -67,7 +67,7 @@ public class OsirisAppLoader implements AppLoader {
             platform.getMainWindow().setListener(OsirisContext.getMainWindowListener());
             
         } catch(Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
     

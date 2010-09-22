@@ -35,14 +35,17 @@ public class OsirisSessionContext extends SessionContext {
         reload();
     }
     
-    public void reload() {
+    public void reload() 
+    {
         super.invokers.clear();
         super.folderIndex.clear();
+        
         MainWindow m = ClientContext.getCurrentContext().getPlatform().getMainWindow();
         JMenuBar menuBar = MenuUtil.getMenuBar("menu");
         m.setComponent(menuBar, MainWindow.MENUBAR);
-        m.setTitle( (String) super.getEnv().get("app.title") );
+        m.setTitle((String) super.getEnv().get("app.title"));
         m.setComponent(ToolbarUtil.getToolBar(), MainWindow.TOOLBAR);
+        m.setComponent(StatusbarUtil.getStatusbar(), MainWindow.STATUSBAR);
     }
     
     public List getPermissions() {

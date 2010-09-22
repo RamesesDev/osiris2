@@ -56,7 +56,7 @@ public class UIControlUtil {
                 if ( parent instanceof NavigatablePanel ) {
                     panel = (NavigatablePanel) parent;
                 }
-                if ( (panel != null && "parent".equals(target)) || parent instanceof UIControllerPanel ) {
+                if ( (panel != null && "parent".equals(target)) || (parent instanceof UIControllerPanel && "root".equals(parent.getName())) ) {
                     break;
                 }
                 parent = parent.getParent();

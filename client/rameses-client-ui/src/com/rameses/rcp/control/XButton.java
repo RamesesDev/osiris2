@@ -14,13 +14,15 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 /**
  *
  * @author jaycverg
  */
-public class XButton extends JButton implements UICommand, ActionListener, ActiveControl {
-    
+public class XButton extends JButton implements UICommand, ActionListener, ActiveControl 
+{
     private int index;
     private String[] depends;
     private Binding binding;
@@ -33,14 +35,20 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     private Map params = new HashMap();
     private String permission;
     
+    private String accelerator;
+    private KeyStroke acceleratorKS; 
     
-    public XButton() {
+    public XButton() 
+    {
+        setOpaque(false); 
         addActionListener(this);
     }
     
     
-    public void refresh() {
-        if ( !ValueUtil.isEmpty(expression) ) {
+    public void refresh() 
+    {
+        if (!ValueUtil.isEmpty(expression)) 
+        {
             ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
             Object value = er.evaluate(binding.getBean(), expression);
             setText( value+"" );
@@ -58,93 +66,58 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public String[] getDepends() {
-        return depends;
+    public String getAccelerator() { return accelerator; }
+    public void setAccelerator(String accelerator) 
+    { 
+        this.accelerator = accelerator; 
+        
+        try
+        {
+            if (acceleratorKS != null) unregisterKeyboardAction(acceleratorKS); 
+            
+            acceleratorKS = KeyStroke.getKeyStroke(accelerator); 
+            
+            if (acceleratorKS != null)
+                registerKeyboardAction(this, acceleratorKS, JComponent.WHEN_IN_FOCUSED_WINDOW); 
+        }
+        catch(Exception ign) {;} 
     }
     
-    public void setDepends(String[] depends) {
-        this.depends = depends;
-    }
+    public String[] getDepends() { return depends; }
+    public void setDepends(String[] depends) { this.depends = depends; }
     
-    public int getIndex() {
-        return index;
-    }
+    public int getIndex() { return index; }
+    public void setIndex(int index) { this.index = index; }
+
+    public Binding getBinding() { return binding; }
+    public void setBinding(Binding binding) { this.binding = binding; }
     
-    public void setIndex(int index) {
-        this.index = index;
-    }
+    public String getActionName() { return getName(); }
     
-    public void setBinding(Binding binding) {
-        this.binding = binding;
-    }
+    public boolean isImmediate() { return immediate; }
+    public void setImmediate(boolean immediate) { this.immediate = immediate; }
     
-    public Binding getBinding() {
-        return binding;
-    }
+    public ControlProperty getControlProperty() { return property; }
     
-    public String getActionName() {
-        return getName();
-    }
+    public String getTarget() { return target; }
+    public void setTarget(String target) { this.target = target; }
     
-    public boolean isImmediate() {
-        return immediate;
-    }
+    public boolean isUpdate() { return update; }
+    public void setUpdate(boolean update) { this.update = update; }
     
-    public void setImmediate(boolean immediate) {
-        this.immediate = immediate;
-    }
-    
-    public ControlProperty getControlProperty() {
-        return property;
-    }
-    
-    public String getTarget() {
-        return target;
-    }
-    
-    public void setTarget(String target) {
-        this.target = target;
-    }
-    
-    public boolean isUpdate() {
-        return update;
-    }
-    
-    public void setUpdate(boolean update) {
-        this.update = update;
-    }
-    
-    public boolean isDefaultCommand() {
-        return defaultCommand;
-    }
-    
+    public boolean isDefaultCommand() { return defaultCommand; }
     public void setDefaultCommand(boolean defaultCommand) {
         this.defaultCommand = defaultCommand;
     }
     
-    public String getExpression() {
-        return expression;
-    }
+    public String getExpression() { return expression; }
+    public void setExpression(String expression) { this.expression = expression; }
     
-    public void setExpression(String expression) {
-        this.expression = expression;
-    }
+    public Map getParams() { return params; }
+    public void setParams(Map params) { this.params = params; }
     
-    public Map getParams() {
-        return params;
-    }
-    
-    public void setParams(Map params) {
-        this.params = params;
-    }
+    public String getPermission() { return permission; }
+    public void setPermission(String permission) { this.permission = permission; }
     //</editor-fold>
-
-    public String getPermission() {
-        return permission;
-    }
-
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
     
 }
