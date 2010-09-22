@@ -7,9 +7,9 @@
 
 package test;
 
-import com.rameses.rules.common.ActionCommand;
-import com.rameses.rules.common.CommandHandler;
-import com.rameses.rules.common.CommandHelper;
+import com.rameses.rules.common.RuleAction;
+import com.rameses.rules.common.RuleActionHandler;
+import com.rameses.rules.common.RuleUtils;
 import com.rameses.ruleserver.RuleMgmt;
 import com.rameses.ruleserver.RuleService;
 import java.util.ArrayList;
@@ -36,19 +36,19 @@ public class MainTest extends TestCase {
     }
     
     
-    public class EmailAction implements CommandHandler {
+    public class EmailAction implements RuleActionHandler {
         public void execute(Object context, Object params) {
             System.out.println("context found is " + context);
             System.out.println("params is " + params);
         }
     }
     
-    public class PrintAction implements CommandHandler {
+    public class PrintAction implements RuleActionHandler {
         public void execute(Object context, Object params) {
             System.out.println("context found is " + context);
             DefaultKnowledgeHelper kh = (DefaultKnowledgeHelper)context;
             try {
-                Object person = CommandHelper.createFact(kh , "org.Person");
+                Object person = RuleUtils.createFact(kh , "org.Person");
                 System.out.println("created new person "+ person);
             }
             catch(Exception ex) {
@@ -59,7 +59,7 @@ public class MainTest extends TestCase {
     }
     
     private void fire(RuleService ruleService) throws Exception {
-        ActionCommand p = new ActionCommand();
+        RuleAction p = new RuleAction();
         p.addCommand( "email", new EmailAction() );
         p.addCommand( "print", new PrintAction() );
         

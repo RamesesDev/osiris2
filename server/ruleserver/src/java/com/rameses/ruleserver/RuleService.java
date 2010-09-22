@@ -1,6 +1,6 @@
 package com.rameses.ruleserver;
 
-import com.rameses.rules.common.ActionCommand;
+import com.rameses.rules.common.RuleAction;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
@@ -29,14 +29,23 @@ public class RuleService implements RuleServiceLocal {
     
     
     public Object createFact( String ruleset, String name ) throws Exception {
+        return  createFact( ruleset, name, null );
+    }
+    
+    //the data is the map coming from the client. we need to copy its properties
+    public Object createFact( String ruleset, String name, Map data ) throws Exception {
         KnowledgeBase kb = ruleMgmt.getKnowledgeBase(ruleset);
         String pkg = name.substring(0, name.lastIndexOf("."));
         String cls = name.substring(name.lastIndexOf(".")+1);
         FactType ftype = kb.getFactType( pkg, cls );
-        return ftype.newInstance();
+        Object fact = ftype.newInstance();
+        if( data !=null ) {
+            ftype.setFromMap( fact, data );
+        }
+        return fact;
     }
     
-    public Object execute(String ruleset, List facts, Object globals, String agenda) throws Exception {
+    public void execute(String ruleset, List facts, Object globals, String agenda) throws Exception {
         KnowledgeBase kb = ruleMgmt.getKnowledgeBase(ruleset);
         if(kb==null) 
             throw new RuntimeException("Knowledgebase " + ruleset + " is not found!");
@@ -49,10 +58,10 @@ public class RuleService implements RuleServiceLocal {
                 }
             }
             if( globals !=null ) {
-                if( globals instanceof ActionCommand ) {
-                    ActionCommand ac = (ActionCommand)globals;
+                if( globals instanceof RuleAction ) {
+                    RuleAction ac = (RuleAction)globals;
                     try {
-                        session.setGlobal(ac.GLOBAL_NAME, ac);
+                        session.setGlobal(ac.getName(), ac);
                     }
                     catch(Exception ign){;}
                 }
@@ -77,13 +86,24 @@ public class RuleService implements RuleServiceLocal {
             else {
                 session.fireAllRules();
             }
-            return null;
         } catch(Exception ex) {
             ex.printStackTrace();
             throw ex;
         } finally{
             session.dispose();
         }
+    }
+
+    public void execute(String ruleset, List facts) throws Exception {
+        execute(ruleset, facts, null, null);
+    }
+
+    public void execute(String ruleset, List facts, Object globals) throws Exception {
+        execute(ruleset,facts,globals,null);
+    }
+
+    public RuleAction createRuleAction() {
+        return new RuleAction();
     }
 
     

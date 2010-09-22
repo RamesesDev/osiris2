@@ -13,12 +13,13 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class ActionCommand implements Serializable {
+public class RuleAction implements Serializable {
     
-    public final static String GLOBAL_NAME = "command";
+    public static final String GLOBAL_NAME = "action";
     
-    private Map<String,CommandHandler> commands = new Hashtable();
+    private Map<String, RuleActionHandler> commands = new Hashtable();
     private Object context;
+    private String name = "action";
     
     public void setContext(Object context) {
         this.context = context;
@@ -28,16 +29,16 @@ public class ActionCommand implements Serializable {
         return context;
     }
     
-    public ActionCommand() {
+    public RuleAction() {
     }
     
-    public void addCommand(String name, CommandHandler handler ) {
+    public void addCommand(String name, RuleActionHandler handler ) {
         commands.put(name, handler);
     }
     
     
     public void execute( String action, Object params ) {
-        CommandHandler handler = commands.get(action);
+        RuleActionHandler handler = commands.get(action);
         if(handler!=null) {
             handler.execute( context, params );
         } 
@@ -48,6 +49,14 @@ public class ActionCommand implements Serializable {
 
     public void destroy() {
         commands.clear();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     
