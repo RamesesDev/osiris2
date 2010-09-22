@@ -24,62 +24,46 @@ public class TestWindhelPage extends javax.swing.JPanel {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        jPanel1 = new javax.swing.JPanel();
+        xImagePanel2 = new com.rameses.rcp.control.XImagePanel();
         xImagePanel1 = new com.rameses.rcp.control.XImagePanel();
-        xTextField1 = new com.rameses.rcp.control.XTextField();
-        xLabel1 = new com.rameses.rcp.control.XLabel();
-        xDateField1 = new com.rameses.rcp.control.XDateField();
+        xImagePanel3 = new com.rameses.rcp.control.XImagePanel();
+        xIconPanel1 = new com.rameses.rcp.control.XIconPanel();
+
+        setLayout(new java.awt.BorderLayout());
 
         setPreferredSize(new java.awt.Dimension(400, 300));
-        xImagePanel1.setFitImage(true);
-        xImagePanel1.setName("image");
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
-        xTextField1.setName("text");
+        xImagePanel2.setText("xImagePanel2");
+        xImagePanel2.setDisplayMode("TILE");
+        xImagePanel2.setName("image2");
+        jPanel1.add(xImagePanel2, java.awt.BorderLayout.CENTER);
 
-        xLabel1.setText("Date:");
-        xLabel1.setFor("date");
+        xImagePanel1.setText("xImagePanel1");
+        xImagePanel1.setName("image1");
+        jPanel1.add(xImagePanel1, java.awt.BorderLayout.WEST);
 
-        xDateField1.setName("date");
+        xImagePanel3.setText("xImagePanel3");
+        xImagePanel3.setName("image3");
+        jPanel1.add(xImagePanel3, java.awt.BorderLayout.EAST);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(xImagePanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(xLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(xDateField1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE))
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, xTextField1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
-                        .add(196, 196, 196))))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(xImagePanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 170, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(xLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(xDateField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(xTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(68, Short.MAX_VALUE))
-        );
+        add(jPanel1, java.awt.BorderLayout.NORTH);
+
+        xIconPanel1.setBackground(new java.awt.Color(102, 153, 255));
+        xIconPanel1.setName("menuActions");
+        xIconPanel1.setOrientation("SPECIAL01");
+        add(xIconPanel1, java.awt.BorderLayout.CENTER);
+
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.rameses.rcp.control.XDateField xDateField1;
+    private javax.swing.JPanel jPanel1;
+    private com.rameses.rcp.control.XIconPanel xIconPanel1;
     private com.rameses.rcp.control.XImagePanel xImagePanel1;
-    private com.rameses.rcp.control.XLabel xLabel1;
-    private com.rameses.rcp.control.XTextField xTextField1;
+    private com.rameses.rcp.control.XImagePanel xImagePanel2;
+    private com.rameses.rcp.control.XImagePanel xImagePanel3;
     // End of variables declaration//GEN-END:variables
     
 }
