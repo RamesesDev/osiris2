@@ -108,30 +108,31 @@ public final class SchemaScanner {
                     Object val = null;
                     String ref = cf.getRef();
                     
-                    if(cf.getSerializer()==null) {
-                        //bypass ref checks if it is a serializer
-                        if(ref==null )
-                            throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
-                        
-                        //add dynamic ref. Dynamic ref are marked with $ and enclosed with braces e.g.:  ${ref-name}
-                        if( data!=null && ref.indexOf("$")>=0) {
-                            ref = ExprUtil.substituteValues(ref, (Map)data, propertyResolver );
-                        }
-                        
-                        
-                        if(ref!=null && ref.indexOf("$")<0) {
-                            if(ref.indexOf(":")>0) {
-                                refElement = schema.getSchemaManager().getElement(ref);
-                            } else {
-                                refElement = schema.getElement(ref);
-                            }
-                            if(refname==null) refname = refElement.getName();
-                        }
-                        
-                        
-                        if(data!=null)
-                            val = propertyResolver.getProperty( data, refname );
+                    //bypass ref checks if it is a serializer. do not also check ref if 
+                    if(cf.getSerializer()==null && ref==null ) {
+                        if(cf.getType()==null || !cf.getType().equals("list"))
+                        throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
+                    }    
+
+                    //add dynamic ref. Dynamic ref are marked with $ and enclosed with braces e.g.:  ${ref-name}
+                    if( data!=null && ref!=null && ref.indexOf("$")>=0) {
+                        ref = ExprUtil.substituteValues(ref, (Map)data, propertyResolver );
                     }
+
+
+                    if(ref!=null && ref.indexOf("$")<0) {
+                        if(ref.indexOf(":")>0) {
+                            refElement = schema.getSchemaManager().getElement(ref);
+                        } else {
+                            refElement = schema.getElement(ref);
+                        }
+                        if(refname==null) refname = refElement.getName();
+                    }
+
+
+                    if(data!=null && refname!=null)
+                        val = propertyResolver.getProperty( data, refname );
+                    
                     handler.startComplexField( cf, refname, refElement,val );
                     handler.endComplexField( cf );
                 } catch(BreakException be) {;}

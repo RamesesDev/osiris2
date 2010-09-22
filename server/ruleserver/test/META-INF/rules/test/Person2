@@ -1,0 +1,11 @@
+package org;
+
+declare Address
+    street: String
+end
+
+declare Person 
+    name: String
+    address: Address
+end
+

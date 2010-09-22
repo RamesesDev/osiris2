@@ -1,8 +1,7 @@
 package test;
-import com.rameses.rcp.common.Opener;
-import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.framework.ControlSupport;
 import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import junit.framework.*;
 
 /*
@@ -23,10 +22,19 @@ public class Test extends TestCase {
     }
     
     public void test() throws ParseException {
-        Opener op = new Opener();
-        Binding b = new Binding();
-        ControlSupport.initOpener(op, b.getController());
-        Object o = ControlSupport.init(op.getController(), op.getParams(), op.getAction());
+        String workunitid = "module1:sample";
+        
+        String name = "create";
+        Matcher m = Pattern.compile("(?:(.*):)?[^\\.]*\\.[^\\.]*$").matcher(name);
+        if ( m.matches() ) {
+            if ( m.group(1) == null ) {
+                name = workunitid.split(":")[0] + ":" + name;
+            }
+        }
+        else {
+            name = workunitid + "." + name;
+        }
+        System.out.println( name );
     }
-    
+        
 }

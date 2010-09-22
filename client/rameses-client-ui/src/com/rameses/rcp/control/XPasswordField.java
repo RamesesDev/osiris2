@@ -2,6 +2,7 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.support.TextEditorSupport;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
@@ -18,8 +19,11 @@ import java.beans.Beans;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.text.DefaultCaret;
 
 /**
@@ -49,7 +53,18 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     private boolean readonly;
     
     
-    public XPasswordField() {}
+    public XPasswordField() 
+    {
+        TextEditorSupport.install(this); 
+        
+        Insets margin = UIManager.getInsets("TextField.margin");
+        if (margin != null) 
+        {
+            Border borderOut = getBorder(); 
+            Border borderIn = BorderFactory.createEmptyBorder(0, margin.left, 0, 0); 
+            setBorder(BorderFactory.createCompoundBorder(borderOut, borderIn)); 
+        }                 
+    }
     
     
     public void refresh() {

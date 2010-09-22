@@ -23,8 +23,7 @@ import javax.naming.InitialContext;
  */
 public class DsLoader implements DsLoaderMBean {
     
-    private String rootPath = System.getProperty("jboss.server.home.dir");
-    private String deployPath = "system/datasources";
+    private String deployPath;
     private ResourceServiceMBean resourceService;
     private List<String> dataSources;
     
@@ -35,8 +34,16 @@ public class DsLoader implements DsLoaderMBean {
      * reloads all Ds resources
      */
     public void start() throws Exception {
+        String home = System.getProperty("jboss.server.home.dir");
+        
+        deployPath = System.getProperty("output.path");
+        if( deployPath == null ) deployPath = "/output";
+        if( !deployPath.startsWith("/")) deployPath = "/" + deployPath;
+        if( !deployPath.endsWith("/")) deployPath = deployPath + "/";
+        deployPath = home + deployPath + "/datasources/";
+        
         System.out.println("STARTING DS LOADER. Deploy at " + deployPath );
-        File dir = new File( rootPath + "/" + deployPath + "/"  );
+        File dir = new File( deployPath );
         if(!dir.exists()) dir.mkdirs();
         InitialContext ctx = new InitialContext();
         resourceService = (ResourceServiceMBean)ctx.lookup(CONSTANTS.RESOURCE_SERVICE);
@@ -52,6 +59,7 @@ public class DsLoader implements DsLoaderMBean {
             f.delete();
         }
         dataSources = null;
+        deployPath = null;
     }
     
     public void deploy( String name ) throws Exception {
@@ -77,7 +85,7 @@ public class DsLoader implements DsLoaderMBean {
     }
     
     private String getFixedName(String name) {
-        return rootPath + "/" + deployPath + "/" + name + "-ds.xml";
+        return deployPath + name + "-ds.xml";
     }
     
     private class DsLoaderHandler implements ResourceHandler {

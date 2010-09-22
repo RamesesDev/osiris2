@@ -37,7 +37,7 @@
                         new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
                         new Column(name: "item.address", caption: "Address", editable: true, required: true, type: "lookup", handler: "test-client:addressLookup"),
                         new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date"),
-                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, fieldType: EmployeeType.class),
+                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, items: "root.empTypes"),
                         new Column(name: "item.single", caption: "Single", type: "checkbox", editable: true)
                     ];
                 }
@@ -55,6 +55,8 @@
                 [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700]
 
             ];
+            
+            def empTypes = ['REGULAR', 'CASUAL'];
             
             void fireAction() {
                 

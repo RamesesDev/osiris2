@@ -54,9 +54,14 @@ public class UpdatePersistenceHandler extends AbstractPersistenceHandler {
             DbElementContext dbec = stack.peek();
             String sname = dbec.correctName( sf.getName() );
             SqlExecutor se = (SqlExecutor)dbec.getSqlTxn();
-            se.setParameter( sname , value );
+            
+            //check if serializer exists
+            Object rvalue = passSerializer(sf, value, refname );
+            
+            se.setParameter( sname , rvalue );
         }
     }
+    
     
     public void startComplexField(ComplexField cf, String refname, SchemaElement element, Object data) {
         String serializer = cf.getSerializer();
@@ -66,12 +71,7 @@ public class UpdatePersistenceHandler extends AbstractPersistenceHandler {
         
         if(serializer!=null) {
             if(!stack.empty()) {
-                Object d = super.rootData;
-                String mapfield = (String)cf.getProperties().get("mapfield");
-                if(mapfield!=null) {
-                    d = schemaManager.getConf().getPropertyResolver().getProperty(d, mapfield);
-                }
-                String svalue = super.schemaManager.getSerializer().write( d );
+                Object svalue = passSerializer( cf, data, refname );
                 DbElementContext dbec = stack.peek();
                 SqlExecutor se = (SqlExecutor)dbec.getSqlTxn();
                 se.setParameter( cf.getName() , svalue );

@@ -1,0 +1,13 @@
+package rule2;
+
+import org.Person;
+global com.rameses.rules.common.ActionCommand command;
+
+rule "rule1"
+when
+   Person( name == "alex" )
+then     
+   System.out.println( "Alex was fired in package 2" );
+   command.setContext( drools );
+   command.execute( "print", "fired" );
+end

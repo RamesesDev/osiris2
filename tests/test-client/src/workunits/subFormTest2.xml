@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+                
+        public class SubFormTest1Controller  {
+        
+            def entity = [ value: 'sample'];
+                        
+            void fireAction() {
+                MsgBox.alert( entity );
+            }
+            
+            def next() {
+                return new Opener(name: 'subFormTest2', outcome: 'page2');
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.subform.SubPage2"/>
+        <page name="page2" template="test.subform.SubPage3"/>
+    </pages>
+</workunit>

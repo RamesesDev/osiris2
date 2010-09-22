@@ -69,7 +69,7 @@ public class UIControllerContext {
     
     public void setController(UIController controller) {
         this.controller = controller;
-        if ( id == null ) id = controller.getId();
+        if ( id == null ) id = controller.getId() + "_" + controller.getTitle();
         if ( name == null ) name = controller.getName();
         if ( title == null ) title = controller.getTitle();
         indexViews();

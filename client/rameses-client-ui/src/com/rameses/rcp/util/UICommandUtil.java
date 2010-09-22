@@ -4,6 +4,7 @@ import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
 import com.rameses.common.MethodResolver;
+import com.rameses.rcp.common.Action;
 import com.rameses.util.BusinessException;
 import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
@@ -52,7 +53,11 @@ public class UICommandUtil {
             
             Object outcome = null;
             String action = command.getActionName();
-            if ( action != null ) {
+            if ( btn.getClientProperty(Action.class.getName()) != null ) {
+                Action a = (Action) btn.getClientProperty(Action.class.getName());
+                outcome = a.execute();
+                
+            } else if ( action != null ) {
                 if ( !action.startsWith("_")) {
                     outcome = resolver.invoke(binding.getBean(), action, null, null);
                 } else {
@@ -62,10 +67,10 @@ public class UICommandUtil {
                 if ( command.isUpdate() ) {
                     binding.update();
                 }
-                NavigationHandler handler = ctx.getNavigationHandler();
-                if ( handler != null ) {
-                    handler.navigate(navPanel, command, outcome);
-                }
+            }
+            NavigationHandler handler = ctx.getNavigationHandler();
+            if ( handler != null ) {
+                handler.navigate(navPanel, command, outcome);
             }
         } catch(Exception ex) {
             Exception e = ExceptionManager.getInstance().getOriginal(ex);

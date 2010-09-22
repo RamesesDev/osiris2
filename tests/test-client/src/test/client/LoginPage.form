@@ -104,6 +104,7 @@
         <Component class="com.rameses.rcp.control.XButton" name="xButton2">
           <Properties>
             <Property name="text" type="java.lang.String" value="Login"/>
+            <Property name="defaultCommand" type="boolean" value="true"/>
             <Property name="name" type="java.lang.String" value="doLogin"/>
           </Properties>
         </Component>

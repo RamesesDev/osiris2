@@ -11,6 +11,7 @@ package com.rameses.persistence;
 
 import com.rameses.schema.SchemaElement;
 import com.rameses.schema.SchemaManager;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,31 +20,31 @@ import java.util.List;
  */
 public final class Indexer {
     
-    private DefaultEntityManager em;
+    private EntityManager em;
     
     /** Creates a new instance of Indexer */
-    public Indexer(DefaultEntityManager em) {
+    public Indexer(EntityManager em) {
         this.em = em;
     }
     
-    /** 
-     * pass the schema and the element and the data for indexing.
-     * sample : fire( "kyc:customer", data) will lookup all indexes for customer.
-     */
-    
-    public void fire(String schemaName, Object data) {
-        SchemaElement e = em.getSchemaManager().getElement( schemaName );
-        fire( schemaName, "indexfor", e.getName(), data ); 
-    }
-
-    public void fire(String schemaName, String attr, String attrValue, Object data) {
+    public List<String> getIndexFor( String schemaName ) {
         SchemaManager sm = em.getSchemaManager();
-        List<SchemaElement> elements = sm.lookup(schemaName, attr,attrValue);
+        SchemaElement e = em.getSchemaManager().getElement( schemaName );
+        List<SchemaElement> elements = sm.lookup(schemaName, "indexfor",e.getName());
         String prefix = schemaName;
         if(prefix.indexOf(":")>0) prefix = prefix.substring(0, prefix.indexOf(":"));
+        List<String> list = new ArrayList();
         for(SchemaElement se: elements) {
-            em.create( prefix + ":" + se.getName(), data );
+            list.add( prefix + ":" + se.getName() );
+        }
+        return list;
+    }
+    
+    public void fire( List<String> indexers, Object data ) {
+        for(String s : indexers) {
+            em.create( s, data );
         }
     }
+    
     
 }

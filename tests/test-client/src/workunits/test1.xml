@@ -20,8 +20,8 @@
             def binding;
         
             def doNext() {
-                //return new Opener(name: 'test-client:test2');
-                return invoker.lookupOpener('test2');
+                return new PopupOpener(name: 'test-client:test2');
+                //return invoker.lookupOpener('test2');
             }
             
             void select( data ) {

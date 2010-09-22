@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="SubForm Test" index="-10"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+                
+        public class SubFormTestController  {
+        
+            def entity = [ detail:[ caption: 'Contact No.'] ];
+            
+            def subFormHandler = new Opener(name: '___testInv');
+            
+            void save() {
+                MsgBox.alert( entity );
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.subform.Single"/>
+    </pages>
+</workunit>

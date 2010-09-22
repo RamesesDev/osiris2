@@ -1,10 +1,8 @@
 package com.rameses.osiris2.netbeans;
 
 import java.awt.Container;
-import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;

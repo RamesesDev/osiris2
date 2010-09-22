@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="test.actions" caption="New" action="create" shortcut="ctrl N" 
+                 mnemonic="n" target="popup"/>
+        <invoker type="test.actions" caption="Edit" action="edit" shortcut="ctrl E" 
+                 mnemonic="e" target="popup"/>
+        <invoker type="test.actions" caption="Open" action="open" shortcut="ctrl O"  
+                 mnemonic="o" target="popup"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TestInvoker2Controller  {
+        
+            @Caller
+            def caller;
+        
+            def name;
+        
+            def open() { 
+                println caller.name;
+                return 'page3' 
+            }
+            def edit() { return 'page2' }
+            def create() { return 'page1' }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page name="page1" template="test1.InvTest1"/>
+        <page name="page2" template="test1.InvTest2"/>
+        <page name="page3" template="test1.InvTest3"/>
+    </pages>
+</workunit>

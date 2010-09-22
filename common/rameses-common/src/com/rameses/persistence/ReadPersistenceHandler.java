@@ -8,7 +8,9 @@
  */
 package com.rameses.persistence;
 
+import com.rameses.schema.ComplexField;
 import com.rameses.schema.Schema;
+import com.rameses.schema.SchemaElement;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SimpleField;
 import com.rameses.sql.AbstractSqlTxn;
@@ -28,6 +30,7 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
     
     
     private List<String> removeFields = new ArrayList();
+    private List<String> serializedFields = new ArrayList();
     
     public ReadPersistenceHandler(SchemaManager schemaManager, SqlContext context, Object rootData) {
         super(schemaManager,context,rootData);
@@ -59,20 +62,35 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
                     removeFields.add( sf.getName() );
                 }
             }
-
             DbElementContext dbec = stack.peek();
             String sname = dbec.correctName( sf.getName() );
             SqlQuery sq = (SqlQuery)dbec.getSqlTxn();
             if( sq.getParameterNames().indexOf(sname)>=0) {
                 sq.setParameter( sname , value );
             }
-            
         }
     }
     
+    public void startComplexField(ComplexField cf, String refname, SchemaElement element, Object data) {
+        String serializer = cf.getSerializer();
+        
+        //serialize object if serializer is mentioned.
+        //lookup appropriate serializer if not exist use default
+        
+        if(serializer!=null) {
+            if(!stack.empty()) {
+                DbElementContext dbec = stack.peek();
+                String sname = dbec.correctName( cf.getName() );
+                serializedFields.add(sname);
+            }
+        }
+    }
     
     public List<String> getRemoveFields() {
         return removeFields;
     }
     
+    public List<String> getSerializedFields() {
+        return serializedFields;
+    }
 }

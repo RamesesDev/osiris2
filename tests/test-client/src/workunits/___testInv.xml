@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Invoker Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.osiris2.client.*;
+        
+                
+        public class TestInvokerController  {
+
+            
+            def name;
+            
+            def getPageActions() {
+                return InvokerUtil.lookupActions("test.actions", [
+                    getParams: { [name: name] }
+                ] as InvokerParameter );
+
+            }
+            
+            def listhandler = [
+            
+                getColumns: { [new Column(name:'item', caption:'Name')] },
+                fetchList: {
+                    println 'fetching list.....';
+                    return [
+                        'item 1', 'item 2', 'item 3'
+                    ];
+                }
+            
+            ] as PageListModel;
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.InvPage"/>
+    </pages>
+</workunit>
