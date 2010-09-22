@@ -2,7 +2,6 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.util.ValueUtil;
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -12,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.Beans;
 import java.net.URL;
 import javax.swing.ImageIcon;
 
@@ -22,38 +22,60 @@ import javax.swing.ImageIcon;
 
 public class IconButton extends XButton {
     
-    private static Font FONT = new Font("Dialog", Font.PLAIN, 9);
-    private static Color ICNHOVERBG = new Color(255, 255, 255);//(238, 233, 233); //lighter background used for gradient
-    private static Color ICNLWRBG = new Color(100,149,237);//119, 136, 153); //darker background used for gradient
-    private static float ALPHACOMP = 0.9f;
+    private static Font BOTTOM_FONT = new Font("Dialog", Font.PLAIN, 9);
+    private static Font RIGHT_FONT = new Font("Dialog", Font.PLAIN, 11);
+    private static Color ICON_TOP_COLOR = new Color(238, 233, 233);
+    private static Color ICON_BOTTOM_COLOR = new Color(197, 205, 211);
+    private static Color ICON_BORDER_CORDER = new Color(132, 130, 132);
+    private static Color ICON_HOVER_BORDER_COLOR = new Color(123, 138, 156);
+    private static String BOTTOM = "BOTTOM";
+    private static String RIGHT = "RIGHT";
+    private static int BTNHEIGHT = 50;
+    private static int BTNWIDTH = 50;
+    private static int EXTENDED_BUTTON_WIDTH = 150;
+    private static int BORDER_EXTRA_SPACE = 5;
     
     private boolean mouseOverImage = false;
     private boolean mousePressed = false;
-    private Image image; // the image
-    private String caption; // the caption below the image
-    private Color captionClr; //caption Color
-    private String imagePath; 
-    private int btnHeight = 50; //the default button height
-    private int btnWidth = 50; //the default button width
-    private int imgXPos; // the X position of the image 
-    private int imgYPos; // the Y position of the image 
-    private int imgHeight; // is set, if we decide to manipulate the images within the code.
-    private int imgWidth; // is set, if we decide to manipulate the images within the code.
-    private int strWidth; // width of the caption
-    private int strHeight; // height of the caption
-    private GradientPaint gradient = new GradientPaint(0,0, ICNHOVERBG, 0, btnHeight, ICNLWRBG);
+    private Image image;
+    private String caption;
+    private String captionOrientation;
+    private Color captionClr;
+    private String imagePath;
+    private int btnHeight;
+    private int btnWidth;
+    private int imgXPos;
+    private int imgYPos;
+    private int imgHeight;
+    private int imgWidth;
+    private int strWidth;
+    private int strHeight;
+    private GradientPaint gradient;
     
-    public IconButton() {}
+    public IconButton() {
+        setCaptionClr(Color.BLACK);
+        setCaptionOrientation("BOTTOM");
+    }
     
     public IconButton(String caption, String path) {
         this.caption = caption;
         setImage(path);
+        setCaptionClr(Color.BLACK);
+        setCaptionOrientation("BOTTOM");
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getter / Setter ">
     
     public int getStringLineMetric(String str) {
-        return getFontMetrics(FONT).charsWidth(str.toCharArray(), 0, str.length());
+        return getFontMetrics(BOTTOM_FONT).charsWidth(str.toCharArray(), 0, str.length());
+    }
+    
+    public String getCaptionOrientation() {
+        return captionOrientation;
+    }
+    
+    public void setCaptionOrientation(String captionOrientation) {
+        this.captionOrientation = captionOrientation;
     }
     
     public String getText() {
@@ -110,26 +132,38 @@ public class IconButton extends XButton {
     //</editor-fold>
     
     public void paintComponent(Graphics g) {
+        if(Beans.isDesignTime())
+            return;
+        
         Graphics2D g2 = (Graphics2D) g.create();
-        if(image != null)
+        g2.setFont(getFont());
+        if(mousePressed && mouseOverImage) {
+            g2.setPaint(null);
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
+        } else {
+            g2.setPaint(gradient);
+            g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
+        }
+        
+        if(image != null && caption != null || caption != "") {
             g2.drawImage(image, imgXPos, imgYPos, imgWidth, imgHeight,null);
-        if(caption != null || caption != "") {
-            g2.setFont(FONT);
             g2.setColor(captionClr);
             g2.drawString(caption, strWidth, strHeight);
         }
-        if(mousePressed == true)
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, ALPHACOMP));
-        if( mouseOverImage == true ) {
-            g2.setPaint(gradient);
-            g2.fillRect(0,0, btnWidth, btnHeight);
-            if(image != null)
-                g2.drawImage(image, imgXPos, imgYPos, imgWidth, imgHeight,null);
-            if(caption != null || caption != "") {
-                g2.setColor(Color.WHITE);
-                g2.drawString(caption, strWidth, strHeight);
-            }
+        
+        if(mouseOverImage) {
+            g2.setColor(ICON_HOVER_BORDER_COLOR);
+            g2.drawRect(0,0, btnWidth, btnHeight);
+            g2.drawRect(0,0, btnWidth - 1, btnHeight - 1);
+            g2.drawRect(0,0, btnWidth - 2, btnHeight - 2);
+            g2.drawRect(1,1, btnWidth - 2, btnHeight - 2);
+            g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
+        }else {
+            g2.setColor(ICON_BORDER_CORDER);
+            g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
         }
+        
         super.paintComponent(g2);
         g2.dispose();
     }
@@ -141,28 +175,36 @@ public class IconButton extends XButton {
         setContentAreaFilled(false);
         setOpaque(false);
         setCaption(caption);
-        btnWidth = (int)this.getPreferredSize().getWidth();
-        strWidth = (int)((btnWidth - getStringLineMetric(caption)) / 2);
-        if(btnWidth < getStringLineMetric(caption)) {
-            btnWidth = btnWidth + (getStringLineMetric(caption) - btnWidth);
-            strWidth = strWidth - (getStringLineMetric(caption) - btnWidth);
-            if(strWidth < 0)
-                strWidth = strWidth - strWidth;
-        }
-        if(caption == "")
-            btnHeight = (int)this.getPreferredSize().getHeight();
-        else {
-            btnHeight = (int)this.getPreferredSize().getHeight() + 5;
-            setPreferredSize(new Dimension(btnWidth, btnHeight));
-        }        
-        strHeight = btnHeight - 5;
-        if(image != null) {
+        if(BOTTOM.equals(getCaptionOrientation()) && image != null) {
+            btnWidth = BTNWIDTH;
+            strWidth = (int)((btnWidth - getStringLineMetric(caption)) / 2);
+            if(btnWidth < getStringLineMetric(caption)) {
+                btnWidth = btnWidth + (getStringLineMetric(caption) - btnWidth) + BORDER_EXTRA_SPACE;
+                strWidth = strWidth - (getStringLineMetric(caption) - btnWidth);
+                if(strWidth < 0)
+                    strWidth = strWidth - strWidth;
+            }
+            btnHeight = BTNHEIGHT;
+            strHeight = btnHeight - BORDER_EXTRA_SPACE;
             imgXPos = (int)((btnWidth - image.getWidth(null)) / 2);
             if(caption == null || caption == "")
                 imgYPos = (int)((btnHeight - image.getHeight(null)) / 2);
             else
                 imgYPos = (int)((btnHeight - image.getHeight(null)) / 2) - 4;
         }
+        if(RIGHT.equals(getCaptionOrientation()) && image != null) {
+            btnHeight = BTNHEIGHT;
+            btnWidth = EXTENDED_BUTTON_WIDTH;
+            if(image != null) {
+                imgXPos = 10;
+                imgYPos = (int)((btnHeight - image.getHeight(null)) / 2);
+                strHeight = (int)(btnHeight / 2) + BORDER_EXTRA_SPACE;
+                strWidth = imgXPos + image.getWidth(null) + (BORDER_EXTRA_SPACE * 2);
+            }
+        }
+        
+        gradient = new GradientPaint(0,((int) btnHeight / 2), ICON_TOP_COLOR, 0, btnHeight, ICON_BOTTOM_COLOR);
+        setPreferredSize(new Dimension(btnWidth, btnHeight));
     }
     
     //<editor-fold defaultstate="collapsed" desc="  MouseSupport -- MouseListener ">
@@ -191,4 +233,5 @@ public class IconButton extends XButton {
         }
     }
     //</editor-fold>
+    
 }
