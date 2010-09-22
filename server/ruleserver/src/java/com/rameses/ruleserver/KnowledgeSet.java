@@ -10,7 +10,6 @@
 package com.rameses.ruleserver;
 
 import com.rameses.sql.SqlContext;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Properties;
@@ -18,9 +17,7 @@ import org.drools.KnowledgeBase;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
 import org.drools.definition.KnowledgePackage;
-import org.drools.io.ResourceFactory;
 
 /**
  *
@@ -29,11 +26,13 @@ import org.drools.io.ResourceFactory;
 public final class KnowledgeSet implements Serializable {
     
     private String name;
+    private String rulegroup;
     private KnowledgeBase kbase;
     private Properties properties;
     
-    public KnowledgeSet( String name, Properties props ) {
+    public KnowledgeSet( String name, String rulegroup, Properties props ) {
         this.name = name;
+        this.rulegroup = rulegroup;
         this.properties = props;
     }
     
@@ -43,9 +42,9 @@ public final class KnowledgeSet implements Serializable {
     
     public void load(SqlContext ctx) throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        System.out.println(" .... Loading rule set " + name );
+        System.out.println(" .... Loading rule set " + getKey() );
         KnowledgeBuilder builder = createKnowledgeBuilder();
-        DrlResourceLoader dl = new DrlResourceLoader(builder, name,ctx);
+        DrlResourceLoader dl = new DrlResourceLoader(builder, name, rulegroup, ctx);
         dl.load();
         if ( builder.hasErrors() ) {
             System.err.println( builder.getErrors().toString() );
@@ -71,33 +70,30 @@ public final class KnowledgeSet implements Serializable {
         }
     }
     
-    public void addPackage(InputStream is) throws Exception {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        KnowledgeBuilder builder = createKnowledgeBuilder();
-        DrlResourceLoader dl = new DrlResourceLoader(builder,name,null);
-        dl.load();
-        builder.add( ResourceFactory.newInputStreamResource(is), ResourceType.DRL);
-        kbase.addKnowledgePackages( builder.getKnowledgePackages() );
-    }
-    
     public void destroy() {
         clear(kbase);
     }
     
-    public KnowledgeSet clone() {
-        return new KnowledgeSet(name, properties);
-    }
-
+    
     public int hashCode() {
-        return  name.hashCode();
+        return  getKey().hashCode();
     }
-
+    
     public boolean equals(Object obj) {
         KnowledgeSet ks = (KnowledgeSet)obj;
         if(ks==null) return false;
         return hashCode() == ks.hashCode();
     }
- 
 
+    public String getRulegroup() {
+        return rulegroup;
+    }
+    
+    public String getKey() {
+        if( rulegroup == null || rulegroup.trim().length()== 0 )
+            return getName();
+        else
+            return getName() + ":" + getRulegroup();
+    }
     
 }

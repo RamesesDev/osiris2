@@ -13,7 +13,7 @@ package com.rameses.rules.common;
  *
  * @author elmo
  */
-public interface CommandHandler {
+public interface RuleActionHandler {
     
     void execute(Object context, Object params);
     

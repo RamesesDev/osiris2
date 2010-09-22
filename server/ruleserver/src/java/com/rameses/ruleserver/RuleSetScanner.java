@@ -45,7 +45,7 @@ public class RuleSetScanner implements URLFilter {
         if( filter.endsWith("/")) {
             filter = filter.substring(0, filter.length()-1);
             String ruleName = filter.substring(filter.lastIndexOf("/")+1);
-            KnowledgeSet ks = new KnowledgeSet(ruleName,null);
+            KnowledgeSet ks = new KnowledgeSet(ruleName,null,null);
             if(results.indexOf(ks)<0) results.add(ks);
         }
         return false;
@@ -53,13 +53,15 @@ public class RuleSetScanner implements URLFilter {
     
     private void loadNamesFromDb() {
         try{
-            System.out.println("loading rule names from DB");
             if( sqlContext!=null ) {
                 List<Map> list = sqlContext.createNamedQuery( "ruleserver:list-rulenames" ).getResultList();
                 for(Map map : list) {
                     String name = (String)map.get("name");
-                    KnowledgeSet ks = new KnowledgeSet(name,null);
-                    if(results.indexOf(ks)<0) results.add(ks);
+                    String rulegroup = (String)map.get("rulegroup");
+                    if(name!=null && name.trim().length() > 0 ) {
+                        KnowledgeSet ks = new KnowledgeSet(name,rulegroup,null);
+                        if(results.indexOf(ks)<0) results.add(ks);
+                    }
                 }
             }
         } catch(Exception e) {

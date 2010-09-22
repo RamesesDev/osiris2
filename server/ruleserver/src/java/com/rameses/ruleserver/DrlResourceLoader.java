@@ -30,11 +30,13 @@ public class DrlResourceLoader implements URLFilter {
     private static final String ROOT_URL = "META-INF/rules/";
     private KnowledgeBuilder builder;
     private String name;
+    private String rulegroup;
     private SqlContext sqlContext;
     
-    public DrlResourceLoader(KnowledgeBuilder b,  String name, SqlContext ctx) {
+    public DrlResourceLoader(KnowledgeBuilder b,  String name, String rulegroup, SqlContext ctx) {
         this.builder = b;
         this.name = name;
+        this.rulegroup = rulegroup;
         this.sqlContext = ctx;
     }
     
@@ -64,6 +66,7 @@ public class DrlResourceLoader implements URLFilter {
             SqlQuery qry = sqlContext.createNamedQuery("ruleserver:list-by-type");
             qry.setParameter("name", name);
             qry.setParameter("type",type);
+            qry.setParameter("rulegroup",rulegroup);
             List<Map> list = qry.getResultList();
             for(Map o: list) {
                 String str = (String)o.get("content");
@@ -76,10 +79,8 @@ public class DrlResourceLoader implements URLFilter {
     public void load() throws Exception {
         loadFromDb("facts");
         loadFromClasspath( "facts" );
-        
         loadFromDb( "rules" );
         loadFromClasspath( "rules" );
     }
-    
     
 }
