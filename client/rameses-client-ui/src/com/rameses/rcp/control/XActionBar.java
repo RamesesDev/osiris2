@@ -35,8 +35,11 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
-public class XActionBar extends JPanel implements UIComposite 
-{   
+public class XActionBar extends JPanel implements UIComposite {
+    
+    public static final String VERTICAL = "VERTICAL";
+    public static final String HORIZONTAL = "HORIZONTAL";
+    
     private Binding binding;
     private String[] depends;
     private boolean useToolBar;
@@ -45,39 +48,37 @@ public class XActionBar extends JPanel implements UIComposite
     private int index;
     private Insets padding = new Insets(0,0,0,0);
     
+    private String orientation = HORIZONTAL;
+    
     //XButton target
     private String target;
     
     private List<XButton> buttons = new ArrayList();
     private JComponent toolbarComponent;
     
-    public XActionBar() 
-    {
-        super.setLayout(new OuterLayout()); 
-        setUseToolBar(true); 
-    } 
+    public XActionBar() {
+        super.setLayout(new OuterLayout());
+        setUseToolBar(true);
+    }
     
-    public void setLayout(LayoutManager mgr) {;} 
+    public void setLayout(LayoutManager mgr) {;}
     
-    public void refresh() 
-    {
+    public void refresh() {
         if (dynamic) buildButtons();
-
+        
         buildToolbar();
     }
     
-    public void load() 
-    {
+    public void load() {
         if (!dynamic) buildButtons();
     }
     
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
-    }    
+    }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
-    private void buildButtons() 
-    {
+    private void buildButtons() {
         buttons.clear();
         List<Action> actions = new ArrayList();
         
@@ -89,21 +90,17 @@ public class XActionBar extends JPanel implements UIComposite
         
         if (value == null) {
             //do nothing
-        } 
-        else if (value.getClass().isArray()) 
-        {
+        } else if (value.getClass().isArray()) {
             for (Action aa: (Action[]) value) {
                 actions.add(aa);
             }
-        } 
-        else if (value instanceof Collection) {
+        } else if (value instanceof Collection) {
             actions.addAll((Collection) value);
         }
         
         //--get actions defined from the action provider
         ActionProvider actionProvider = ClientContext.getCurrentContext().getActionProvider();
-        if (actionProvider != null) 
-        {
+        if (actionProvider != null) {
             UIController controller = binding.getController();
             List<Action> aa = actionProvider.getActionsByType(getName(), controller);
             if (aa != null) actions.addAll(aa);
@@ -112,13 +109,12 @@ public class XActionBar extends JPanel implements UIComposite
         if (actions.size() == 0) return;
         
         Collections.sort(actions);
-        for (Action action: actions) 
-        {
+        for (Action action: actions) {
             //check permission
             String permission = action.getPermission();
-            if (permission != null && binding.getController().getName() != null) 
+            if (permission != null && binding.getController().getName() != null)
                 permission = binding.getController().getName() + "." + permission;
-
+            
             boolean allowed = ControlSupport.isPermitted(permission);
             if (!allowed) continue;
             
@@ -136,8 +132,8 @@ public class XActionBar extends JPanel implements UIComposite
             
             Map props = action.getProperties();
             try {
-                btn.setAccelerator(props.get("shortcut")+""); 
-            } catch(Exception ign){;} 
+                btn.setAccelerator(props.get("shortcut")+"");
+            } catch(Exception ign){;}
             
             Map params = action.getParams();
             if (params != null && params.size() > 0) {
@@ -152,16 +148,13 @@ public class XActionBar extends JPanel implements UIComposite
         }
     }
     
-    private void buildToolbar() 
-    {
+    private void buildToolbar() {
         toolbarComponent.removeAll();
         
         ExpressionResolver expResolver = ClientContext.getCurrentContext().getExpressionResolver();
-        for (XButton btn: buttons) 
-        {
+        for (XButton btn: buttons) {
             String expression = (String) btn.getClientProperty("visibleWhen");
-            if (!ValueUtil.isEmpty(expression)) 
-            {
+            if (!ValueUtil.isEmpty(expression)) {
                 Object visible = expResolver.evaluate(binding.getBean(), expression);
                 if (!"true".equals(visible+"")) continue;
             }
@@ -187,37 +180,34 @@ public class XActionBar extends JPanel implements UIComposite
     public String[] getDepends() { return depends; }
     public void setDepends(String[] depends) { this.depends = depends; }
     
-    public int getIndex() { return index; }    
+    public int getIndex() { return index; }
     public void setIndex(int index) { this.index = index; }
-
+    
     public Binding getBinding() { return binding; }
-    public void setBinding(Binding binding) { this.binding = binding; }    
+    public void setBinding(Binding binding) { this.binding = binding; }
     
     public boolean isUseToolBar() { return useToolBar; }
-    public void setUseToolBar(boolean useToolBar) 
-    {
+    public void setUseToolBar(boolean useToolBar) {
         this.useToolBar = useToolBar;
         
-        super.removeAll();        
-        if (useToolBar) 
-        {
+        super.removeAll();
+        if (useToolBar) {
             JToolBar tlb = new JToolBar();
             tlb.setFloatable(false);
             tlb.setRollover(true);
-            toolbarComponent = tlb; 
-        }
-        else { 
-            toolbarComponent = new JPanel(); 
+            toolbarComponent = tlb;
+        } else {
+            toolbarComponent = new JPanel();
         }
         
-        toolbarComponent.setLayout(new InnerLayout()); 
-        toolbarComponent.setName("toolbar"); 
-        toolbarComponent.setOpaque(false); 
+        toolbarComponent.setLayout(new InnerLayout());
+        toolbarComponent.setName("toolbar");
+        toolbarComponent.setOpaque(false);
         add(toolbarComponent);
         
-        if (Beans.isDesignTime()) 
+        if (Beans.isDesignTime())
             toolbarComponent.add(new JButton(XActionBar.class.getSimpleName()));
-    } 
+    }
     
     public boolean isDynamic() { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
@@ -228,31 +218,37 @@ public class XActionBar extends JPanel implements UIComposite
     
     public String getTarget() { return target; }
     public void setTarget(String target) { this.target = target; }
+    
+    
+    public String getOrientation() { return orientation; }
+    public void setOrientation(String orientation) {
+        if ( orientation != null ) {
+            this.orientation = orientation.toUpperCase();
+        } else {
+            this.orientation = orientation;
+        }
+    }
+    
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc=" OuterLayout (Class) ">    
-    private class OuterLayout implements LayoutManager
-    {
+    //<editor-fold defaultstate="collapsed" desc=" OuterLayout (Class) ">
+    private class OuterLayout implements LayoutManager {
         public void addLayoutComponent(String name, Component comp) {;}
         public void removeLayoutComponent(Component comp) {;}
-
-        public Dimension getLayoutSize(Container parent)
-        {
-            synchronized (parent.getTreeLock())
-            {
+        
+        public Dimension getLayoutSize(Container parent) {
+            synchronized (parent.getTreeLock()) {
                 int w=0, h=0;
-                if (toolbarComponent != null)
-                {
-                    Insets margin = parent.getInsets(); 
+                if (toolbarComponent != null) {
+                    Insets margin = parent.getInsets();
                     Dimension dim = toolbarComponent.getPreferredSize();
                     w = (margin.left + dim.width + margin.right);
-                    h = (margin.top + dim.height + margin.bottom); 
-                                        
-                    Insets pads = getPadding(); 
-                    if (pads != null)
-                    {
+                    h = (margin.top + dim.height + margin.bottom);
+                    
+                    Insets pads = getPadding();
+                    if (pads != null) {
                         w += (pads.left + pads.right);
-                        h += (pads.top + pads.bottom); 
+                        h += (pads.top + pads.bottom);
                     }
                 }
                 return new Dimension(w, h);
@@ -260,96 +256,95 @@ public class XActionBar extends JPanel implements UIComposite
         }
         
         public Dimension preferredLayoutSize(Container parent) {
-            return getLayoutSize(parent); 
-        } 
-
-        public Dimension minimumLayoutSize(Container parent) { 
-            return getLayoutSize(parent); 
-        } 
-
-        public void layoutContainer(Container parent) 
-        { 
-            synchronized (parent.getTreeLock()) 
-            { 
-                if (toolbarComponent != null)
-                {
-                    Insets margin = parent.getInsets(); 
+            return getLayoutSize(parent);
+        }
+        
+        public Dimension minimumLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+        
+        public void layoutContainer(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                if (toolbarComponent != null) {
+                    Insets margin = parent.getInsets();
                     int x = margin.left;
                     int y = margin.top;
-                    int w = parent.getWidth() - (margin.left + margin.right); 
-                    int h = parent.getHeight() - (margin.top + margin.bottom); 
+                    int w = parent.getWidth() - (margin.left + margin.right);
+                    int h = parent.getHeight() - (margin.top + margin.bottom);
                     
-                    Insets pads = getPadding(); 
-                    if (pads != null)
-                    {
+                    Insets pads = getPadding();
+                    if (pads != null) {
                         x += pads.left;
-                        y += pads.top; 
+                        y += pads.top;
                         w -= (pads.left + pads.right);
-                        h -= (pads.top + pads.bottom); 
-                    }                    
+                        h -= (pads.top + pads.bottom);
+                    }
                     
                     toolbarComponent.setBounds(x, y, w, h);
-                } 
-            } 
-        } 
-    } 
+                }
+            }
+        }
+    }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc=" InnerLayout (Class) ">    
-    private class InnerLayout implements LayoutManager
-    {
+    //<editor-fold defaultstate="collapsed" desc=" InnerLayout (Class) ">
+    private class InnerLayout implements LayoutManager {
         public void addLayoutComponent(String name, Component comp) {;}
         public void removeLayoutComponent(Component comp) {;}
-
-        public Dimension getLayoutSize(Container parent)
-        {
-            synchronized (parent.getTreeLock())
-            {
+        
+        public Dimension getLayoutSize(Container parent) {
+            synchronized (parent.getTreeLock()) {
                 int w=0, h=0;
                 
                 Component[] comps = parent.getComponents();
-                for (int i=0; i<comps.length; i++)
-                {
+                for (int i=0; i<comps.length; i++) {
                     if (!comps[i].isVisible()) continue;
                     
                     Dimension dim = comps[i].getPreferredSize();
-                    w += (dim.width + getSpacing());
-                    h = Math.max(h, dim.height); 
+                    if ( VERTICAL.equals(orientation) ) {
+                        w = Math.max(w, dim.width);
+                        h += (dim.height + getSpacing());
+                    } else {
+                        w += (dim.width + getSpacing());
+                        h = Math.max(h, dim.height);
+                    }
                 }
                 return new Dimension(w,h);
             }
         }
         
         public Dimension preferredLayoutSize(Container parent) {
-            return getLayoutSize(parent); 
-        } 
-
-        public Dimension minimumLayoutSize(Container parent) { 
-            return getLayoutSize(parent); 
-        } 
-
-        public void layoutContainer(Container parent) 
-        { 
-            synchronized (parent.getTreeLock()) 
-            { 
-                Insets margin = parent.getInsets(); 
+            return getLayoutSize(parent);
+        }
+        
+        public Dimension minimumLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+        
+        public void layoutContainer(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                Insets margin = parent.getInsets();
                 int x = margin.left;
                 int y = margin.top;
-                int w = parent.getWidth() - (margin.left + margin.right); 
-                int h = parent.getHeight() - (margin.top + margin.bottom); 
-              
+                int w = parent.getWidth() - (margin.left + margin.right);
+                int h = parent.getHeight() - (margin.top + margin.bottom);
+                
                 Component[] comps = parent.getComponents();
-                for (int i=0; i<comps.length; i++)
-                {
+                for (int i=0; i<comps.length; i++) {
                     if (!comps[i].isVisible()) continue;
                     
                     Dimension dim = comps[i].getPreferredSize();
-                    comps[i].setBounds(x, y, dim.width, h);
-                    x += (dim.width + getSpacing());  
-                }                
-            } 
-        } 
-    } 
-    //</editor-fold>    
+                    if ( VERTICAL.equals(orientation) ) {
+                        comps[i].setBounds(x, y, w, dim.height);
+                        y += (dim.height + getSpacing());
+                    } else {
+                        comps[i].setBounds(x, y, dim.width, h);
+                        x += (dim.width + getSpacing());
+                    }
+                }
+            }
+        }
+    }
+    //</editor-fold>
     
 }
