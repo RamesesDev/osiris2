@@ -173,10 +173,9 @@ public class EntityManager {
             throw new RuntimeException("Data that is not a map is not yet supported at this time");
         Map oldData = (Map) read( schemaName, data );
         oldData.putAll( (Map)data );
-        
         try {
             SchemaScanner scanner = schemaManager.newScanner();
-            UpdatePersistenceHandler handler = new UpdatePersistenceHandler(schemaManager,sqlContext,data);
+            UpdatePersistenceHandler handler = new UpdatePersistenceHandler(schemaManager,sqlContext,oldData);
             Schema schema = schemaManager.getSchema( schemaName );
             SchemaElement element = schema.getElement( schemaName );
             scanner.scan(schema,element,oldData,handler);

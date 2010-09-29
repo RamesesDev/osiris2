@@ -94,7 +94,7 @@ public class HttpInvokerClient {
                 if( (retval instanceof String) && retval.equals("#NULL")  ) {
                     retval = null;
                 }
-                if( retval instanceof Exception )
+                if( retval instanceof Exception ) 
                     throw (Exception)retval;
                 
                 break;
