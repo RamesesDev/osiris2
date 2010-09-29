@@ -87,8 +87,8 @@ public class ListItem {
         }
     }
     
-    public void initSelected() {
-        this.selected = false;
+    public void initSelected(boolean selected) {
+        this.selected = selected;
     }
     
     public final Object getRoot() {

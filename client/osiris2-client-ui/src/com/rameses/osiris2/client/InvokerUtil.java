@@ -11,15 +11,16 @@ package com.rameses.osiris2.client;
 
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.Folder;
+import com.rameses.rcp.framework.ControlSupport;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.osiris2.Invoker;
 import com.rameses.platform.interfaces.Platform;
-import com.rameses.rcp.common.Action;
 import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.common.ExpressionResolver;
+import com.rameses.rcp.common.Opener;
 import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public final class InvokerUtil {
     
     public static void showWindow(Invoker invoker, String target, Map winParams) {
         if ( !ValueUtil.isEmpty(target) ) {
-            invoker.getProperties().put("windowmode", target);
+            invoker.setType(target);
         }
         if ( winParams != null ) {
             invoker.getProperties().putAll(winParams);
@@ -48,30 +49,45 @@ public final class InvokerUtil {
     }
     
     public static void invoke(Invoker invoker, Map params) {
+        invoke(invoker, params, null);
+    }
+    
+    public static void invoke(Invoker invoker, Map params, Object caller) {
         try {
-            //check if window already exists
             ClientContext ctx = ClientContext.getCurrentContext();
             Platform platform = ctx.getPlatform();
             
             String wuId = invoker.getWorkunitid();
-            if ( platform.isWindowExists( wuId )) {
-                platform.activateWindow( wuId );
+            
+            //check if window id already exists
+            String windowId = wuId + invoker.getCaption();
+            if ( platform.isWindowExists( windowId )) {
+                platform.activateWindow( windowId );
                 return;
             }
             
             ControllerProvider cp = ctx.getControllerProvider();
             UIController u = cp.getController( wuId );
+            
+            if ( caller != null ) {
+                Object callee = u.getCodeBean();
+                ControlSupport.injectCaller(callee, callee.getClass(), caller);
+            }
+            
             String action = invoker.getAction();
             u.setId( wuId );
             u.setName( wuId );
             u.setTitle( invoker.getCaption());
+            
             String outcome = (String) u.init(params, action);
             String target = (String)invoker.getProperties().get("target");
             if( target == null ) target = "_window";
+            
             if((target.endsWith("process")||target.endsWith("action"))) {
                 //do nothing
             } else {
                 UIControllerContext uic = new UIControllerContext( u );
+                uic.setId(windowId);
                 if ( !ValueUtil.isEmpty(outcome) ) {
                     uic.setCurrentView(outcome);
                 }
@@ -80,14 +96,13 @@ public final class InvokerUtil {
                 if ( invoker.getProperties() != null ) {
                     winParams.putAll( invoker.getProperties() );
                 }
-                winParams.put("id", u.getId());
-                winParams.put("title", u.getTitle());
+                winParams.put("id", uic.getId());
+                winParams.put("title", uic.getTitle());
                 
-                String windowmode = winParams.get("windowmode")+"";
-                if ( !"popup".equals(windowmode) ) {
-                    platform.showWindow(null, panel, winParams);
-                } else {
+                if ( "_popup".equals(target) || "popup".equals(target) ) {
                     platform.showPopup(null, panel, winParams);
+                } else {
+                    platform.showWindow(null, panel, winParams);
                 }
             }
         } catch(Exception ex) {
@@ -97,6 +112,67 @@ public final class InvokerUtil {
                 ClientContext.getCurrentContext().getPlatform().showError(null, ex);
             }
         }
+    }
+    
+    public static Object invokeAction(InvokerAction action) {
+        try {
+            Invoker inv = action.getInvoker();
+            InvokerParameter invParam = action.getInvokerParam();
+            
+            String target = (String)inv.getProperties().get("target");
+            if( target == null ) target = "_window";
+            
+            if((target.endsWith("process")||target.endsWith("action"))) {
+                if ( invParam != null )
+                    invoke(inv, invParam.getParams());
+                else
+                    invoke(inv, null);
+                
+                return null;
+                
+            } else {
+                Opener opener = new Opener(inv.getWorkunitid());
+                opener.setId(inv.getWorkunitid() + "_" + inv.getCaption());
+                opener.setCaption(inv.getCaption());
+                opener.setAction(inv.getAction());
+                if ( invParam != null ) {
+                    opener.setParams(invParam.getParams());
+                }
+                
+                if ( target.endsWith("popup") ) {
+                    opener.setTarget("_popup");
+                } else if ( target.endsWith("window") ) {
+                    opener.setTarget("_window");
+                }
+                
+                return opener;
+            }
+        } catch(Exception ex) {
+            Exception e = ExceptionManager.getInstance().getOriginal(ex);
+            
+            if ( !ExceptionManager.getInstance().handleError(e) ) {
+                ClientContext.getCurrentContext().getPlatform().showError(null, ex);
+            }
+            return null;
+        }
+    }
+    
+    public static List lookupActions(String type) {
+        return lookupActions(type, null);
+    }
+    
+    public static List lookupActions(String type, InvokerParameter param) {
+        List actions = new ArrayList();
+        List invList = lookup(type);
+        for(Object o: invList) {
+            Invoker inv = (Invoker)  o;
+            InvokerAction ia = new InvokerAction(inv, param);
+            ia.setCaption(inv.getCaption());
+            ia.getProperties().putAll(inv.getProperties());
+            
+            actions.add(ia);
+        }
+        return actions;
     }
     
     public static List lookup(String type) {
@@ -164,29 +240,5 @@ public final class InvokerUtil {
         }
         return invokers;
     }
-    
-    /**
-     * This method returns a list of actions (used for example by XActionBar).
-     * The specified invoke action and the invoke parameter must be specified.
-     * if not, invoke action default is "invoke" and invoke target is "invoker"
-     *
-     * there should be a method named <invokeAction> in the calling controller
-     * there should be a setter method named as set<invokeTarget> which accepts an Invoker
-     */
-    public static List<Action> getInvokerActions(List<Invoker> invokerList, String invokeAction, String invokeTarget  ) {
-        if(invokeAction ==null) invokeAction = "invoke";
-        if(invokeTarget ==null) invokeAction = "invoker";
-        List<Action> list = new ArrayList<Action>();
-        for( Invoker i: invokerList ) {
-            Map params = new HashMap();
-            params.put(invokeTarget, i);
-            Action a = new Action(invokeAction, i.getCaption(), (String)i.getProperties().get("icon"));
-            a.setParameters(params);
-            list.add(a);
-        }
-        return list;
-    }
-    
-    
     
 }

@@ -2,11 +2,11 @@
 <workunit>
     <invokers>
         <invoker type="test.actions" caption="New" action="create" shortcut="ctrl N" 
-                 mnemonic="n" permission="record.create"/>
+                 mnemonic="n" target="popup"/>
         <invoker type="test.actions" caption="Edit" action="edit" shortcut="ctrl E" 
-                 mnemonic="e" permission="record.edit"/>
+                 mnemonic="e" target="popup"/>
         <invoker type="test.actions" caption="Open" action="open" shortcut="ctrl O"  
-                 mnemonic="o" permission="record.open"/>
+                 mnemonic="o" target="popup"/>
     </invokers>
     
     <code>
@@ -18,9 +18,15 @@
                 
         public class TestInvoker2Controller  {
         
+            @Caller
+            def caller;
+        
             def name;
         
-            def open() { return 'page3' }
+            def open() { 
+                println caller.name;
+                return 'page3' 
+            }
             def edit() { return 'page2' }
             def create() { return 'page1' }
             

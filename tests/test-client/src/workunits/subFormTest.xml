@@ -15,9 +15,7 @@
         
             def entity = [ detail:[ caption: 'Contact No.'] ];
             
-            def subFormHandler = new Opener(
-                name: 'test-client:subFormTest2', params: [entity: entity.detail ]
-            );
+            def subFormHandler = new Opener(name: '___testInv');
             
             void save() {
                 MsgBox.alert( entity );

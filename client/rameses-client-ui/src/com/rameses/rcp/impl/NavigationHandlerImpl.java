@@ -88,6 +88,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     } else {
                         platform.showWindow(sourceComp, uic, props);
                     }
+                    return;
                 }
                 
             } else if( outcome instanceof String ) {
