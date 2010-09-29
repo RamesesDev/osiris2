@@ -398,20 +398,13 @@
     </target>
     <target name="do-dist" depends="init,compile,compile-jsps,-pre-dist,-do-dist-with-manifest,-do-dist-without-manifest"/>
     <target name="library-inclusion-in-manifest" depends="init" if="dist.ear.dir">
-        <basename property="included.lib.file.reference.commons-beanutils.jar" file="${file.reference.commons-beanutils.jar}"/>
-        <copy-ear-war file="${file.reference.commons-beanutils.jar}" propname="included.lib.file.reference.commons-beanutils.jar.X"/>
-        <basename property="included.lib.reference.rameses-common.jar" file="${reference.rameses-common.jar}"/>
-        <copy-ear-war file="${reference.rameses-common.jar}" propname="included.lib.reference.rameses-common.jar.X"/>
         <mkdir dir="${build.web.dir.real}/META-INF"/>
         <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.file.reference.commons-beanutils.jar} ${included.lib.reference.rameses-common.jar} "/>
+            <attribute name="Class-Path" value=""/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
-    <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir">
-        <copy file="${file.reference.commons-beanutils.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
-        <copy file="${reference.rameses-common.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
-    </target>
+    <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir"/>
     <target name="do-ear-dist" depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest">
         <dirname property="dist.jar.dir" file="${dist.ear.war}"/>
         <mkdir dir="${dist.jar.dir}"/>
