@@ -22,47 +22,15 @@
             def entity = [ : ];
             boolean required;
             
-            def items = ["one", "two", "three"];
             
             void btnShowInput() {
+                MsgBox.alert( entity.date?.class );
                 MsgBox.alert("entity = $entity");
             }
-        
-            boolean readonly;
             
-            void btnToggle() {
-                readonly = !readonly;
-            }
-            
-            void toggleRequired() {
-                required = !required;
-            }
-            
-            void setAddress(addr) { 
-                println "setting address....";
-                if ( !addr ) {
-                    entity.address = null;
-                    throw new Exception('please supply a valid address.');
-                }
-                  
-                entity.address = addr 
-            }
-            
-            def getAddress() { entity.address }
-                        
-            void testPost() {
-                MsgBox.alert("Posting $entity.testPost");
-            }
-            
-            void save() {
-                throw new Exception('session: Session Expired Error');
-            }
-            
-            @Close
-            def close() {
-                MsgBox.alert('Closing');
-            }
-           
+            def getName() { return entity.name }
+            void setName(name) { entity.name = name?.replaceAll(/^(\d)|\s+|[^\w\d]/, '_$1') }
+                       
         }
         
         ]]>

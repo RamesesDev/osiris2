@@ -10,18 +10,30 @@
         
         import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
+        import com.rameses.util.*;
         
         public class TestScriptController {
         
             @Script( "TestScript" )
             def script;
+            
+            @Service( "TestService" )
+            def svc;
         
             @Script( "test-client:Gender" )
             def gender;
 
             public void fireTest() {
-                script.test();
-                MsgBox.alert( gender.list );
+                try {
+                    svc.fireTest();
+                }
+                catch(BusinessException e) {
+                    MsgBox.alert('business exception: ' + e.message);
+                }
+                catch(e) {
+                    println "workunit: " + e;
+                    throw e;
+                }
             }    
         }
         
