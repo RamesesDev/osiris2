@@ -172,7 +172,11 @@ public class ScriptService implements ScriptServiceLocal {
             while( e.getCause()!=null) {
                 e = e.getCause();
             }
-            throw new EJBException(e.getMessage());
+            if( e instanceof Exception )
+                throw new EJBException((Exception)e);
+            else
+                throw new EJBException(e.getMessage());
+            
         } finally {
             if(injectionHandler!=null) injectionHandler.destroy();
         }

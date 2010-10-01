@@ -81,7 +81,7 @@ public final class SchemaUtil {
         } else if( type.equalsIgnoreCase(SimpleFieldTypes.INTEGER) ) {
             pass = (clazz==Integer.class) || (clazz==int.class);
         } else if( type.equalsIgnoreCase(SimpleFieldTypes.BOOLEAN) ) {
-            pass = (clazz==Integer.class) || (clazz==int.class);
+            pass = (clazz==Boolean.class) || (clazz==boolean.class);
         } else if( type.equalsIgnoreCase(SimpleFieldTypes.LONG) ) {
             pass = (clazz==Long.class) || (clazz==long.class);
         }

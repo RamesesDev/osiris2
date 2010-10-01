@@ -208,8 +208,12 @@ is divided into following sections:
     <!--
                 COMPILATION SECTION
             -->
-    <target name="-deps-module-jar" depends="init" if="no.dist.ear.dir" unless="no.deps"/>
-    <target name="-deps-ear-jar" depends="init" if="dist.ear.dir" unless="no.deps"/>
+    <target name="-deps-module-jar" depends="init" if="no.dist.ear.dir" unless="no.deps">
+        <ant target="jar" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
+    </target>
+    <target name="-deps-ear-jar" depends="init" if="dist.ear.dir" unless="no.deps">
+        <ant target="jar" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
+    </target>
     <target name="deps-jar" depends="init, -deps-module-jar, -deps-ear-jar"/>
     <target name="-pre-pre-compile" depends="init,deps-jar">
         <mkdir dir="${build.classes.dir}"/>
@@ -219,15 +223,9 @@ is divided into following sections:
         <!-- Empty placeholder for easier customization. -->
         <!-- You can override this target in the ../build.xml file. -->
     </target>
-    <target name="library-inclusion-in-archive" depends="compile">
-        <copy file="${libs.rameses-common.classpath}" todir="${build.classes.dir}"/>
-    </target>
+    <target name="library-inclusion-in-archive" depends="compile"/>
     <target name="library-inclusion-in-manifest" depends="compile">
-        <basename property="included.lib.libs.rameses-common.classpath" file="${libs.rameses-common.classpath}"/>
-        <copy file="${libs.rameses-common.classpath}" todir="${dist.ear.dir}"/>
-        <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.libs.rameses-common.classpath} "/>
-        </manifest>
+        <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">
         <copy todir="${classes.dir}">
@@ -481,7 +479,9 @@ is divided into following sections:
     <!--
                 CLEANUP SECTION
             -->
-    <target name="deps-clean" depends="init" if="no.dist.ear.dir" unless="no.deps"/>
+    <target name="deps-clean" depends="init" if="no.dist.ear.dir" unless="no.deps">
+        <ant target="clean" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
+    </target>
     <target name="-do-clean" depends="init">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>

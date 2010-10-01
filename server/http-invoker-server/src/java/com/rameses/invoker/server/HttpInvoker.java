@@ -58,8 +58,16 @@ public class HttpInvoker extends HttpServlet {
             
             //ex.printStackTrace();
             Throwable t = ex;
-            while( t.getCause() != null ) t = t.getCause();
-            Exception ne = new Exception(t.getMessage());
+            while( t.getCause() != null ) {
+                t = t.getCause();
+            }
+            Exception ne = null;
+            if( (t instanceof Exception) && (t instanceof Serializable)) {
+                ne = (Exception)t;
+            }
+            else {
+                ne = new Exception(t.getMessage());
+            }
             out = new ObjectOutputStream(res.getOutputStream());
             out.writeObject(ne);
         } 
