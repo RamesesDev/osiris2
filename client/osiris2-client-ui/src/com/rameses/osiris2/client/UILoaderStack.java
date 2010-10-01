@@ -78,8 +78,15 @@ public class UILoaderStack extends Stack {
                 } else {
                     UIControllerContext uic = new UIControllerContext( c );
                     Object outcome = c.init( null, action );
-                    if ( !ValueUtil.isEmpty(outcome) && outcome instanceof String ) {
-                        uic.setCurrentView(outcome+"");
+                    if ( !ValueUtil.isEmpty(outcome) && outcome instanceof String ) 
+                    {
+                        if ("_close".equals(outcome))
+                        {
+                            loaders.remove(0); 
+                            continue; 
+                        }    
+                        else     
+                            uic.setCurrentView(outcome+"");
                     }
                     peek = uic;
                     
@@ -87,7 +94,7 @@ public class UILoaderStack extends Stack {
                     //reload the menus/folders
                     if ( loaders.size() <= 1 ) {
                         sessCtx.reload();
-                    } 
+                    }
                 }
             }
         }

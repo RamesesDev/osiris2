@@ -61,7 +61,7 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
             if ( !isCheck ) {
                 setSelected(false);
                 if ( !isUncheck ) {
-                    UIInputUtil.updateBeanValue(this, false);
+                    UIInputUtil.updateBeanValue(this, false, false);
                 }
             } else {
                 setSelected(true);

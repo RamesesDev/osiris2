@@ -72,8 +72,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
             UIControl c = binding.find(labelFor);
             if ( c == null ) return;
             if (c instanceof JComponent) {
-                activeComponent = (JComponent) c;
-                this.setLabelFor(activeComponent);
+                this.setLabelFor((JComponent) c);
             }
         }
     }
@@ -184,6 +183,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     }
     
     public void setLabelFor(Component c) {
+        activeComponent = (JComponent) c;
         if ( c instanceof ActiveControl ) {
             ActiveControl ac = (ActiveControl) c;
             activeProperty = ac.getControlProperty();

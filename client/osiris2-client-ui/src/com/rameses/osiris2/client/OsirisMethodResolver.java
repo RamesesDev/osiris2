@@ -17,6 +17,7 @@ import com.rameses.rcp.common.AsyncEvent;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.common.MethodResolver;
 import com.rameses.common.PropertyResolver;
+import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -39,10 +40,14 @@ public class OsirisMethodResolver implements MethodResolver {
     }
     
     private Object invokeMethod(Object xbean, String xaction, Object[] args, Class[] params ) throws Exception {
-        if(params==null)
-            return MethodUtils.invokeMethod(xbean, xaction, args);
-        else
-            return MethodUtils.invokeMethod(xbean, xaction, args, params);
+        try {
+            if(params==null)
+                return MethodUtils.invokeMethod(xbean, xaction, args);
+            else
+                return MethodUtils.invokeMethod(xbean, xaction, args, params);
+        } catch(Exception e) {
+            throw ExceptionManager.getInstance().getOriginal(e);
+        }
     }
     
     public Object invoke(Object bean, String action, Class[] paramTypes, Object[] args) throws Exception {
@@ -83,7 +88,7 @@ public class OsirisMethodResolver implements MethodResolver {
         
         return invokeMethod(xbean, xaction, args, null);
     }
-
+    
     private String getTaskId(Object bean, String action) {
         return bean.hashCode() + "." + action.hashCode();
     }

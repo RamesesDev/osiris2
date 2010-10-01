@@ -1,14 +1,11 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.ui.ControlProperty;
-import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -61,16 +58,18 @@ public class XDateField extends XTextField {
             if ( !ValueUtil.isEmpty(getText()) ) {
                 date = inputFormatter.parse(getText());
                 formattedString = valueFormatter.format(date);
+                if ( !formattedString.equals(getText()) ) {                    
+                    actionMessage.addMessage("", "Invalid date entered for {0}.", new Object[] {getCaption()});
+                }
             }
         } catch(Exception e) {
-            formattedString = null;
-            ActionMessage actionMessage = getActionMessage();
             actionMessage.addMessage("", "Expected format for {0} is " + inputFormat, new Object[] {getCaption()});
-            
-            if(actionMessage.hasMessages())  {
-                ControlProperty controlProperty = getControlProperty();
-                controlProperty.setErrorMessage(actionMessage.toString());
-            }
+        }
+        
+        if(actionMessage.hasMessages())  {
+            formattedString = null;
+            ControlProperty controlProperty = getControlProperty();
+            controlProperty.setErrorMessage(actionMessage.toString());
         }
         
         return formattedString;
@@ -159,6 +158,8 @@ public class XDateField extends XTextField {
                 setText( inputFormatter.format(inputFormatter.parse(value.toString())) );
             }
         }
+        
+        if ( !formatted ) selectAll();
     }
     
     public void calculatePosition() {
@@ -199,9 +200,6 @@ public class XDateField extends XTextField {
         
         public void focusLost(FocusEvent e) {
             if ( e.isTemporary() ) return;
-            
-            //insert autocomplete here
-            
             
             try{
                 showFormattedValue(true);

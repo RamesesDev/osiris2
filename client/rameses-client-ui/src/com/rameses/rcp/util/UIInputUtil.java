@@ -49,10 +49,10 @@ public class UIInputUtil {
     }
     
     public static synchronized void updateBeanValue(UIInput control) {
-        updateBeanValue(control, true);
+        updateBeanValue(control, true, true);
     }
     
-    public static synchronized void updateBeanValue(UIInput control, boolean addLog) {
+    public static synchronized void updateBeanValue(UIInput control, boolean addLog, boolean refresh) {
         try {
             Binding binding = control.getBinding();
             if ( binding == null ) return;
@@ -78,6 +78,7 @@ public class UIInputUtil {
                 if ( addLog ) {
                     binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
                 }
+                if ( refresh ) control.refresh();
                 
                 binding.notifyDepends(control);
             }
