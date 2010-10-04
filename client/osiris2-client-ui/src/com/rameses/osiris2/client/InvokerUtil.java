@@ -106,7 +106,7 @@ public final class InvokerUtil {
                 }
             }
         } catch(Exception ex) {
-            Exception e = ExceptionManager.getInstance().getOriginal(ex);
+            Exception e = ExceptionManager.getOriginal(ex);
             
             if ( !ExceptionManager.getInstance().handleError(e) ) {
                 ClientContext.getCurrentContext().getPlatform().showError(null, ex);
@@ -148,7 +148,7 @@ public final class InvokerUtil {
                 return opener;
             }
         } catch(Exception ex) {
-            Exception e = ExceptionManager.getInstance().getOriginal(ex);
+            Exception e = ExceptionManager.getOriginal(ex);
             
             if ( !ExceptionManager.getInstance().handleError(e) ) {
                 ClientContext.getCurrentContext().getPlatform().showError(null, ex);

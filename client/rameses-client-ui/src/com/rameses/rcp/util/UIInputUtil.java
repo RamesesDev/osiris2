@@ -84,9 +84,8 @@ public class UIInputUtil {
             }
             
         } catch(Exception e) {
-            ExceptionManager emgr = ExceptionManager.getInstance();
-            Exception src = emgr.getOriginal(e);
-            if ( !emgr.handleError(src) ) {
+            Exception src = ExceptionManager.getOriginal(e);
+            if ( !ExceptionManager.getInstance().handleError(src) ) {
                 ClientContext.getCurrentContext().getPlatform().showError((JComponent) control, e);
             }
         }

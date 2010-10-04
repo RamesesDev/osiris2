@@ -46,7 +46,7 @@ public class OsirisMethodResolver implements MethodResolver {
             else
                 return MethodUtils.invokeMethod(xbean, xaction, args, params);
         } catch(Exception e) {
-            throw ExceptionManager.getInstance().getOriginal(e);
+            throw ExceptionManager.getOriginal(e);
         }
     }
     

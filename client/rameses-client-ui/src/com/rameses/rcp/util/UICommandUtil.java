@@ -73,7 +73,7 @@ public class UICommandUtil {
                 handler.navigate(navPanel, command, outcome);
             }
         } catch(Exception ex) {
-            Exception e = ExceptionManager.getInstance().getOriginal(ex);
+            Exception e = ExceptionManager.getOriginal(ex);
             
             if ( !ExceptionManager.getInstance().handleError(e) ) {
                 ClientContext.getCurrentContext().getPlatform().showError((JComponent) command, ex);
