@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Controls Test"/>
+        
+        <!-- form actions -->
+        <invoker type="actions" action="_close" caption="Close" immediate="true" shortcut="ctrl X"/>
+        <invoker type="actions" action="edit" caption="Edit" shortcut="ctrl E"/>
+        <invoker type="actions" action="print" caption="Print"/>
+        <invoker type="actions" action="btnToggle" caption="Enable/Disable Controls" immediate="true"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TabTestController  {
+                       
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.client.ControlsTestPage"/>
+    </pages>
+</workunit>

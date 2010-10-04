@@ -12,7 +12,6 @@ package com.rameses.osiris2.client;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.invoker.client.HttpInvokerClient;
 import com.rameses.invoker.client.HttpClientManager;
-import com.rameses.util.MachineInfo;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -23,7 +22,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 public class InvokerProxy {
-
+    
     private final static String INVOKER = "ScriptService";
     private Map<String, Class> map = new Hashtable<String, Class>();
     private GroovyClassLoader loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
@@ -55,6 +54,13 @@ public class InvokerProxy {
         return Proxy.newProxyInstance(loader, new Class[]{clazz}, new MyHandler(name, client));
     }
     
+    public void reset() {
+        map.clear();
+        //loader.clearCache();
+        loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
+        instance = null;
+    }
+    
     
     public class MyHandler implements InvocationHandler {
         
@@ -71,28 +77,8 @@ public class InvokerProxy {
             if( method.getName().equals("toString")) return serviceName;
             
             Map headers = ClientContext.getCurrentContext().getHeaders();
-            headers.put(CONSTANTS.HEADER_MACHINE_KEY, getMachineKey());
-
             return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
         }
-        
-        private String getMachineKey() {
-            if ( machineKey == null ) {
-                try {
-                    machineKey = MachineInfo.getInstance().getMacAddress().hashCode()+"";
-                } catch (Exception ex) {
-                    throw new IllegalStateException(ex.getMessage(), ex);
-                }
-            }
-            return machineKey;
-        }
-    } 
- 
-    public void reset() {
-        map.clear();
-        //loader.clearCache();
-        loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
-        instance = null;
     }
     
 }
