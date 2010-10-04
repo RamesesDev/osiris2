@@ -16,9 +16,7 @@ import java.util.Map;
  *
  * this is basic aggerator opearations of sun,count,min and max
  */
-public class BasicAggregatorHandler implements AggregateHandler {
-    
-    
+public class BasicAggregatorHandler {
     
     /**
      * count always returns an incrementing field.
@@ -33,11 +31,11 @@ public class BasicAggregatorHandler implements AggregateHandler {
     /** Creates a new instance of BasicAggregatorHandler */
     public BasicAggregatorHandler() {
     }
-
+    
     public boolean proceed(Object oldModel, Object newModel) {
         return true;
     }
-
+    
     public Object compare(String aggtype, Class type, Object oldValue, Object newValue, Map properties) {
         Object retValue = oldValue;
         if(aggtype != null && !aggtype.equalsIgnoreCase(AGGTYPE_CONCAT)) {
@@ -48,18 +46,15 @@ public class BasicAggregatorHandler implements AggregateHandler {
             
             if(aggtype.equalsIgnoreCase(AGGTYPE_SUM)) {
                 _old = _old.add( _new );
-            }
-            else if(aggtype.equalsIgnoreCase(AGGTYPE_MAX)) {
+            } else if(aggtype.equalsIgnoreCase(AGGTYPE_MAX)) {
                 if( _old.compareTo( _new) < 0 ) {
                     _old = _new;
-                }    
-            }
-            else if(aggtype.equalsIgnoreCase(AGGTYPE_MIN)) {
+                }
+            } else if(aggtype.equalsIgnoreCase(AGGTYPE_MIN)) {
                 if( _old.compareTo( _new) > 0 ) {
                     _old = _new;
                 }
-            }
-            else if(aggtype.equalsIgnoreCase(AGGTYPE_COUNT)) {
+            } else if(aggtype.equalsIgnoreCase(AGGTYPE_COUNT)) {
                 if( _old.equals(new BigDecimal("0"))) {
                     _old = new BigDecimal("1");
                 }
@@ -68,34 +63,25 @@ public class BasicAggregatorHandler implements AggregateHandler {
             
             if( type == Integer.class ) {
                 retValue = new Integer( _old.intValue() );
-            }
-            else if( type == int.class ) {
+            } else if( type == int.class ) {
                 retValue = _old.intValue();
-            }
-            else if( type == Double.class ) {
+            } else if( type == Double.class ) {
                 retValue = new Double( _old.doubleValue() );
-            }
-            else if( type == double.class ) {
+            } else if( type == double.class ) {
                 retValue = _old.doubleValue();
-            }
-            else if( type == Long.class ) {
+            } else if( type == Long.class ) {
                 retValue = new Long(_old.longValue());
-            }
-            else if( type == long.class ) {
+            } else if( type == long.class ) {
                 retValue = _old.longValue();
-            }
-            else if( type == Float.class ) {
+            } else if( type == Float.class ) {
                 retValue = new Float(_old.floatValue());
-            }
-            else if( type == float.class ) {
+            } else if( type == float.class ) {
                 retValue = _old.floatValue();
-            }
-            else {
+            } else {
                 retValue = _old;
             }
             return retValue;
-        }
-        else if(aggtype != null && aggtype.equalsIgnoreCase(AGGTYPE_CONCAT)) {
+        } else if(aggtype != null && aggtype.equalsIgnoreCase(AGGTYPE_CONCAT)) {
             String delimiter = (String)properties.get("delimiter");
             
             StringBuffer sb = new StringBuffer();
@@ -104,8 +90,7 @@ public class BasicAggregatorHandler implements AggregateHandler {
             if( newValue!=null )sb.append((String)newValue );
             retValue = sb.toString();
             return retValue;
-        }
-        else {
+        } else {
             return newValue;
         }
     }

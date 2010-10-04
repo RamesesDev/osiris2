@@ -27,58 +27,20 @@ public final class DateUtil {
         else if( interval.contains("h")) type = "hour";
         else if( interval.contains("m")) type = "minute";
         else if( interval.contains("s")) type = "second";
+        else if( interval.contains("y")) type = "year";
         return type;
     }
-    
-    //this functionality compares 2 dates.
-    //Only 2 types of interval are supported. d (day) or m (month).
-    /*
-    public static boolean isExpired( Date fromDate, Date toDate, String interval ) {
-        int x = 0;
-     
-        int num = Integer.parseInt(interval.replaceAll("\\D", ""));
-        String type = getType(interval);
-     
-        if(type.equals("month")) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime( fromDate );
-            int startYear = cal.get( Calendar.YEAR );
-            int startMonth = cal.get( Calendar.MONTH );
-            cal.setTime( toDate );
-            int endYear = cal.get( Calendar.YEAR );
-            int endMonth = cal.get( Calendar.MONTH );
-            int monthDiff = ((( endYear-startYear )*12) + endMonth) - startMonth;
-            return (monthDiff >= num);
-        } else {
-            Calendar cal1 = Calendar.getInstance();
-            cal1.setTime(fromDate);
-            Calendar cal2 = Calendar.getInstance();
-            cal2.setTime(toDate);
-            //long endL = cal2.getTimeInMillis() + cal2.getTimeZone().getOffset( cal2.getTimeInMillis() );
-            //long startL = cal1.getTimeInMillis() + cal1.getTimeZone().getOffset( cal1.getTimeInMillis() );
-            long endL = cal2.getTimeInMillis();
-            long startL = cal1.getTimeInMillis();
-            long diff = endL - startL;
-     
-            if(type.equals("hour")) {
-                return (diff / MILLISECS_PER_HOUR) >= num;
-            } else if(type.equals("minute")) {
-                return (diff / MILLISECS_PER_MIN) >= num;
-            } else if(type.equals("second")) {
-                return (diff / MILLISECS_PER_SEC) >= num;
-            } else {
-                return (diff / MILLISECS_PER_DAY) >= num;
-            }
-        }
-    }
-     */
     
     public static Date add( Date fromDate, String interval ) {
         if( interval == null ) return fromDate;
         Calendar cal = Calendar.getInstance();
         cal.setTime(fromDate);
         String type = getType(interval);
+        boolean neg = false;
+        if(interval.trim().startsWith("-")) neg = true;
+        
         int num = Integer.parseInt(interval.replaceAll("\\D", ""));
+        if(neg) num = num * -1;
         
         if(type.equals("hour")) {
             cal.add(Calendar.HOUR, num );

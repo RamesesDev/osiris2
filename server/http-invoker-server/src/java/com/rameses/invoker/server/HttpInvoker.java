@@ -1,5 +1,6 @@
 package com.rameses.invoker.server;
 
+import com.rameses.util.ExceptionManager;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,20 +55,9 @@ public class HttpInvoker extends HttpServlet {
             
             out = new ObjectOutputStream(res.getOutputStream());
             out.writeObject(response);
-        } catch (Exception ex) {
-            
-            //ex.printStackTrace();
-            Throwable t = ex;
-            while( t.getCause() != null ) {
-                t = t.getCause();
-            }
-            Exception ne = null;
-            if( (t instanceof Exception) && (t instanceof Serializable)) {
-                ne = (Exception)t;
-            }
-            else {
-                ne = new Exception(t.getMessage());
-            }
+        } 
+        catch (Exception ex) {
+            Exception ne = ExceptionManager.getOriginal(ex);
             out = new ObjectOutputStream(res.getOutputStream());
             out.writeObject(ne);
         } 

@@ -46,12 +46,26 @@ public final class ExceptionManager {
         return false;
     }
     
-    public Exception getOriginal(Exception ex) {
-        Exception t = ex;
-        while( t.getCause() != null && (t.getCause() instanceof Exception) ) {
-            t = (Exception) t.getCause();
+    public static Exception getOriginal(Exception ex) {
+        Throwable t = ex;
+        while( t.getCause() != null) {
+            t = t.getCause();
         }
-        return t;
+        Exception e = null;
+        if( t instanceof AppException) {
+            e = (AppException)t;
+        }
+        if( t instanceof NullPointerException ) {
+            e = (NullPointerException)t;
+        }
+        else {
+            String msg = t.getMessage();
+            if( msg == null ) {
+                if( msg == null )  msg = t.getClass().getName(); 
+            }
+            e = new Exception(msg);
+        }
+        return e;
     }
     
     
