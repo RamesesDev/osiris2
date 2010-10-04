@@ -44,10 +44,10 @@ public class Aggregator {
     public Object execute(String schemaName, Map param)  {
         try {
             Object targetModel = em.read( schemaName, param );
+            SchemaElement element = schemaManager.getElement(schemaName);
+            SqlContext sqlContext = em.getSqlContext();
             if(targetModel==null ) {
                 targetModel = em.createModel(schemaName);
-                SchemaElement element = schemaManager.getElement(schemaName);
-                SqlContext sqlContext = em.getSqlContext();
                 NewFieldUpdater fieldUpdater = new NewFieldUpdater(schemaManager, sqlContext, targetModel);
                 SchemaScanner scanner = schemaManager.newScanner();
                 scanner.scan( element.getSchema(), element, param, fieldUpdater );
@@ -57,8 +57,6 @@ public class Aggregator {
             
             else {
                 //create schema handler
-                SchemaElement element = schemaManager.getElement(schemaName);
-                SqlContext sqlContext = em.getSqlContext();
                 FieldUpdater fieldUpdater = new FieldUpdater(schemaManager, sqlContext, targetModel);
                 SchemaScanner scanner = schemaManager.newScanner();
                 scanner.scan( element.getSchema(), element, param, fieldUpdater );
