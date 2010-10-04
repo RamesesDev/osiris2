@@ -82,7 +82,7 @@ public class HttpInvokerClient {
                 
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(timeout);
-                conn.setReadTimeout(timeout);
+                //conn.setReadTimeout(timeout);
                 conn.setDoOutput(true);
                 conn.setUseCaches(false);
                 
