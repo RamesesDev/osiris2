@@ -2,7 +2,7 @@
 <workunit>
 
     <invokers>
-        <invoker folderid="/menu/file" caption="Inject Script Test" index="-2"/>
+        <invoker folderid="/menu/file" caption="Script Test" index="-2"/>
     </invokers>
 
     <code>
@@ -24,16 +24,22 @@
             def gender;
 
             public void fireTest() {
+                /*
                 try {
                     svc.fireTest();
                 }
                 catch(BusinessException e) {
                     MsgBox.alert('business exception: ' + e.message);
                 }
+                catch(Warning e) {
+                    MsgBox.alert('warning: ' + e.message);
+                }
                 catch(e) {
                     println "error: " + e + " : " + e.message;
                     throw e;
                 }
+                */
+                throw new Exception('asdfasdf');
             }    
         }
         

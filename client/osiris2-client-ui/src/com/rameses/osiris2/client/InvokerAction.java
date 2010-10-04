@@ -9,8 +9,6 @@ package com.rameses.osiris2.client;
 
 import com.rameses.osiris2.Invoker;
 import com.rameses.rcp.common.Action;
-import java.util.Map;
-
 
 public class InvokerAction extends Action  {
     
@@ -26,10 +24,6 @@ public class InvokerAction extends Action  {
     }
     
     public Object execute() {
-        Map p = null;
-        if ( invParam != null ) {
-            p = invParam.getParams();
-        }
         return InvokerUtil.invokeAction(this);
     }
 

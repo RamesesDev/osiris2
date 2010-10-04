@@ -25,6 +25,6 @@
     </code>
     
     <pages>
-        <page template="test.client.ControlsTestPage"/>
+        <page template="test.xtab.TabTest"/>
     </pages>
 </workunit>

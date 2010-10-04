@@ -71,6 +71,7 @@ public class XDateField extends AbstractIconedTextField {
         
         if(actionMessage.hasMessages())  {
             formattedString = null;
+            setText("");
             ControlProperty controlProperty = getControlProperty();
             controlProperty.setErrorMessage(actionMessage.toString());
         }
@@ -176,6 +177,8 @@ public class XDateField extends AbstractIconedTextField {
                     setText(inputFormatter.format(date));
             }
         }catch(Exception ex) {}
+        
+        if ( !formatted ) selectAll();
     }
     
     public void calculatePosition() {

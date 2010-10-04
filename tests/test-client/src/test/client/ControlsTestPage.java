@@ -35,6 +35,7 @@ public class ControlsTestPage extends javax.swing.JPanel {
         xDateField1.setName("entity.date");
         xDateField1.setPreferredSize(new java.awt.Dimension(150, 19));
         xDateField1.setRequired(true);
+        xDateField1.setUseDatePickerModel(true);
         formPanel1.add(xDateField1);
 
         xTextField1.setName("name");

@@ -66,6 +66,7 @@
               <Dimension value="[150, 19]"/>
             </Property>
             <Property name="required" type="boolean" value="true"/>
+            <Property name="useDatePickerModel" type="boolean" value="true"/>
           </Properties>
         </Component>
       </SubComponents>
