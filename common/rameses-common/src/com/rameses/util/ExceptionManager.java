@@ -55,8 +55,15 @@ public final class ExceptionManager {
         if( t instanceof AppException) {
             e = (AppException)t;
         }
+        if( t instanceof NullPointerException ) {
+            e = (NullPointerException)t;
+        }
         else {
-            e = new Exception(t.getMessage());
+            String msg = t.getMessage();
+            if( msg == null ) {
+                if( msg == null )  msg = t.getClass().getName(); 
+            }
+            e = new Exception(msg);
         }
         return e;
     }
