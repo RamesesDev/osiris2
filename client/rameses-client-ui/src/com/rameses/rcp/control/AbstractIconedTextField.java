@@ -36,12 +36,11 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
     private String orientation = ICON_ON_RIGHT;
     private boolean mouseOverImage = false;
     
-    
     public AbstractIconedTextField() {
         IconedTextFieldSupport support = new IconedTextFieldSupport();
         addMouseListener(support);
         addMouseMotionListener(support);
-        addActionListener(this);
+        addActionListener(this);        
     }
     
     public AbstractIconedTextField(String iconPath) {
@@ -68,17 +67,19 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
         
-        if( !isFocusable() ) {
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
-        } else if( mouseOverImage == true ) {
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
-        }
-        
-        if(imgWidth > 0) {
-            if(orientation.toUpperCase() == "RIGHT")
-                g2.drawImage( icon.getImage(), this.getWidth() - (imgWidth + XPAD), (this.getHeight() - imgHeight) / 2 , null);
-            else
-                g2.drawImage( icon.getImage(), XPAD, (this.getHeight() - imgHeight) / 2 , null);
+        if(icon != null) {
+            if( !isFocusable() ) {
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
+            } else if( mouseOverImage == true ) {
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
+            }
+            
+            if(imgWidth > 0) {
+                if(orientation.toUpperCase() == "RIGHT")
+                    g2.drawImage( icon.getImage(), this.getWidth() - (imgWidth + XPAD), (this.getHeight() - imgHeight) / 2 , null);
+                else
+                    g2.drawImage( icon.getImage(), XPAD, (this.getHeight() - imgHeight) / 2 , null);
+            }
         }
         g2.dispose();
     }
@@ -121,6 +122,17 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         this.icon = icon;
         imgWidth = icon.getIconWidth();
         imgHeight = icon.getIconHeight();
+    }
+    
+    public void setIcon(String path) {
+        try{
+            ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
+            URL url = loader.getResource(path);
+            
+            this.icon = new ImageIcon(url);
+            imgWidth = icon.getIconWidth();
+            imgHeight = icon.getIconHeight();
+        }catch(Exception ex) {}
     }
     
     

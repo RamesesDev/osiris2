@@ -22,6 +22,7 @@ public class DateDocument extends PlainDocument {
     
     private char dateSeparator;
     private String format;
+    private boolean editMode = false;
     
     public DateDocument(char separator, String format) {
         this.dateSeparator = separator;
@@ -29,17 +30,26 @@ public class DateDocument extends PlainDocument {
     }
     
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-        if(str.matches("\\d+")) {            
-            if(offs + 1 < format.length() && format.charAt(offs + 1) == dateSeparator) {
-                str = str + dateSeparator;
-                super.insertString(offs, str, a);
-            } else if(super.getLength() < format.length()) {
-                super.insertString(offs, str, a);
-            }            
-        }
+        if(isEditMode()) {
+            if(str.matches("\\d+")) {
+                if(offs + 1 < format.length() && format.charAt(offs + 1) == dateSeparator) {
+                    str = str + dateSeparator;
+                    super.insertString(offs, str, a);
+                } else if(super.getLength() < format.length()) {
+                    super.insertString(offs, str, a);
+                }
+            }
+        } else {
+            super.insertString(offs, str, a);
+        }        
     }
     
+    public boolean isEditMode() {
+        return editMode;
+    }
     
-    
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
     
 }

@@ -1,5 +1,6 @@
 package com.rameses.rcp.control;
 
+import com.rameses.rcp.control.date.DatePickerModel;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
@@ -11,7 +12,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.Beans;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -20,11 +20,8 @@ import java.util.Date;
  * @author Windhel
  */
 
-public class XDateField extends XTextField {
+public class XDateField extends AbstractIconedTextField {
     
-    private static int CURRENT_MILLENIUM = 2000;
-    
-    private Date currentDate;
     private SimpleDateFormat inputFormatter;
     private SimpleDateFormat outputFormatter;
     private SimpleDateFormat valueFormatter;
@@ -37,7 +34,8 @@ public class XDateField extends XTextField {
     private int txtXPos;
     private String guideFormat;
     private char dateSeparator;
-    private boolean autoComplete;
+    private boolean useDatePickerModel = false;
+    private DatePickerModel dpm;
     
     public XDateField() {
         setOutputFormat("yyyy-MM-dd");
@@ -49,16 +47,21 @@ public class XDateField extends XTextField {
         guideFormat = getInputFormat();
     }
     
+    
     //<editor-fold defaultstate="collapsed" desc="  Getter / Setter  ">
     public Object getValue() {
-        if( Beans.isDesignTime())
+        if(Beans.isDesignTime())
             return "";
         
         try {
-            if ( !ValueUtil.isEmpty(getText()) ) {
-                date = inputFormatter.parse(getText());
+            if(!ValueUtil.isEmpty(getText())) {
+                if(hasFocus())
+                    date = inputFormatter.parse(getText());
+                else
+                    date = outputFormatter.parse(getText());
+                
                 formattedString = valueFormatter.format(date);
-                if ( !formattedString.equals(getText()) ) {                    
+                if ( !formattedString.equals(getText()) ) {
                     actionMessage.addMessage("", "Invalid date entered for {0}.", new Object[] {getCaption()});
                 }
             }
@@ -76,29 +79,20 @@ public class XDateField extends XTextField {
     }
     
     public void setValue(Object value) {
-        if ( value instanceof KeyEvent ) {
+        if (value instanceof KeyEvent ){
             String text = ((KeyEvent) value).getKeyChar()+"";
-            if ( text.matches("[\\d]")) {
+            if (text.matches("[\\d]")) {
                 setText( text );
             }
         } else {
-            if ( value != null ) {
+            if (value != null) {
                 try{
-                    value = outputFormatter.parse(value.toString());
+                    Date d = valueFormatter.parse(value.toString());
+                    value = outputFormatter.format(d);
                 }catch(Exception ex) { ex.printStackTrace(); }
             }
-            setText( value==null? "" : outputFormatter.format(value) );
+            setText(value==null? "" : value + "");
         }
-    }
-    
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
-    }
-    
-    public void load() {
-        setInputVerifier(UIInputUtil.VERIFIER);
-        guideFormat = getInputFormat();
     }
     
     public String getOutputFormat() {
@@ -107,7 +101,7 @@ public class XDateField extends XTextField {
     
     public void setOutputFormat(String pattern) {
         this.outputFormat = pattern;
-        if( !ValueUtil.isEmpty(pattern) )
+        if(!ValueUtil.isEmpty(pattern))
             outputFormatter = new SimpleDateFormat(pattern);
         else
             outputFormatter = null;
@@ -119,19 +113,10 @@ public class XDateField extends XTextField {
     
     public void setInputFormat(String inputFormat) {
         this.inputFormat = inputFormat;
-        if( !ValueUtil.isEmpty(inputFormat) )
+        if(!ValueUtil.isEmpty(inputFormat))
             inputFormatter = new SimpleDateFormat(inputFormat);
         else
             inputFormatter = null;
-    }
-    
-    
-    public boolean isAutoComplete() {
-        return autoComplete;
-    }
-    
-    public void setAutoComplete(boolean autoComplete) {
-        this.autoComplete = autoComplete;
     }
     
     public String getValueFormat() {
@@ -140,35 +125,61 @@ public class XDateField extends XTextField {
     
     public void setValueFormat(String valueFormat) {
         this.valueFormat = valueFormat;
-        if( !ValueUtil.isEmpty(valueFormat))
+        if(!ValueUtil.isEmpty(valueFormat))
             valueFormatter = new SimpleDateFormat(valueFormat);
         else
             valueFormatter = null;
     }
+    
+    public boolean isUseDatePickerModel() {
+        return useDatePickerModel;
+    }
+    
+    public void setUseDatePickerModel(boolean useDatePickerModel) {
+        this.useDatePickerModel = useDatePickerModel;
+    }
+    
     //</editor-fold>
     
-    private final void showFormattedValue(boolean formatted) throws ParseException {
+    public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
-        if( formatted && outputFormatter !=null && value!=null ) {
-            setText( outputFormatter.format(outputFormatter.parse(value.toString())) );
-        } else {
-            if( value == null )
-                setText("");
-            else {
-                setText( inputFormatter.format(inputFormatter.parse(value.toString())) );
+        setValue(value);
+        
+    }
+    
+    public void load() {
+        setInputVerifier(UIInputUtil.VERIFIER);
+        guideFormat = getInputFormat();
+        for(char c : getInputFormat().toCharArray()) {
+            if(c != 'y' && c != 'M' && c != 'd') {
+                dateSeparator = c;
+                break;
             }
         }
         
-        if ( !formatted ) selectAll();
+        if(isUseDatePickerModel()) {
+            dpm = new DatePickerModel(this);
+            super.setIcon("com/rameses/rcp/icons/search.png");
+        }
+    }
+    
+    private final void showFormattedValue(boolean formatted) {
+        try{
+            if( formatted && outputFormatter !=null && !ValueUtil.isEmpty(getText())) {
+                date = inputFormatter.parse(getText());
+                setText(outputFormatter.format(date));
+            } else {
+                date = outputFormatter.parse(getText());
+                if(ValueUtil.isEmpty(getText()))
+                    setText("");
+                else
+                    setText(inputFormatter.format(date));
+            }
+        }catch(Exception ex) {}
     }
     
     public void calculatePosition() {
         txtYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
-        for(char c : getInputFormat().toCharArray()) {
-            if(c != 'y' && c != 'M' && c != 'd') {
-                dateSeparator = c;
-            }
-        }
         
         if(super.getText().length() <= getInputFormat().length())
             guideFormat = getInputFormat().substring(super.getText().length());
@@ -176,15 +187,25 @@ public class XDateField extends XTextField {
         for(int i = 0 ; i < super.getText().length() ; i++) {
             txtXPos = txtXPos + (getFontMetrics(getFont()).charWidth(super.getText().charAt(i)));
         }
+        
+        guideFormat = guideFormat.toUpperCase();
     }
     
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(Beans.isDesignTime() == false) {
-            g.setColor(Color.LIGHT_GRAY);
-            g.setFont(getFont());
-            calculatePosition();
-            g.drawString(guideFormat, txtXPos, txtYPos);
+        
+        if(Beans.isDesignTime())
+            return;
+        
+        g.setColor(Color.LIGHT_GRAY);
+        g.setFont(getFont());
+        calculatePosition();
+        g.drawString(guideFormat, txtXPos, txtYPos);
+    }
+    
+    public void actionPerformed() {
+        if(isUseDatePickerModel()) {
+            dpm.showCalendar();
         }
     }
     
@@ -203,6 +224,11 @@ public class XDateField extends XTextField {
             
             try{
                 showFormattedValue(true);
+                guideFormat = "";
+                if(ValueUtil.isEmpty(getText())) {
+                    setText(null);
+                    setValue(null);
+                }
             }catch(Exception ex) { ex.printStackTrace(); }
         }
         
@@ -218,16 +244,14 @@ public class XDateField extends XTextField {
                     e.getKeyChar() != KeyEvent.VK_KP_LEFT &&
                     e.getKeyCode() != 37 &&
                     e.getKeyCode() != 39) {
-                if(XDateField.this.getInputFormat().length() > XDateField.this.getText().length() ) {
-                    if(XDateField.this.getInputFormat().charAt(XDateField.this.getText().length()) == '-')
-                        XDateField.this.setText(XDateField.this.getText() + dateSeparator);
+                if(getInputFormat().length() > getText().length()) {
+                    if(getInputFormat().charAt(getText().length()) == dateSeparator)
+                        setText(getText() + dateSeparator);
                 }
             }
         }
         
-        public void keyReleased(KeyEvent e) {
-            
-        }
+        public void keyReleased(KeyEvent e) {}
         
     }
     //</editor-fold>

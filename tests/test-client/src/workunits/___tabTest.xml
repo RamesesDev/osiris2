@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker folderid="/menu/file" caption="Controls Test"/>
+        <invoker folderid="/menu/file" caption="XTabbedPane Test"/>
         
         <!-- form actions -->
         <invoker type="actions" action="_close" caption="Close" immediate="true" shortcut="ctrl X"/>

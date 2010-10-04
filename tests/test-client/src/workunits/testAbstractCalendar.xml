@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker type="loader" caption="Login" index="1000"/>
+        <invoker folderid="/menu/file" caption="Test Abstract Calendar"/>
     </invokers>
     
     <code>
@@ -10,14 +10,19 @@
         import com.rameses.common.annotations.*;
         import com.rameses.rcp.common.*;
                 
-        public class HomeController  {
+        public class TestAbstractCalendarController  {
         
+            def date;
+            
+            public void fireButton() {
+                MsgBox.alert(date);
+            }
         }
         
         ]]>
     </code>
     
     <pages>
-        <page template="test.client.HomePage"/>
+        <page template="testWindhel.TestAbstractCalendar"/>
     </pages>
 </workunit>
