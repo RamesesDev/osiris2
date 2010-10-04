@@ -6,13 +6,11 @@
             <name>http-invoker-server</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
-                <library>
-                    <file>${file.reference.commons-beanutils.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library>
+                <library files="1">
                     <file>${reference.rameses-common.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library files="3">
+                    <file>${libs.Apache_Bean_Utils.classpath}</file>
                 </library>
             </web-module-libraries>
             <web-module-additional-libraries/>

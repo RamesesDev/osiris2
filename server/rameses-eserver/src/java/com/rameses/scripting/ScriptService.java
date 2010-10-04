@@ -167,17 +167,11 @@ public class ScriptService implements ScriptServiceLocal {
                 }
                 return invokeAsync( pass, destinationType );
             }
-        } catch(Exception ex) {
-            Throwable e = ex;
-            while( e.getCause()!=null) {
-                e = e.getCause();
-            }
-            if( e instanceof Exception )
-                throw new EJBException((Exception)e);
-            else
-                throw new EJBException(e.getMessage());
-            
-        } finally {
+        } 
+        catch(Exception ex) {
+            throw new EJBException(ex);
+        } 
+        finally {
             if(injectionHandler!=null) injectionHandler.destroy();
         }
     }

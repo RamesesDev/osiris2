@@ -33,17 +33,23 @@ public class Aggregator {
     
     private SchemaManager schemaManager;
     private EntityManager em;
-    private AggregateHandler handler = new BasicAggregatorHandler();
+    private BasicAggregatorHandler handler = new BasicAggregatorHandler();
     
     public Aggregator(EntityManager em) {
         this.em = em;
         this.schemaManager = em.getSchemaManager();
     }
     
-    
     public Object execute(String schemaName, Map param)  {
+        return execute(schemaName, param, null);
+    }
+    
+    public Object execute(String schemaName, Map param, AggregateFilter filter)  {
         try {
             Object targetModel = em.read( schemaName, param );
+            if(filter!=null && !filter.accept(targetModel, param)) {
+                return null;
+            }
             SchemaElement element = schemaManager.getElement(schemaName);
             SqlContext sqlContext = em.getSqlContext();
             if(targetModel==null ) {
@@ -54,7 +60,6 @@ public class Aggregator {
                 EntityManagerUtil.executeQueue(fieldUpdater.getQueue(),sqlContext,null,em.isTransactionOpen(),em.isDebug());
                 return targetModel;
             }
-            
             else {
                 //create schema handler
                 FieldUpdater fieldUpdater = new FieldUpdater(schemaManager, sqlContext, targetModel);
@@ -140,7 +145,7 @@ public class Aggregator {
                 if(aggtype != null ) updatable = true;
                 
                 if( f.getProperties().get("primary")!=null) updatable = false;
-                 
+                
                 //get the old and new values.
                 Object oldValue = resolver.getProperty( targetModel, refname );
                 Object newValue = SchemaUtil.formatType( f, value );
@@ -148,11 +153,10 @@ public class Aggregator {
                     Object testVal = (oldValue!=null) ? oldValue : newValue;
                     Class clazz = SchemaUtil.getFieldClass( f, testVal );
                     newValue = handler.compare(aggtype, clazz, oldValue, newValue, f.getProperties());
-                }
-                else {
+                } else {
                     newValue = oldValue;
                 }
-
+                
                 //if there are changes update it.
                 DbElementContext dbec = stack.peek();
                 String sname = dbec.correctName( f.getName() );
@@ -187,6 +191,5 @@ public class Aggregator {
             execute( s, data );
         }
     }
-    
     
 }

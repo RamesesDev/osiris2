@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Warning extends RuntimeException {
+public class Warning extends AppException {
     
     public static long serialVersionUID = 1L;
     

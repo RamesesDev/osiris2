@@ -399,9 +399,7 @@
     <target name="do-dist" depends="init,compile,compile-jsps,-pre-dist,-do-dist-with-manifest,-do-dist-without-manifest"/>
     <target name="library-inclusion-in-manifest" depends="init" if="dist.ear.dir">
         <mkdir dir="${build.web.dir.real}/META-INF"/>
-        <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value=""/>
-        </manifest>
+        <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update"/>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
     <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir"/>

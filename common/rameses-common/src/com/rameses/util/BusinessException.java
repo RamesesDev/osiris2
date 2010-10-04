@@ -3,7 +3,7 @@ package com.rameses.util;
 import java.text.MessageFormat;
 
 
-public class BusinessException extends RuntimeException {
+public class BusinessException extends AppException {
     
     private String errno;
     private Object[] args;
