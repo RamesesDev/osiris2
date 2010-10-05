@@ -231,8 +231,8 @@ public class Binding {
         boolean first = !actionMessage.hasMessages();
         for ( Validatable vc: validatables ) {
             Component comp = (Component) vc;
-            if ( !comp.isFocusable() || !comp.isEnabled() ) {
-                //do not validate non-focusable or disabled fields.
+            if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isVisible() ) {
+                //do not validate non-focusable, disabled, or hidden fields.
                 continue;
             }
             
