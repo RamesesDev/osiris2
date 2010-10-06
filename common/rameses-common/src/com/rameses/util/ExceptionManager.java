@@ -55,7 +55,7 @@ public final class ExceptionManager {
         if( t instanceof AppException) {
             e = (AppException)t;
         }
-        if( t instanceof NullPointerException ) {
+        else if( t instanceof NullPointerException ) {
             e = (NullPointerException)t;
         }
         else {
