@@ -1,7 +1,9 @@
-package com.rameses.rcp.framework;
+package com.rameses.rcp.util;
 
 import com.rameses.rcp.common.Opener;
 import com.rameses.common.PropertyResolver;
+import com.rameses.rcp.framework.*;
+import com.rameses.rcp.ui.UIControl;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +11,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
 
 
@@ -55,6 +58,12 @@ public final class ControlSupport {
         return null;
     }
     
+    public static void fireNavigation(UIControl source, Object outcome) {
+        NavigationHandler nh = ClientContext.getCurrentContext().getNavigationHandler();
+        NavigatablePanel navPanel = UIControlUtil.getParentPanel((JComponent)source, null);
+        nh.navigate(navPanel, source, outcome);
+    }
+    
     public static byte[] getByteFromResource( String name ) {
         if(name==null || name.trim().length()==0)
             return null;
@@ -91,7 +100,8 @@ public final class ControlSupport {
         if ( caller != null && ValueUtil.isEmpty(opener.getName()) ) {
             opener.setController( caller );
             
-        } else {
+        } else if ( opener.getController() == null ) {
+            //this checking should not be here
             if ( opener.getName().indexOf(":") < 0 && caller != null ) {
                 String name = caller.getName();
                 String mod = name.substring(0, name.indexOf(":"));
@@ -156,10 +166,6 @@ public final class ControlSupport {
         } else {
             return true;
         }
-    }
-
-    public static void initOpener() {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
     
 }

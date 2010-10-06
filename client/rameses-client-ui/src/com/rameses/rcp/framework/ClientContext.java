@@ -35,6 +35,7 @@ public abstract class ClientContext {
     private NavigationHandler navigationHandler;
     private ControllerProvider controllerProvider;
     private ActionProvider actionProvider;
+    private OpenerProvider openerProvider;
     private Map headers = new HashMap();
     
     private Map properties = new HashMap();
@@ -93,6 +94,16 @@ public abstract class ClientContext {
             }
         }
         return actionProvider;
+    }
+    
+    public final OpenerProvider getOpenerProvider() {
+        if ( openerProvider == null ) {
+            Iterator itr = Service.providers(OpenerProvider.class, Thread.currentThread().getContextClassLoader());
+            if ( itr.hasNext() ) {
+                openerProvider = (OpenerProvider) itr.next();
+            }
+        }
+        return openerProvider;
     }
     
     public static final ClientContext getCurrentContext() {

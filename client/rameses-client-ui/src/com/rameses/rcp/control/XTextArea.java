@@ -1,6 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.constant.TextCase;
+import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.support.TextDocument;
 import com.rameses.rcp.ui.ActiveControl;
@@ -34,6 +35,10 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public XTextArea() {
         super();
+        
+        //default trim space option for TextArea
+        textDocument.setTrimSpaceOption(TrimSpaceOption.NONE);
+        
         try {
             super.setFont(UIManager.getFont("TextField.font"));
         } catch(Exception ign){;}
@@ -152,6 +157,14 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public void setTextCase(TextCase textCase) {
         textDocument.setTextCase(textCase);
+    }
+    
+    public TrimSpaceOption getTrimSpaceOption() {
+        return textDocument.getTrimSpaceOption();
+    }
+    
+    public void setTrimSpaceOption(TrimSpaceOption option) {
+        textDocument.setTrimSpaceOption(option);
     }
     
     public void setReadonly(boolean readonly) {

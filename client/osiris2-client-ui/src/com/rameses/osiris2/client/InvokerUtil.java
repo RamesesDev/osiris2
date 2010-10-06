@@ -11,7 +11,7 @@ package com.rameses.osiris2.client;
 
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.Folder;
-import com.rameses.rcp.framework.ControlSupport;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.osiris2.Invoker;

@@ -4,10 +4,8 @@
         <invoker folderid="/menu/file" caption="XTabbedPane Test"/>
         
         <!-- form actions -->
-        <invoker type="actions" action="_close" caption="Close" immediate="true" shortcut="ctrl X"/>
-        <invoker type="actions" action="edit" caption="Edit" shortcut="ctrl E"/>
-        <invoker type="actions" action="print" caption="Print"/>
-        <invoker type="actions" action="btnToggle" caption="Enable/Disable Controls" immediate="true"/>
+        <invoker type="invokerTabs" outcome="address" caption="Address"/>
+        <invoker type="invokerTabs" outcome="name" caption="Name"/>
     </invokers>
     
     <code>
@@ -18,7 +16,9 @@
         
                 
         public class TabTestController  {
-                       
+
+            
+        
         }
         
         ]]>
@@ -26,5 +26,7 @@
     
     <pages>
         <page template="test.xtab.TabTest"/>
+        <page name="address" template="test.xtab.Address"/>
+        <page name="name" template="test.xtab.Name"/>
     </pages>
 </workunit>

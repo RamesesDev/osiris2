@@ -38,6 +38,8 @@ public class UIInputUtil {
                 throw new IllegalStateException("UIInputVerifier should be used for UIInput controls only.");
             
             UIInput control = (UIInput) input;
+            if ( control.isReadonly() ) return true;
+            
             if ( control instanceof Validatable ) {
                 ((Validatable) control).validateInput();
             }

@@ -17,6 +17,10 @@
             def text = TemplateProvider.instance.getResult(
                 'templates/TestTemplate.groovy', [items:["one", "two", "three"]]
             );
+            
+            void refresh() {
+                MsgBox.alert('refreshing...');
+            }
         
         }
         
@@ -24,6 +28,6 @@
     </code>
     
     <pages>
-        <page template="test1.TemplateTest"/>
+        <page template="test.xeditor.TemplateTest"/>
     </pages>
 </workunit>

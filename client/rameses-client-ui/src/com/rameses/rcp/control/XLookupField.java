@@ -6,7 +6,7 @@ import com.rameses.rcp.common.LookupSelector;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.framework.ControlSupport;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;

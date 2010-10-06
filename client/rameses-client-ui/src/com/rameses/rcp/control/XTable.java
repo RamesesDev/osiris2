@@ -9,14 +9,14 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
+import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.table.TableManager;
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.framework.NavigatablePanel;
-import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
@@ -41,7 +41,6 @@ import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.TableComponent;
 import com.rameses.rcp.control.table.TableHeaderBorder;
-import com.rameses.rcp.framework.ClientContext;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
@@ -206,12 +205,10 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                 Object outcome = listModel.openSelectedItem();
                 if ( outcome == null ) return;
                 
-                NavigationHandler nh = ClientContext.getCurrentContext().getNavigationHandler();
-                NavigatablePanel navPanel = UIControlUtil.getParentPanel(this, null);
-                nh.navigate(navPanel, this, outcome);
+                ControlSupport.fireNavigation(this, outcome);
                 
             } catch(Exception ex){
-                throw new IllegalStateException("XTable::openItem", ex);
+                MsgBox.err(new IllegalStateException("XTable::openItem", ex));
             }
         }
     }

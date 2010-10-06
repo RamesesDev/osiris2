@@ -4,7 +4,7 @@ import com.rameses.rcp.framework.UIController;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.Page;
 import com.rameses.osiris2.WorkUnitInstance;
-import com.rameses.rcp.framework.ControlSupport;
+import com.rameses.rcp.util.ControlSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

@@ -1,28 +1,23 @@
-package test;
-
+package test.xtab;
 /*
- * TestPage.java
+ * Address.java
  *
- * Created on July 1, 2010, 1:43 PM
+ * Created on October 6, 2010, 2:01 PM
  * @author jaycverg
  */
 
 
-public class TestPage extends javax.swing.JPanel {
+public class Name extends javax.swing.JPanel {
     
-    public TestPage() {
+    public Name() {
         initComponents();
-        ep.setText("<html><body><b>hello world.</b></body></html>");
     }
     
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jScrollPane1 = new javax.swing.JScrollPane();
-        ep = new javax.swing.JEditorPane();
+        jLabel1 = new javax.swing.JLabel();
 
-        ep.setEditable(false);
-        ep.setContentType("text/html");
-        jScrollPane1.setViewportView(ep);
+        jLabel1.setText("Tab 2");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -30,22 +25,21 @@ public class TestPage extends javax.swing.JPanel {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
-                .addContainerGap())
+                .add(jLabel1)
+                .addContainerGap(353, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 131, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(233, Short.MAX_VALUE))
+                .add(jLabel1)
+                .addContainerGap(273, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JEditorPane ep;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
     
 }

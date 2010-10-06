@@ -25,6 +25,8 @@ public class Opener {
     private UIController controller;
     private UIController caller;
     
+    private Map properties = new HashMap();
+    
     
     public Opener() {
     }
@@ -91,37 +93,52 @@ public class Opener {
     public void setOutcome(String outcome) {
         this.outcome = outcome;
     }
-
+    
     public UIController getController() {
         return controller;
     }
-
+    
     public void setController(UIController controller) {
         this.controller = controller;
     }
-
+    
+    /**
+     * @description
+     *  Shorthand for getting the controllers codeBean.
+     *  Returns null if the controller is null.
+     */
+    public Object getHandle() {
+        if ( controller == null ) return null;
+        
+        return controller.getCodeBean();
+    }
+    
     public UIController getCaller() {
         return caller;
     }
-
+    
     public void setCaller(UIController caller) {
         this.caller = caller;
     }
-
+    
     public String getPermission() {
         return permission;
     }
-
+    
     public void setPermission(String permission) {
         this.permission = permission;
     }
-
+    
     public boolean isModal() {
         return modal;
     }
-
+    
     public void setModal(boolean modal) {
         this.modal = modal;
+    }
+    
+    public Map getProperties() {
+        return properties;
     }
     
 }

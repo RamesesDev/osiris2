@@ -2,7 +2,7 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.BindingConnector;
-import com.rameses.rcp.framework.ControlSupport;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIControllerContext;
@@ -41,6 +41,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     private List<Binding> subBindings = new ArrayList();
     private List<SubFormContext> subFormItems = new ArrayList();
     
+    private List<Opener> openers;
     
     public XSubFormPanel() {
         super.setLayout(new BorderLayout());
@@ -48,6 +49,16 @@ public class XSubFormPanel extends JPanel implements UISubControl {
             setPreferredSize( new Dimension(40,40) );
             setBackground( Color.decode("#e3e3e3") );
         }
+    }
+    
+    public XSubFormPanel(Opener o) {
+        this();
+        getOpeners().add(o);
+    }
+    
+    public List<Opener> getOpeners() {
+        if ( openers == null ) openers = new ArrayList();
+        return openers;
     }
     
     public void setLayout(LayoutManager mgr) {;}
@@ -77,27 +88,27 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         removeAll();
         SwingUtilities.updateComponentTreeUI(this);
         
-        Object obj = UIControlUtil.getBeanValue(this, getHandler());
+        Object obj = null;
+        
+        //this is usually set by XTabbedPane or 
+        //other controls that used XSubForm internally
+        if ( getOpeners().size() > 0 ) {
+            obj = getOpeners();
+        } else {
+            obj = UIControlUtil.getBeanValue(this, getHandler());
+        }
         if ( obj == null ) return;
         
-        String errMsg = "XSubFormPanel handler must be an instance of Opener, Opener[], or List<Opener>";
         List<Opener> openers = new ArrayList();
         multiForm = true;
         
-        //get handler
         if ( obj instanceof Collection ) {
             for(Object o: (Collection) obj) {
-                if ( !(o instanceof Opener) ) {
-                    throw new IllegalStateException(errMsg);
-                }
                 openers.add( (Opener)o );
             }
             
         } else if ( obj.getClass().isArray() ) {
             for(Object o: (Object[]) obj) {
-                if ( !(o instanceof Opener) ) {
-                    throw new IllegalStateException(errMsg);
-                }
                 openers.add( (Opener)o );
             }
             
@@ -106,7 +117,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
             multiForm = false;
             
         } else {
-            throw new IllegalStateException(errMsg);
+            throw new IllegalStateException("XSubFormPanel handler must be an instance of Opener, Opener[], or List<Opener>");
         }
         
         if ( openers.size() == 0 ) return;

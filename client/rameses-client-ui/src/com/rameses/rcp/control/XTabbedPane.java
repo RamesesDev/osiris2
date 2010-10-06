@@ -7,18 +7,21 @@
 
 package Templates.Classes;
 
-import com.rameses.rcp.common.Action;
-import com.rameses.rcp.framework.ActionProvider;
+import com.rameses.rcp.common.Opener;
+import com.rameses.rcp.control.XSubFormPanel;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.framework.OpenerProvider;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
+import java.awt.Component;
 import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -31,6 +34,7 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     private boolean dynamic;
     
     private int oldIndex;
+    private List<Opener> openers = new ArrayList();
     
     public XTabbedPane() {
         super();
@@ -47,16 +51,39 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     //</editor-fold>
     
     public void refresh() {
+        if ( dynamic ) {
+            loadTabs();
+        }
     }
     
     public void load() {
+        if ( !dynamic ) {
+            loadTabs();
+        }
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
-    private void loadActions() {
-        List<Action> actions = new ArrayList();
-        
-        //--get actions defined from the code bean
+    private void loadTabs() {
+        loadOpeners();
+        removeAll();
+        if ( openers.size() > 0 ) {
+            for (Opener o: openers) {
+                super.addTab(o.getCaption(), getOpenerIcon(o), new XSubFormPanel());
+            }
+            setSelectedIndex(0);
+        }
+    }
+    
+    private Icon getOpenerIcon(Opener o) {
+        if ( o.getProperties().get("icon") != null ) {
+            return ControlSupport.getImageIcon(o.getProperties().get("icon")+"");
+        }
+        return null;
+    }
+    
+    private void loadOpeners() {
+        openers.clear();
+        //--get openers defined from the code bean
         Object value = null;
         try {
             value = UIControlUtil.getBeanValue(this);
@@ -65,24 +92,20 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
         if (value == null) {
             //do nothing
         } else if (value.getClass().isArray()) {
-            for (Action aa: (Action[]) value) {
-                actions.add(aa);
+            for (Opener o: (Opener[]) value) {
+                openers.add(o);
             }
         } else if (value instanceof Collection) {
-            actions.addAll((Collection) value);
+            openers.addAll((Collection) value);
         }
         
-        //--get actions defined from the action provider
-        ActionProvider actionProvider = ClientContext.getCurrentContext().getActionProvider();
-        if (actionProvider != null) {
+        //--get openers defined from the opener provider
+        OpenerProvider openerProvider = ClientContext.getCurrentContext().getOpenerProvider();
+        if (openerProvider != null) {
             UIController controller = binding.getController();
-            List<Action> aa = actionProvider.getActionsByType(getName(), null);
-            if (aa != null) actions.addAll(aa);
+            List<Opener> oo = openerProvider.getOpeners(getName(), null);
+            if (oo != null) openers.addAll(oo);
         }
-        
-        if (actions.size() == 0) return;
-        
-        Collections.sort(actions);
     }
     //</editor-fold>
     
@@ -91,11 +114,20 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     }
     
     public void setSelectedIndex(int index) {
+        Component c = getComponentAt(index);
+        if ( c instanceof XSubFormPanel ) {
+            XSubFormPanel xsf = (XSubFormPanel) c;
+            if ( xsf.getClientProperty("BINDED") == null ) {
+                
+            }
+        }
+        
         this.oldIndex = getSelectedIndex();
         super.setSelectedIndex(index);
     }
     
     
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String[] getDepends() { return depends; }
     public void setDepends(String[] depends) { this.depends = depends; }
     
@@ -107,6 +139,6 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     
     public boolean isDynamic() { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
-    
+    //</editor-fold>
     
 }

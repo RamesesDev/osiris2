@@ -3,7 +3,7 @@ package com.rameses.rcp.impl;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.framework.ControlSupport;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.framework.NavigatablePanel;
 import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.common.Opener;
