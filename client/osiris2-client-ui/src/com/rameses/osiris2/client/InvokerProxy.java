@@ -77,7 +77,14 @@ public class InvokerProxy {
             if( method.getName().equals("toString")) return serviceName;
             
             Map headers = ClientContext.getCurrentContext().getHeaders();
-            return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
+            try {
+                return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
+            }
+            catch(Exception e) {
+                System.out.println("ERROR CLASS " + e.getClass().getName());
+                e.printStackTrace();
+                throw e;
+            }
         }
     }
     

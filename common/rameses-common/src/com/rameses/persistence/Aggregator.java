@@ -41,10 +41,14 @@ public class Aggregator {
     }
     
     public Object execute(String schemaName, Map param)  {
-        return execute(schemaName, param, null);
+        return execute(schemaName, param, null, true);
     }
     
     public Object execute(String schemaName, Map param, AggregateFilter filter)  {
+        return execute(schemaName, param, filter, true);
+    }
+    
+    public Object execute(String schemaName, Map param, AggregateFilter filter, boolean persist)  {
         try {
             Object targetModel = em.read( schemaName, param );
             if(filter!=null && !filter.accept(targetModel, param)) {
@@ -57,17 +61,16 @@ public class Aggregator {
                 NewFieldUpdater fieldUpdater = new NewFieldUpdater(schemaManager, sqlContext, targetModel);
                 SchemaScanner scanner = schemaManager.newScanner();
                 scanner.scan( element.getSchema(), element, param, fieldUpdater );
-                EntityManagerUtil.executeQueue(fieldUpdater.getQueue(),sqlContext,null,em.isTransactionOpen(),em.isDebug());
-                return targetModel;
-            }
-            else {
+                if(persist) EntityManagerUtil.executeQueue(fieldUpdater.getQueue(),sqlContext,null,em.isTransactionOpen(),em.isDebug());
+            } else {
                 //create schema handler
                 FieldUpdater fieldUpdater = new FieldUpdater(schemaManager, sqlContext, targetModel);
                 SchemaScanner scanner = schemaManager.newScanner();
                 scanner.scan( element.getSchema(), element, param, fieldUpdater );
-                EntityManagerUtil.executeQueue(fieldUpdater.getQueue(),sqlContext,null,em.isTransactionOpen(),em.isDebug());
-                return targetModel;
+                if(persist) EntityManagerUtil.executeQueue(fieldUpdater.getQueue(),sqlContext,null,em.isTransactionOpen(),em.isDebug());
             }
+            return targetModel;
+            
         } catch(Exception e) {
             throw new RuntimeException(e);
         }

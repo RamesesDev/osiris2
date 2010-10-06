@@ -40,7 +40,14 @@ public class RuleService implements RuleServiceLocal {
         FactType ftype = kb.getFactType( pkg, cls );
         Object fact = ftype.newInstance();
         if( data !=null ) {
-            ftype.setFromMap( fact, data );
+            //ftype.setFromMap( fact, data );
+            for(Object m: data.entrySet()) {
+                Map.Entry me = (Map.Entry)m;
+                try {
+                    ftype.set(fact, me.getKey()+"", me.getValue());
+                }
+                catch(Exception ign){;}
+            }
         }
         return fact;
     }
