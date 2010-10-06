@@ -1,4 +1,4 @@
-package groovytemplate;
+package com.rameses.osiris2.client;
 /*
  * GroovyTemplateProvider.java
  *
@@ -9,7 +9,6 @@ package groovytemplate;
  */
 
 import com.rameses.util.TemplateProvider;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Template;
 import groovy.lang.Writable;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;

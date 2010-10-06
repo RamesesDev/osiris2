@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Template Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.util.*;
+        
+                
+        public class TemplateTestController  {
+                       
+            def text = TemplateProvider.instance.getResult(
+                'templates/TestTemplate.groovy', [items:["one", "two", "three"]]
+            );
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.TemplateTest"/>
+    </pages>
+</workunit>
