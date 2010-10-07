@@ -20,7 +20,9 @@ public class Test extends TestCase {
     }
     
     public void test() throws ParseException {
-        String reg = "^(.+)(?:\\?(.+))?";
+        for(String s : "click?hello world".split("\\?") ) {
+            System.out.println(s);
+        }
     }
     
 }

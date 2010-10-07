@@ -1,14 +1,15 @@
 package com.rameses.rcp.util;
 
+import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.Rectangle;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -17,40 +18,34 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
-public class FormPanel extends JPanel {
+public class FormPanel extends JPanel implements ActiveControl {
     
     private int cellspacing = 3;
-    private int captionWidth = 80;
+    private Insets cellpadding = new Insets(0,0,0,0);
+    private String orientation = UIConstants.VERTICAL;
     
-    // (NUM-PAD ARRANGEMENT) 2-top  5-center  8-bottom
-    private int captionVAlignment = 2;
-    private Color errorCaptionColor = Color.RED;
+    private Insets padding;
+    private Border origBorder;
+    
+    private int captionWidth = 80;
+    private String captionVAlignment = UIConstants.TOP;
+    private String captionHAlignment = UIConstants.LEFT;
+    private String captionOrientation = UIConstants.LEFT;
+    private Insets captionPadding = new Insets(0,0,0,5);
+    private boolean addCaptionColon = true;
+    
+    private ControlProperty property = new ControlProperty();
     
     public FormPanel() {
         super.setLayout(new Layout());
-        setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        setPadding(new Insets(5,5,5,5));
         setOpaque(false);
-        
-        if ( Beans.isDesignTime() ) {
-            setPreferredSize(new Dimension(100, 100));
-        }
     }
     
     //<editor-fold defaultstate="collapsed" desc=" FormPanel implementations ">
     public void setLayout(LayoutManager mgr) {;}
-    
-    public int getCellspacing() { return cellspacing; }
-    public void setCellspacing(int cellspacing) { this.cellspacing = cellspacing; }
-    
-    public int getCaptionWidth() { return captionWidth; }
-    public void setCaptionWidth(int captionWidth) { this.captionWidth = captionWidth; }
-    
-    public int getCaptionVAlignment() { return captionVAlignment; }
-    public void setCaptionVAlignment(int captionVAlignment) { this.captionVAlignment = captionVAlignment; }
-    
-    public Color getErrorCaptionColor() { return errorCaptionColor; }
-    public void setErrorCaptionColor(Color color) { this.errorCaptionColor = color; }
     
     protected void addImpl(Component comp, Object constraints, int index) {
         ItemPanel p = null;
@@ -105,6 +100,89 @@ public class FormPanel extends JPanel {
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public ControlProperty getControlProperty() {
+        return property;
+    }
+    
+    public String getCaption() { return property.getCaption(); }
+    public void setCaption(String caption) { property.setCaption(caption); }
+    
+    public char getCaptionMnemonic() { return property.getCaptionMnemonic(); }
+    public void setCaptionMnemonic(char c) { property.setCaptionMnemonic(c); }
+    
+    public boolean isShowCaption() { return property.isShowCaption(); }
+    public void setShowCaption(boolean show) { property.setShowCaption(show); }
+    
+    public int getCellspacing() { return cellspacing; }
+    public void setCellspacing(int cellspacing) { this.cellspacing = cellspacing; }
+    
+    public void setBorder(Border border) {
+        this.origBorder = border;
+        if ( padding != null ) {
+            Border inner = BorderFactory.createEmptyBorder(padding.top, padding.left, padding.bottom, padding.right);
+            super.setBorder(BorderFactory.createCompoundBorder(border, inner));
+        } else {
+            super.setBorder(border);
+        }
+    }
+    
+    public Insets getPadding() { return padding; }
+    public void setPadding(Insets padding) {
+        this.padding = padding;
+        setBorder(origBorder);
+    }
+    
+    public int getCaptionWidth() { return captionWidth; }
+    public void setCaptionWidth(int captionWidth) { this.captionWidth = captionWidth; }
+    
+    public String getCaptionVAlignment() { return captionVAlignment; }
+    public void setCaptionVAlignment(String captionVAlignment) {
+        if ( captionVAlignment != null )
+            this.captionVAlignment = captionVAlignment.toUpperCase();
+        else
+            this.captionVAlignment = UIConstants.TOP;
+    }
+    
+    public String getCaptionHAlignment() { return captionHAlignment; }
+    public void setCaptionHAlignment(String captionHAlignment) {
+        if ( captionHAlignment != null )
+            this.captionHAlignment = captionHAlignment.toUpperCase();
+        else
+            this.captionHAlignment = UIConstants.LEFT;
+    }
+    
+    public String getCaptionOrientation() { return captionOrientation; }
+    public void setCaptionOrientation(String captionOrientation) {
+        if ( captionOrientation != null )
+            this.captionOrientation = captionOrientation.toUpperCase();
+        else
+            this.captionOrientation = UIConstants.LEFT;
+    }
+    
+    public String getOrientation() { return orientation; }
+    public void setOrientation(String orientation) {
+        if ( orientation != null )
+            this.orientation = orientation.toUpperCase();
+        else
+            this.orientation = UIConstants.VERTICAL;
+    }
+    
+    public Insets getCaptionPadding() { return captionPadding; }
+    public void setCaptionPadding(Insets captionPadding) { this.captionPadding = captionPadding; }
+    
+    public Insets getCellpadding() { return cellpadding; }
+    public void setCellpadding(Insets cellpadding) {
+        if ( cellpadding != null )
+            this.cellpadding = cellpadding;
+        else
+            this.cellpadding = new Insets(0,0,0,0);
+    }
+    
+    public boolean isAddCaptionColon() { return addCaptionColon; }
+    public void setAddCaptionColon(boolean addCaptionColon) { this.addCaptionColon = addCaptionColon; }
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc=" ItemPanel (Class) ">
     private class ItemPanel extends JPanel {
         
@@ -128,6 +206,7 @@ public class FormPanel extends JPanel {
             
             label = new XLabel(true);
             label.setLabelFor(editor);
+            ((XLabel) label).setAddCaptionColon(addCaptionColon);
             
             setOpaque(false);
             setLayout(new ItemPanelLayout(property));
@@ -137,7 +216,7 @@ public class FormPanel extends JPanel {
             } else {
                 add(editor, "editor");
             }
-
+            
             PropertyChangeListener listener = new ContainablePropetyListener(this);
             property.addPropertyChangeListener(listener);
         }
@@ -168,7 +247,7 @@ public class FormPanel extends JPanel {
         public void propertyChange(PropertyChangeEvent evt) {
             String propName = evt.getPropertyName();
             Object value = evt.getNewValue();
-
+            
             if ( "captionWidth".equals(propName) ) {
                 panel.revalidate();
             } else if ( "showCaption".equals(propName)) {
@@ -218,45 +297,78 @@ public class FormPanel extends JPanel {
                 int w = parent.getWidth() - (margin.left + margin.right);
                 int h = parent.getHeight() - (margin.top + margin.bottom);
                 int captionWidth = getPreferredCaptionWidth();
-                boolean captionHidden = !isShowCaption();
+                String orient = getCaptionOrientation();
                 
-                if (label != null && !captionHidden) {
-                    int cw = captionWidth;
-                    Dimension dim = label.getPreferredSize();
-                    if (cw <= 0) cw = dim.width;
-                    
-                    label.setBounds(x, y, cw, h);
-                    x += cw;
-                    w -= cw;
-                }
-                
-                if (editor != null) {
-                    Dimension dim = editor.getPreferredSize();
-                    int cw = dim.width;
-                    if ( cw > w || cw <= 0 ) {
-                        cw = w;
-                    }
-                    editor.setBounds(x, y, cw, h);
+                if ( UIConstants.LEFT.equals(orient) || UIConstants.TOP.equals(orient) ) {
+                    Rectangle rec = layoutLabel(x, y, w, h, captionWidth);
+                    layoutEditor(rec.x, rec.y, rec.width, rec.height);
+                } else {
+                    Rectangle rec = layoutEditor(x, y, w, h);
+                    layoutLabel(rec.x, rec.y, rec.width, rec.height, captionWidth);
                 }
             }
         }
+        
+        //<editor-fold defaultstate="collapsed" desc="  layout helper  ">
+        private Rectangle layoutLabel(int x, int y, int w, int h, int captionWidth) {
+            if (label != null && isShowCaption()) {
+                int cw = captionWidth;
+                Dimension dim = label.getPreferredSize();
+                if (cw <= 0) cw = dim.width;
+                
+                label.setBounds(x, y, cw, h);
+                if ( UIConstants.TOP.equals(captionOrientation) ) {
+                    y += dim.height;
+                    h -= dim.height;
+                } else {
+                    x += cw;
+                    w -= cw;
+                }
+            }
+            return new Rectangle(x, y, w, h);
+        }
+        
+        private Rectangle layoutEditor(int x, int y, int w, int h) {
+            if (editor != null) {
+                Dimension dim = editor.getPreferredSize();
+                int cw = dim.width;
+                if ( cw > w || cw <= 0 ) {
+                    cw = w;
+                }
+                editor.setBounds(x, y, cw, dim.height);
+                if ( UIConstants.BOTTOM.equals(captionOrientation) ) {
+                    y += dim.height;
+                    h -= dim.height;
+                } else {
+                    x += cw;
+                    w -= cw;
+                }
+            }
+            return new Rectangle(x, y, w, h);
+        }
+        //</editor-fold>
         
         public Dimension getLayoutSize(Container parent) {
             synchronized (parent.getTreeLock()) {
                 int w=0, h=0;
                 int captionWidth = getPreferredCaptionWidth();
-                boolean captionHidden = !isShowCaption();
+                String orient = getCaptionOrientation();
                 
                 if (label != null) {
-                    if ( !captionHidden ) {
+                    if ( isShowCaption() ) {
                         applyCaptionStyles((JLabel) label);
-                        
-                        int cw = captionWidth;
                         Dimension dim = label.getPreferredSize();
-                        if (cw <= 0) cw = dim.width;
                         
-                        w += cw;
-                        h = Math.max(h, dim.height);
+                        if ( UIConstants.TOP.equals(orient) || UIConstants.BOTTOM.equals(orient) ) {
+                            h += dim.height;
+                            w = Math.max(w, dim.width);
+                        } else {
+                            int cw = captionWidth;
+                            if (cw <= 0) cw = dim.width;
+                            w += cw;
+                            h = Math.max(h, dim.height);
+                        }
+                        
                         label.setVisible(true);
                     } else {
                         label.setVisible(false);
@@ -265,8 +377,13 @@ public class FormPanel extends JPanel {
                 
                 if (editor != null) {
                     Dimension dim = editor.getPreferredSize();
-                    w += dim.width;
-                    h = Math.max(h, dim.height);
+                    if ( UIConstants.TOP.equals(orient) || UIConstants.BOTTOM.equals(orient) ) {
+                        h += dim.height;
+                        w = Math.max(w, dim.width);
+                    } else {
+                        w += dim.width;
+                        h = Math.max(h, dim.height);
+                    }
                 }
                 
                 Insets margin = parent.getInsets();
@@ -277,10 +394,26 @@ public class FormPanel extends JPanel {
         }
         
         private void applyCaptionStyles(JLabel label) {
-            int valign = getCaptionVAlignment();
-            if (valign == 5) label.setVerticalAlignment(SwingConstants.CENTER);
-            else if (valign == 8) label.setVerticalAlignment(SwingConstants.BOTTOM);
-            else label.setVerticalAlignment(SwingConstants.TOP);
+            //vertical alignment
+            String valign = getCaptionVAlignment();
+            if ( UIConstants.CENTER.equals(valign) )
+                label.setVerticalAlignment(SwingConstants.CENTER);
+            else if ( UIConstants.BOTTOM.equals(valign) )
+                label.setVerticalAlignment(SwingConstants.BOTTOM);
+            else
+                label.setVerticalAlignment(SwingConstants.TOP);
+            
+            //horizontal alignment
+            String halign = getCaptionHAlignment();
+            if ( UIConstants.CENTER.equals(halign) )
+                label.setHorizontalAlignment(SwingConstants.CENTER);
+            else if ( UIConstants.RIGHT.equals(halign) )
+                label.setHorizontalAlignment(SwingConstants.RIGHT);
+            else
+                label.setHorizontalAlignment(SwingConstants.LEFT);
+            
+            if ( captionPadding != null )
+                ((XLabel) label).setPadding(captionPadding);
         }
         
         private int getPreferredCaptionWidth() {
@@ -322,10 +455,21 @@ public class FormPanel extends JPanel {
                     Dimension dim = c.getPreferredSize();
                     
                     //add cellspacing
-                    if (y > 0) y += getCellspacing();
+                    if ( UIConstants.HORIZONTAL.equals(orientation) ) {
+                        if (x > 0) x += getCellspacing();
+                        x += cellpadding.left;
+                    } else {
+                        if (y > 0) y += getCellspacing();
+                        y += cellpadding.top;
+                    }
                     
                     c.setBounds(x, y, w, dim.height);
-                    y += dim.height;
+                    
+                    //increment
+                    if ( UIConstants.HORIZONTAL.equals(orientation) )
+                        x += dim.width + cellpadding.right;
+                    else
+                        y += dim.height + cellpadding.bottom;
                 }
             }
         }
@@ -335,18 +479,30 @@ public class FormPanel extends JPanel {
                 int w=0, h=0;
                 
                 Component[] comps = parent.getComponents();
+                if ( Beans.isDesignTime() && comps.length == 0 ) {
+                    return new Dimension(100, 100);
+                }
+                
                 for (int i=0; i<comps.length; i++) {
                     Component c = comps[i];
                     if (c instanceof ItemPanel) {
                         Dimension dim = c.getPreferredSize();
-                        if (w == 0) w = dim.width;
-                        
-                        w = Math.min(w, dim.width);
-                        
-                        //add cellspacing
-                        if (h > 0) h += getCellspacing();
-                        
-                        h += dim.height;
+                        if ( UIConstants.HORIZONTAL.equals(orientation) ) {
+                            if (h == 0) h = dim.height;
+                            h = Math.min(h, dim.height);
+                            
+                            //add cellspacing and cellpadding
+                            if (w > 0) w += getCellspacing();
+                            w += dim.width + cellpadding.left + cellpadding.right;
+                            
+                        } else {
+                            if (w == 0) w = dim.width;
+                            w = Math.min(w, dim.width);
+                            
+                            //add cellspacing and cellpadding
+                            if (h > 0) h += getCellspacing();
+                            h += dim.height + cellpadding.top + cellpadding.bottom;
+                        }
                     }
                 }
                 

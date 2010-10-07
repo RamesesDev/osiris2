@@ -49,7 +49,7 @@ public class UIControlUtil {
     }
     
     public static NavigatablePanel getParentPanel(JComponent comp, String target) {
-        NavigatablePanel panel = null; //(NavigatablePanel) comp.getClientProperty(NavigatablePanel.class);
+        NavigatablePanel panel = null;
         if ( panel == null ) {
             Container parent = comp.getParent();
             while( parent != null ) {

@@ -16,6 +16,7 @@ import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.common.ExpressionResolver;
+import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
@@ -37,9 +38,6 @@ import javax.swing.SwingUtilities;
 
 public class XActionBar extends JPanel implements UIComposite {
     
-    public static final String VERTICAL = "VERTICAL";
-    public static final String HORIZONTAL = "HORIZONTAL";
-    
     private Binding binding;
     private String[] depends;
     private boolean useToolBar;
@@ -48,7 +46,7 @@ public class XActionBar extends JPanel implements UIComposite {
     private int index;
     private Insets padding = new Insets(0,0,0,0);
     
-    private String orientation = HORIZONTAL;
+    private String orientation = UIConstants.HORIZONTAL;
     
     //XButton target
     private String target;
@@ -301,7 +299,7 @@ public class XActionBar extends JPanel implements UIComposite {
                     if (!comps[i].isVisible()) continue;
                     
                     Dimension dim = comps[i].getPreferredSize();
-                    if ( VERTICAL.equals(orientation) ) {
+                    if ( UIConstants.VERTICAL.equals(orientation) ) {
                         w = Math.max(w, dim.width);
                         h += (dim.height + getSpacing());
                     } else {
@@ -334,7 +332,7 @@ public class XActionBar extends JPanel implements UIComposite {
                     if (!comps[i].isVisible()) continue;
                     
                     Dimension dim = comps[i].getPreferredSize();
-                    if ( VERTICAL.equals(orientation) ) {
+                    if ( UIConstants.VERTICAL.equals(orientation) ) {
                         comps[i].setBounds(x, y, w, dim.height);
                         y += (dim.height + getSpacing());
                     } else {

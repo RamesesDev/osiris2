@@ -59,7 +59,6 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
         if ( current != null ) {
             UIViewPanel p = current.getCurrentView();
             Binding binding = p.getBinding();
-            binding.getProperties().put(UIViewPanel.class, p);
             defaultBtn = binding.getDefaultButton();
             if ( defaultBtn != null ) {
                 defaultBtnAdded = false;

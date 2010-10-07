@@ -177,7 +177,7 @@ public class PageFlowForm {
         
         Object outcome = signal();
         
-        UIViewPanel panel = (UIViewPanel) getBinding().getProperties().get(UIViewPanel.class);
+        UIViewPanel panel = getBinding().getOwner();
         NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
         NavigationHandler nh = ClientContext.getCurrentContext().getNavigationHandler();
         if ( nh != null ) {

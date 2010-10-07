@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker folderid="/menu/file" caption="XTabbedPane Test"/>
+        <invoker type="invokerTabs" action="init" caption="Name" index="1"/>
     </invokers>
     
     <code>
@@ -13,10 +13,14 @@
                 
         public class TabTestController  {
 
-            def entity = [address:[:],address2:[:], name:[:]];
+            @Caller
+            def caller;
             
-            void save() {
-                MsgBox.alert(entity);
+            def entity;
+            
+            void init() {
+                Thread.sleep(10000);
+                entity = caller.entity.name;
             }
         
         }
@@ -25,6 +29,6 @@
     </code>
     
     <pages>
-        <page template="test.xtab.TabTest"/>
+        <page template="test.xtab.Name"/>
     </pages>
 </workunit>

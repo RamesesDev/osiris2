@@ -2,6 +2,11 @@
 <workunit>
     <invokers>
         <invoker folderid="/menu/file" caption="Invoker Test"/>
+        
+        <invoker type="pageActions" caption="Stack" action="stack"/>
+        <invoker type="pageActions" caption="Back to Root" action="_root"/>
+        <invoker type="pageActions" caption="Back to Root (page2)" action="_root:page2"/>
+        <invoker type="pageActions" caption="Close" action="_close"/>
     </invokers>
     
     <code>
@@ -28,13 +33,16 @@
             
                 getColumns: { [new Column(name:'item', caption:'Name')] },
                 fetchList: {
-                    println 'fetching list.....';
                     return [
                         'item 1', 'item 2', 'item 3'
                     ];
                 }
             
             ] as PageListModel;
+            
+            def stack() {
+                return new Opener(name: '___testInv');
+            }
             
         }
         
@@ -43,5 +51,6 @@
     
     <pages>
         <page template="test1.InvPage"/>
+        <page name="page2" template="test1.Page2"/>
     </pages>
 </workunit>

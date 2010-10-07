@@ -1,20 +1,13 @@
 package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.Platform;
-import com.rameses.rcp.common.MsgBox;
-import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.common.*;
 import com.rameses.rcp.util.ControlSupport;
-import com.rameses.rcp.framework.NavigatablePanel;
-import com.rameses.rcp.framework.NavigationHandler;
 import com.rameses.rcp.common.Opener;
-import com.rameses.rcp.framework.UIControllerPanel;
-import com.rameses.rcp.framework.UIController;
-import com.rameses.rcp.framework.UIControllerContext;
+import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.util.ValueUtil;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import javax.swing.JComponent;
 
 /**
@@ -56,7 +49,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 UIController opCon = opener.getController();
                 String permission = opener.getPermission();
                 
-                //check permission(if allowed) when specified
+                //check permission(if specified) if allowed
                 if ( !ValueUtil.isEmpty(permission) ) {
                     permission = opCon.getName() + "." + permission;
                     if( !ControlSupport.isPermitted(permission) ) {
@@ -91,16 +84,16 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     return;
                 }
                 
-            } else if( outcome instanceof String ) {
-                String oc = outcome+"";
-                if ( oc.startsWith("_close") ) {
+            } else {
+                String out = outcome+"";
+                if ( out.startsWith("_close") ) {
                     if ( !conStack.isEmpty() ) {
                         if ( conStack.size() > 1 ) {
                             conStack.pop();
                             
-                            if( oc.contains(":") ) {
-                                oc = oc.substring(oc.indexOf(":")+1);
-                                navigate(panel, source, oc);
+                            if( out.contains(":") ) {
+                                out = out.substring(out.indexOf(":")+1);
+                                navigate(panel, source, out);
                                 return;
                             }
                             
@@ -109,8 +102,8 @@ public class NavigationHandlerImpl implements NavigationHandler {
                             platform.closeWindow(conId);
                         }
                     }
-                                        
-                } else if ( oc.startsWith("_exit")) {
+                    
+                } else if ( out.startsWith("_exit")) {
                     //get the original owner of he window
                     while ( conStack.size() > 1 ) {
                         conStack.pop();
@@ -118,9 +111,20 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     String conId = conStack.peek().getId();
                     platform.closeWindow(conId);
                     
+                } else if ( out.startsWith("_root") ) {
+                    //get the original owner of he window
+                    while ( conStack.size() > 1 ) {
+                        conStack.pop();
+                    }
+                    if( out.contains(":") ) {
+                        out = out.substring(out.indexOf(":")+1);
+                        navigate(panel, source, out);
+                        return;
+                    }
+                    
                 } else {
-                    if ( oc.startsWith("_") ) oc = oc.substring(1);
-                    curController.setCurrentView( oc );
+                    if ( out.startsWith("_") ) out = out.substring(1);
+                    curController.setCurrentView( out );
                     
                     //update binding injections based on current view
                     curController.getCurrentView().getBinding().reinjectAnnotations();

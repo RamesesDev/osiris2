@@ -14,7 +14,6 @@ import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.awt.Cursor;
 import java.beans.Beans;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
@@ -51,9 +50,12 @@ public class XEditorPane extends JEditorPane implements UIInput {
         EventType evt = e.getEventType();
         if (evt == EventType.ACTIVATED) {
             try {
-                String action = e.getDescription();
-                if ( !ValueUtil.isEmpty(action) )  {
-                    Object outcome = ControlSupport.invoke(binding.getBean(), action, null);
+                String desc = e.getDescription();
+                if ( !ValueUtil.isEmpty(desc) )  {
+                    String[] aa = desc.split("\\?");
+                    Object[] param = null;
+                    if ( aa.length > 1 ) param = new Object[]{ aa[1] };
+                    Object outcome = ControlSupport.invoke(binding.getBean(), aa[0], param);
                     ControlSupport.fireNavigation(this, outcome);
                 }
             } catch(Exception ex){
