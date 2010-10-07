@@ -50,7 +50,7 @@ public final class ControlSupport {
         //fire actions
         if( action !=null && action.trim().length()>0) {
             try {
-                return ctx.getMethodResolver().invoke(bean,action,null,null);
+                return ctx.getMethodResolver().invoke(bean,action,null,params);
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             }

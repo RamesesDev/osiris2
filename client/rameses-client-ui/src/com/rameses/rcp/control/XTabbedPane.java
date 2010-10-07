@@ -9,6 +9,7 @@ package Templates.Classes;
 
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.control.XSubFormPanel;
+import com.rameses.rcp.control.tabbedpane.LoadingPanel;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.OpenerProvider;
@@ -68,7 +69,7 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
         removeAll();
         if ( openers.size() > 0 ) {
             for (Opener o: openers) {
-                super.addTab(o.getCaption(), getOpenerIcon(o), new XSubFormPanel());
+                super.addTab(o.getCaption(), getOpenerIcon(o), new LoadingPanel());
             }
             setSelectedIndex(0);
         }
@@ -115,10 +116,11 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     
     public void setSelectedIndex(int index) {
         Component c = getComponentAt(index);
-        if ( c instanceof XSubFormPanel ) {
-            XSubFormPanel xsf = (XSubFormPanel) c;
-            if ( xsf.getClientProperty("BINDED") == null ) {
-                
+        if ( c instanceof LoadingPanel ) {
+            JPanel p = (JPanel) c;
+            if ( p.getClientProperty("BINDED") == null ) {
+                new Thread(new BindingRunnable(index, openers.get(index))).start();
+                p.putClientProperty("BINDED", true);
             }
         }
         
@@ -139,6 +141,32 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     
     public boolean isDynamic() { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  BindingRunnable  ">
+    private class BindingRunnable implements Runnable {
+        
+        private int index;
+        private Opener opener;
+        
+        BindingRunnable(int index, Opener opener) {
+            this.index = index;
+            this.opener = opener;
+        }
+        
+        public void run() {
+            try {
+                XSubFormPanel xsf = new XSubFormPanel(opener);
+                xsf.setBinding(binding);
+                xsf.load();
+                XTabbedPane.this.setComponentAt(index, xsf);
+                
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+    }
     //</editor-fold>
     
 }

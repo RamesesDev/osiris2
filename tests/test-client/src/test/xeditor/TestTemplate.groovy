@@ -9,7 +9,7 @@
         <br>
         <ul>
         <% items.each {%>
-            <li>${it}</li>
+            <li><a href="click?${it}">${it}</a></li>
         <%}%>
         </ul>
         <br>

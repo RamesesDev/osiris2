@@ -2,11 +2,11 @@
 <workunit>
     <invokers>
         <invoker type="test.actions" caption="New" action="create" shortcut="ctrl N" 
-                 mnemonic="n" target="popup"/>
+                 mnemonic="n" target="_self"/>
         <invoker type="test.actions" caption="Edit" action="edit" shortcut="ctrl E" 
-                 mnemonic="e" target="popup"/>
+                 mnemonic="e" target="_self"/>
         <invoker type="test.actions" caption="Open" action="open" shortcut="ctrl O"  
-                 mnemonic="o" target="popup"/>
+                 mnemonic="o" target="_self"/>
     </invokers>
     
     <code>
@@ -20,6 +20,9 @@
         
             @Caller
             def caller;
+            
+            @Binding
+            def binding;
         
             def name;
         
@@ -27,8 +30,13 @@
                 println caller.name;
                 return 'page3' 
             }
+            
             def edit() { return 'page2' }
             def create() { return 'page1' }
+            
+            void back() {
+                binding.fireNavigation('_close');
+            }
             
         }
         

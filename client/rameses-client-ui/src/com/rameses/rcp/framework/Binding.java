@@ -40,6 +40,9 @@ public class Binding {
     
     private Object bean;
     
+    //reference to the owner panel(UIViewPanel)
+    private UIViewPanel owner;
+    
     /**
      * this is used when referencing controller properties
      * such as controller name, id, and title
@@ -81,6 +84,16 @@ public class Binding {
      */
     private Map properties = new HashMap();
     
+    
+    public Binding() {}
+    
+    public Binding(UIViewPanel owner) {
+        this.owner = owner;
+    }
+    
+    public UIViewPanel getOwner() {
+        return owner;
+    }
     
     //<editor-fold defaultstate="collapsed" desc="  control binding  ">
     public void register( UIControl control ) {
@@ -366,17 +379,20 @@ public class Binding {
      * from the controller's code bean
      */
     public void fireNavigation(Object outcome) {
-        UIViewPanel panel = (UIViewPanel) getProperties().get(UIViewPanel.class);
+        fireNavigation(outcome, "parent");
+    }
+    
+    public void fireNavigation(Object outcome, String target) {
         try {
             ClientContext ctx = ClientContext.getCurrentContext();
             NavigationHandler handler = ctx.getNavigationHandler();
-            NavigatablePanel navPanel = UIControlUtil.getParentPanel(panel, null);
+            NavigatablePanel navPanel = UIControlUtil.getParentPanel(owner, target);
             if ( handler != null ) {
                 handler.navigate(navPanel, null, outcome);
             }
             
         } catch(Exception e) {
-            ClientContext.getCurrentContext().getPlatform().showError(panel, e);
+            ClientContext.getCurrentContext().getPlatform().showError(owner, e);
         }
     }
     

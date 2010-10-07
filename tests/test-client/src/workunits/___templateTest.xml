@@ -15,11 +15,15 @@
         public class TemplateTestController  {
                        
             def text = TemplateProvider.instance.getResult(
-                'templates/TestTemplate.groovy', [items:["one", "two", "three"]]
+                'test/xeditor/TestTemplate.groovy', [items:["one", "two", "three"]]
             );
             
             void refresh() {
                 MsgBox.alert('refreshing...');
+            }
+            
+            void click( data ) {
+                MsgBox.alert( data );
             }
         
         }

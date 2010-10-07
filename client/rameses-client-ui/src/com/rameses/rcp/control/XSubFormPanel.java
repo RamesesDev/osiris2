@@ -83,6 +83,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         }
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void buildForm() {
         subFormItems.clear();
         removeAll();
@@ -90,7 +91,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         
         Object obj = null;
         
-        //this is usually set by XTabbedPane or 
+        //this is usually set by XTabbedPane or
         //other controls that used XSubForm internally
         if ( getOpeners().size() > 0 ) {
             obj = getOpeners();
@@ -157,6 +158,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         subFormItems.add( sfc );
         add( sfc );
     }
+    //</editor-fold>
     
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
@@ -233,22 +235,22 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     
     //<editor-fold defaultstate="collapsed" desc="  SubFormContext (class)  ">
     private class SubFormContext extends UIControllerPanel {
-        
+
         SubFormContext(UIControllerContext controller) {
             super(controller);
             setOpaque(false);
             setName(XSubFormPanel.this.getName());
         }
-        
+
         public void renderView() {
             super.renderView();
-            
+
             List<Binding> connectorBindings = bindingConnector.getSubBindings();
             connectorBindings.clear();
             connectorBindings.addAll(getSubBindings());
         }
-        
+
     }
     //</editor-fold>
-    
+
 }
