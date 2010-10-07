@@ -109,9 +109,9 @@ public final class SchemaScanner {
                     String ref = cf.getRef();
                     
                     //bypass ref checks if it is a serializer. do not also check ref if 
-                    if(cf.getSerializer()==null && ref==null ) {
-                        if(cf.getType()==null || !cf.getType().equals("list"))
-                        throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
+                    if(cf.getSerializer()==null && ref==null) {
+                        if(cf.isRequired() && (cf.getType()==null || !cf.getType().equals("list")))
+                            throw new RuntimeException("SchemaScanner error. ref is required for complex field" );
                     }    
 
                     //add dynamic ref. Dynamic ref are marked with $ and enclosed with braces e.g.:  ${ref-name}
