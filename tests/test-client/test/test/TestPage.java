@@ -35,6 +35,7 @@ public class TestPage extends javax.swing.JPanel {
         formPanel5 = new com.rameses.rcp.util.FormPanel();
         xTextField12 = new com.rameses.rcp.control.XTextField();
         xTextField13 = new com.rameses.rcp.control.XTextField();
+        xActionBar1 = new com.rameses.rcp.control.XActionBar();
 
         xTextField3.setText("xTextField3");
         xTextField3.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -48,7 +49,7 @@ public class TestPage extends javax.swing.JPanel {
         formPanel2.add(xComboBox1);
 
         formPanel1.setCellpadding(new java.awt.Insets(0, 0, 0, 10));
-        formPanel1.setOrientation("horizontal");
+        formPanel1.setOrientation(???);
         formPanel1.setPadding(new java.awt.Insets(0, 0, 0, 0));
         formPanel1.setShowCaption(false);
         xTextField1.setText("xTextField1");
@@ -63,7 +64,7 @@ public class TestPage extends javax.swing.JPanel {
         formPanel2.add(formPanel1);
 
         formPanel3.setCellpadding(new java.awt.Insets(0, 0, 0, 10));
-        formPanel3.setOrientation("horizontal");
+        formPanel3.setOrientation(???);
         formPanel3.setPadding(new java.awt.Insets(0, 0, 0, 0));
         formPanel3.setShowCaption(false);
         xTextField5.setText("xTextField1");
@@ -89,7 +90,7 @@ public class TestPage extends javax.swing.JPanel {
         formPanel2.add(xTextField11);
 
         formPanel4.setCaption("");
-        formPanel4.setCaptionOrientation("top");
+        formPanel4.setCaptionOrientation(???);
         formPanel4.setCaptionPadding(new java.awt.Insets(0, 0, 5, 5));
         formPanel4.setCellspacing(0);
         formPanel4.setPadding(new java.awt.Insets(0, 0, 10, 0));
@@ -101,7 +102,7 @@ public class TestPage extends javax.swing.JPanel {
         xTextField10.setPreferredSize(new java.awt.Dimension(120, 19));
         formPanel4.add(xTextField10);
 
-        formPanel5.setOrientation("horizontal");
+        formPanel5.setOrientation(???);
         formPanel5.setPadding(new java.awt.Insets(3, 0, 0, 0));
         formPanel5.setShowCaption(false);
         xTextField12.setText("xTextField12");
@@ -112,6 +113,8 @@ public class TestPage extends javax.swing.JPanel {
 
         formPanel4.add(formPanel5);
 
+        xActionBar1.setUseToolBar(false);
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -119,6 +122,7 @@ public class TestPage extends javax.swing.JPanel {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(xActionBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 370, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(formPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 386, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(formPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 420, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(67, Short.MAX_VALUE))
@@ -129,8 +133,10 @@ public class TestPage extends javax.swing.JPanel {
                 .addContainerGap()
                 .add(formPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 217, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(formPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 184, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(66, Short.MAX_VALUE))
+                .add(formPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 104, Short.MAX_VALUE)
+                .add(xActionBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     
@@ -141,6 +147,7 @@ public class TestPage extends javax.swing.JPanel {
     private com.rameses.rcp.util.FormPanel formPanel3;
     private com.rameses.rcp.util.FormPanel formPanel4;
     private com.rameses.rcp.util.FormPanel formPanel5;
+    private com.rameses.rcp.control.XActionBar xActionBar1;
     private com.rameses.rcp.control.XComboBox xComboBox1;
     private com.rameses.rcp.control.XTextField xTextField1;
     private com.rameses.rcp.control.XTextField xTextField10;

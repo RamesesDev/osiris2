@@ -47,6 +47,8 @@ public class XActionBar extends JPanel implements UIComposite {
     private Insets padding = new Insets(0,0,0,0);
     
     private String orientation = UIConstants.HORIZONTAL;
+    private String orientationHAlignment = UIConstants.LEFT;
+    private String orientationVAlignment = UIConstants.TOP;
     
     //XButton target
     private String target;
@@ -220,11 +222,26 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public String getOrientation() { return orientation; }
     public void setOrientation(String orientation) {
-        if ( orientation != null ) {
+        if ( orientation != null )
             this.orientation = orientation.toUpperCase();
-        } else {
-            this.orientation = orientation;
-        }
+        else
+            this.orientation = UIConstants.HORIZONTAL;
+    }
+    
+    public String getOrientationHAlignment() { return orientationHAlignment; }
+    public void setOrientationHAlignment(String alignment) {
+        if ( alignment != null )
+            this.orientationHAlignment = alignment.toUpperCase();
+        else
+            this.orientationHAlignment = UIConstants.LEFT;
+    }
+    
+    public String getOrientationVAlignment() { return orientationVAlignment; }
+    public void setOrientationVAlignment(String alignment) {
+        if ( alignment != null )
+            this.orientationVAlignment = alignment.toUpperCase();
+        else
+            this.orientationVAlignment = UIConstants.TOP;
     }
     
     //</editor-fold>
@@ -322,10 +339,18 @@ public class XActionBar extends JPanel implements UIComposite {
         public void layoutContainer(Container parent) {
             synchronized (parent.getTreeLock()) {
                 Insets margin = parent.getInsets();
+                String halign = getOrientationHAlignment();
+                String valign = getOrientationVAlignment();
+                
                 int x = margin.left;
                 int y = margin.top;
                 int w = parent.getWidth() - (margin.left + margin.right);
                 int h = parent.getHeight() - (margin.top + margin.bottom);
+                
+                if ( UIConstants.HORIZONTAL.equals(orientation) && UIConstants.RIGHT.equals(halign) )
+                    x = w - margin.right;
+                else if ( UIConstants.VERTICAL.equals(orientation) && UIConstants.BOTTOM.equals(valign) )
+                    y = h - margin.bottom;
                 
                 Component[] comps = parent.getComponents();
                 for (int i=0; i<comps.length; i++) {
@@ -333,11 +358,22 @@ public class XActionBar extends JPanel implements UIComposite {
                     
                     Dimension dim = comps[i].getPreferredSize();
                     if ( UIConstants.VERTICAL.equals(orientation) ) {
+                        if ( UIConstants.BOTTOM.equals(valign) )
+                            y -= dim.height + ((i > 0)? getSpacing():0);
+                        
                         comps[i].setBounds(x, y, w, dim.height);
-                        y += (dim.height + getSpacing());
+                        
+                        if ( !UIConstants.BOTTOM.equals(valign) )
+                            y += dim.height + getSpacing();
+                        
                     } else {
+                        if ( UIConstants.RIGHT.equals(halign) )
+                            x -= dim.width + ((i > 0)? getSpacing():0);
+                        
                         comps[i].setBounds(x, y, dim.width, h);
-                        x += (dim.width + getSpacing());
+                        
+                        if ( !UIConstants.RIGHT.equals(halign) )
+                            x += dim.width + getSpacing();
                     }
                 }
             }
