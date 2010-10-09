@@ -86,6 +86,8 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void buildForm() {
+        List<Binding> connectorBindings = bindingConnector.getSubBindings();
+        connectorBindings.clear();
         subFormItems.clear();
         removeAll();
         SwingUtilities.updateComponentTreeUI(this);
@@ -136,9 +138,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
             addOpener(opener);
         }
         
-        //register subBindings
-        List<Binding> connectorBindings = bindingConnector.getSubBindings();
-        connectorBindings.clear();
+        //register new subBindings
         connectorBindings.addAll(getSubBindings());
     }
     
