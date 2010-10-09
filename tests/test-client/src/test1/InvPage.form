@@ -49,6 +49,7 @@
     <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
       <Properties>
         <Property name="name" type="java.lang.String" value="pageActions"/>
+        <Property name="useToolBar" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">

@@ -15,6 +15,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="xActionBar1" alignment="0" min="-2" pref="370" max="-2" attributes="1"/>
                   <Component id="formPanel4" alignment="0" min="-2" pref="386" max="-2" attributes="0"/>
                   <Component id="formPanel2" alignment="0" min="-2" pref="420" max="-2" attributes="1"/>
               </Group>
@@ -28,8 +29,10 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="formPanel2" min="-2" pref="217" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="formPanel4" min="-2" pref="184" max="-2" attributes="0"/>
-              <EmptySpace pref="66" max="32767" attributes="0"/>
+              <Component id="formPanel4" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="104" max="32767" attributes="0"/>
+              <Component id="xActionBar1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -144,7 +147,7 @@
     <Container class="com.rameses.rcp.util.FormPanel" name="formPanel4">
       <Properties>
         <Property name="caption" type="java.lang.String" value=""/>
-        <Property name="captionOrientation" type="java.lang.String" value="top"/>
+        <Property name="captionOrientation" type="java.lang.String" value="TOP"/>
         <Property name="captionPadding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 5, 5]"/>
         </Property>
@@ -193,5 +196,10 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
+      <Properties>
+        <Property name="useToolBar" type="boolean" value="false"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

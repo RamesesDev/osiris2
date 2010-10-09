@@ -1,4 +1,5 @@
 package test;
+import com.rameses.util.TemplateProvider;
 import java.text.ParseException;
 import junit.framework.*;
 
@@ -20,9 +21,7 @@ public class Test extends TestCase {
     }
     
     public void test() throws ParseException {
-        for(String s : "click?hello world".split("\\?") ) {
-            System.out.println(s);
-        }
+
     }
     
 }

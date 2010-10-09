@@ -21,6 +21,7 @@ public class InvPage extends javax.swing.JPanel {
         xTable1 = new com.rameses.rcp.control.XTable();
 
         xActionBar1.setName("pageActions");
+        xActionBar1.setUseToolBar(false);
 
         jLabel1.setText("Invoker Actions Test");
 
