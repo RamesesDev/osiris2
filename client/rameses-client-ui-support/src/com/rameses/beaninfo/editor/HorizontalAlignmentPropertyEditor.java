@@ -2,14 +2,12 @@ package com.rameses.beaninfo.editor;
 
 import com.rameses.rcp.constant.UIConstants;
 import java.beans.PropertyEditorSupport;
-import javax.swing.SwingConstants;
 
-public class HorizontalAlignmentPropertyEditor extends PropertyEditorSupport
-{
+public class HorizontalAlignmentPropertyEditor extends PropertyEditorSupport {
+    
     private String[] values;
     
-    public HorizontalAlignmentPropertyEditor()
-    {
+    public HorizontalAlignmentPropertyEditor() {
         values = new String[]
         {
             UIConstants.LEFT, UIConstants.CENTER, UIConstants.RIGHT
@@ -17,4 +15,12 @@ public class HorizontalAlignmentPropertyEditor extends PropertyEditorSupport
     }
     
     public String[] getTags() { return values; }
+
+    
+    public String getJavaInitializationString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(UIConstants.class.getName() + "." + getValue());
+        return sb.toString();
+    }
+
 }
