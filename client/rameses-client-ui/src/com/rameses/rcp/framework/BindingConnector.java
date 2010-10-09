@@ -10,6 +10,7 @@
 package com.rameses.rcp.framework;
 
 import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.ui.UISubControl;
 import com.rameses.rcp.util.ActionMessage;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,12 @@ public class BindingConnector implements BindingListener {
     
     private Binding parentBinding;
     private List<Binding> subBindings = new ArrayList();
+    private UISubControl parent;
     
     
-    public BindingConnector() {}
+    public BindingConnector(UISubControl parent) {
+        this.parent = parent;
+    }
     
     public Binding getParentBinding() {
         return parentBinding;
@@ -35,9 +39,13 @@ public class BindingConnector implements BindingListener {
         return subBindings;
     }
     
-    public void validate(ActionMessage actionMessage, Binding parent) {
+    public void validate(ActionMessage actionMessage, Binding pbinding) {
+        ActionMessage subMessages = new ActionMessage();
         for (Binding sb : subBindings ) {
-            sb.validate(actionMessage);
+            sb.validate(subMessages);
+        }
+        if ( subMessages.hasMessages() ) {
+            actionMessage.addMessage(subMessages, parent.getCaption());
         }
     }
     
@@ -63,6 +71,14 @@ public class BindingConnector implements BindingListener {
         for (Binding sb : subBindings) {
             sb.update();
         }
+    }
+
+    public UIControl getParent() {
+        return parent;
+    }
+
+    public void setParent(UISubControl parent) {
+        this.parent = parent;
     }
     
 }

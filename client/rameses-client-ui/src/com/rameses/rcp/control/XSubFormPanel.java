@@ -33,8 +33,9 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     private String[] depends;
     private int index;
     private Binding binding;
-    private BindingConnector bindingConnector = new  BindingConnector();
+    private BindingConnector bindingConnector = new  BindingConnector(this);
     private boolean dynamic;
+    private String caption;
     
     private boolean multiForm;
     private JPanel multiPanel;
@@ -230,27 +231,41 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
     }
+    
+    public String getCaption() {
+        if ( caption == null ) {
+            if ( !ValueUtil.isEmpty(getName()))
+                return getName();
+            else
+                return handler;
+        }
+        return caption;
+    }
+    
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
     //</editor-fold>
     
     
     //<editor-fold defaultstate="collapsed" desc="  SubFormContext (class)  ">
     private class SubFormContext extends UIControllerPanel {
-
+        
         SubFormContext(UIControllerContext controller) {
             super(controller);
             setOpaque(false);
             setName(XSubFormPanel.this.getName());
         }
-
+        
         public void renderView() {
             super.renderView();
-
+            
             List<Binding> connectorBindings = bindingConnector.getSubBindings();
             connectorBindings.clear();
             connectorBindings.addAll(getSubBindings());
         }
-
+        
     }
     //</editor-fold>
-
+    
 }

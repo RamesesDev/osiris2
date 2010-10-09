@@ -14,12 +14,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="xActionBar1" alignment="0" min="-2" pref="370" max="-2" attributes="1"/>
-                  <Component id="formPanel4" alignment="0" min="-2" pref="386" max="-2" attributes="0"/>
-                  <Component id="formPanel2" alignment="0" min="-2" pref="420" max="-2" attributes="1"/>
-              </Group>
-              <EmptySpace pref="67" max="32767" attributes="0"/>
+              <Component id="xActionBar1" min="-2" pref="267" max="-2" attributes="0"/>
+              <EmptySpace pref="220" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -27,178 +23,16 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="formPanel2" min="-2" pref="217" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="formPanel4" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="104" max="32767" attributes="0"/>
               <Component id="xActionBar1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace pref="447" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="com.rameses.rcp.util.FormPanel" name="formPanel2">
-      <SubComponents>
-        <Component class="com.rameses.rcp.control.XTextField" name="xTextField3">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="xTextField3"/>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[150, 19]"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="com.rameses.rcp.control.XTextField" name="xTextField4">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="xTextField4"/>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[150, 19]"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="com.rameses.rcp.control.XComboBox" name="xComboBox1">
-          <Properties>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[100, 24]"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Container class="com.rameses.rcp.util.FormPanel" name="formPanel1">
-          <Properties>
-            <Property name="cellpadding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-              <Insets value="[0, 0, 0, 10]"/>
-            </Property>
-            <Property name="orientation" type="java.lang.String" value="horizontal"/>
-            <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-              <Insets value="[0, 0, 0, 0]"/>
-            </Property>
-            <Property name="showCaption" type="boolean" value="false"/>
-          </Properties>
-          <SubComponents>
-            <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="xTextField1"/>
-                <Property name="caption" type="java.lang.String" value="Address"/>
-                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[150, 19]"/>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="com.rameses.rcp.control.XTextField" name="xTextField2">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="xTextField2"/>
-                <Property name="caption" type="java.lang.String" value="Name"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
-        <Container class="com.rameses.rcp.util.FormPanel" name="formPanel3">
-          <Properties>
-            <Property name="cellpadding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-              <Insets value="[0, 0, 0, 10]"/>
-            </Property>
-            <Property name="orientation" type="java.lang.String" value="horizontal"/>
-            <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-              <Insets value="[0, 0, 0, 0]"/>
-            </Property>
-            <Property name="showCaption" type="boolean" value="false"/>
-          </Properties>
-          <SubComponents>
-            <Component class="com.rameses.rcp.control.XTextField" name="xTextField5">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="xTextField1"/>
-                <Property name="caption" type="java.lang.String" value="Address"/>
-                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[150, 19]"/>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="com.rameses.rcp.control.XTextField" name="xTextField6">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="xTextField2"/>
-                <Property name="caption" type="java.lang.String" value="Name"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
-        <Component class="com.rameses.rcp.control.XTextField" name="xTextField7">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="xTextField7"/>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[150, 19]"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="com.rameses.rcp.control.XTextField" name="xTextField8">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="xTextField8"/>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[150, 19]"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="com.rameses.rcp.control.XTextField" name="xTextField11">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="xTextField11"/>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
-    <Container class="com.rameses.rcp.util.FormPanel" name="formPanel4">
-      <Properties>
-        <Property name="caption" type="java.lang.String" value=""/>
-        <Property name="captionOrientation" type="java.lang.String" value="TOP"/>
-        <Property name="captionPadding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[0, 0, 5, 5]"/>
-        </Property>
-        <Property name="cellspacing" type="int" value="0"/>
-        <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[0, 0, 10, 0]"/>
-        </Property>
-      </Properties>
-      <SubComponents>
-        <Component class="com.rameses.rcp.control.XTextField" name="xTextField9">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="xTextField9"/>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[120, 19]"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="com.rameses.rcp.control.XTextField" name="xTextField10">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="xTextField10"/>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[120, 19]"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Container class="com.rameses.rcp.util.FormPanel" name="formPanel5">
-          <Properties>
-            <Property name="orientation" type="java.lang.String" value="horizontal"/>
-            <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-              <Insets value="[3, 0, 0, 0]"/>
-            </Property>
-            <Property name="showCaption" type="boolean" value="false"/>
-          </Properties>
-          <SubComponents>
-            <Component class="com.rameses.rcp.control.XTextField" name="xTextField12">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="xTextField12"/>
-              </Properties>
-            </Component>
-            <Component class="com.rameses.rcp.control.XTextField" name="xTextField13">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="xTextField13"/>
-              </Properties>
-            </Component>
-          </SubComponents>
-        </Container>
-      </SubComponents>
-    </Container>
     <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
       <Properties>
-        <Property name="useToolBar" type="boolean" value="false"/>
+        <Property name="orientationHAlignment" type="java.lang.String" value="RIGHT"/>
       </Properties>
     </Component>
   </SubComponents>

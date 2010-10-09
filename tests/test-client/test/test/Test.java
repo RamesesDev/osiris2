@@ -1,5 +1,4 @@
 package test;
-import com.rameses.util.TemplateProvider;
 import java.text.ParseException;
 import junit.framework.*;
 

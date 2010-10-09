@@ -12,34 +12,32 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="259" max="32767" attributes="0"/>
-          </Group>
-          <Component id="xActionBar1" alignment="1" pref="400" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xTextField1" min="-2" pref="202" max="-2" attributes="0"/>
-              <EmptySpace pref="186" max="32767" attributes="0"/>
-          </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="xTable1" pref="376" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="xTextField1" alignment="0" min="-2" pref="202" max="-2" attributes="0"/>
+                  <Component id="xTable1" min="-2" pref="258" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="44" max="32767" attributes="0"/>
+              <Component id="xActionBar1" min="-2" pref="135" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <Component id="xActionBar1" min="-2" pref="37" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="xTextField1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="xTable1" pref="199" max="32767" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="xActionBar1" alignment="0" pref="288" max="32767" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xTextField1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="xTable1" pref="230" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -49,6 +47,8 @@
     <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
       <Properties>
         <Property name="name" type="java.lang.String" value="pageActions"/>
+        <Property name="orientation" type="java.lang.String" value="VERTICAL"/>
+        <Property name="orientationVAlignment" type="java.lang.String" value="BOTTOM"/>
         <Property name="useToolBar" type="boolean" value="false"/>
       </Properties>
     </Component>
@@ -59,7 +59,9 @@
     </Component>
     <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
       <Properties>
+        <Property name="caption" type="java.lang.String" value="Name"/>
         <Property name="name" type="java.lang.String" value="name"/>
+        <Property name="required" type="boolean" value="true"/>
       </Properties>
     </Component>
     <Component class="com.rameses.rcp.control.XTable" name="xTable1">

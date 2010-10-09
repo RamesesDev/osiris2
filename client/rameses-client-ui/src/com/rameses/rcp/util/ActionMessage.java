@@ -34,6 +34,14 @@ public class ActionMessage {
         messages.addAll(message.messages);
     }
     
+    public void addMessage(ActionMessage message, String parentCaption) {
+        messages.add(parentCaption + " (");
+        for (String msg : message.messages) {
+            messages.add("\t" + msg);
+        }
+        messages.add(")");
+    }
+    
     public boolean hasMessages() {
         return !messages.isEmpty();
     }

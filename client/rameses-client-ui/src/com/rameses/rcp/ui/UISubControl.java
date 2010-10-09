@@ -9,6 +9,7 @@ package com.rameses.rcp.ui;
 
 public interface UISubControl extends UIControl {
  
+    String getCaption();
     boolean focusFirstInput();
     
 }

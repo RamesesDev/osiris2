@@ -308,6 +308,7 @@ public class XActionBar extends JPanel implements UIComposite {
     
     //<editor-fold defaultstate="collapsed" desc=" InnerLayout (Class) ">
     private class InnerLayout implements LayoutManager {
+        
         public void addLayoutComponent(String name, Component comp) {;}
         public void removeLayoutComponent(Component comp) {;}
         
@@ -358,14 +359,20 @@ public class XActionBar extends JPanel implements UIComposite {
                 
                 Component[] comps = parent.getComponents();
                 for (int i=0; i<comps.length; i++) {
-                    if (!comps[i].isVisible()) continue;
+                    Component comp = null;
+                    if ( (UIConstants.HORIZONTAL.equals(orientation) && UIConstants.RIGHT.equals(halign)) || (UIConstants.VERTICAL.equals(orientation) && UIConstants.BOTTOM.equals(valign)) )
+                        comp = comps[comps.length - i - 1];
+                    else
+                        comp = comps[i];
                     
-                    Dimension dim = comps[i].getPreferredSize();
+                    if (!comp.isVisible()) continue;
+                    
+                    Dimension dim = comp.getPreferredSize();
                     if ( UIConstants.VERTICAL.equals(orientation) ) {
                         if ( UIConstants.BOTTOM.equals(valign) )
                             y -= dim.height + ((i > 0)? getSpacing():0);
                         
-                        comps[i].setBounds(x, y, w, dim.height);
+                        comp.setBounds(x, y, w, dim.height);
                         
                         if ( !UIConstants.BOTTOM.equals(valign) )
                             y += dim.height + getSpacing();
@@ -374,7 +381,7 @@ public class XActionBar extends JPanel implements UIComposite {
                         if ( UIConstants.RIGHT.equals(halign) )
                             x -= dim.width + ((i > 0)? getSpacing():0);
                         
-                        comps[i].setBounds(x, y, dim.width, h);
+                        comp.setBounds(x, y, dim.width, h);
                         
                         if ( !UIConstants.RIGHT.equals(halign) )
                             x += dim.width + getSpacing();
