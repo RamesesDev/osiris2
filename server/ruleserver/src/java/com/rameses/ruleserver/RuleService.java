@@ -10,7 +10,6 @@ import org.drools.KnowledgeBase;
 import org.drools.definition.type.FactType;
 import org.drools.runtime.StatefulKnowledgeSession;
 
-
 @Stateless
 @Local(RuleServiceLocal.class)
 public class RuleService implements RuleServiceLocal {
@@ -100,7 +99,17 @@ public class RuleService implements RuleServiceLocal {
             session.dispose();
         }
     }
-
+    /*
+    public class SimpleAgendaFilter implements AgendaFilter {
+          private final String  name;
+          public SimpleAgendaFilter(String n) {
+              name = n;
+          }
+          public boolean accept(final Activation activation) {
+              return activation.getAgendaGroup().getName().equals(name);
+          }
+      }
+    */
     public void execute(String ruleset, List facts) throws Exception {
         execute(ruleset, facts, null, null);
     }

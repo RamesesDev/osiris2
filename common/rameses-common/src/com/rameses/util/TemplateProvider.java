@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -14,7 +15,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-public abstract class TemplateProvider {
+public abstract class TemplateProvider implements Serializable {
     
     public abstract String[] getExtensions();
     public abstract Object getResult( String templateName, Object data);
@@ -79,6 +80,10 @@ public abstract class TemplateProvider {
             String ext = name.substring( name.lastIndexOf(".")+1 );
             TemplateProvider t = getProvider(ext);
             t.transform( name, data, out );
+        }
+        
+        public void clear(String name) {
+            
         }
     }
     
