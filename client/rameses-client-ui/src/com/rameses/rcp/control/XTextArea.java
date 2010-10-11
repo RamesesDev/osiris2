@@ -48,6 +48,7 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
         setValue(value);
+        setCaretPosition(0);
     }
     
     public void load() {

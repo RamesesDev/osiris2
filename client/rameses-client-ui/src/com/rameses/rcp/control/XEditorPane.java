@@ -68,6 +68,7 @@ public class XEditorPane extends JEditorPane implements UIInput {
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
         setValue(value);
+        setCaretPosition(0);
     }
     
     public void load() {
