@@ -20,7 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-public class FormPanel extends JPanel implements ActiveControl {
+public class FormPanel extends JPanel implements ActiveControl, UIConstants {
     
     private int cellspacing = 3;
     private Insets cellpadding = new Insets(0,0,0,0);
@@ -180,7 +180,21 @@ public class FormPanel extends JPanel implements ActiveControl {
     }
     
     public boolean isAddCaptionColon() { return addCaptionColon; }
-    public void setAddCaptionColon(boolean addCaptionColon) { this.addCaptionColon = addCaptionColon; }
+    public void setAddCaptionColon(boolean addCaptionColon) { 
+        this.addCaptionColon = addCaptionColon;
+        updateLabels();
+    }
+    
+    private void updateLabels() {
+        for(Component c: getComponents()) {
+            if ( c instanceof ItemPanel ) {
+                XLabel lbl = ((ItemPanel)c).getLabelComponent();
+                lbl.setAddCaptionColon(addCaptionColon);
+            }
+        }
+        revalidate();
+    }
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" ItemPanel (Class) ">
@@ -191,7 +205,7 @@ public class FormPanel extends JPanel implements ActiveControl {
          */
         private Component editorWrapper;
         private Component editor;
-        private JLabel label;
+        private XLabel label;
         private ControlProperty property;
         
         public ItemPanel(Component editor) {
@@ -206,7 +220,7 @@ public class FormPanel extends JPanel implements ActiveControl {
             
             label = new XLabel(true);
             label.setLabelFor(editor);
-            ((XLabel) label).setAddCaptionColon(addCaptionColon);
+            label.setAddCaptionColon(addCaptionColon);
             
             setOpaque(false);
             setLayout(new ItemPanelLayout(property));
@@ -229,7 +243,7 @@ public class FormPanel extends JPanel implements ActiveControl {
         
         public Component getEditorComponent() { return editor; }
         public Component getEditorWrapper() { return editorWrapper; }
-        public JLabel getLabelComponent() { return label; }
+        public XLabel getLabelComponent() { return label; }
         public ControlProperty getControlProperty() { return property; }
         
     }
@@ -314,9 +328,14 @@ public class FormPanel extends JPanel implements ActiveControl {
             if (label != null && isShowCaption()) {
                 int cw = captionWidth;
                 Dimension dim = label.getPreferredSize();
-                if (cw <= 0) cw = dim.width;
+                
+                if ( (UIConstants.TOP.equals(captionOrientation) || UIConstants.BOTTOM.equals(captionOrientation)) && editor != null )
+                    cw = editor.getPreferredSize().width;
+                else if (cw <= 0) 
+                    cw = dim.width;
                 
                 label.setBounds(x, y, cw, h);
+                
                 if ( UIConstants.TOP.equals(captionOrientation) ) {
                     y += dim.height;
                     h -= dim.height;
@@ -458,13 +477,13 @@ public class FormPanel extends JPanel implements ActiveControl {
                     if ( UIConstants.HORIZONTAL.equals(orientation) ) {
                         if (x > 0) x += getCellspacing();
                         x += cellpadding.left;
+                        c.setBounds(x, y, dim.width, dim.height);
                     } else {
                         if (y > 0) y += getCellspacing();
                         y += cellpadding.top;
+                        c.setBounds(x, y, w, dim.height);
                     }
-                    
-                    c.setBounds(x, y, w, dim.height);
-                    
+                                        
                     //increment
                     if ( UIConstants.HORIZONTAL.equals(orientation) )
                         x += dim.width + cellpadding.right;

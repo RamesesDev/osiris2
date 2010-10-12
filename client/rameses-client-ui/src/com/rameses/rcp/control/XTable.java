@@ -65,6 +65,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     private String handler;
     private ActionMessage actionMessage = new ActionMessage();
     private boolean dynamic;
+    private boolean showRowHeader;
     
     
     public XTable() {
@@ -272,110 +273,53 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setLayout(LayoutManager mgr) {;}
     
-    public String getHandler() {
-        return handler;
-    }
+    public String getHandler() { return handler; }    
+    public void setHandler(String handler) { this.handler = handler; }
     
-    public void setHandler(String handler) {
-        this.handler = handler;
-    }
+    public boolean isDynamic() { return dynamic; }    
+    public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
     
-    public boolean isDynamic() {
-        return dynamic;
-    }
+    public void setShowHorizontalLines(boolean show) { table.setShowHorizontalLines(show); }    
+    public boolean isShowHorizontalLines() { return table.getShowHorizontalLines(); }
     
-    public void setDynamic(boolean dynamic) {
-        this.dynamic = dynamic;
-    }
+    public void setShowVerticalLines(boolean show) { table.setShowVerticalLines(show); }    
+    public boolean isShowVerticalLines() { return table.getShowVerticalLines(); }
     
-    public void setShowHorizontalLines(boolean show) {
-        table.setShowHorizontalLines(show);
-    }
-    
-    public boolean isShowHorizontalLines() {
-        return table.getShowHorizontalLines();
-    }
-    
-    public void setShowVerticalLines(boolean show) {
-        table.setShowVerticalLines(show);
-    }
-    
-    public boolean isShowVerticalLines() {
-        return table.getShowVerticalLines();
-    }
-    
-    public void setAutoResize(boolean autoResize) {
-        table.setAutoResize(autoResize);
-    }
-    
-    public boolean isAutoResize() {
-        return table.isAutoResize();
-    }
+    public void setAutoResize(boolean autoResize) { table.setAutoResize(autoResize); }    
+    public boolean isAutoResize() { return table.isAutoResize(); }
     
     public void setRequestFocus(boolean focus) {
         if ( focus ) table.requestFocus();
     }
     
-    public void requestFocus() {
-        table.grabFocus();
-    }
+    public void requestFocus() { table.requestFocus(); }
     
-    public void focusGained(FocusEvent e) {
-        table.grabFocus();
-    }
-    
+    public void focusGained(FocusEvent e) { table.grabFocus(); }    
     public void focusLost(FocusEvent e) {}
     
-    public Color getEvenBackground() {
-        return table.getEvenBackground();
-    }
+    public Color getEvenBackground() { return table.getEvenBackground(); }    
+    public void setEvenBackground(Color evenBackground) { table.setEvenBackground( evenBackground ); }
     
-    public void setEvenBackground(Color evenBackground) {
-        table.setEvenBackground( evenBackground );
-    }
+    public Color getOddBackground() { return table.getOddBackground(); }    
+    public void setOddBackground(Color oddBackground) { table.setOddBackground( oddBackground ); }
     
-    public Color getOddBackground() {
-        return table.getOddBackground();
-    }
+    public Color getErrorBackground() { return table.getErrorBackground(); }    
+    public void setErrorBackground(Color errorBackground) { table.setErrorBackground( errorBackground ); }
     
-    public void setOddBackground(Color oddBackground) {
-        table.setOddBackground( oddBackground );
-    }
+    public Color getEvenForeground() { return table.getEvenForeground(); }    
+    public void setEvenForeground(Color evenForeground) { table.setEvenForeground( evenForeground ); }
     
-    public Color getErrorBackground() {
-        return table.getErrorBackground();
-    }
+    public Color getOddForeground() { return table.getOddForeground(); }    
+    public void setOddForeground(Color oddForeground) { table.setOddForeground( oddForeground ); }
     
-    public void setErrorBackground(Color errorBackground) {
-        table.setErrorBackground( errorBackground );
-    }
+    public Color getErrorForeground() { return table.getErrorForeground(); }    
+    public void setErrorForeground(Color errorForeground) { table.setErrorForeground( errorForeground ); }
     
-    public Color getEvenForeground() {
-        return table.getEvenForeground();
-    }
+    public boolean isImmediate() { return true; }
     
-    public void setEvenForeground(Color evenForeground) {
-        table.setEvenForeground( evenForeground );
-    }
-    
-    public Color getOddForeground() {
-        return table.getOddForeground();
-    }
-    
-    public void setOddForeground(Color oddForeground) {
-        table.setOddForeground( oddForeground );
-    }
-    
-    public Color getErrorForeground() {
-        return table.getErrorForeground();
-    }
-    
-    public void setErrorForeground(Color errorForeground) {
-        table.setErrorForeground( errorForeground );
-    }
-    
-    public boolean isImmediate() {
-        return true;
+    public boolean isShowRowHeader() { return showRowHeader; }    
+    public void setShowRowHeader(boolean showRowHeader) { 
+        this.showRowHeader = showRowHeader; 
     }
     //</editor-fold>
     
@@ -556,4 +500,5 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         }
     }
     //</editor-fold>
+    
 }

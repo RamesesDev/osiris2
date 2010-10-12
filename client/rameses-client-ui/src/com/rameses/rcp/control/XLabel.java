@@ -138,6 +138,14 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
         property.setCaption(caption);
     }
     
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean show) {
+        property.setShowCaption(show);
+    }
+    
     public String[] getDepends() {
         return depends;
     }
@@ -216,6 +224,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     public void setAddCaptionColon(boolean addCaptionColon) {
         this.addCaptionColon = addCaptionColon;
+        activeProperty.setCaption(activeProperty.getCaption());
     }
     //</editor-fold>
     

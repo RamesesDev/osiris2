@@ -14,8 +14,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xActionBar1" min="-2" pref="267" max="-2" attributes="0"/>
-              <EmptySpace pref="220" max="32767" attributes="0"/>
+              <Component id="formPanel1" min="-2" pref="305" max="-2" attributes="0"/>
+              <EmptySpace pref="320" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -23,17 +23,29 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="xActionBar1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="447" max="32767" attributes="0"/>
+              <Component id="formPanel1" pref="274" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
+    <Container class="com.rameses.rcp.util.FormPanel" name="formPanel1">
       <Properties>
-        <Property name="orientationHAlignment" type="java.lang.String" value="RIGHT"/>
+        <Property name="orientation" type="java.lang.String" value="HORIZONTAL"/>
       </Properties>
-    </Component>
+      <SubComponents>
+        <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="xTextField1"/>
+          </Properties>
+        </Component>
+        <Component class="com.rameses.rcp.control.XTextField" name="xTextField2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="xTextField2"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>
