@@ -1,0 +1,12 @@
+
+"^[^(?:btn)].+" [readonly]  { 
+    readonly: true; 
+}
+
+"^[^(?:btn)].+" [!readonly] { 
+    readonly: false; 
+}
+
+"entity.*" [required] { required: true; }
+"entity.*" [!required] { required: false; }
+

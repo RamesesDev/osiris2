@@ -1,0 +1,14 @@
+
+"entity.(name|address)" [entity.remote == false] { 
+    readonly: true;
+}
+
+"entity.(name|address)" [entity.remote == true] { 
+    readonly: false;
+}
+
+"entity.name" [entity.remote == true] { 
+    requestFocus: true;
+}
+
+
