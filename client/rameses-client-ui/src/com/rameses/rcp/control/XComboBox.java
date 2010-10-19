@@ -299,7 +299,23 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public void setRequired(boolean required) {
         property.setRequired(required);
     }
+
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
     
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
+    }
+    
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean showCaption) {
+        property.setShowCaption(showCaption);
+    }
+        
     public void validateInput() {
         actionMessage.clearMessages();
         property.setErrorMessage(null);

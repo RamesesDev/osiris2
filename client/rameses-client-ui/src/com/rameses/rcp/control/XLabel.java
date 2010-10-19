@@ -145,7 +145,23 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setShowCaption(boolean show) {
         property.setShowCaption(show);
     }
+
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
     
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
+    
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
+    }
+   
     public String[] getDepends() {
         return depends;
     }
@@ -224,7 +240,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     public void setAddCaptionColon(boolean addCaptionColon) {
         this.addCaptionColon = addCaptionColon;
-        activeProperty.setCaption(activeProperty.getCaption());
+        formatText( activeProperty.getCaption(), activeProperty.isRequired() );
     }
     //</editor-fold>
     

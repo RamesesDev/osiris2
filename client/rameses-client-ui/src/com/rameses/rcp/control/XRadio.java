@@ -84,7 +84,7 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     }
     
     public boolean isNullWhenEmpty() { return true; }
-
+    
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEnabled(!readonly);
@@ -153,6 +153,22 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     
     public void setCaptionMnemonic(char c) {
         property.setCaptionMnemonic(c);
+    }
+    
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean show) {
+        property.setShowCaption(show);
+    }
+
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
+    
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
     }
     
     public boolean isImmediate() {

@@ -1,0 +1,8 @@
+
+"selectedItem" [true] { 
+    evenBackground: #e3e3e3;
+    evenForeground: #000000;
+}
+
+
+

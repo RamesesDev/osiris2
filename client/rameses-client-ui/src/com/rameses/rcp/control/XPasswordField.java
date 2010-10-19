@@ -53,17 +53,15 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     private boolean readonly;
     
     
-    public XPasswordField() 
-    {
-        TextEditorSupport.install(this); 
+    public XPasswordField() {
+        TextEditorSupport.install(this);
         
         Insets margin = UIManager.getInsets("TextField.margin");
-        if (margin != null) 
-        {
-            Border borderOut = getBorder(); 
-            Border borderIn = BorderFactory.createEmptyBorder(0, margin.left, 0, 0); 
-            setBorder(BorderFactory.createCompoundBorder(borderOut, borderIn)); 
-        }                 
+        if (margin != null) {
+            Border borderOut = getBorder();
+            Border borderIn = BorderFactory.createEmptyBorder(0, margin.left, 0, 0);
+            setBorder(BorderFactory.createCompoundBorder(borderOut, borderIn));
+        }
     }
     
     
@@ -216,7 +214,23 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public void setRequired(boolean required) {
         controlProperty.setRequired(required);
     }
+
+    public int getCaptionWidth() {
+        return controlProperty.getCaptionWidth();
+    }
     
+    public void setCaptionWidth(int width) {
+        controlProperty.setCaptionWidth(width);
+    }
+    
+    public boolean isShowCaption() {
+        return controlProperty.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean showCaption) {
+        controlProperty.setShowCaption(showCaption);
+    }
+        
     public void validateInput() {
         actionMessage.clearMessages();
         controlProperty.setErrorMessage(null);
@@ -233,7 +247,7 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public ControlProperty getControlProperty() {
         return controlProperty;
     }
-
+    
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEditable(!readonly);
