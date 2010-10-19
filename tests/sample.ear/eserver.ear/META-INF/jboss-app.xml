@@ -1,0 +1,5 @@
+<jboss-app>
+	<loader-repository>
+        com.rameses:loader=eserver.ear
+    </loader-repository>
+</jboss-app>

@@ -1,3 +1,0 @@
-<server>
-  <mbean code="com.rameses.ruleserver.RuleMgmt" name="rameses:service=RuleMgmt"/>
-</server>

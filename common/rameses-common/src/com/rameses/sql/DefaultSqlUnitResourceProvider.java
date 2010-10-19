@@ -11,17 +11,19 @@ public class DefaultSqlUnitResourceProvider implements SqlUnitResourceProvider {
     
     private List<SqlUnitResourceProvider> providers;
     
+    public DefaultSqlUnitResourceProvider() {
+        //build the sql unit resource providers upon loading. not on demand!
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        providers = new ArrayList();
+        Iterator iter = Service.providers(SqlUnitResourceProvider.class, classLoader);
+        while (iter.hasNext()) {
+            SqlUnitResourceProvider sp = (SqlUnitResourceProvider)iter.next();
+            providers.add(sp);
+        }
+    }
+    
     public InputStream getResource(String name) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (providers==null) {
-            providers = new ArrayList();
-            Iterator iter = Service.providers(SqlUnitResourceProvider.class, classLoader);
-            while (iter.hasNext()) {
-                SqlUnitResourceProvider sp = (SqlUnitResourceProvider)iter.next();
-                providers.add(sp);
-            }
-        }
-        
         InputStream is = null;
         for(SqlUnitResourceProvider sp : providers) {
             try {

@@ -9,6 +9,8 @@
 
 package com.rameses.sql;
 
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Map;
 import javax.sql.DataSource;
 
@@ -16,19 +18,32 @@ import javax.sql.DataSource;
  * for caching Sql Units, this class must be extended.
  * 
  */
-public abstract class SqlManager {
+public class SqlManager {
     
-    public abstract SqlConf getConf();
+    private SqlConf conf = new SqlConf();
+     
+    public SqlConf getConf() {
+        return conf;
+    }
+    
+    private Map<String,SqlUnit> cache = Collections.synchronizedMap(new Hashtable());
+    
+    public SqlManager(SqlConf conf) {
+        this.conf = conf;
+        this.conf.load();
+    }
     
     public SqlUnit getParsedSqlUnit(String statement) {
         String key = statement.hashCode()+"";
-        SqlUnit su = getConf().getCacheProvider().getCache(key);
+        SqlUnit su = cache.get(key);
         if(su==null) {
             su = new SqlUnit(statement);
-            getConf().getCacheProvider().putCache(key, su);
+            cache.put(key, su);
         }
         return su;    
     }
+    
+    
     
     public SqlUnit getNamedSqlUnit(String name) {
         int extIndex = name.lastIndexOf(".");
@@ -36,12 +51,10 @@ public abstract class SqlManager {
         //type is represnted in the extension part.
         String type = name.substring( extIndex+1);
 
-        Map<String, SqlUnitProvider> providers = getConf().getSqlUnitProviders();
-
-
-        SqlUnit su = getConf().getCacheProvider().getCache(unitName);
+        SqlUnit su = cache.get(unitName);
         if( su!=null) return su;
         
+         Map<String, SqlUnitProvider> providers = getConf().getSqlUnitProviders();
         //extension represents the type of Sql unit.
         if(!providers.containsKey(type))
             throw new RuntimeException("Sql unit factory error. There is no Sql Unit provider for type " + type );
@@ -49,33 +62,23 @@ public abstract class SqlManager {
         su = providers.get(type).getSqlUnit(unitName);
         if(su==null)
             throw new RuntimeException("Sql unit " + name + " is not found");
-        getConf().getCacheProvider().putCache(name, su);
+        cache.put(name, su);
         return su;
     }
     
     
     private static SqlManager instance;
     
+    public static void setInstance(SqlManager sm) {
+        instance = sm;
+    }
+    
     public static SqlManager getInstance() {
         if(instance==null) {
-            instance = new DefaultSqlManager(new SqlConf());
+            instance = new SqlManager(new SqlConf());
         }
         return instance;
     }
-    
-    public static class DefaultSqlManager extends SqlManager {
-        
-        private SqlConf conf = new SqlConf();
-        
-        public DefaultSqlManager(SqlConf c) {
-            conf = c;
-        }
-        public SqlConf getConf() {
-            return conf;
-        }
-    }
-
-    
     
     public void destroy() {
         getConf().destroy();
@@ -92,5 +95,9 @@ public abstract class SqlManager {
         SqlContext sm = new SqlContext(ds);
         sm.setSqlManager(this);
         return sm;
+    }
+
+    public Map<String, SqlUnit> getCache() {
+        return cache;
     }
 }

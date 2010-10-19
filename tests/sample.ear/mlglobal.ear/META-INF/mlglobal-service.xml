@@ -1,0 +1,5 @@
+<server>
+  
+  <mbean code="com.rameses.eserver.ServerMgmt" name="rameses:mlglobal=ServerMgmt"/>
+  <mbean code="com.rameses.ruleserver.RuleMgmt" name="rameses:mlglobal=RuleMgmt"/>
+</server>

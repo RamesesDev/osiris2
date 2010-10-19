@@ -19,7 +19,6 @@ public class HttpInvoker extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
-        
         try {
             in = new ObjectInputStream(req.getInputStream());
             Object[] values = filterData( in.readObject() );
@@ -33,7 +32,11 @@ public class HttpInvoker extends HttpServlet {
             String[] pathInfos = reqPath.toString().split("\\.");
             
             InitialContext ctx = new InitialContext();
-            Object bean = ctx.lookup(pathInfos[0].substring(1) + "/local");
+            String appContext = "";
+            if( req.getContextPath() != null && req.getContextPath().trim().length()>0 && !req.getContextPath().equals("/") ) {
+                appContext = req.getContextPath().substring(1) + "/";
+            }
+            Object bean = ctx.lookup(appContext + pathInfos[0].substring(1) + "/local");
             
             Method[] methods = getMethodByName(bean, pathInfos[1], values.length);
             boolean methodFound = false;

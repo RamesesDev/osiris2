@@ -1,6 +1,6 @@
 package com.rameses.invoker.client;
 
-import java.util.HashMap;
+import com.rameses.util.SysMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -29,9 +29,7 @@ public final class HttpClientManager {
     
     
     public HttpInvokerClient getService(String hostKey, Map env) {
-        if( env == null ) env = new SysMap();
-        
-        
+        env = new SysMap(env);
         //determine the host key
         if( hostKey == null || hostKey.trim().length() == 0 ) {
             if( env.get("default.host") != null ) {
@@ -45,7 +43,6 @@ public final class HttpClientManager {
         
         if( !services.containsKey(hostKey) ) {
             HttpInvokerClient client = new HttpInvokerClient();
-            
             //find the hostkey settings in system properties
             if( hostKey !=null ) {
                 String s = (String) env.get( hostKey);
@@ -59,17 +56,18 @@ public final class HttpClientManager {
                     client.setHosts(hosts);
                 }
             }
+            
+            //new addition with app context.
+            String appContext = (String)env.get("app.context");
+            if(appContext!=null) client.setAppContext( appContext );
             services.put(hostKey, client);
         }
+        
         return (HttpInvokerClient)services.get(hostKey);
     }
     
-    private static class SysMap extends HashMap {
-        public Object get(Object o) {
-            return System.getProperty(o+"");
-        }
-        
+    public void clear() {
+        services.clear();
     }
-    
     
 }

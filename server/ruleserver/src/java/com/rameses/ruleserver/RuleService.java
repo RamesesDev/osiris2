@@ -3,7 +3,6 @@ package com.rameses.ruleserver;
 import com.rameses.rules.common.RuleAction;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import org.drools.KnowledgeBase;
@@ -14,26 +13,17 @@ import org.drools.runtime.StatefulKnowledgeSession;
 @Local(RuleServiceLocal.class)
 public class RuleService implements RuleServiceLocal {
     
-    @Resource(mappedName="RuleMgmt")
-    private RuleMgmtMBean ruleMgmt;
-    
     public RuleService() {
         
     }
 
-    //for testing only
-    public RuleService(RuleMgmt mgmt) {
-        this.ruleMgmt = mgmt;
-    }
-    
-    
     public Object createFact( String ruleset, String name ) throws Exception {
         return  createFact( ruleset, name, null );
     }
     
     //the data is the map coming from the client. we need to copy its properties
     public Object createFact( String ruleset, String name, Map data ) throws Exception {
-        KnowledgeBase kb = ruleMgmt.getKnowledgeBase(ruleset);
+        KnowledgeBase kb = RuleManager.getInstance().getKnowledgeBase(ruleset);
         String pkg = name.substring(0, name.lastIndexOf("."));
         String cls = name.substring(name.lastIndexOf(".")+1);
         FactType ftype = kb.getFactType( pkg, cls );
@@ -52,7 +42,7 @@ public class RuleService implements RuleServiceLocal {
     }
     
     public void execute(String ruleset, List facts, Object globals, String agenda) throws Exception {
-        KnowledgeBase kb = ruleMgmt.getKnowledgeBase(ruleset);
+        KnowledgeBase kb = RuleManager.getInstance().getKnowledgeBase(ruleset);
         if(kb==null) 
             throw new RuntimeException("Knowledgebase " + ruleset + " is not found!");
         StatefulKnowledgeSession session = null;

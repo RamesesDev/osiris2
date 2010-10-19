@@ -22,76 +22,62 @@ import java.util.Map;
 public class SqlConf {
     
     private SqlUnitResourceProvider resourceProvider = new DefaultSqlUnitResourceProvider();
-    private SqlUnitCacheProvider cacheProvider = new DefaultSqlUnitCacheProvider();
     private Map<String, SqlUnitProvider> providers;
     
+    
+    public void load() {
+        providers = new Hashtable();
+        Iterator iter = Service.providers(  SqlUnitProvider.class, Thread.currentThread().getContextClassLoader());
+        while(iter.hasNext()) {
+            SqlUnitProvider p = (SqlUnitProvider)iter.next();
+            p.setConf(this);
+            providers.put( p.getType(), p );
+        }
+        
+        //plug in available providers. so that we can immediately
+        //basic sql provider
+        SqlUnitProvider s = new com.rameses.sql.SimpleSqlUnitProvider();
+        s.setConf( this );
+        providers.put( s.getType(), s );
+        
+        //sqlx
+        s = new com.rameses.sql.SqlxSqlUnitProvider();
+        s.setConf(this);
+        providers.put( s.getType(), s );
+        
+        //crud
+        s = new com.rameses.sql.CrudSqlUnitProvider();
+        s.setConf(this);
+        providers.put( s.getType(), s );
+    }
     
     //provision for other configurations that will be used by other providers.
     private Map extensions = new HashMap();
     
     public SqlConf() {
     }
-
+    
     public SqlUnitResourceProvider getResourceProvider() {
         return resourceProvider;
     }
-
+    
     public void setResourceProvider(SqlUnitResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
     }
-
-    public SqlUnitCacheProvider getCacheProvider() {
-        return cacheProvider;
-    }
-
-    public void setCacheProvider(SqlUnitCacheProvider cacheProvider) {
-        this.cacheProvider = cacheProvider;
-    }
     
     public Map getSqlUnitProviders() {
-        if(providers==null) {
-            providers = new Hashtable();
-            Iterator iter = Service.providers(  SqlUnitProvider.class, Thread.currentThread().getContextClassLoader());
-            while(iter.hasNext()) {
-                SqlUnitProvider p = (SqlUnitProvider)iter.next();
-                p.setConf(this);
-                providers.put( p.getType(), p );
-            }
-            
-            //plug in available providers. so that we can immediately
-            //basic sql provider
-            SqlUnitProvider s = new com.rameses.sql.SimpleSqlUnitProvider();
-            s.setConf( this );
-            providers.put( s.getType(), s );
-            
-            //sqlx
-            s = new com.rameses.sql.SqlxSqlUnitProvider();
-            s.setConf(this);
-            providers.put( s.getType(), s );
-
-            //crud
-            s = new com.rameses.sql.CrudSqlUnitProvider();
-            s.setConf(this);
-            providers.put( s.getType(), s );
-            
-            //this is to check if we have made new changes.
-            if(providers.size()==0)
-                throw new RuntimeException("There must be at least one SqlUnitProvider specified");
-        }
         return providers;
     }
     
     public void destroy() {
-         resourceProvider = null;
-         if(cacheProvider!=null) cacheProvider.destroy();
-         cacheProvider = null;
-         if(providers!=null) providers.clear();
-         providers = null;
+        resourceProvider = null;
+        if(providers!=null) providers.clear();
+        providers = null;
     }
-
+    
     public Map getExtensions() {
         return extensions;
     }
-
+    
     
 }

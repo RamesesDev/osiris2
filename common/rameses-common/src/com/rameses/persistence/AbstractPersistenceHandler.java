@@ -78,7 +78,7 @@ public abstract class AbstractPersistenceHandler implements SchemaHandler {
             String ename = sb.toString() ;
             
             //check if sql unit exists in the cache
-            SqlUnit u = sqlManager.getConf().getCacheProvider().getCache( ename );
+            SqlUnit u = sqlManager.getCache().get(ename);
             if(u==null) {
                 CrudSchemaHandler crudBuilder = new CrudSchemaHandler();
                 crudBuilder.setPrefix( contextPath );
@@ -86,7 +86,7 @@ public abstract class AbstractPersistenceHandler implements SchemaHandler {
                 sc.scan(schema, element, crudBuilder ) ;
                 CrudModel crudModel = crudBuilder.getCrudModel();
                 u = getSqlUnit(crudModel);
-                sqlManager.getConf().getCacheProvider().putCache(ename, u);
+                sqlManager.getCache().put(ename, u);
             }
             
             AbstractSqlTxn sq = getSqlTransaction(ename);

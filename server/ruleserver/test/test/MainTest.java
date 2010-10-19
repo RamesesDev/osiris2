@@ -10,7 +10,7 @@ package test;
 import com.rameses.rules.common.RuleAction;
 import com.rameses.rules.common.RuleActionHandler;
 import com.rameses.rules.common.RuleUtils;
-import com.rameses.ruleserver.RuleMgmt;
+import com.rameses.ruleserver.RuleMgmtBak;
 import com.rameses.ruleserver.RuleService;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -87,7 +87,7 @@ public class MainTest extends TestCase {
         Enumeration e = classLoader.getResources("META-INF/rules");
         assertTrue(e.hasMoreElements());
         
-        RuleMgmt mgmt = new RuleMgmt(true);
+        RuleMgmtBak mgmt = new RuleMgmtBak(true);
         mgmt.start();
         
         System.out.println("firing originally rules");

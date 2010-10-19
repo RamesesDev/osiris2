@@ -9,6 +9,8 @@
 
 package com.rameses.schema;
 
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ public abstract class SchemaManager {
     }
     
     public abstract SchemaConf getConf();
-    
+    private Map<String,Schema> cache = Collections.synchronizedMap(new Hashtable());
     
     public Schema getSchema(String sname) {
         if(getConf().getPropertyResolver()==null)
@@ -37,13 +39,13 @@ public abstract class SchemaManager {
         }
 
         //find the schema and check in cache
-        Schema schema = getConf().getCacheProvider().getCache(name);
+        Schema schema = cache.get(name);
         if(schema !=null) return schema;
         
         for(SchemaProvider sp: getConf().getProviders()) {
             schema = sp.getSchema(name);
             if( schema!=null ) {
-                getConf().getCacheProvider().putCache(name, schema);
+                cache.put(name, schema);
                 return schema;
             }
         }
@@ -61,6 +63,9 @@ public abstract class SchemaManager {
     
     private static SchemaManager instance;
     
+    public static void setInstance(SchemaManager sm) {
+        instance = sm;
+    }
     
     public static SchemaManager getInstance() {
         if(instance==null) {
@@ -142,6 +147,10 @@ public abstract class SchemaManager {
      
     public List<SchemaElement> lookup(String schemaName, String attribute, String matchPattern ) {
         return getSchema(schemaName).lookup(attribute,matchPattern);
+    }
+
+    public Map<String, Schema> getCache() {
+        return cache;
     }
     
     

@@ -21,9 +21,23 @@ public abstract class TemplateProvider implements Serializable {
     public abstract Object getResult( String templateName, Object data);
     public abstract void transform( String templateName, Object data, OutputStream out);
     
+    //when null is passed, it should clear all.
+    public abstract void clear(String name);
+    
     private static TemplateProvider instance;
     
-    protected final InputStream getResourceStream(String name) {
+    public static void setInstance(TemplateProvider  tp ) {
+        instance = tp;
+    }
+     
+    public static TemplateProvider getInstance() {
+        if(instance==null) {
+            instance = new DefaultTemplateProvider();
+        }
+        return instance;
+    }
+    
+    protected InputStream getResourceStream(String name) {
         InputStream is = null;
         try {
             if( name.indexOf("://") < 0 ) {
@@ -38,29 +52,23 @@ public abstract class TemplateProvider implements Serializable {
         }
     }
     
-    public static TemplateProvider getInstance() {
-        if(instance==null) {
-            instance = new DefaultTemplateProvider();
-        }
-        return instance;
-    }
-    
     public static class DefaultTemplateProvider extends TemplateProvider {
         
         private Map<String,TemplateProvider> providers;
         
-        private TemplateProvider getProvider(String ext) {
-            if(providers==null) {
-                providers = new Hashtable();
-                Iterator iter = Service.providers(TemplateProvider.class, Thread.currentThread().getContextClassLoader());
-                while(iter.hasNext()) {
-                    TemplateProvider tp = (TemplateProvider)iter.next();
-                    for(String s: tp.getExtensions()) {
-                        providers.put( s, tp );
-                    }
+        public DefaultTemplateProvider() {
+            //automatically include xslt cause this is quite common.
+            providers = new Hashtable();
+            Iterator iter = Service.providers(TemplateProvider.class, Thread.currentThread().getContextClassLoader());
+            while(iter.hasNext()) {
+                TemplateProvider tp = (TemplateProvider)iter.next();
+                for(String s: tp.getExtensions()) {
+                    providers.put( s, tp );
                 }
-                //automatically include xslt cause this is quite common.
             }
+        }
+        
+        private TemplateProvider getProvider(String ext) {
             if(!providers.containsKey(ext))
                 throw new RuntimeException("There is no template handler found for " + ext);
             return providers.get(ext);
@@ -83,7 +91,9 @@ public abstract class TemplateProvider implements Serializable {
         }
         
         public void clear(String name) {
-            
+            String ext = name.substring( name.lastIndexOf(".")+1 );
+            TemplateProvider t = getProvider(ext);
+            t.clear( name );
         }
     }
     
@@ -155,6 +165,13 @@ public abstract class TemplateProvider implements Serializable {
             catch(Exception e) {
                 throw new IllegalStateException(e);
             }
+        }
+
+        public void clear(String name) {
+            if( name !=null ) 
+                cache.clear();
+            else
+                cache.remove( name );
         }
         
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd"
+             version="5">
+
+    <display-name>ESERVER APPLICATION</display-name>
+	<module>
+		<java>rameses-common.jar</java>
+	</module>
+	<module>
+		<ejb>rameses-eserver-async.jar</ejb>
+	</module>
+	<module>
+		<ejb>rameses-eserver-scheduler.jar</ejb>
+	</module>
+</application>

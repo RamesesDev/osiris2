@@ -27,7 +27,6 @@ public class SchemaConf {
     
     private PropertyResolver propertyResolver;
     private SchemaResourceProvider resourceProvider = new DefaultSchemaResourceProvider();
-    private SchemaCacheProvider cacheProvider = new DefaultSchemaCacheProvider();
     
     private SchemaScriptProvider scriptProvider;
 
@@ -57,14 +56,6 @@ public class SchemaConf {
         this.resourceProvider = resourceProvider;
     }
     
-    public SchemaCacheProvider getCacheProvider() {
-        return cacheProvider;
-    }
-    
-    public void setCacheProvider(SchemaCacheProvider cacheProvider) {
-        this.cacheProvider = cacheProvider;
-    }
-    
     public List<SchemaProvider> getProviders() {
         if(providers==null) {
             providers = new ArrayList();
@@ -86,8 +77,6 @@ public class SchemaConf {
         propertyResolver = null;
         resourceProvider = null;
         if(providers!=null) providers.clear();
-        if(cacheProvider!=null) cacheProvider.destroy();
-        cacheProvider = null;
         scriptProvider = null;
         schemaManager = null;
         serializer = null;

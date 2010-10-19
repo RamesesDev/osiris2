@@ -1,0 +1,10 @@
+<server>
+  
+  <!-- topic asynchronous scripts -->    
+  <mbean code="org.jboss.mq.server.jmx.Topic" name="jboss.mq.destination:service=Topic,name=TaskSchedulerQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+  </mbean>
+  
+  <mbean code="com.rameses.eserver.scheduler.TaskSchedulerMgmt" name="rameses:eserver=TaskSchedulerMgmt"/>
+  
+</server>

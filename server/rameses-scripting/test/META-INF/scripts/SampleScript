@@ -1,0 +1,25 @@
+import com.rameses.annotations.*;
+
+public class SampleScript {
+
+    @ProxyMethod
+    public String test(String name) {
+        println "executing non-local script " + name;
+        return "non-local->" + name;
+    }
+
+    @ProxyMethod(local=true)
+    public String localtest(String name) {
+        println "executing local script " + name;
+        return "local->" + name;
+    }
+
+    @ProxyMethod(local=true)
+    @Async
+    public String asyncTest(String name) {
+        println "executing local script " + name;
+        return "local->" + name;
+    }
+
+
+}

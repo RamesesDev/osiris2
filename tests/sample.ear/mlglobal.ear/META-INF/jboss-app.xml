@@ -1,0 +1,8 @@
+<jboss-app>
+	<loader-repository>
+        com.rameses:loader=mlglobal.ear
+    </loader-repository>
+    <module>
+	   <service>META-INF/mlglobal-service.xml</service>
+    </module>
+</jboss-app>

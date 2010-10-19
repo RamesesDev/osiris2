@@ -17,6 +17,7 @@ public class HttpInvokerClient {
     private String protocol = "http";
     private String host = "localhost:8080";
     private boolean secured = false;
+    private String appContext;
     
     private String[] hosts;
     private int timeout = 10000;
@@ -27,9 +28,12 @@ public class HttpInvokerClient {
     
     public String buildHostPath(String host) {
         StringBuffer sb = new StringBuffer();
-        sb.append( getProtocol() + "://" + host.trim() + "/invoke/");
+        sb.append( getProtocol() + "://" + host.trim() );
+        if(  appContext !=null && appContext.trim().length()>0 ) sb.append( "/"+appContext );
+        sb.append( "/invoke/" );
         if( isSecured() ) sb.append( "secured/");
-        return sb.toString();
+        String path = sb.toString();
+        return path;
     }
     
     
@@ -173,6 +177,14 @@ public class HttpInvokerClient {
     
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public String getAppContext() {
+        return appContext;
+    }
+
+    public void setAppContext(String appContext) {
+        this.appContext = appContext;
     }
     
 }

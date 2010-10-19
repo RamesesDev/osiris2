@@ -1,0 +1,10 @@
+import com.rameses.annotations.*;
+
+public class TestInterceptor2 {
+
+    @Before(pattern=".*", index=1)
+    public void beforeExec2(def evt) {
+        println "before " + evt;
+    }
+
+}

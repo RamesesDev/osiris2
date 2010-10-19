@@ -10,11 +10,11 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>WebInvoker</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/invoke/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SecuredWebInvoker</servlet-name>
-        <url-pattern>/secured/*</url-pattern>
+        <url-pattern>/invoke/secured/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
