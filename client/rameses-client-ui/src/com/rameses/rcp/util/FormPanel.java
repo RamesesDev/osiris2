@@ -1,26 +1,37 @@
 package com.rameses.rcp.util;
 
+import com.rameses.rcp.common.FormControl;
 import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.control.XLabel;
+import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
+import com.rameses.rcp.ui.DynamicContainer;
+import com.rameses.rcp.ui.UIComposite;
+import com.rameses.rcp.ui.UICompositeFocusable;
+import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.ui.UIInput;
+import com.rameses.rcp.ui.Validatable;
+import com.rameses.util.ValueUtil;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
 import java.beans.Beans;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-public class FormPanel extends JPanel implements ActiveControl, UIConstants {
+public class FormPanel extends JPanel implements UIComposite, DynamicContainer, Validatable, ActiveControl, UIConstants {
     
     private int cellspacing = 3;
     private Insets cellpadding = new Insets(0,0,0,0);
@@ -33,15 +44,32 @@ public class FormPanel extends JPanel implements ActiveControl, UIConstants {
     private String captionVAlignment = UIConstants.TOP;
     private String captionHAlignment = UIConstants.LEFT;
     private String captionOrientation = UIConstants.LEFT;
+    private Font captionFont;
+    private Color captionForeground;
     private Insets captionPadding = new Insets(0,0,0,5);
     private boolean addCaptionColon = true;
     
+    private Binding binding;
+    private String[] depends;
+    private int index;
+    private List<UIControl> controls = new ArrayList();
+    private boolean dynamic;
     private ControlProperty property = new ControlProperty();
+    private ActionMessage actionMessage = new ActionMessage();
+    
+    private boolean hasNonDynamicContents;
+    
+    //internal flag
+    private boolean _loaded;
+    
     
     public FormPanel() {
         super.setLayout(new Layout());
         setPadding(new Insets(5,5,5,5));
         setOpaque(false);
+        
+        setCaptionFont(UIManager.getFont("Label.font"));
+        setCaptionForeground(UIManager.getColor("Label.foreground"));
     }
     
     //<editor-fold defaultstate="collapsed" desc=" FormPanel implementations ">
@@ -51,16 +79,18 @@ public class FormPanel extends JPanel implements ActiveControl, UIConstants {
         ItemPanel p = null;
         //check if it is a containable component
         if ( comp instanceof ActiveControl ) {
-            p = new ItemPanel(comp);
+            p = new ItemPanel(this, comp);
         } else if ( comp instanceof JScrollPane ) {
             Component view = ((JScrollPane) comp).getViewport().getView();
             if ( view instanceof ActiveControl ) {
-                p = new ItemPanel(view, comp);
+                p = new ItemPanel(this, view, comp);
             }
         }
         
-        if ( p != null )
+        if ( p != null ) {
+            if ( !_loaded ) hasNonDynamicContents = true;
             super.addImpl(p, constraints, index);
+        }
     }
     
     public void remove(Component comp) {
@@ -97,6 +127,92 @@ public class FormPanel extends JPanel implements ActiveControl, UIConstants {
             }
         }
         return null;
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  UIComposite properties  ">
+    public List<? extends UIControl> getControls() {
+        return controls;
+    }
+    
+    public String[] getDepends() { return depends; }
+    public void setDepends(String[] depends) { this.depends = depends; }
+    
+    public int getIndex() { return index; }
+    public void setIndex(int index) { this.index = index; }
+    
+    public Binding getBinding() { return binding; }
+    public void setBinding(Binding binding) { this.binding = binding; }
+    
+    public boolean isDynamic() { return dynamic; }
+    public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
+    
+    public void refresh() {
+        for(UIControl uic: controls) {
+            uic.refresh();
+        }
+    }
+    
+    public void load() {
+        _loaded = true;
+        build();
+    }
+    
+    public void reload() {
+        build();
+    }
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  helper method  ">
+    private void build() {
+        if ( ValueUtil.isEmpty(getName()) ) return;
+        
+        removeAll();
+        controls.clear();
+        property.setRequired(false);
+        
+        List<FormControl> list = getFormControls();
+        FormControlUtil util = FormControlUtil.getInstance();
+        for(FormControl fc: list) {
+            UIControl uic = util.getControl(fc);
+            if ( uic == null ) continue;
+            
+            uic.setBinding(binding);
+            uic.load();
+            
+            if( uic instanceof Validatable && ((Validatable) uic).isRequired() )
+                property.setRequired(true);
+            
+            controls.add( uic );
+            add( (Component)uic );
+        }
+        
+        revalidate();
+    }
+    
+    private List getFormControls() {
+        List list = new ArrayList();
+        
+        Object value = null;
+        try {
+            value = UIControlUtil.getBeanValue(this);
+        } catch(Exception e) {;}
+        
+        if (value == null) {
+            //do nothing
+        } else if (value.getClass().isArray()) {
+            for (FormControl fc: (FormControl[]) value) {
+                list.add(fc);
+            }
+        } else if (value instanceof Collection) {
+            list.addAll((Collection) value);
+        }
+        
+        return list;
     }
     //</editor-fold>
     
@@ -180,7 +296,7 @@ public class FormPanel extends JPanel implements ActiveControl, UIConstants {
     }
     
     public boolean isAddCaptionColon() { return addCaptionColon; }
-    public void setAddCaptionColon(boolean addCaptionColon) { 
+    public void setAddCaptionColon(boolean addCaptionColon) {
         this.addCaptionColon = addCaptionColon;
         updateLabels();
     }
@@ -195,253 +311,94 @@ public class FormPanel extends JPanel implements ActiveControl, UIConstants {
         revalidate();
     }
     
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc=" ItemPanel (Class) ">
-    private class ItemPanel extends JPanel {
-        
-        /**
-         * wrapper is usually JScrollPane
-         */
-        private Component editorWrapper;
-        private Component editor;
-        private XLabel label;
-        private ControlProperty property;
-        
-        public ItemPanel(Component editor) {
-            this(editor, null);
-        }
-        
-        public ItemPanel(Component editor, Component container) {
-            this.editor = editor;
-            this.editorWrapper = container;
-            ActiveControl con = (ActiveControl) editor;
-            property = con.getControlProperty();
-            
-            label = new XLabel(true);
-            label.setLabelFor(editor);
-            label.setAddCaptionColon(addCaptionColon);
-            
-            setOpaque(false);
-            setLayout(new ItemPanelLayout(property));
-            add(label, "label");
-            if ( container != null ) {
-                add(container, "editor");
-            } else {
-                add(editor, "editor");
-            }
-            
-            PropertyChangeListener listener = new ContainablePropetyListener(this);
-            property.addPropertyChangeListener(listener);
-        }
-        
-        public boolean match(Component editor) {
-            if (editor == null) return false;
-            
-            return (this.editor == editor);
-        }
-        
-        public Component getEditorComponent() { return editor; }
-        public Component getEditorWrapper() { return editorWrapper; }
-        public XLabel getLabelComponent() { return label; }
-        public ControlProperty getControlProperty() { return property; }
-        
+    public Font getCaptionFont() { return captionFont; }
+    public void setCaptionFont(Font captionFont) {
+        this.captionFont = captionFont;
+        updateLabelsFont();
     }
-    //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc=" ContainablePropetyListener (Class) ">
-    private class ContainablePropetyListener implements PropertyChangeListener {
-        
-        private ItemPanel panel;
-        
-        public ContainablePropetyListener(ItemPanel panel) {
-            this.panel = panel;
-        }
-        
-        public void propertyChange(PropertyChangeEvent evt) {
-            String propName = evt.getPropertyName();
-            Object value = evt.getNewValue();
-            
-            if ( "captionWidth".equals(propName) ) {
-                panel.revalidate();
-            } else if ( "showCaption".equals(propName)) {
-                panel.revalidate();
+    private void updateLabelsFont() {
+        for(Component c: getComponents()) {
+            if ( c instanceof ItemPanel ) {
+                XLabel lbl = ((ItemPanel)c).getLabelComponent();
+                lbl.setFont(captionFont);
             }
         }
-        
+        revalidate();
     }
-    //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc=" ItemPanelLayout (Class) ">
-    private class ItemPanelLayout implements LayoutManager {
-        
-        private Component label;
-        private Component editor;
-        private ControlProperty property;
-        
-        public ItemPanelLayout(ControlProperty property) {
-            this.property = property;
-        }
-        
-        public void addLayoutComponent(String name, Component comp) {
-            if ("label".equals(name)) label = comp;
-            else if ("editor".equals(name)) editor = comp;
-        }
-        
-        public void removeLayoutComponent(Component comp) {
-            if (comp == null) ;
-            else if (label == comp) label = comp;
-            else if (editor == comp) editor = comp;
-        }
-        
-        public Dimension preferredLayoutSize(Container parent) {
-            return getLayoutSize(parent);
-        }
-        
-        public Dimension minimumLayoutSize(Container parent) {
-            Dimension dim = getLayoutSize(parent);
-            return new Dimension(100, dim.height);
-        }
-        
-        public void layoutContainer(Container parent) {
-            synchronized (parent.getTreeLock()) {
-                Insets margin = parent.getInsets();
-                int x = margin.left;
-                int y = margin.top;
-                int w = parent.getWidth() - (margin.left + margin.right);
-                int h = parent.getHeight() - (margin.top + margin.bottom);
-                int captionWidth = getPreferredCaptionWidth();
-                String orient = getCaptionOrientation();
-                
-                if ( UIConstants.LEFT.equals(orient) || UIConstants.TOP.equals(orient) ) {
-                    Rectangle rec = layoutLabel(x, y, w, h, captionWidth);
-                    layoutEditor(rec.x, rec.y, rec.width, rec.height);
-                } else {
-                    Rectangle rec = layoutEditor(x, y, w, h);
-                    layoutLabel(rec.x, rec.y, rec.width, rec.height, captionWidth);
-                }
+    public Color getCaptionForeground() { return captionForeground; }
+    public void setCaptionForeground(Color captionForeground) {
+        this.captionForeground = captionForeground;
+        updateLabelsForeground();
+    }
+    
+    private void updateLabelsForeground() {
+        for(Component c: getComponents()) {
+            if ( c instanceof ItemPanel ) {
+                XLabel lbl = ((ItemPanel)c).getLabelComponent();
+                lbl.setForeground(captionForeground);
             }
         }
-        
-        //<editor-fold defaultstate="collapsed" desc="  layout helper  ">
-        private Rectangle layoutLabel(int x, int y, int w, int h, int captionWidth) {
-            if (label != null && isShowCaption()) {
-                int cw = captionWidth;
-                Dimension dim = label.getPreferredSize();
-                
-                if ( (UIConstants.TOP.equals(captionOrientation) || UIConstants.BOTTOM.equals(captionOrientation)) && editor != null )
-                    cw = editor.getPreferredSize().width;
-                else if (cw <= 0) 
-                    cw = dim.width;
-                
-                label.setBounds(x, y, cw, h);
-                
-                if ( UIConstants.TOP.equals(captionOrientation) ) {
-                    y += dim.height;
-                    h -= dim.height;
-                } else {
-                    x += cw;
-                    w -= cw;
-                }
-            }
-            return new Rectangle(x, y, w, h);
-        }
-        
-        private Rectangle layoutEditor(int x, int y, int w, int h) {
-            if (editor != null) {
-                Dimension dim = editor.getPreferredSize();
-                int cw = dim.width;
-                if ( cw > w || cw <= 0 ) {
-                    cw = w;
-                }
-                editor.setBounds(x, y, cw, dim.height);
-                if ( UIConstants.BOTTOM.equals(captionOrientation) ) {
-                    y += dim.height;
-                    h -= dim.height;
-                } else {
-                    x += cw;
-                    w -= cw;
-                }
-            }
-            return new Rectangle(x, y, w, h);
-        }
-        //</editor-fold>
-        
-        public Dimension getLayoutSize(Container parent) {
-            synchronized (parent.getTreeLock()) {
-                int w=0, h=0;
-                int captionWidth = getPreferredCaptionWidth();
-                String orient = getCaptionOrientation();
-                
-                if (label != null) {
-                    if ( isShowCaption() ) {
-                        applyCaptionStyles((JLabel) label);
-                        Dimension dim = label.getPreferredSize();
-                        
-                        if ( UIConstants.TOP.equals(orient) || UIConstants.BOTTOM.equals(orient) ) {
-                            h += dim.height;
-                            w = Math.max(w, dim.width);
-                        } else {
-                            int cw = captionWidth;
-                            if (cw <= 0) cw = dim.width;
-                            w += cw;
-                            h = Math.max(h, dim.height);
-                        }
-                        
-                        label.setVisible(true);
-                    } else {
-                        label.setVisible(false);
-                    }
-                }
-                
-                if (editor != null) {
-                    Dimension dim = editor.getPreferredSize();
-                    if ( UIConstants.TOP.equals(orient) || UIConstants.BOTTOM.equals(orient) ) {
-                        h += dim.height;
-                        w = Math.max(w, dim.width);
-                    } else {
-                        w += dim.width;
-                        h = Math.max(h, dim.height);
-                    }
-                }
-                
-                Insets margin = parent.getInsets();
-                w += (margin.left + margin.right);
-                h += (margin.top + margin.bottom);
-                return new Dimension(w, h);
-            }
-        }
-        
-        private void applyCaptionStyles(JLabel label) {
-            //vertical alignment
-            String valign = getCaptionVAlignment();
-            if ( UIConstants.CENTER.equals(valign) )
-                label.setVerticalAlignment(SwingConstants.CENTER);
-            else if ( UIConstants.BOTTOM.equals(valign) )
-                label.setVerticalAlignment(SwingConstants.BOTTOM);
-            else
-                label.setVerticalAlignment(SwingConstants.TOP);
+        revalidate();
+    }
+    
+    public void setRequired(boolean required) {}
+    public boolean isRequired() {
+        return property.isRequired();
+    }
+    
+    
+    public void validateInput() {
+        actionMessage.clearMessages();
+        for(UIControl c: controls) {
+            if( !(c instanceof Validatable) ) continue;
             
-            //horizontal alignment
-            String halign = getCaptionHAlignment();
-            if ( UIConstants.CENTER.equals(halign) )
-                label.setHorizontalAlignment(SwingConstants.CENTER);
-            else if ( UIConstants.RIGHT.equals(halign) )
-                label.setHorizontalAlignment(SwingConstants.RIGHT);
-            else
-                label.setHorizontalAlignment(SwingConstants.LEFT);
-            
-            if ( captionPadding != null )
-                ((XLabel) label).setPadding(captionPadding);
+            Validatable v = (Validatable) c;
+            v.validateInput();
+            if( v.getActionMessage().hasMessages() )
+                actionMessage.addMessage(v.getActionMessage());
         }
-        
-        private int getPreferredCaptionWidth() {
-            return property.getCaptionWidth() <= 0? getCaptionWidth(): property.getCaptionWidth();
+    }
+    
+    public ActionMessage getActionMessage() {
+        return actionMessage;
+    }
+    
+    public void requestFocus() {
+        focusFirstInput();
+    }
+    
+    public boolean focusFirstInput() {
+        for(UIControl c: controls) {
+            if( actionMessage.hasMessages() ) {
+                if( !(c instanceof Validatable) ) continue;
+                
+                Validatable v = (Validatable) c;
+                v.validateInput();
+                if( v.getActionMessage().hasMessages() ) {
+                    ((Component) v).requestFocus();
+                    return true;
+                }
+            } else if ( c instanceof UICompositeFocusable ) {
+                UICompositeFocusable uis = (UICompositeFocusable) c;
+                if ( uis.focusFirstInput() ) return true;
+                
+            } else if ( c instanceof UIInput ) {
+                UIInput u = (UIInput) c;
+                JComponent jc = (JComponent) c;
+                if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isVisible())
+                    continue;
+                
+                jc.requestFocus();
+                return true;
+            }
         }
-        
-        private boolean isShowCaption() {
-            return property.isShowCaption();
-        }
+        return false;
+    }
+
+    public boolean isHasNonDynamicContents() {
+        return hasNonDynamicContents;
     }
     //</editor-fold>
     
@@ -483,7 +440,7 @@ public class FormPanel extends JPanel implements ActiveControl, UIConstants {
                         y += cellpadding.top;
                         c.setBounds(x, y, w, dim.height);
                     }
-                                        
+                    
                     //increment
                     if ( UIConstants.HORIZONTAL.equals(orientation) )
                         x += dim.width + cellpadding.right;

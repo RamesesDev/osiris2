@@ -1,6 +1,7 @@
 package test;
 import java.text.ParseException;
-import javax.swing.JDialog;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import junit.framework.*;
 
 /*
@@ -20,21 +21,22 @@ public class Test extends TestCase {
         super(testName);
     }
     
-//    public void test() throws ParseException {
-//        UIDefaults d = UIManager.getLookAndFeelDefaults();
-//        for(Object o : d.entrySet()) {
-//            if( o.toString().contains("Separator") )
-//                System.out.println(o);
-//        }
-//    }
-    
-    public void test2() throws ParseException {
-        JDialog d = new JDialog();
-        d.setModal(true);
-        d.setContentPane(new TestPage());
-        d.pack();
-        d.setLocationRelativeTo(null);
-        d.setVisible(true);
+    public void test() throws ParseException {
+        Matcher m = Pattern.compile("([\\s\\w]+)\\s+(\\w+)\\s+(\\d+)$").matcher("Times New Roman bold 12");
+        if ( m.matches() ) {
+            System.out.println(m.group(1));
+            System.out.println(m.group(2));
+            System.out.println(m.group(3));
+        }
     }
+    
+//    public void test2() throws ParseException {
+//        JDialog d = new JDialog();
+//        d.setModal(true);
+//        d.setContentPane(new TestPage());
+//        d.pack();
+//        d.setLocationRelativeTo(null);
+//        d.setVisible(true);
+//    }
     
 }

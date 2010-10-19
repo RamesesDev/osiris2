@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Dynamic Controls Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test1Controller  {
+        
+            def entity = [:];
+        
+            def formControls = [];
+            
+            void showData() {
+                println entity;
+            }
+            
+            void save() {
+                if ( entity.address == null ) {
+                    entity.address = [:];
+                    entity.address2 = [:];
+                    formControls = [
+                        new FormControl(type: 'label', properties:[ font: 'Dialog bold 14', text: 'Address 1', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
+                        new FormControl(type: 'separator', properties:[ showCaption: false, preferredSize: "0,5"]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.street', caption: 'Street', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.barangay', caption: 'Barangay', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.city', caption: 'City', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.province', caption: 'Province', preferredSize: "200,19", required: true]),
+                        
+                        new FormControl(type: 'label', properties:[ font: 'Dialog bold 14', text: 'Address 2', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
+                        new FormControl(type: 'separator', properties:[ showCaption: false, preferredSize: "0,5"]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address2.street', caption: 'Street2', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address2.barangay', caption: 'Barangay2', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address2.city', caption: 'City2', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address2.province', caption: 'Province2', preferredSize: "200,19", required: true])
+
+
+                    ];
+                }
+                else {
+                    showData();
+                }
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="formpanel.Page"/>
+    </pages>
+</workunit>

@@ -9,6 +9,8 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.ui.ActiveControl;
+import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
@@ -21,13 +23,15 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;
 
 
-public class XEditorPane extends JEditorPane implements UIInput {
+public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
     
     private Binding binding;
     private String[] depends;
     private int index;
     private boolean nullWhenEmpty = true;
     private boolean readonly;
+    
+    private ControlProperty property = new ControlProperty();
     
     
     public XEditorPane() {
@@ -130,6 +134,42 @@ public class XEditorPane extends JEditorPane implements UIInput {
     
     public void setBinding(Binding binding) { this.binding = binding; }
     public Binding getBinding() { return binding; }
+    
+    public ControlProperty getControlProperty() {
+        return property;
+    }
+    
+    public String getCaption() {
+        return property.getCaption();
+    }
+    
+    public void setCaption(String caption) {
+        property.setCaption(caption);
+    }
+    
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
+    
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
+    }
+    
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean showCaption) {
+        property.setShowCaption(showCaption);
+    }
     //</editor-fold>
     
 }

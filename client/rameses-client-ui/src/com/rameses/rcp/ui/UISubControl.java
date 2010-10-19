@@ -7,9 +7,8 @@
 
 package com.rameses.rcp.ui;
 
-public interface UISubControl extends UIControl {
+public interface UISubControl extends UICompositeFocusable {
  
     String getCaption();
-    boolean focusFirstInput();
     
 }

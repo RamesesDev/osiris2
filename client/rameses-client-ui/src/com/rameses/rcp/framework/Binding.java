@@ -9,13 +9,13 @@ import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
-import com.rameses.rcp.ui.UISubControl;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.MethodResolver;
+import com.rameses.rcp.ui.UICompositeFocusable;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -58,7 +58,7 @@ public class Binding {
     /**
      * 1. reference of all controls that can aquire default focus
      *    when the window is shown or during page navigation
-     * 2. this reference contains UIInput and UISubControl only
+     * 2. this reference contains UIInput and UICompositeFocusable only
      */
     private List<UIControl> focusableControls = new ArrayList();
     
@@ -114,6 +114,21 @@ public class Binding {
         }
     }
     
+    public void unregister( UIControl control ) {
+        controls.remove( control );
+        if( control instanceof Validatable ) {
+            validatables.remove( (Validatable)control );
+        }
+        if( !ValueUtil.isEmpty(control.getName()) ) {
+            controlsIndex.remove(control.getName());
+        }
+        if ( control instanceof UIInput || control instanceof UICompositeFocusable ) {
+            focusableControls.remove( control );
+        }
+        for(Set c: depends.values()) {
+            if ( c.contains(control) ) c.remove(control);
+        }
+    }
     
     public void init() {
         if ( _initialized ) return;
@@ -123,7 +138,7 @@ public class Binding {
         Collections.sort( validatables );
         for( UIControl u : controls ) {
             //index all default focusable controls
-            if ( u instanceof UIInput || u instanceof UISubControl ) {
+            if ( u instanceof UIInput || u instanceof UICompositeFocusable ) {
                 focusableControls.add( u );
             }
             
@@ -194,6 +209,8 @@ public class Binding {
         if( refreshed.add(u) ) {
             if ( u instanceof UIComposite ) {
                 UIComposite comp = (UIComposite)u;
+                if ( comp.isDynamic() ) comp.reload();
+                
                 for (UIControl uic: comp.getControls()) {
                     applyStyle(uic);
                 }
@@ -334,8 +351,8 @@ public class Binding {
     public boolean focusFirstInput() {
         //focus first UIInput that is not disabled/readonly
         for (UIControl u: focusableControls ) {
-            if ( u instanceof UISubControl ) {
-                UISubControl uis = (UISubControl) u;
+            if ( u instanceof UICompositeFocusable ) {
+                UICompositeFocusable uis = (UICompositeFocusable) u;
                 if ( uis.focusFirstInput() ) return true;
                 
             } else if ( u instanceof UIInput ) {
@@ -373,7 +390,7 @@ public class Binding {
             throw new IllegalStateException(e);
         }
     }
-
+    
     /**
      * fireNavigation can be used to programmatically trigger the navigation handler
      * from the controller's code bean

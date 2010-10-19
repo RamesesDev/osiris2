@@ -1,5 +1,6 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.rcp.ui.DynamicContainer;
 import com.rameses.rcp.ui.UIControl;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -24,7 +25,7 @@ public class UIViewPanel extends JPanel implements ContainerListener {
         this.binding = new Binding(this);
         initComponents();
     }
-
+    
     public void setLayout(LayoutManager mgr) {;}
     
     private void initComponents() {
@@ -36,7 +37,9 @@ public class UIViewPanel extends JPanel implements ContainerListener {
     
     public void bindComponents( Container cont ) {
         for( Component c: cont.getComponents()) {
-            if( c instanceof UIControl ) {
+            if( c instanceof DynamicContainer && ((DynamicContainer) c).isHasNonDynamicContents() && c instanceof Container ) {
+                bindComponents( (Container)c);                
+            } else if( c instanceof UIControl ) {
                 UIControl uic = (UIControl)c;
                 uic.setBinding(binding);
                 binding.register(uic);
