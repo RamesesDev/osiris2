@@ -139,20 +139,24 @@ public class FormControlUtil {
                     String[] ss = strValue.split("\\s*,\\s*");
                     return new Dimension(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
                 }
-                //a hex color value is expected
-                if( strValue.startsWith("#") ) {
-                    return Color.decode(strValue);
-                }
                 
-                //an rgb color value is expected
-                //example: rgb(200, 219, 227)
-                if( strValue.startsWith("rgb") ) {
-                    Matcher m = RGB_PATTERN.matcher(strValue.replace(" ", ""));
-                    if ( m.matches() ) {
-                        int r = Integer.parseInt(m.group(1));
-                        int g = Integer.parseInt(m.group(2));
-                        int b = Integer.parseInt(m.group(3));
-                        return new Color(r,g,b);
+                if ( name.matches(".*([Bb]ackground|[Ff]oreground|[Cc]olor).*") ) {
+                    //a hex color value is expected
+                    //example #33ff00
+                    if( strValue.matches("#[a-f\\d]{3,6}") ) {
+                        return Color.decode(strValue);
+                    }
+                    
+                    //an rgb color value is expected
+                    //example: rgb(200, 219, 227)
+                    if( strValue.startsWith("rgb") ) {
+                        Matcher m = RGB_PATTERN.matcher(strValue.replace(" ", ""));
+                        if ( m.matches() ) {
+                            int r = Integer.parseInt(m.group(1));
+                            int g = Integer.parseInt(m.group(2));
+                            int b = Integer.parseInt(m.group(3));
+                            return new Color(r,g,b);
+                        }
                     }
                 }
                 
@@ -177,7 +181,7 @@ public class FormControlUtil {
                         }
                     }
                     return new Font(null);
-                }                
+                }
             }
             
             return null;

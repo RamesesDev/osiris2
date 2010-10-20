@@ -14,6 +14,8 @@ import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.MethodResolver;
+import com.rameses.rcp.common.Validator;
+import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.ui.UICompositeFocusable;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
@@ -49,7 +51,7 @@ public class Binding {
     
     /**
      * index of all controls in this binding
-     * this is used to speed up in finding a control by name
+     * this is used when finding a control by name
      */
     private Map<String, UIControl> controlsIndex = new Hashtable();
     
@@ -74,6 +76,7 @@ public class Binding {
     
     private KeyListener changeLogKeySupport = new ChangeLogKeySupport();
     private List<String> closeMethods;
+    private List<Validator> validators = new ArrayList();
     
     /**
      * can be used by UIControls to store values
@@ -90,6 +93,15 @@ public class Binding {
     
     public UIViewPanel getOwner() {
         return owner;
+    }
+    
+    public void addValidator(Validator validator) {
+        if ( validators.contains(validator) )
+            validators.add(validator);
+    }
+    
+    public boolean removeValidator(Validator validator) {
+        return validators.remove(validator);
     }
     
     //<editor-fold defaultstate="collapsed" desc="  control binding  ">
@@ -110,23 +122,7 @@ public class Binding {
             controlsIndex.put(control.getName(), control);
         }
     }
-    
-    public void unregister( UIControl control ) {
-        controls.remove( control );
-        if( control instanceof Validatable ) {
-            validatables.remove( (Validatable)control );
-        }
-        if( !ValueUtil.isEmpty(control.getName()) ) {
-            controlsIndex.remove(control.getName());
-        }
-        if ( control instanceof UIInput || control instanceof UICompositeFocusable ) {
-            focusableControls.remove( control );
-        }
-        for(Set c: depends.values()) {
-            if ( c.contains(control) ) c.remove(control);
-        }
-    }
-    
+
     public void init() {
         if ( _initialized ) return;
         
@@ -285,25 +281,42 @@ public class Binding {
         }
     }
     
+    public void validateBean(ValidatorEvent evt) {
+        for(Validator v: validators) {
+            v.validate(evt);
+        }
+    }
+    
     public void formCommit() {
         for ( UIControl u: focusableControls ) {
-            if ( !(u instanceof UIInput) || ValueUtil.isEmpty(u.getName()) ) continue;
-            
-            UIInput ui = (UIInput) u;
-            if ( ui.isImmediate() || ui.isReadonly() ) continue;
-            
-            Component c = (Component) ui;
-            if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) continue;
-            
-            Object compValue = ui.getValue();
-            Object beanValue = UIControlUtil.getBeanValue(ui);
-            if ( !ValueUtil.isEqual(compValue, beanValue) ) {
-                UIInputUtil.updateBeanValue(ui);
+            if ( u instanceof UIComposite ) {
+                UIComposite uc = (UIComposite) u;
+                for( UIControl uu: uc.getControls() )
+                    doCommit(uu);
+                
+            } else {
+                doCommit(u);
             }
         }
         
         for (BindingListener bl : listeners) {
             bl.formCommit();
+        }
+    }
+    
+    private void doCommit(UIControl u) {
+        if ( !(u instanceof UIInput) || ValueUtil.isEmpty(u.getName()) ) return;
+        
+        UIInput ui = (UIInput) u;
+        if ( ui.isImmediate() || ui.isReadonly() ) return;
+        
+        Component c = (Component) ui;
+        if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) return;
+        
+        Object compValue = ui.getValue();
+        Object beanValue = UIControlUtil.getBeanValue(ui);
+        if ( !ValueUtil.isEqual(compValue, beanValue) ) {
+            UIInputUtil.updateBeanValue(ui);
         }
     }
     
@@ -555,7 +568,7 @@ public class Binding {
         }
     }
     //</editor-fold>
-
+    
     //<editor-fold defaultstate="collapsed" desc="  ChangeLogKeySupport (class)  ">
     private class ChangeLogKeySupport implements KeyListener {
         

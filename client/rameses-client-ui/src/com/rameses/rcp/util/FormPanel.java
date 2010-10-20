@@ -171,8 +171,12 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
     private void build() {
         if ( ValueUtil.isEmpty(getName()) ) return;
         
-        removeAll();
+        //remove only dynamic controls
+        for(UIControl u: controls) {
+            remove((Component) u);
+        }
         controls.clear();
+        
         property.setRequired(false);
         
         List<FormControl> list = getFormControls();

@@ -1,5 +1,6 @@
 package com.rameses.rcp.util;
 
+import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
@@ -89,6 +90,12 @@ public class UICommandUtil {
         binding.validate(am);
         if ( am.hasMessages() ) {
             throw new BusinessException(am.toString());
+        }
+        
+        ValidatorEvent evt = new ValidatorEvent();
+        binding.validateBean(evt);
+        if ( evt.hasMessages() ) {
+            throw new BusinessException(evt.toString());
         }
     }
 }

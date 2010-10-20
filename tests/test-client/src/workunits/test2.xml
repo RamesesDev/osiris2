@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Dynamic Controls Test 2"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test2Controller  {
+        
+            def entity = [:];
+        
+            def formControls = [                        
+                new FormControl(type: 'combo', properties:[ 
+                    name: 'entity.item', caption: 'Item', items: 'items', expression: '#{name}', immediate: true,
+                    preferredSize: "200,19", required: true, allowNull: false
+                ]),
+
+                new FormControl(type: 'combo', properties:[ 
+                    name: 'entity.detail', caption: 'Detail', items: 'details', depends: 'entity.item',
+                    preferredSize: "200,19", required: true
+                ])
+            ];
+            
+            def items = [
+                [name: 'Colors', details: ['Red', 'Green', 'Blue']],
+                [name: 'Games', details: ['Tennis', 'Badminton']],
+                [name: 'Language', details: ['English', 'Spanish']]
+            ];
+            
+            def getDetails() { return entity.item?.details; }
+            
+            void showData() {
+                println entity;
+            }
+            
+            void save() {
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="formpanel.Page"/>
+    </pages>
+</workunit>

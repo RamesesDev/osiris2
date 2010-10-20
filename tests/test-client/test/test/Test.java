@@ -1,7 +1,5 @@
 package test;
 import java.text.ParseException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import junit.framework.*;
 
 /*
@@ -22,12 +20,7 @@ public class Test extends TestCase {
     }
     
     public void test() throws ParseException {
-        Matcher m = Pattern.compile("([\\s\\w]+)\\s+(\\w+)\\s+(\\d+)$").matcher("Times New Roman bold 12");
-        if ( m.matches() ) {
-            System.out.println(m.group(1));
-            System.out.println(m.group(2));
-            System.out.println(m.group(3));
-        }
+        System.out.println("#eef433".matches("#[a-f\\d]{3,6}") );
     }
     
 //    public void test2() throws ParseException {
