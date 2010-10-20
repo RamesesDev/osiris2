@@ -11,7 +11,8 @@ package com.rameses.scripting.impl;
 
 import com.rameses.scripting.ResourceInjector;
 import com.rameses.scripting.ScriptManager;
-import com.rameses.scripting.ScriptUtil;
+import com.rameses.util.ExprUtil;
+
 import com.rameses.util.SysMap;
 import java.lang.annotation.Annotation;
 
@@ -32,7 +33,7 @@ public class ResourceInjectorImpl extends ResourceInjector {
             return com.rameses.annotations.Resource.class;
         }
         public Object getResource(Annotation a) {
-            String resname = ScriptUtil.correctValue(((com.rameses.annotations.Resource)a).value(), new SysMap());
+            String resname = ExprUtil.substituteValues(((com.rameses.annotations.Resource)a).value(), new SysMap());
             System.out.println("looking up " + resname );
             return resname;
             //InitialContext ctx = new InitialContext();
@@ -49,8 +50,8 @@ public class ResourceInjectorImpl extends ResourceInjector {
             //check first if the script info is already cached. if not yet then cache it
             com.rameses.annotations.Service asvc = (com.rameses.annotations.Service)a;
             SysMap sm = new SysMap();
-            String scriptname =  ScriptUtil.correctValue(asvc.value(),sm);
-            String host =  ScriptUtil.correctValue(asvc.host(),sm);
+            String scriptname =  ExprUtil.substituteValues(asvc.value(),sm);
+            String host =  ExprUtil.substituteValues(asvc.host(),sm);
             
             ScriptManager scriptManager = ScriptManager.getInstance();
             /*

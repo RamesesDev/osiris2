@@ -12,7 +12,8 @@ package com.rameses.eserver;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptProxyInvocationHandler;
 import com.rameses.scripting.ScriptServiceLocal;
-import com.rameses.scripting.ScriptUtil;
+import com.rameses.util.ExprUtil;
+
 import com.rameses.util.SysMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class InvokerProxy {
 
     public Object create(String svcName) {
         SysMap m = new SysMap(env);
-        String scriptname = ScriptUtil.correctValue(svcName,m);
+        String scriptname = ExprUtil.substituteValues(svcName,m);
         ScriptProxyInvocationHandler handler = new ScriptProxyInvocationHandler(scriptService,scriptname,env);
         return ScriptManager.getInstance().createProxy( scriptname, handler );
     }

@@ -10,8 +10,12 @@
 package com.rameses.eserver;
 
 
+import com.rameses.util.SysMap;
 import com.rameses.util.URLUtil;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
+import java.util.Properties;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
@@ -52,8 +56,7 @@ public final class AppContext {
         try {
             InitialContext ctx = new InitialContext();
             return (DataSource)ctx.lookup("java:" + getName() + "_system");
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             throw new RuntimeException("AppSystemUtil.Error lookup systemDB. " + e.getMessage() );
         }
     }
@@ -62,22 +65,50 @@ public final class AppContext {
         String name = getName();
         if(name==null || name.trim().length()==0) return false;
         return true;
-    } 
+    }
     
     public static final DataSource lookupDs(String name) {
         try {
             if(name.startsWith("java:")) name = name.substring(5);
-            if(hasAppName() && !name.startsWith(getName())) name = getName() + "_" + name; 
+            if(hasAppName() && !name.startsWith(getName())) name = getName() + "_" + name;
             
             InitialContext ctx = new InitialContext();
             return (DataSource)ctx.lookup("java:" + name);
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             throw new RuntimeException("AppContext.lookupDs error. " + e.getMessage() );
         }
     }
     
+    private static Properties properties;
+    private static Map sysmap;
     
+    public static Map getProperties() {
+        if(sysmap==null) {
+            InputStream is = null;
+            try {
+                URL u1 = Thread.currentThread().getContextClassLoader().getResource( "META-INF/app.conf" );
+                is = u1.openStream();
+                Properties props = new Properties();
+                props.load(is);
+                properties = props;
+                sysmap = new SysMap( properties );
+            } 
+            catch(Exception ex) {
+                System.out.println("error loading app properties " + ex.getMessage());
+            } 
+            finally {
+                try {is.close();}catch(Exception ign){;}
+            }
+            if(properties==null) properties = new Properties();
+            if(sysmap==null) sysmap = new SysMap();
+        }
+        return properties;
+    }
+    
+    public static Object getProperty( String name ) {
+        if(properties==null) getProperties();
+        return sysmap.get( name );
+    }
     
     
 }

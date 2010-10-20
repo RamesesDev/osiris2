@@ -28,4 +28,9 @@ public interface ServerMgmtMBean {
     void reloadTemplates();
     void reloadTemplate(String name);
     
+    void stopTaskManager();
+    void startTaskManager();
+    
+    String showAppProperties();
+    
 }

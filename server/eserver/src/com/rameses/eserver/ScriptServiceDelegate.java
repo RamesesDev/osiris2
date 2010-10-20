@@ -1,14 +1,18 @@
 package com.rameses.eserver;
 
 import com.rameses.scripting.ScriptServiceLocal;
-import com.rameses.eserver.AppContext;
 import javax.naming.InitialContext;
 
 public final class ScriptServiceDelegate {
     
+    private static ScriptServiceLocal scriptService;
+    
     public static ScriptServiceLocal getScriptService() throws Exception {
-        InitialContext ctx = new InitialContext();
-        return (ScriptServiceLocal)ctx.lookup( AppContext.getName() + ScriptService.class.getSimpleName() + "/local" );
+        if(scriptService==null) {
+            InitialContext ctx = new InitialContext();
+            scriptService = (ScriptServiceLocal)ctx.lookup( AppContext.getPath() + ScriptService.class.getSimpleName() + "/local" );
+        }
+        return scriptService;
     }
     
 }

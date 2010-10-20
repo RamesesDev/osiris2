@@ -9,8 +9,10 @@
 
 package com.rameses.eserver;
 
+
 import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlQuery;
+import com.rameses.util.ExprUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,21 +39,26 @@ public final class DsLoader {
     private String deployPath;
     private List<Map> items = new ArrayList();
     
+    private void initPaths() {
+        if(deployPath==null ) {
+            String home = System.getProperty("jboss.server.home.dir");
+            deployPath = (String)AppContext.getProperty("ds.output");
+            if( deployPath == null ) deployPath = "/output";
+            if( !deployPath.startsWith("/")) deployPath = "/" + deployPath;
+            if( !deployPath.endsWith("/")) deployPath = deployPath + "/";
+            deployPath = home + deployPath + "/datasources/";
+            File dir = new File( deployPath );
+            if(!dir.exists()) dir.mkdirs();
+        }
+    }
+    
     public void load() throws Exception {
-        String home = System.getProperty("jboss.server.home.dir");
-        deployPath = System.getProperty("output.path");
-        if( deployPath == null ) deployPath = "/output";
-        if( !deployPath.startsWith("/")) deployPath = "/" + deployPath;
-        if( !deployPath.endsWith("/")) deployPath = deployPath + "/";
-        deployPath = home + deployPath + "/datasources/";
-        
+        initPaths();
         System.out.println("STARTING DS LOADER. Deploy at " + deployPath );
-        File dir = new File( deployPath );
-        if(!dir.exists()) dir.mkdirs();
         
         DataSource ds = AppContext.getSystemDs();
         SqlQuery sq = SqlManager.getInstance().createContext(ds).createNamedQuery("eserver:datasources");
-        items = sq.setParameter(1, AppContext.getName() ).getResultList();
+        items = sq.getResultList();
     }
     
     public void clearAll() {
@@ -79,13 +86,17 @@ public final class DsLoader {
     }
     
     private void persist(Map map) {
+        String name = (String)map.get("name");
+        String content = (String)map.get("content");
+        persist(name,content);
+    }    
+    
+    private void persist( String name, String content ) {
         InputStream is = null;
         FileOutputStream fos = null;
-        String name = null;
         try {
-            String content = (String)map.get("content");
-            name = (String)map.get("name");
-            is = new ByteArrayInputStream(content.getBytes());
+            String corrected = ExprUtil.substituteValues( content, AppContext.getProperties()  );
+            is = new ByteArrayInputStream(corrected.getBytes());
             String fileName = getFixedName(name);
             File f = new File(fileName);
             fos = new FileOutputStream(f);
@@ -102,10 +113,14 @@ public final class DsLoader {
             try { is.close(); } catch(Exception ign){;}
             try { fos.close(); } catch(Exception ign){;}
         }
-    }    
+    }
     
     public void remove(Map map) {
         String name = (String)map.get("name");
+        remove(name);
+    }
+    
+    public void remove(String name) {
         String fileName = getFixedName(name) ;
         File f = new File(fileName);
         f.delete();

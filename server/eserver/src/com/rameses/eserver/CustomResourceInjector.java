@@ -14,9 +14,10 @@ import com.rameses.scripting.ResourceInjector;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptProxyInvocationHandler;
 import com.rameses.scripting.ScriptServiceLocal;
-import com.rameses.scripting.ScriptUtil;
+
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
+import com.rameses.util.ExprUtil;
 import com.rameses.util.SysMap;
 
 import java.lang.annotation.Annotation;
@@ -55,7 +56,7 @@ public class CustomResourceInjector extends ResourceInjector {
             String resname = null;
             try {
                 SysMap m = new SysMap(env);
-                resname = ScriptUtil.correctValue(((com.rameses.annotations.Resource)annotation).value(),m);
+                resname = ExprUtil.substituteValues(((com.rameses.annotations.Resource)annotation).value(),m);
                 if(resname==null)
                     throw new Exception("Resource name must be provided");
                 if(!resname.startsWith("java:")) {
@@ -95,8 +96,8 @@ public class CustomResourceInjector extends ResourceInjector {
         public Object getResource(Annotation a) {
             com.rameses.annotations.Service asvc = (com.rameses.annotations.Service)a;
             SysMap m = new SysMap(env);
-            String scriptname = ScriptUtil.correctValue(asvc.value(),m);
-            String host = ScriptUtil.correctValue(asvc.host(),m);
+            String scriptname = ExprUtil.substituteValues(asvc.value(),m);
+            String host = ExprUtil.substituteValues(asvc.host(),m);
             if(scriptname==null || scriptname.trim().length()==0) scriptname = serviceName;
             
             ScriptProxyInvocationHandler handler = null;
@@ -127,7 +128,7 @@ public class CustomResourceInjector extends ResourceInjector {
         }
         public Object getResource(Annotation a) {
             SysMap m = new SysMap(env);
-            String dsName = ScriptUtil.correctValue(((com.rameses.annotations.SqlContext)a).value(), m);
+            String dsName =ExprUtil.substituteValues(((com.rameses.annotations.SqlContext)a).value(), m);
             if(dsName!=null && dsName.trim().length()>0) {
                 return SqlManager.getInstance().createContext( AppContext.lookupDs(dsName) );
             } else {
@@ -143,7 +144,7 @@ public class CustomResourceInjector extends ResourceInjector {
         }
         public Object getResource(Annotation a) {
             Map m = new SysMap(env);
-            String dsName = ScriptUtil.correctValue(((com.rameses.annotations.PersistenceContext)a).value(), m);
+            String dsName = ExprUtil.substituteValues(((com.rameses.annotations.PersistenceContext)a).value(), m);
             SqlContext sqlContext = null;
             if(dsName!=null && dsName.trim().length()>0) {
                 sqlContext = SqlManager.getInstance().createContext( AppContext.lookupDs(dsName) );

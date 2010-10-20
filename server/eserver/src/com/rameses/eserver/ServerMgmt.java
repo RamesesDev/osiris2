@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.eserver.scheduler.TaskManager;
 import com.rameses.schema.SchemaManager;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.sql.SqlManager;
@@ -22,8 +23,8 @@ public class ServerMgmt implements ServerMgmtMBean {
     
     public void start() throws Exception {
         System.out.println("STARTING SERVER MGMT:" + AppContext.getName() );
-
-        System.out.println("      Loading Template Manager");
+        
+        System.out.println("      Initializing Template Manager");
         TemplateProvider.setInstance(new TemplateProviderImpl());
         
         System.out.println("      Initializing Schema Manager");
@@ -34,15 +35,19 @@ public class ServerMgmt implements ServerMgmtMBean {
         DsLoader.getInstance().deploy();
         
         //load scripts
-        System.out.println("      Loading ScriptManager");
+        System.out.println("      Initializing ScriptManager");
         ScriptManager.setInstance(new ScriptManagerImpl());
         ScriptManager.getInstance().load();
         
-
+        System.out.println("      Initializing TaskManager");
+        TaskManager.getInstance().start();
     }
 
     public void stop() throws Exception {
         System.out.println("STOPPING SERVER MANAGER:" + AppContext.getName());
+
+        System.out.println("      Stopping TaskManager");
+        TaskManager.getInstance().stop();
 
         System.out.println("      Unloading ScriptManager");
         ScriptManager.setInstance(null);
@@ -100,7 +105,17 @@ public class ServerMgmt implements ServerMgmtMBean {
         TemplateProvider.getInstance().clear(name);
     }
 
-    
+    public void stopTaskManager() {
+        TaskManager.getInstance().stop();
+    }
+
+    public void startTaskManager() {
+        TaskManager.getInstance().start();
+    }
+
+    public String showAppProperties() {
+        return new HtmlMap(AppContext.getProperties()).toString();
+    }
     
     
 }

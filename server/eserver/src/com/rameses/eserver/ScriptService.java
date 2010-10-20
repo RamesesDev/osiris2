@@ -69,9 +69,9 @@ public class ScriptService implements ScriptServiceLocal {
              * remote host = the server contains the actual code
              */
             if( destination == null || destination.equals("queue") )
-                destination = "queue/ScriptQueue";
+                destination = "queue/" + AppContext.getPath() + "ScriptQueue";
             else
-                destination = "topic/ScriptTopic";
+                destination = "topic/" + AppContext.getPath() + "ScriptTopic";
             conn = ((ConnectionFactory)context.lookup("java:/JmsXA")).createConnection();
             
             Destination dest = (Destination) context.lookup(destination);
