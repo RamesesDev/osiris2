@@ -1,0 +1,18 @@
+<server>
+  
+  <!-- point to point asynchronous scripts. This is the default value -->    
+  <mbean code="org.jboss.mq.server.jmx.Queue" name="jboss.mq.destination:service=Queue,name=${earname}/ScriptQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+  </mbean>
+
+  <!-- topic asynchronous scripts -->    
+  <mbean code="org.jboss.mq.server.jmx.Topic" name="jboss.mq.destination:service=Topic,name=${earname}/ScriptTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+  </mbean>
+  
+    <!-- topic asynchronous scripts -->    
+  <mbean code="org.jboss.mq.server.jmx.Topic" name="jboss.mq.destination:service=Topic,name=${earname}/TaskSchedulerQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+  </mbean>
+  
+</server>
