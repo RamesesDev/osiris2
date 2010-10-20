@@ -85,6 +85,22 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
         property.setCaptionMnemonic(c);
     }
     
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
+    
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
+    }
+    
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean showCaption) {
+        property.setShowCaption(showCaption);
+    }
+        
     public boolean isNullWhenEmpty() {
         return false;
     }
@@ -144,7 +160,7 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
         String expr = exp.toString();
         return expr.matches(".*#\\{[^\\{\\}]+\\}.*");
     }
-
+    
     public void setReadonly(boolean readonly) {
         this.readonly = readonly;
         setEnabled(!readonly);

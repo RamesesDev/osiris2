@@ -144,6 +144,22 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
         property.setRequired(required);
     }
     
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean show) {
+        property.setShowCaption(show);
+    }
+
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
+    
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
+    }
+    
     public ActionMessage getActionMessage() {
         return actionMessage;
     }

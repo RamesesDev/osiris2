@@ -1,0 +1,17 @@
+<connections>
+    
+    <connection>
+        <name>smackCon1</name>
+        <host>etracs.org</host>
+        <port>5222</port>
+        <driver>com.rameses.messaging.SmackMessagingConnection</driver>
+    </connection>
+    
+    <connection>
+        <name>smackCon1</name>
+        <host>etracs.org</host>
+        <port>5222</port>
+        <driver>com.rameses.messaging.SmackMessagingConnection</driver>
+    </connection>
+    
+</connections>

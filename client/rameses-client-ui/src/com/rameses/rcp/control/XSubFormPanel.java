@@ -2,11 +2,13 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.BindingConnector;
+import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
+import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UISubControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
@@ -27,7 +29,7 @@ import javax.swing.SwingUtilities;
  *
  * @author jaycverg
  */
-public class XSubFormPanel extends JPanel implements UISubControl {
+public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl {
     
     private String handler;
     private String[] depends;
@@ -35,7 +37,6 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     private Binding binding;
     private BindingConnector bindingConnector = new  BindingConnector(this);
     private boolean dynamic;
-    private String caption;
     
     private boolean multiForm;
     private JPanel multiPanel;
@@ -43,6 +44,9 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     private List<SubFormContext> subFormItems = new ArrayList();
     
     private List<Opener> openers;
+    
+    private ControlProperty property = new ControlProperty();
+    
     
     public XSubFormPanel() {
         super.setLayout(new BorderLayout());
@@ -172,6 +176,7 @@ public class XSubFormPanel extends JPanel implements UISubControl {
         return false;
     }
     
+    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public Dimension getPreferredSize() {
         if ( getComponentCount() > 0 ) {
@@ -233,17 +238,45 @@ public class XSubFormPanel extends JPanel implements UISubControl {
     }
     
     public String getCaption() {
-        if ( caption == null ) {
+        if ( property.getCaption() == null ) {
             if ( !ValueUtil.isEmpty(getName()))
                 return getName();
             else
                 return handler;
         }
-        return caption;
+        return property.getCaption();
     }
     
     public void setCaption(String caption) {
-        this.caption = caption;
+        property.setCaption(caption);
+    }
+    
+    public char getCaptionMnemonic() {
+        return property.getCaptionMnemonic();
+    }
+    
+    public void setCaptionMnemonic(char c) {
+        property.setCaptionMnemonic(c);
+    }
+    
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
+    
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
+    }
+    
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean showCaption) {
+        property.setShowCaption(showCaption);
+    }
+    
+    public ControlProperty getControlProperty() {
+        return property;
     }
     //</editor-fold>
     

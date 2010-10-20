@@ -181,7 +181,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     
     public void setValue(Object value) {}
     public boolean isNullWhenEmpty() { return true; }
-
+    
     public String getCustomFilter() {
         return customFilter;
     }
@@ -270,7 +270,23 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     public void setRequired(boolean required) {
         property.setRequired(required);
     }
+
+    public int getCaptionWidth() {
+        return property.getCaptionWidth();
+    }
     
+    public void setCaptionWidth(int width) {
+        property.setCaptionWidth(width);
+    }
+    
+    public boolean isShowCaption() {
+        return property.isShowCaption();
+    }
+    
+    public void setShowCaption(boolean showCaption) {
+        property.setShowCaption(showCaption);
+    }
+        
     public void validateInput() {
         actionMessage.clearMessages();
         property.setErrorMessage(null);

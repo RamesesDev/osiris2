@@ -1,0 +1,32 @@
+
+"edit|print" [readonly]  { 
+    enabled: false;
+}
+
+"edit|print" [!readonly] { 
+    enabled: true;
+}
+
+"edit" [readonly]  { 
+    visible: false;
+}
+
+"edit" [!readonly] { 
+    visible: true;
+}
+
+".*[Cc]lose.*" [true] {
+    icon: images/common/16/cancel.gif;
+}
+
+".*[Ss]ave.*" [true] {
+    icon: com/rameses/osiris2/images/save.gif;
+}
+
+".*[Ee]dit.*" [true] {
+    icon: com/rameses/osiris2/images/edit.gif;
+}
+
+".*[P]rint.*" [true] {
+    icon: com/rameses/osiris2/images/edit.gif;
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Test 1"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test1Controller  {
+        
+            @Script("Invoker")
+            def invoker;
+        
+            @Binding
+            def binding;
+        
+            def doNext() {
+                return new PopupOpener(name: 'test-client:test2');
+                //return invoker.lookupOpener('test2');
+            }
+            
+            void select( data ) {
+                if ( data == null ) {
+                    binding.fireNavigation(
+                        new Opener(name: 'test-client:_crudFormTest')
+                    );
+                }
+            }
+            
+            void fetchOpenerData() {
+                def op = invoker.lookupOpener('test2Init');
+                MsgBox.alert( invoker.invokeOpener(op, binding));
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.Page1"/>
+        <page name="page2" template="test1.Page2"/>
+    </pages>
+</workunit>

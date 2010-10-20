@@ -40,7 +40,11 @@ public final class ControlSupport {
             PropertyResolver resolver = ctx.getPropertyResolver();
             for( Object oo : params.entrySet()) {
                 Map.Entry me = (Map.Entry)oo;
-                resolver.setProperty(bean, me.getKey()+"", me.getValue() );
+                try {
+                    resolver.setProperty(bean, me.getKey()+"", me.getValue() );
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

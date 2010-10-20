@@ -64,13 +64,15 @@ public class XActionBar extends JPanel implements UIComposite {
     public void setLayout(LayoutManager mgr) {;}
     
     public void refresh() {
-        if (dynamic) buildButtons();
-        
         buildToolbar();
     }
     
     public void load() {
-        if (!dynamic) buildButtons();
+        buildButtons();
+    }
+    
+    public void reload() {
+        buildButtons();
     }
     
     public int compareTo(Object o) {
@@ -246,6 +248,10 @@ public class XActionBar extends JPanel implements UIComposite {
             this.orientationVAlignment = alignment.toUpperCase();
         else
             this.orientationVAlignment = UIConstants.TOP;
+    }
+
+    public boolean focusFirstInput() {
+        return false;
     }
     
     //</editor-fold>

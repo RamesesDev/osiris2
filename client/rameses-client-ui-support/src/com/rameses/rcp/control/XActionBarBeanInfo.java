@@ -34,6 +34,7 @@ public class XActionBarBeanInfo extends AbstractBeanInfo {
             desc.setPropertyEditorClass(HorizontalAlignmentPropertyEditor.class);
         else if ( "orientationVAlignment".equals(propertyName) )
             desc.setPropertyEditorClass(VerticalAlignmentPropertyEditor.class);
+
     }
     
 }

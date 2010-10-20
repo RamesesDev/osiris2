@@ -14,8 +14,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="formPanel1" min="-2" pref="305" max="-2" attributes="0"/>
-              <EmptySpace pref="320" max="32767" attributes="0"/>
+              <Component id="formPanel1" min="-2" pref="319" max="-2" attributes="0"/>
+              <EmptySpace pref="64" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -23,17 +23,14 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="formPanel1" pref="274" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="formPanel1" min="-2" pref="276" max="-2" attributes="0"/>
+              <EmptySpace pref="79" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Container class="com.rameses.rcp.util.FormPanel" name="formPanel1">
-      <Properties>
-        <Property name="orientation" type="java.lang.String" value="HORIZONTAL"/>
-      </Properties>
       <SubComponents>
         <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
           <Properties>
@@ -43,6 +40,11 @@
         <Component class="com.rameses.rcp.control.XTextField" name="xTextField2">
           <Properties>
             <Property name="text" type="java.lang.String" value="xTextField2"/>
+          </Properties>
+        </Component>
+        <Component class="com.rameses.rcp.control.XTextField" name="xTextField3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="xTextField3"/>
           </Properties>
         </Component>
       </SubComponents>
