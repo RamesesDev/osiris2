@@ -24,23 +24,20 @@
             void save() {
                 if ( entity.address == null ) {
                     entity.address = [:];
-                    entity.address2 = [:];
-                    formControls = [
-                        new FormControl(type: 'label', properties:[ font: 'Dialog bold 14', text: 'Address 1', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
+                    entity.contact = [:];
+                    formControls = [                        
+                        new FormControl(type: 'label', properties:[ font: 'Tahoma bold 12', text: 'Address', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
                         new FormControl(type: 'separator', properties:[ showCaption: false, preferredSize: "0,5"]),
                         new FormControl(type: 'text', properties:[ name: 'entity.address.street', caption: 'Street', preferredSize: "200,19", required: true]),
                         new FormControl(type: 'text', properties:[ name: 'entity.address.barangay', caption: 'Barangay', preferredSize: "200,19", required: true]),
                         new FormControl(type: 'text', properties:[ name: 'entity.address.city', caption: 'City', preferredSize: "200,19", required: true]),
                         new FormControl(type: 'text', properties:[ name: 'entity.address.province', caption: 'Province', preferredSize: "200,19", required: true]),
-                        
-                        new FormControl(type: 'label', properties:[ font: 'Dialog bold 14', text: 'Address 2', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
+
+                        new FormControl(type: 'label', properties:[ font: 'Tahoma bold 12', text: 'Contact Info', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
                         new FormControl(type: 'separator', properties:[ showCaption: false, preferredSize: "0,5"]),
-                        new FormControl(type: 'text', properties:[ name: 'entity.address2.street', caption: 'Street2', preferredSize: "200,19", required: true]),
-                        new FormControl(type: 'text', properties:[ name: 'entity.address2.barangay', caption: 'Barangay2', preferredSize: "200,19", required: true]),
-                        new FormControl(type: 'text', properties:[ name: 'entity.address2.city', caption: 'City2', preferredSize: "200,19", required: true]),
-                        new FormControl(type: 'text', properties:[ name: 'entity.address2.province', caption: 'Province2', preferredSize: "200,19", required: true])
-
-
+                        new FormControl(type: 'text', properties:[ name: 'entity.contact.mobile', caption: 'Mobile', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.contact.email', caption: 'Email', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.contact.phone', caption: 'Phone', preferredSize: "200,19", required: true])
                     ];
                 }
                 else {

@@ -26,6 +26,8 @@ public class Page extends javax.swing.JPanel {
         formPanel1 = new com.rameses.rcp.util.FormPanel();
 
         xButton1.setText("Show Data");
+        xButton1.setDefaultCommand(true);
+        xButton1.setImmediate(true);
         xButton1.setName("showData");
 
         xButton3.setText("Save");

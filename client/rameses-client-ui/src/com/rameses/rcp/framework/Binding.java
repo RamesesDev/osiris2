@@ -1,7 +1,6 @@
 
 package com.rameses.rcp.framework;
 
-import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDefUtil;
 import com.rameses.rcp.annotations.Close;
 import com.rameses.rcp.common.StyleRule;
@@ -20,7 +19,6 @@ import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -74,7 +72,6 @@ public class Binding {
     private List<UIControl> _depends = new ArrayList();
     private boolean _initialized = false;
     
-    private AnnotationFieldHandler fieldInjector = new BindingAnnotationHandler();
     private KeyListener changeLogKeySupport = new ChangeLogKeySupport();
     private List<String> closeMethods;
     
@@ -290,12 +287,10 @@ public class Binding {
     
     public void formCommit() {
         for ( UIControl u: focusableControls ) {
-            if ( !(u instanceof UIInput) ) continue;
-            if ( ValueUtil.isEmpty(u.getName()) ) continue;
+            if ( !(u instanceof UIInput) || ValueUtil.isEmpty(u.getName()) ) continue;
             
             UIInput ui = (UIInput) u;
-            if ( ui.isImmediate() ) continue;
-            if ( ui.isReadonly() ) continue;
+            if ( ui.isImmediate() || ui.isReadonly() ) continue;
             
             Component c = (Component) ui;
             if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) continue;
@@ -430,6 +425,8 @@ public class Binding {
      * returns the UIControl w/ the specified name
      */
     public UIControl find(String name) {
+        if ( name == null ) return null;
+        
         return controlsIndex.get(name);
     }
     //</editor-fold>
@@ -558,22 +555,7 @@ public class Binding {
         }
     }
     //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  BindingAnnotationHandler (class)  ">
-    private class BindingAnnotationHandler implements AnnotationFieldHandler {
-        
-        public Object getResource(Field f, Annotation a) throws Exception {
-            Class type = a.annotationType();
-            if ( type == com.rameses.rcp.annotations.Binding.class ) {
-                return Binding.this;
-            }
-            
-            return null;
-        }
-        
-    }
-    //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="  ChangeLogKeySupport (class)  ">
     private class ChangeLogKeySupport implements KeyListener {
         

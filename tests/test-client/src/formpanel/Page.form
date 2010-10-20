@@ -48,6 +48,8 @@
     <Component class="com.rameses.rcp.control.XButton" name="xButton1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Show Data"/>
+        <Property name="defaultCommand" type="boolean" value="true"/>
+        <Property name="immediate" type="boolean" value="true"/>
         <Property name="name" type="java.lang.String" value="showData"/>
       </Properties>
     </Component>

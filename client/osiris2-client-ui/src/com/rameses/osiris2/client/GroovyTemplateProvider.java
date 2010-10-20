@@ -78,6 +78,13 @@ public class GroovyTemplateProvider extends TemplateProvider {
             try {oos.close();}catch(Exception ign){;}
         }
     }
+
+    public void clear(String name) {
+        if ( name != null )
+            cache.remove(name);
+        else
+            cache.clear();
+    }
     
     
 }
