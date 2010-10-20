@@ -44,6 +44,7 @@ public class TaskSchedulerThread extends Thread {
     
     public void run() {
         //there should only be 1 connection for the isolation level to work.
+        boolean lookup_success;
         while(!cancelled) {
             try {
                 TaskSchedulerServiceLocal l = TaskSchedulerDelegate.getTaskSchedulerService();
@@ -51,9 +52,13 @@ public class TaskSchedulerThread extends Thread {
                     l.fireActiveQueue(fetchSize);
                 }
             }
-            catch(Exception e) {
-                System.out.println("ERROR LOOKUP SCRIPT");
+            catch(javax.naming.NameNotFoundException ne) {
+                //do nothing
             }
+            catch(Exception e) {
+                System.out.println("Scheduler warning: " + e.getMessage() + " " + e.getClass());
+            }
+            
             try {
                 sleep(delay);
             } catch (InterruptedException ex) {

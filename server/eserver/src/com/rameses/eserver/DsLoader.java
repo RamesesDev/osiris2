@@ -12,12 +12,13 @@ package com.rameses.eserver;
 
 import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlQuery;
-import com.rameses.util.ExprUtil;
+import com.rameses.util.TemplateProvider;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -68,7 +69,7 @@ public final class DsLoader {
     public void deploy() throws Exception {
         if(items.size()==0) load();
         for(Map map : items ) {
-            persist( map );        
+            persist( map );  
         }
     }
     
@@ -85,18 +86,19 @@ public final class DsLoader {
         return deployPath + appCtx +  name + "-ds.xml";
     }
     
+    /*
     private void persist(Map map) {
         String name = (String)map.get("name");
         String content = (String)map.get("content");
         persist(name,content);
-    }    
+    } 
+     */   
     
     private void persist( String name, String content ) {
         InputStream is = null;
         FileOutputStream fos = null;
         try {
-            String corrected = ExprUtil.substituteValues( content, AppContext.getProperties()  );
-            is = new ByteArrayInputStream(corrected.getBytes());
+            is = new ByteArrayInputStream(content.getBytes());
             String fileName = getFixedName(name);
             File f = new File(fileName);
             fos = new FileOutputStream(f);
@@ -126,5 +128,20 @@ public final class DsLoader {
         f.delete();
     }
     
+    private void persist(Map map) {
+        String scheme = (String)map.get("scheme");
+        if(scheme==null) scheme = System.getProperty("default.ds.scheme");
+        String templateName = "ds.groovy";
+        if(scheme!=null) templateName = scheme + "-" + templateName; 
+        Map m = new HashMap();
+        m.put("data", map);
+        String name = (String)map.get("name");
+        String dsname = name;
+        if(AppContext.getName()!=null) dsname = AppContext.getName()+"_"+dsname; 
+        map.put("dsname", dsname);
+        String path = "META-INF/templates/" + templateName;
+        String content = (String)TemplateProvider.getInstance().getResult( path, m );
+        persist(name,content);
+    }
     
 }
