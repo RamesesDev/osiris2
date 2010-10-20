@@ -7,10 +7,9 @@
  * and open the template in the editor.
  */
 
-package com.rameses.rcp.framework;
+package com.rameses.rcp.ui;
 
-import com.rameses.rcp.ui.UIControl;
-import com.rameses.rcp.ui.UISubControl;
+import com.rameses.rcp.framework.*;
 import com.rameses.rcp.util.ActionMessage;
 import java.util.ArrayList;
 import java.util.List;

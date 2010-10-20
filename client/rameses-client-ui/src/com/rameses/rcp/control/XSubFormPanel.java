@@ -1,13 +1,13 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.framework.BindingConnector;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
+import com.rameses.rcp.ui.BindingConnector;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UISubControl;
 import com.rameses.rcp.util.UIControlUtil;
