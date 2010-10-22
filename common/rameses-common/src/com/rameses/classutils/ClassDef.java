@@ -60,9 +60,11 @@ public final class ClassDef {
                 Object res = handler.getResource( fld, annot );
                 if( res != null ) {
                     boolean accessible = fld.isAccessible();
-                    fld.setAccessible(true);
-                    fld.set( o, res );
-                    fld.setAccessible(accessible);
+                    //synchronized(fld) {
+                        fld.setAccessible(true);
+                        fld.set( o, res );
+                        fld.setAccessible(accessible);
+                    //}
                 }
                 
             } catch(Exception ex) {

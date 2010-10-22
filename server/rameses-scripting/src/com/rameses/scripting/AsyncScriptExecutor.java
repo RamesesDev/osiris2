@@ -18,12 +18,14 @@ import java.util.Map;
 
 public class AsyncScriptExecutor implements ScriptExecutor, Serializable {
     
+    private ScriptObject scriptObject;
     private String serviceName;
     private String methodName;
     private Object target;
     private Method actionMethod;
     
-    public AsyncScriptExecutor(String serviceName, String methodName, Method actionMethod) {
+    public AsyncScriptExecutor(ScriptObject o, String serviceName, String methodName, Method actionMethod) {
+        this.scriptObject = o;
         this.serviceName = serviceName;
         this.methodName = methodName;
         this.actionMethod = actionMethod;
@@ -61,6 +63,10 @@ public class AsyncScriptExecutor implements ScriptExecutor, Serializable {
             }
         }
         return scriptService.invokeAsync( pass, destinationType );
+    }
+
+    public void close() {
+        scriptObject.close();
     }
     
 }

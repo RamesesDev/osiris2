@@ -45,12 +45,16 @@ public class ScriptService implements ScriptServiceLocal {
     }
     
     public Object invoke(String name, String method, Object[] params, Map env) {
+        ScriptExecutor se = null;
         try {
             CustomResourceInjector si = new CustomResourceInjector(name,context,env,this);
-            ScriptExecutor se = ScriptManager.getInstance().createExecutor( name, method,params, si );
+            se = ScriptManager.getInstance().createExecutor( name, method,params, si );
             return se.execute(this,params,env);
         } catch(Exception e) {
             throw new EJBException(e);
+        }
+        finally {
+            if(se!=null)se.close();
         }
     }
     

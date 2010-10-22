@@ -49,7 +49,8 @@ public class TaskSchedulerThread extends Thread {
             try {
                 TaskSchedulerServiceLocal l = TaskSchedulerDelegate.getTaskSchedulerService();
                 if(l!=null) {
-                    l.fireActiveQueue(fetchSize);
+                    l.scheduleTasks();
+                    l.processTasks();
                 }
             }
             catch(javax.naming.NameNotFoundException ne) {
