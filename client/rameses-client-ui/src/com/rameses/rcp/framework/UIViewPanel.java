@@ -21,6 +21,7 @@ public class UIViewPanel extends JPanel implements ContainerListener {
     
     public UIViewPanel() {
         super();
+        super.setOpaque(false);
         super.setLayout(new BorderLayout());
         this.binding = new Binding(this);
         initComponents();
