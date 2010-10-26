@@ -1,7 +1,9 @@
 
 import com.rameses.util.TemplateProvider;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.*;
@@ -36,7 +38,7 @@ public class NewEmptyJUnitTest extends TestCase {
         System.out.println(o);
     }
     
-    public void testQueue() {
+    public void test1Queue() {
         BlockingQueue<String> b = new LinkedBlockingQueue();
         b.add( "one" );
         b.add( "two");
@@ -54,6 +56,16 @@ public class NewEmptyJUnitTest extends TestCase {
             System.out.println("process " + s);
         }
         System.out.println("finished 2");
+    }
+    
+    public void testAdd() {
+        Set m = new HashSet();
+        System.out.println( m.add( "one" ) );
+        System.out.println( m.add( "one" ) );
+        System.out.println( m.add( "one" ) );
+        Integer i = new Integer(0);
+        i = i+1;
+        System.out.println(i);
     }
     
 }

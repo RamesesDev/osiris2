@@ -10,6 +10,7 @@
 package com.rameses.scripting;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,16 +19,21 @@ import java.util.Map;
  */
 public class LocalScriptExecutor implements ScriptExecutor {
     
-    private ScriptObject scriptObject;
+    private String name;
     private String methodName;
     private Object target;
     private Method actionMethod;
+    private List<String> beforeInterceptors;
+    private List<String> afterInterceptors;
     
-    public LocalScriptExecutor(ScriptObject o, String methodName, Object target, Method actionMethod) {
-        this.scriptObject = o;
+    
+    public LocalScriptExecutor(String serviceName, String methodName, Object target, Method actionMethod, List<String> before, List<String>after) {
+        this.name = serviceName;
         this.methodName = methodName;
         this.actionMethod = actionMethod;
         this.target = target;
+        this.beforeInterceptors = before;
+        this.afterInterceptors = after;
     }
     
     public Object execute(ScriptServiceLocal scriptService, Object[] params, Map env) throws Exception {
@@ -35,9 +41,9 @@ public class LocalScriptExecutor implements ScriptExecutor {
         ActionEvent ae = null;
         ScriptEval se = null;
         try {
-            ae = new ActionEvent( scriptObject.getName(), actionMethod.getName(), params, env);
+            ae = new ActionEvent( name, actionMethod.getName(), params, env);
             se = new ScriptEval(ae);
-            for(String b: scriptObject.findBeforeInterceptors(methodName)) {
+            for(String b: beforeInterceptors) {
                 Object test = executeInterceptor(b, ae, se, scriptService, env);
                 if(test!=null && (test instanceof Exception )) return test;
             }
@@ -47,7 +53,7 @@ public class LocalScriptExecutor implements ScriptExecutor {
                 return retval;
 
             ae.setResult(retval);
-            for(String b: scriptObject.findAfterInterceptors(methodName)) {
+            for(String b: afterInterceptors ) {
                 Object test = executeInterceptor(b, ae, se, scriptService, env);
                 if(test!=null && (test instanceof Exception )) return test;
             }
@@ -69,7 +75,7 @@ public class LocalScriptExecutor implements ScriptExecutor {
         if( serviceName.indexOf("#")>0) {
             String[] sarr = serviceName.split("#");
             serviceName = sarr[0];
-        se.setResult(ae.getResult());
+            se.setResult(ae.getResult());
             passEval = se.eval(sarr[1]);
         }
         
@@ -91,7 +97,7 @@ public class LocalScriptExecutor implements ScriptExecutor {
     }
     
     public void close() {
-        if(scriptObject!=null) scriptObject.close();
+        
     }
     
 }

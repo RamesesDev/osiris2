@@ -12,6 +12,7 @@ package com.rameses.eserver;
 import com.rameses.eserver.scheduler.TaskManager;
 import com.rameses.schema.SchemaManager;
 import com.rameses.scripting.ScriptManager;
+import com.rameses.scripting.ScriptObject;
 import com.rameses.sql.SqlManager;
 import com.rameses.util.TemplateProvider;
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ import java.util.Map;
 public class ServerMgmt implements ServerMgmtMBean {
     
     public void start() throws Exception {
+        System.out.println("      Initializing Properties");
+        AppContext.load();
+        
         System.out.println("STARTING SERVER MGMT:" + AppContext.getName() );
         
         System.out.println("      Initializing Template Manager");
@@ -38,7 +42,7 @@ public class ServerMgmt implements ServerMgmtMBean {
         System.out.println("      Initializing ScriptManager");
         ScriptManager.setInstance(new ScriptManagerImpl());
         ScriptManager.getInstance().load();
-        
+
         System.out.println("      Initializing TaskManager");
         TaskManager.getInstance().start();
     }
@@ -115,6 +119,11 @@ public class ServerMgmt implements ServerMgmtMBean {
 
     public String showAppProperties() {
         return new HtmlMap(AppContext.getProperties()).toString();
+    }
+
+    public String showScriptInfo(String name) {
+        ScriptObject sm = ScriptManager.getInstance().getScriptObject(name);
+        return  sm.toHtml();
     }
     
     

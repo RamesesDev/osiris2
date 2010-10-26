@@ -12,8 +12,16 @@ package com.rameses.eserver;
 import com.rameses.scripting.ScriptExecutor;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptServiceLocal;
+import com.rameses.sql.SqlContext;
+import com.rameses.sql.SqlExecutor;
+import com.rameses.sql.SqlManager;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.rmi.server.UID;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.EJBException;
@@ -45,20 +53,51 @@ public class ScriptService implements ScriptServiceLocal {
     }
     
     public Object invoke(String name, String method, Object[] params, Map env) {
-        ScriptExecutor se = null;
         try {
             CustomResourceInjector si = new CustomResourceInjector(name,context,env,this);
-            se = ScriptManager.getInstance().createExecutor( name, method,params, si );
+            ScriptExecutor se = ScriptManager.getInstance().createExecutor( name, method,params, si );
             return se.execute(this,params,env);
         } catch(Exception e) {
             throw new EJBException(e);
         }
-        finally {
-            if(se!=null)se.close();
-        }
     }
     
-    public Object invokeAsync(Map map, String destination) {
+    public Object invokeAsync(String name, String method, Object[] params, Map env, Map asyncInfo ) {
+        Map pass = new HashMap();
+        String destinationType = (String)asyncInfo.get("destination");
+        if(destinationType.trim().length()==0) destinationType = "queue";
+        
+        String responseHandler = (String)asyncInfo.get("responseHandler");
+        if(responseHandler==null || responseHandler.trim().length()==0) responseHandler = null;
+        
+        boolean hasReturnType = false;
+        try {
+            hasReturnType = Boolean.parseBoolean(asyncInfo.get("hasReturnType")+"");
+        }catch(Exception ign){;}
+        
+        boolean loop = false;
+        try {
+            loop = Boolean.parseBoolean( asyncInfo.get("loop")+"" );
+        }catch(Exception ign){;}
+        
+        pass.put("script", name);
+        pass.put("method", method);
+        pass.put("params", params);
+        pass.put("env", env);
+        pass.put("hasReturnType", hasReturnType);
+        
+        //apply response handler only if there is a return type
+        if(hasReturnType) {
+            if( responseHandler!=null ) pass.put("responseHandler", responseHandler);
+            if( loop ) {
+                pass.put("loop", true);
+                pass.put( "loopVar", asyncInfo.get("loopVar") );
+            }
+        }
+        return invokeAsync( pass, destinationType );
+    }
+    
+    private Object invokeAsync(Map map, String destination) {
         Connection conn = null;
         Session session = null;
         MessageProducer sender = null;
@@ -67,6 +106,7 @@ public class ScriptService implements ScriptServiceLocal {
             String origin = System.getProperty("jboss.bind.address");
             map.put("origin", origin);
             map.put("app.context", AppContext.getName());
+            map.put("originPort", "8080");
             
             String requestId = "ASYNC:"+new UID();
             /**
@@ -98,12 +138,51 @@ public class ScriptService implements ScriptServiceLocal {
     }
 
     public void pushResponse(String requestId, Object data) {
-        System.out.println("pushing response " + requestId + " data->" + data);
+        SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
+        ObjectOutputStream oos = null;
+        ByteArrayOutputStream bos = null;
+        try {
+            ctx.openConnection();
+            bos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject( data );
+            SqlExecutor qe = ctx.createNamedExecutor("eserver:async-push");
+            qe.setParameter(1,"RESP:"+new UID());
+            qe.setParameter(2, requestId );
+            qe.setParameter(3, bos.toByteArray());
+            qe.execute();
+        }
+        catch(Exception e) {
+            throw new EJBException(e);
+        }
+        finally {
+            ctx.closeConnection();
+        }
     }
 
     public Object getPollData(String requestId) {
-        System.out.println("removing response");
-        return null;
+        SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
+        ObjectInputStream ois = null;
+        try {
+            ctx.openConnection();
+            Map map = (Map)ctx.createNamedQuery("eserver:async-poll").setParameter(1,requestId).getSingleResult();
+            if(map==null) return null;
+            String objid = (String)map.get( "objid" );
+            byte[] bytes = (byte[])map.get("data"); 
+            ois = new ObjectInputStream( new ByteArrayInputStream(bytes) );
+            Object returnObject =  ois.readObject();
+            ctx.createNamedExecutor("eserver:async-remove").setParameter(1, objid).execute();
+            return returnObject;
+        }
+        catch(Exception e) {
+            throw new EJBException(e);
+        }
+        finally {
+            ctx.closeConnection();
+            try {ois.close();} catch(Exception ign){;}
+        }
     }
+
+    
     
 }

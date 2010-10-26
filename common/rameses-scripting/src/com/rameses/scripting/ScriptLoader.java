@@ -14,5 +14,5 @@ package com.rameses.scripting;
  * @author ms
  */
 public interface ScriptLoader {
-    ScriptObject findScript(String name);
+    ScriptObjectPoolItem findScript(String name);
 }

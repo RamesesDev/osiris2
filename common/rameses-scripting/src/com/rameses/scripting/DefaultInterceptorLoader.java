@@ -62,8 +62,11 @@ public class DefaultInterceptorLoader implements InterceptorLoader {
     }
     
     private void loadInterceptor(String name) {
+        ScriptObjectPoolItem so = null;
         try {
-            ClassDef def = scriptManager.getScriptObject(name).getClassDef();
+            ScriptObject sm = scriptManager.getScriptObject(name);
+            so = sm.getPooledObject();
+            ClassDef def = so.getClassDef();
             Method[] beforeMethods = def.findAnnotatedMethods(Before.class);
             for(Method m: beforeMethods) {
                 Before b = (Before)m.getAnnotation(Before.class);
@@ -76,6 +79,9 @@ public class DefaultInterceptorLoader implements InterceptorLoader {
             }
         } catch(Exception e) {
             System.out.println("InterceptorLoader. Fail loading " + name + ":" + e.getMessage());
+        }
+        finally {
+            try { so.close(); } catch(Exception ign){;}
         }
     }
     

@@ -1,6 +1,7 @@
 package com.rameses.eserver;
 
 
+import com.rameses.invoker.client.HttpScriptService;
 import java.util.HashMap;
 import java.util.Map;
 import javax.jms.Message;
@@ -19,8 +20,12 @@ public abstract class AbstractScriptMDB implements MessageListener {
             String method = (String)map.get("method");
             Object[] params = (Object[])map.get("params");
             boolean hasReturnType = Boolean.valueOf(map.get("hasReturnType")+"");
+            
             Map env = (Map)map.get("env");
             String origin = (String)map.get("origin");
+            String originAppContext = (String)map.get("app.context");
+            String originPort = (String)map.get("originPort");
+            
             boolean sameServer = true;
             
             String host = System.getProperty("jboss.bind.address");
@@ -33,7 +38,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
             //execute the result;
             if(!loop) {
                 Object result = ScriptServiceDelegate.getScriptService().invoke( "~" +script,method,params,env );
-                if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
+                if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId, originAppContext, originPort);
             } else {
                 if(env==null) env = new HashMap();
 
@@ -47,7 +52,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
                     ae.put("loop", i + 1);
                     Object result = ScriptServiceDelegate.getScriptService().invoke("~" +script,method,params,env);
                     if(result!=null) {
-                        if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId);
+                        if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId, originAppContext, originPort);
                     } else {
                         break;
                     }
@@ -58,9 +63,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
         }
     }
     
-    private void executeResponse( String responseHandler, String script,Object result, Map env, String origin, boolean sameServer, String requestId ) throws Exception {
-        Map m = new HashMap();
-        m.put("response.host", origin + ":8080" );
+    private void executeResponse( String responseHandler, String script,Object result, Map env, String origin, boolean sameServer, String requestId, String originAppContext, String originPort ) throws Exception {
         if(responseHandler!=null) {
             String method = null;
             if( responseHandler.contains(".") ) {
@@ -72,17 +75,24 @@ public abstract class AbstractScriptMDB implements MessageListener {
             }
             if(sameServer) {
                 ScriptServiceDelegate.getScriptService().invoke(script,method,new Object[]{result},env);
-            } else {
-                //RemoteDelegate.getScriptService("response.host",m).invoke(script,method,new Object[]{result},env);
+            } 
+            else {
+                Map m = new HashMap();
+                m.put("response.host", origin + ":" + originPort );
+                m.put("app.context", originAppContext );
+                HttpScriptService svc = ScriptServiceDelegate.createRemoteService( "response.host", m );
+                svc.invoke(script,method,new Object[]{result},env);
             }
         } else {
-            
             //send response back to original requester which is the machine key of the client.
             if(sameServer && result!=null) {
                 ScriptServiceDelegate.getScriptService().pushResponse( requestId, result );
             } else {
-                //RemoteResponseService rr = RemoteDelegate.getResponseService("response.host", m);
-                //rr.pushResponse(requestId, result);
+                Map m = new HashMap();
+                m.put("response.host", origin + ":" + originPort );
+                m.put("app.context", originAppContext );
+                HttpScriptService svc = ScriptServiceDelegate.createRemoteService( "response.host", m );
+                svc.pushResponse(requestId,  result );
             }
         }
     }

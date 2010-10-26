@@ -32,5 +32,6 @@ public interface ServerMgmtMBean {
     void startTaskManager();
     
     String showAppProperties();
+    String showScriptInfo(String name);
     
 }

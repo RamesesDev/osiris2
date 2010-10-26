@@ -8,7 +8,7 @@
 package test;
 
 import com.rameses.scripting.ScriptManager;
-import com.rameses.scripting.ScriptObject;
+import com.rameses.scripting.ScriptObjectPoolItem;
 import com.rameses.scripting.impl.ScriptServiceImpl;
 import java.util.HashMap;
 import junit.framework.*;
@@ -30,7 +30,7 @@ public class Tester extends TestCase {
     }
     
     public void xtestHello() throws Exception {
-        ScriptObject o = ScriptManager.getInstance().getScriptObject("SampleScript");
+        ScriptObjectPoolItem o = ScriptManager.getInstance().getScriptObject("SampleScript");
         ScriptManager.getInstance().getInterceptorManager().injectInterceptors(o, "test");
         System.out.println(o.getBeforeInterceptors());
         System.out.println(o.getAfterInterceptors());

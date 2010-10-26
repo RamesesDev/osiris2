@@ -23,7 +23,7 @@ public class DefaultScriptLoader implements ScriptLoader {
         }
     }
     
-    public ScriptObject findScript(String name) {
+    public ScriptObjectPoolItem findScript(String name) {
         //find script first in the database. If it cannot be found, find in META-INF/scripts
         InputStream is = null;
         try {
@@ -38,7 +38,7 @@ public class DefaultScriptLoader implements ScriptLoader {
                 proxyClass = scriptManager.getScriptProvider().parseClass( proxyInterface );
             }
             //build also the proxy class so it can be done on one pass only.
-            return new ScriptObject(clazz, name, proxyInterface, proxyClass );
+            return new ScriptObjectPoolItem(clazz, name, proxyInterface, proxyClass );
         } catch(Exception e) {
             throw new RuntimeException(e);
         } finally {

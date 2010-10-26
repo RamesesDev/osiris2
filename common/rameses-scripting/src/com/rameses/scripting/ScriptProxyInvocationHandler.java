@@ -10,6 +10,7 @@
 package com.rameses.scripting;
 
 
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -20,19 +21,19 @@ import java.util.Map;
  */
 public class ScriptProxyInvocationHandler  implements InvocationHandler {
     
-    private ScriptServiceLocal scriptService;
     private String name;
     private Map env;
+    private ScriptServiceLocal scriptService;
     
     public ScriptProxyInvocationHandler(ScriptServiceLocal scriptService, String name, Map env) {
-        this.scriptService = scriptService;
         this.name = name;
         this.env = env;
+        this.scriptService = scriptService;
     }
     
     public Object invoke(Object object, Method method, Object[] args) throws Throwable {
         if( method.getName().equals("toString")) return name;
-        return scriptService.invoke(name, method.getName(),args,env);
+        return scriptService.invoke( name, method.getName(), args, env ); 
     }
     
     

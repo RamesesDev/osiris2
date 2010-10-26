@@ -13,9 +13,5 @@ import java.util.Map;
 
 
 public interface ScriptExecutor {
-    
     Object execute(ScriptServiceLocal scriptService, Object[] params, Map env) throws Exception;
-    
-    //this needs to be closed in case you are running a pooled execution  
-    void close();
 }

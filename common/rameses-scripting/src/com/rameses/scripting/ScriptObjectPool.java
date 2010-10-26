@@ -18,7 +18,7 @@ import java.util.Hashtable;
  */
 public class ScriptObjectPool extends HashMap {
     
-    private Hashtable<String, ScriptObjectPoolManager> map = new Hashtable();
+    private Hashtable<String, ScriptObject> map = new Hashtable();
     private ScriptLoader scriptLoader;
     
     public ScriptObjectPool(ScriptLoader loader) {
@@ -27,18 +27,18 @@ public class ScriptObjectPool extends HashMap {
 
     public Object get(Object key) {
         String name = (String)key;
-        ScriptObjectPoolManager m = map.get(name);
-        if( m!=null) return m.getPooledObject();
+        ScriptObject m = map.get(name);
+        if( m!=null) return m;
         
         //we need to synchronize as only one script object poolmanager must be created.
         synchronized(map) {
             if(!map.containsKey(name)) {
-                ScriptObjectPoolManager poolManager = new ScriptObjectPoolManager(name,scriptLoader);
+                ScriptObject poolManager = new ScriptObject(name,scriptLoader);
                 poolManager.init();
                 map.put(name, poolManager );
             }    
         }
-        return map.get(name).getPooledObject();
+        return map.get(name);
     }
 
     public void clear() {
