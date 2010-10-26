@@ -50,6 +50,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     public XSubFormPanel() {
         super.setLayout(new BorderLayout());
+        setOpaque(false);
         if ( Beans.isDesignTime() ) {
             setPreferredSize( new Dimension(40,40) );
             setBackground( Color.decode("#e3e3e3") );
@@ -59,6 +60,13 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     public XSubFormPanel(Opener o) {
         this();
         getOpeners().add(o);
+        multiForm = false;
+    }
+    
+    public XSubFormPanel(List<Opener> o) {
+        this();
+        this.openers = o;
+        multiForm = true;
     }
     
     public List<Opener> getOpeners() {
@@ -104,11 +112,11 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             obj = getOpeners();
         } else {
             obj = UIControlUtil.getBeanValue(this, getHandler());
+            multiForm = true; //reset, check based on passed value
         }
         if ( obj == null ) return;
         
         List<Opener> openers = new ArrayList();
-        multiForm = true;
         
         if ( obj instanceof Collection ) {
             for(Object o: (Collection) obj) {
