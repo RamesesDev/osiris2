@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="invokerTabs" action="init" caption="Name" index="1"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TabTestController  {
+
+            @Caller
+            def caller;
+            
+            def entity;
+            
+            void init() {
+                Thread.sleep(10);
+                entity = caller.entity.name;
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.xtab.Name"/>
+    </pages>
+</workunit>

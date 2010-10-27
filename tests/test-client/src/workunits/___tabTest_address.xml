@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="invokerTabs" action="init" caption="Address" index="-1"/>
+        <invoker type="invokerTabs" action="init2" caption="Address 2" index="0"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TabTestController  {
+
+            @Caller
+            def caller;
+            
+            def entity;
+            
+            void init() {
+                entity = caller.entity.address;
+            }
+            
+            void init2() {
+                Thread.sleep(20);
+                entity = caller.entity.address2;
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.xtab.Address"/>
+    </pages>
+</workunit>

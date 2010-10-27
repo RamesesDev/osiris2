@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XTabbedPane Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TabTestController  {
+
+            def entity = [address:[:],address2:[:], name:[:]];
+            
+            void save() {
+                MsgBox.alert(entity);
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.xtab.TabTest"/>
+    </pages>
+</workunit>
