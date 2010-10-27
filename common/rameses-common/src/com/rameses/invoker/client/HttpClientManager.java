@@ -27,6 +27,9 @@ public final class HttpClientManager {
         return instance;
     }
     
+    public HttpInvokerClient getService( Map env) {
+        return getService(null, env);
+    }
     
     public HttpInvokerClient getService(String hostKey, Map env) {
         env = new SysMap(env);
@@ -41,7 +44,13 @@ public final class HttpClientManager {
             }
         }
         
-        if( !services.containsKey(hostKey) ) {
+        String nameKey = hostKey;
+        String appContext = (String)env.get("app.context");
+        if(appContext!=null) {
+            nameKey = hostKey + "/" + appContext;
+        }
+        
+        if( !services.containsKey(nameKey) ) {
             HttpInvokerClient client = new HttpInvokerClient();
             //find the hostkey settings in system properties
             if( hostKey !=null ) {
@@ -57,13 +66,13 @@ public final class HttpClientManager {
                 }
             }
             
-            //new addition with app context.
-            String appContext = (String)env.get("app.context");
             if(appContext!=null) client.setAppContext( appContext );
-            services.put(hostKey, client);
+            
+            //new addition with app context.
+            services.put(nameKey, client);
         }
         
-        return (HttpInvokerClient)services.get(hostKey);
+        return (HttpInvokerClient)services.get(nameKey);
     }
     
     public void clear() {

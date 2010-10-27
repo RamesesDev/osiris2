@@ -51,5 +51,9 @@ public class ScriptServiceImpl implements ScriptServiceLocal {
     public Object getPollData(String requestId) {
         return null;
     }
+
+    public Object invokeAsync(String name, String method, Object[] params, Map env, Map asyncInfo) {
+        return  "async";
+    }
     
 }

@@ -1,7 +1,7 @@
 /*
- * InvokerProxy.java
+ * TestProxy.java
  *
- * Created on June 28, 2009, 6:10 PM
+ * Created on October 24, 2010, 2:31 PM
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -9,77 +9,77 @@
 
 package tester;
 
-import com.rameses.invoker.client.HttpInvokerClient;
-import com.rameses.invoker.client.HttpClientManager;
+import com.rameses.invoker.client.AbstractScriptServiceProxy;
+import com.rameses.invoker.client.ResponseHandler;
+import com.rameses.invoker.client.ScriptInterfaceProvider;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
-public class TestProxy {
+/**
+ *
+ * @author ms
+ */
+public class TestProxy extends AbstractScriptServiceProxy {
+
+    private long timeout = 10000;
+    private long delay = 2000;
     
-    
-    private final static String INVOKER = "ScriptService";
-    private Map<String, Class> map = new Hashtable<String, Class>();
-    private Map env = new HashMap();
-    private GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
-    private HttpClientManager manager = new HttpClientManager();
-    
-    public TestProxy() {;}
+    private GroovyClassLoader classLoader;
+    private GroovyScriptInterfaceProvider interfaceProvider;
     
     public TestProxy(Map env) {
-        this.env = env;
+        super(env);
+        classLoader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
+        interfaceProvider = new GroovyScriptInterfaceProvider();
     }
 
-    public Object create( String name ) throws Exception {
-        return create(name, null);
+    protected ScriptInterfaceProvider getScriptInterfaceProvider() {
+        return interfaceProvider;
+    }
+
+    private class GroovyScriptInterfaceProvider extends ScriptInterfaceProvider {
+        
+        protected Class parseClass(byte[] bytes) {
+            return classLoader.parseClass( new ByteArrayInputStream(bytes));
+        }
+
+        public ClassLoader getProxyClassLoader() {
+            return classLoader;
+        }
     }
     
-    public Object create( String name, String hostKey) throws Exception {
-        HttpInvokerClient client = manager.getService(hostKey, env);
-        Class clazz = null;
-        if(! map.containsKey(name)) {
-            byte[] b = (byte[])client.invoke(INVOKER+".getScriptInfo", new Object[]{name});
-            InputStream is = new ByteArrayInputStream(b);
-            clazz = loader.parseClass(is);
-            map.put(name, clazz);
-        }
-        clazz = map.get(name);
-        return Proxy.newProxyInstance(loader, new Class[]{clazz}, new MyHandler(name, client));
+    public void invokeLater(ResponseHandler handler) {
+        Thread t = new Thread(new AsyncRunnable(handler));
+        t.start();
     }
-    
-    public class MyHandler implements InvocationHandler {
+
+    private class AsyncRunnable implements Runnable {
         
-        private HttpInvokerClient client;
-        private String serviceName;
-        private String machineKey;
+        private long timeleft;
+        private ResponseHandler handler;
         
-        public MyHandler(String serviceName, HttpInvokerClient client) {
-            this.serviceName = serviceName;
-            this.client = client;
+        public AsyncRunnable(ResponseHandler h) {
+            timeleft = timeout;
+            handler = h;
         }
         
-        public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-            if( method.getName().equals("toString")) return serviceName;
-            try {
-                return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, env } );
+        public void run() {
+            while(timeleft>0) {
+                try {
+                    //if there are results, reset the timer.
+                    if( handler.execute() ) timeleft = timeout; 
+                    Thread.sleep(delay );
+                }
+                catch(Exception e) {
+                    //do nothing, let it die gracefully
+                }
+                timeleft = timeleft - delay;
             }
-            catch(Exception e) {
-                System.out.println("ERROR CLASS " + e.getClass().getName());
-                e.printStackTrace();
-                throw e;
-            }
+            System.out.println("finished");
         }
+        
     }
     
-    public void reset() {
-        map.clear();
-        manager = new HttpClientManager();
-    }
     
 }

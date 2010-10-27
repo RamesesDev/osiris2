@@ -14,6 +14,7 @@ import com.rameses.util.SysMap;
 import com.rameses.util.URLUtil;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import javax.naming.InitialContext;
@@ -25,97 +26,125 @@ import javax.sql.DataSource;
  */
 public final class AppContext {
     
+    private static Properties properties;
+    private static Map sysmap;
     private static String name;
+    private static String path;
     private static String host;
+    private static DataSource systemDs;
     
-    public static String getName() {
-        if(name==null) {
-            try {
-                URL u1 = Thread.currentThread().getContextClassLoader().getResource( "META-INF/application.xml" );
-                if(u1!=null) {
-                    URL u2 = URLUtil.getParentUrl( u1 );
-                    URL u3 = URLUtil.getParentUrl( u2 );
-                    String p = u3.getPath();
-                    name = p.substring(p.lastIndexOf("/")+1, p.lastIndexOf(".") );
-                } else {
-                    name = "";
-                }
-            } catch(Exception ign) {
+    //this should load all app.conf defined.
+    public static void load() {
+        loadName();
+        loadHost();
+        loadProperties();
+        loadSystemDs();
+    }
+    
+    private static void loadName() {
+        try {
+            URL u1 = Thread.currentThread().getContextClassLoader().getResource( "META-INF/application.xml" );
+            if(u1!=null) {
+                URL u2 = URLUtil.getParentUrl( u1 );
+                URL u3 = URLUtil.getParentUrl( u2 );
+                String p = u3.getPath();
+                name = p.substring(p.lastIndexOf("/")+1, p.lastIndexOf(".") );
+            } else {
                 name = "";
             }
+        } catch(Exception ign) {
+            name = "";
         }
+        
+        //loads the path
+        if(name!=null && name.trim().length()>0) 
+            path = name + "/";
+        else 
+            path = name;
+    }
+
+    private static void loadHost() {
+        host = System.getProperty("jboss.bind.address");
+        if(host==null) host = System.getProperty( name + ".host" );
+    }
+
+    private static void loadProperties() {
+        //load properties
+        properties = new Properties();
+        InputStream is = null;
+        try {
+            Properties props = new Properties();
+            Enumeration<URL> e =  Thread.currentThread().getContextClassLoader().getResources("META-INF/app.conf");
+            while(e.hasMoreElements()) {
+                props.clear();
+                URL u = e.nextElement();
+                is = u.openStream();
+                props.load(is);
+                properties.putAll(props);
+            }
+            sysmap = new SysMap( properties );
+        } 
+        catch(Exception ex) {
+            System.out.println("error loading app properties " + ex.getMessage());
+        } 
+        finally {
+            try {is.close();}catch(Exception ign){;}
+        }
+    }
+
+    private static void loadSystemDs() {
+        try {
+            InitialContext ctx = new InitialContext();
+            systemDs = (DataSource)ctx.lookup("java:" + getName() + "_system");
+        } catch(Exception e) {
+            throw new RuntimeException("AppSystemUtil.Error lookup systemDB. " + e.getMessage() );
+        }        
+    }
+    
+    public static String getName() {
         return name;
     }
     
     public static String getPath() {
-        String sname = getName();
-        if(sname!=null && sname.trim().length()>0) return sname + "/";
-        else return name;
+        return path;
     }
     
     public static final DataSource getSystemDs() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DataSource)ctx.lookup("java:" + getName() + "_system");
-        } catch(Exception e) {
-            throw new RuntimeException("AppSystemUtil.Error lookup systemDB. " + e.getMessage() );
-        }
+        return systemDs;
     }
     
     public static final boolean hasAppName() {
-        String name = getName();
         if(name==null || name.trim().length()==0) return false;
         return true;
     }
     
-    public static final DataSource lookupDs(String name) {
+    public static final DataSource lookupDs(String dname) {
         try {
-            if(name.startsWith("java:")) name = name.substring(5);
-            if(hasAppName() && !name.startsWith(getName())) name = getName() + "_" + name;
+            if(dname.startsWith("java:")) dname = dname.substring(5);
+            if(hasAppName() && !dname.startsWith(getName())) dname = getName() + "_" + dname;
             
             InitialContext ctx = new InitialContext();
-            return (DataSource)ctx.lookup("java:" + name);
+            return (DataSource)ctx.lookup("java:" + dname);
         } catch(Exception e) {
             throw new RuntimeException("AppContext.lookupDs error. " + e.getMessage() );
         }
     }
+ 
     
-    private static Properties properties;
-    private static Map sysmap;
     
     public static Map getProperties() {
-        if(sysmap==null) {
-            InputStream is = null;
-            try {
-                URL u1 = Thread.currentThread().getContextClassLoader().getResource( "META-INF/app.conf" );
-                is = u1.openStream();
-                Properties props = new Properties();
-                props.load(is);
-                properties = props;
-                sysmap = new SysMap( properties );
-            } 
-            catch(Exception ex) {
-                System.out.println("error loading app properties " + ex.getMessage());
-            } 
-            finally {
-                try {is.close();}catch(Exception ign){;}
-            }
-            if(properties==null) properties = new Properties();
-            if(sysmap==null) sysmap = new SysMap();
-        }
         return properties;
     }
     
-    public static Object getProperty( String name ) {
-        if(properties==null) getProperties();
-        return sysmap.get( name );
+    public static Map getSysMap() {
+        return sysmap;
+    }
+    
+    public static Object getProperty( String pname ) {
+        return sysmap.get( pname );
     }
     
     public static String getHost() {
-        if(host==null) {
-            host = System.getProperty("jboss.bind.address");
-            if(host==null) host = System.getProperty( getName() + ".host" );
-        }
         return host;
     }
     
