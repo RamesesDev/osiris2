@@ -36,6 +36,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -164,6 +165,17 @@ public final class TableManager {
         editor.setBackground(FOCUS_BG);
         Font font = (Font) UIManager.get("Table.font");
         editor.setFont(font);
+        
+        //set alignment if it is specified in the Column model
+        if ( col.getAlignment() != null && editor instanceof JTextField ) {
+            JTextField jtf = (JTextField) editor;
+            if ( "right".equals(col.getAlignment().toLowerCase()) )
+                jtf.setHorizontalAlignment(SwingConstants.LEFT);
+            else if ( "center".equals(col.getAlignment().toLowerCase()))
+                jtf.setHorizontalAlignment(SwingConstants.CENTER);
+            else if ( "left".equals(col.getAlignment().toLowerCase()) )
+                jtf.setHorizontalAlignment(SwingConstants.LEFT);
+        }
         
         if ( editor instanceof XComboBox ) {
             XComboBox cbox = (XComboBox) editor;
@@ -338,6 +350,16 @@ public final class TableManager {
                     value = "<html>" + value + "</html>";
                 }
                 label.setText((value == null ? "" : value.toString()));
+            }
+            
+            //set alignment if it is specified in the Column model
+            if ( c.getAlignment() != null ) {
+                if ( "right".equals(c.getAlignment().toLowerCase()) )
+                    label.setHorizontalAlignment(SwingConstants.LEFT);
+                else if ( "center".equals(c.getAlignment().toLowerCase()))
+                    label.setHorizontalAlignment(SwingConstants.CENTER);
+                else if ( "left".equals(c.getAlignment().toLowerCase()) )
+                    label.setHorizontalAlignment(SwingConstants.LEFT);
             }
         }
         
