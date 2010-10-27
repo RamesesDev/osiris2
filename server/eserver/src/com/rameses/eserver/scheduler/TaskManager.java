@@ -10,6 +10,9 @@
 package com.rameses.eserver.scheduler;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  *
@@ -49,6 +52,14 @@ public class TaskManager {
         }
     }
     
+    private BlockingQueue<Map> activeQueue = new LinkedBlockingQueue();
     
+    public void addTTaskToQueue(Map map) {
+        activeQueue.add(map);
+    }
+    
+    public Map getNextTaskInQueue() {
+        return activeQueue.poll();
+    }
     
 }

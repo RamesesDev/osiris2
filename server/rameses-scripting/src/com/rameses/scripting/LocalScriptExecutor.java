@@ -69,7 +69,7 @@ public class LocalScriptExecutor implements ScriptExecutor {
         if( serviceName.indexOf("#")>0) {
             String[] sarr = serviceName.split("#");
             serviceName = sarr[0];
-            se.setResult(ae.getResult());
+        se.setResult(ae.getResult());
             passEval = se.eval(sarr[1]);
         }
         
@@ -88,6 +88,10 @@ public class LocalScriptExecutor implements ScriptExecutor {
                 retval = scriptService.invoke(n,_action,new Object[]{},env);
         }
         return retval;
+    }
+    
+    public void close() {
+        if(scriptObject!=null) scriptObject.close();
     }
     
 }

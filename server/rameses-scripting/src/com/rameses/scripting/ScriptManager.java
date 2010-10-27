@@ -37,12 +37,15 @@ public abstract class ScriptManager {
         instance = scriptManager;
     }
     
-    private Map<String,ScriptObject> scriptObjects = new Hashtable();
    
     public abstract ScriptProvider getScriptProvider();
 
     private ScriptLoader scriptLoader;
     private InterceptorLoader interceptorLoader;
+    private ScriptObjectPool scriptObjectPool;
+    //we have to build the interfaces on the fly
+    private Map<String, Class> proxyInterfaces = Collections.synchronizedMap(new Hashtable());
+    private InterceptorManager interceptorManager = new InterceptorManager();
     
     public ScriptLoader getScriptLoader() {
         if(scriptLoader==null) scriptLoader = new DefaultScriptLoader(this);
@@ -54,9 +57,6 @@ public abstract class ScriptManager {
         return interceptorLoader;
     }
     
-    //we have to build the interfaces on the fly
-    private Map<String, Class> proxyInterfaces = Collections.synchronizedMap(new Hashtable());
-    private InterceptorManager interceptorManager = new InterceptorManager();
     
     protected abstract void init();
     protected abstract void destroy();
@@ -68,23 +68,19 @@ public abstract class ScriptManager {
         System.out.println("loading version " + (version++));
         init();
         loaded = true;
-        scriptObjects.clear();
+        scriptObjectPool = new ScriptObjectPool(getScriptLoader());
         interceptorManager.setLoader( getInterceptorLoader() );
         interceptorManager.load();
         proxyInterfaces.clear();
     }
     
     public final void reload(String name) {
-        scriptObjects.remove( name );
+        scriptObjectPool.remove( name );
     }
     
     public final ScriptObject getScriptObject(String name) {
         if(!loaded)  load();
-        if( !scriptObjects.containsKey(name) ) {
-            ScriptObject so = getScriptLoader().findScript(name);
-            scriptObjects.put( name, so );
-        }
-        return scriptObjects.get(name);
+        return (ScriptObject)scriptObjectPool.get(name);
     }
     
     public final InterceptorManager getInterceptorManager() {
@@ -145,7 +141,7 @@ public abstract class ScriptManager {
             return new LocalScriptExecutor(so, methodName, target, actionMethod);
         } 
         else {
-            return new AsyncScriptExecutor( serviceName, methodName, actionMethod);
+            return new AsyncScriptExecutor( so, serviceName, methodName, actionMethod);
         }
     }
     

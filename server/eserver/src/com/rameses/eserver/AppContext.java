@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 public final class AppContext {
     
     private static String name;
+    private static String host;
     
     public static String getName() {
         if(name==null) {
@@ -108,6 +109,14 @@ public final class AppContext {
     public static Object getProperty( String name ) {
         if(properties==null) getProperties();
         return sysmap.get( name );
+    }
+    
+    public static String getHost() {
+        if(host==null) {
+            host = System.getProperty("jboss.bind.address");
+            if(host==null) host = System.getProperty( getName() + ".host" );
+        }
+        return host;
     }
     
     

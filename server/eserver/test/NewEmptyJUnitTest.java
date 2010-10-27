@@ -2,6 +2,8 @@
 import com.rameses.util.TemplateProvider;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.*;
 /*
  * NewEmptyJUnitTest.java
@@ -27,11 +29,31 @@ public class NewEmptyJUnitTest extends TestCase {
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
-    public void testHello() {
+    public void test1Hello() {
         Map map = new HashMap();
         map.put("name", "${elmo}");
         Object o = TemplateProvider.getInstance().getResult("META-INF/template.groovy", map );
         System.out.println(o);
+    }
+    
+    public void testQueue() {
+        BlockingQueue<String> b = new LinkedBlockingQueue();
+        b.add( "one" );
+        b.add( "two");
+        b.add( "three");
+        String s = null;
+        while((s=b.poll())!=null) {
+            System.out.println("process " + s);
+        }
+        System.out.println("finished");
+        b.add( "four" );
+        b.add( "five");
+        b.add( "six");
+        s = null;
+        while((s=b.poll())!=null) {
+            System.out.println("process " + s);
+        }
+        System.out.println("finished 2");
     }
     
 }

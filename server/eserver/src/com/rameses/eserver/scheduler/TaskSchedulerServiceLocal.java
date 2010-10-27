@@ -16,6 +16,7 @@ import java.util.Map;
  * @author ms
  */
 public interface TaskSchedulerServiceLocal {
-    void fireActiveQueue(int fetchSize);
+    void scheduleTasks();
+    void processTasks();
     void updateTask(Map map, boolean increment);
 }

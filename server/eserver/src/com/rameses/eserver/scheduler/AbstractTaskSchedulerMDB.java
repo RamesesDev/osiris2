@@ -29,6 +29,9 @@ public abstract class AbstractTaskSchedulerMDB implements MessageListener {
     
     public void onMessage(Message message) {
         try {
+            //we need to check first to ensure if we are really on the scheduled task.
+            //check based on mac address and taskid.
+            
             Map map = (Map)((ObjectMessage)message).getObject();
             if( map == null ) return;
             

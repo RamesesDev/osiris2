@@ -14,17 +14,18 @@ import com.rameses.eserver.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
+import com.rameses.sql.SqlQuery;
 import com.rameses.util.MachineInfo;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -38,42 +39,66 @@ public class TaskSchedulerService implements TaskSchedulerServiceLocal{
     @Resource
     private SessionContext context;
     
-    @TransactionAttribute( TransactionAttributeType.REQUIRED )
-    public void fireActiveQueue(int fetchSize) {
-        SqlContext ctx = null;
+    //transfer data from queue to interim that is expired. add machine id so we can remember it when firing
+    public void scheduleTasks() {
         try {
-            ctx = SqlManager.getInstance().createContext(AppContext.getSystemDs());
-            ctx.openConnection();
-            Map dt = (Map)ctx.createNamedQuery("scheduler:serverdate").getSingleResult();
-            Date d = (Date)dt.get("serverdate");
-            List<Map> list = ctx.createNamedQuery("scheduler:list-queue").setParameter(1,d).setMaxResults(fetchSize).getResultList();
-            if(list.size()==0) {
-                return;
-            }
-            SqlExecutor transferer = ctx.createNamedExecutor("scheduler:add-processing");
-            SqlExecutor remover = ctx.createNamedExecutor("scheduler:remove-queue");
-            for(Map t : list) {
-                int taskid = Integer.parseInt( t.get("taskid")+"" );
-                Date expirydt = (Date)t.get("expirydate");
-                transferer.setParameter( 1, taskid );
-                transferer.setParameter( 2, MachineInfo.getInstance().getMacAddress() );
-                transferer.setParameter( 3, expirydt );
-                transferer.addBatch();
-                remover.setParameter( 1, taskid );
-                remover.addBatch();
-            }
-            transferer.execute();
-            remover.execute();
-            for(Map map: list) {
-                processAsync( map );
+            String host = AppContext.getHost();
+            Map vars = new HashMap();
+            vars.put("host", host );
+            String machineid = MachineInfo.getInstance().getMacAddress();
+            SqlContext ctx = SqlManager.getInstance().createContext(AppContext.getSystemDs());
+            
+            List<Map> entries = ctx.createNamedQuery("scheduler:list-queue").setVars(vars).getResultList();
+            for(Map m: entries ) {
+                int taskid = Integer.parseInt(m.get("taskid")+"");
+                Date expirydate = (Date)m.get("expirydate");
+                try {
+                    ctx.openConnection();
+                    SqlExecutor se = ctx.createNamedExecutor("scheduler:transfer-queue-to-interim");    
+                    se.setParameter(1,taskid).setParameter(2,machineid).setParameter(3,expirydate).setParameter(4,host).execute();
+                    ctx.createNamedExecutor("scheduler:remove-queue").setParameter(1,taskid).execute();
+                }
+                catch(Exception ex) {
+                    System.out.println("Scheduler Queue Error. " + taskid + ":" + ex.getMessage() );
+                }
+                finally {
+                    ctx.closeConnection();
+                }
             }
         } 
         catch(Exception e) {
-            System.out.println("ERROR SCHEDULER " );
-            e.printStackTrace();
-        } finally {
-            ctx.closeConnection();
+            System.out.println("Scheduler. Schedule Tasks error " + e.getMessage() );
         }        
+    }
+
+    public void processTasks() {
+        SqlContext ctx = SqlManager.getInstance().createContext(AppContext.getSystemDs());
+        List<Map> results = new ArrayList();
+        try {
+            ctx.openConnection();
+            String machineid = MachineInfo.getInstance().getMacAddress();
+            SqlQuery sq = ctx.createNamedQuery("scheduler:list-interim");
+            List<Map> list = sq.setParameter(1,machineid).getResultList();
+            if(list.size()==0) return;
+            
+            for(Map t : list) {
+                int taskid = Integer.parseInt(t.get("taskid")+"");
+                ctx.createNamedExecutor("scheduler:transfer-interim-to-processing").setParameter(1,taskid).execute();
+                ctx.createNamedExecutor("scheduler:remove-interim").setParameter(1,taskid).execute();
+                results.add(t);
+            }
+        } 
+        catch(Exception e) {
+            System.out.println("Scheduler.Process Task error " + e.getMessage() );
+        }     
+        finally {
+            ctx.closeConnection();
+        }
+        
+        //process async
+        for(Map m : results) {
+            processAsync(m);
+        }
     }
 
     private void processAsync(Map map) {
@@ -118,7 +143,6 @@ public class TaskSchedulerService implements TaskSchedulerServiceLocal{
         else if( enddate==null || enddate.after(nextdate) ) {
             reload = true;
         }
-        
         SqlContext ctx = null;
         try {
             ctx = SqlManager.getInstance().createContext(AppContext.getSystemDs());
@@ -136,5 +160,6 @@ public class TaskSchedulerService implements TaskSchedulerServiceLocal{
         }     
     }
 
+    
     
 }

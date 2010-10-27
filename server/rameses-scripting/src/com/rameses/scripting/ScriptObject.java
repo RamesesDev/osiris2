@@ -39,6 +39,8 @@ public class ScriptObject implements Serializable {
     //new addition: parameters will be checked for validitiy.
     private Map<String, CheckedParameter[]> checkedParameters = new HashMap();
     
+    private ScriptObjectPoolManager scriptObjectPoolManager;
+    
     public ScriptObject(Class cp, String name, String proxyInterface, Class proxyClass  ) {
         this.name = name;
         this.classDef = new ClassDef( cp );
@@ -114,4 +116,13 @@ public class ScriptObject implements Serializable {
         return checkedParameters.get(method);
     }
     
+    public void close() {
+        if(scriptObjectPoolManager!=null) scriptObjectPoolManager.addBackToPool(this);
+    }
+
+    public void setScriptObjectPoolManager(ScriptObjectPoolManager scriptObjectPoolManager) {
+        this.scriptObjectPoolManager = scriptObjectPoolManager;
+    }
+
+
 }
