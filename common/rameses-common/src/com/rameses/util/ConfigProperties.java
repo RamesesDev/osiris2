@@ -43,6 +43,18 @@ public final class ConfigProperties {
         setFile( file );
     }
     
+    public ConfigProperties(String fname) {
+        try {
+            File f = new File(fname);
+            if(!f.exists()) f.createNewFile();
+            setFile(f);
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
     public void update(){
         ByteArrayOutputStream baos = null;
         try{
