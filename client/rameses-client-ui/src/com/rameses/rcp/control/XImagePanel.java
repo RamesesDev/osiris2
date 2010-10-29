@@ -92,7 +92,7 @@ public class XImagePanel extends JPanel implements UIControl
         try 
         { 
             if (url == null)
-                url = Thread.currentThread().getContextClassLoader().getResource(iconResource); 
+                url = ClientContext.getCurrentContext().getClassLoader().getResource(iconResource); 
         } catch(Exception ign) {;}         
         
         try 

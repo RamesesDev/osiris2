@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" action="loop" caption="Test Loop"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+                
+        public class SubListTestController  {
+        
+            int data=0;
+            
+            @Binding
+            def binding;
+            
+            @Async(loop=true)
+            def loop() {
+                data++;
+                Thread.sleep(500);
+                binding.refresh('data');
+                
+                return data;
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.table.TestLoop"/>
+    </pages>
+</workunit>

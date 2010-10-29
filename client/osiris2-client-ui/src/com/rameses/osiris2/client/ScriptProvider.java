@@ -9,6 +9,7 @@ package com.rameses.osiris2.client;
 
 import com.rameses.classutils.AnnotationFieldHandler;
 import com.rameses.classutils.ClassDefUtil;
+import com.rameses.rcp.framework.ClientContext;
 import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
 import java.util.Hashtable;
@@ -24,7 +25,7 @@ public final class ScriptProvider {
     private Map<String,Class> scriptMap = new Hashtable();
     
     public ScriptProvider() {
-        loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
+        loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
     }
     
     public static ScriptProvider getInstance() {

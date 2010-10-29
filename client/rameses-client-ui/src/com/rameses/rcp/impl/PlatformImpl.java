@@ -160,9 +160,13 @@ public class PlatformImpl implements Platform {
         }
         return msg;
     }
-    
-    public void exit() {
+
+    public void shutdown() {
         mainWindow.close();
     }
+
+    public void logoff() {
+    }
+
     
 }
