@@ -46,6 +46,8 @@ public class OsirisAppLoader implements AppLoader {
             ctx.setMethodResolver( new OsirisMethodResolver() );
             ctx.setAppEnv(env);
             
+            Thread.currentThread().setContextClassLoader(loader);
+            
             OsirisContext.setSession(startupApp);
 
             //load all loaders

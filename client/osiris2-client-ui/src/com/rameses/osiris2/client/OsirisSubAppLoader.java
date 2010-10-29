@@ -25,6 +25,10 @@ public class OsirisSubAppLoader implements AppLoader {
     public OsirisSubAppLoader() {
     }
     
+    /**
+     * if the env contains a key "permissions", the value will be added to the security provider's permissions
+     * if the env contains a key "virtualEnv", the value will be added to the OsirisContext.env/ClientContext#headers
+     */
     public void load(ClassLoader loader, Map env, Platform platform) {
         try {
             if( env ==null ) {
@@ -47,12 +51,21 @@ public class OsirisSubAppLoader implements AppLoader {
             ctx.setMethodResolver( new OsirisMethodResolver() );
             ctx.setAppEnv(env);
             
+            Thread.currentThread().setContextClassLoader(loader);
+            
             OsirisContext.setSession(startupApp);
             
             //if there are permissions specified from the calling platform
-            if ( env.get("permissions") != null && env.get("permissions") instanceof Collection ) {
+            Object perms = env.get("permissions");
+            if ( perms != null && perms instanceof Collection ) {
                 OsirisSecurityProvider sp = (OsirisSecurityProvider) OsirisContext.getSession().getSecurityProvider();
-                sp.getPermissions().addAll( (Collection) env.get("permissions") );
+                sp.getPermissions().addAll( (Collection) perms );
+            }
+            
+            //if there are virtualEnv specified from the calling platform
+            Object virtualEnv = env.get("virtualEnv");
+            if ( virtualEnv != null && virtualEnv instanceof Map ) {
+                OsirisContext.getEnv().putAll( (Map) virtualEnv );
             }
             
             //load all loaders

@@ -36,6 +36,9 @@ public class SubSession {
                 if ( properties.get("permissions") != null )
                     env.put("permissions", properties.get("permissions"));
                 
+                if ( properties.get("virtualEnv") != null )
+                    env.put("virtualEnv", properties.get("virtualEnv"));
+                
                 loader.load( newLoader, env, platform);
                 
                 SubPlatformWindow mw = (SubPlatformWindow) platform.getMainWindow();
