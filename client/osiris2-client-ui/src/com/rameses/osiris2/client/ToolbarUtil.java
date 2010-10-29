@@ -19,6 +19,10 @@ import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.support.ResourceUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -35,6 +39,7 @@ public final class ToolbarUtil {
     
     public static JToolBar getToolBar() {
         JToolBar toolbar = new JToolBar();
+        toolbar.setLayout(new ToolBarLayout());
         SessionContext app = OsirisContext.getSession();
         
         List<Invoker> invokers = app.getInvokers("toolbar");
@@ -62,7 +67,7 @@ public final class ToolbarUtil {
             if ( !ValueUtil.isEmpty(out) ) {
                 uic.setCurrentView(out);
             }
-        } 
+        }
         
         UIControllerPanel p = new UIControllerPanel(uic);
         return p;
@@ -94,4 +99,59 @@ public final class ToolbarUtil {
         }
         
     }
+    
+    private static class ToolBarLayout implements LayoutManager {
+        
+        private static final int SPACING = 2;
+        
+        public void addLayoutComponent(String name, Component comp) {;}
+        public void removeLayoutComponent(Component comp) {;}
+        
+        public Dimension getLayoutSize(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                int w=0, h=0;
+                
+                Component[] comps = parent.getComponents();
+                for (int i=0; i<comps.length; i++) {
+                    if (!comps[i].isVisible()) continue;
+                    
+                    Dimension dim = comps[i].getPreferredSize();
+                    w += (dim.width + SPACING);
+                    h = Math.max(h, dim.height);
+                }
+                return new Dimension(w,h);
+            }
+        }
+        
+        public Dimension preferredLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+        
+        public Dimension minimumLayoutSize(Container parent) {
+            return getLayoutSize(parent);
+        }
+        
+        public void layoutContainer(Container parent) {
+            synchronized (parent.getTreeLock()) {
+                Insets margin = new Insets(2,2,2,2);
+                
+                int x = margin.left;
+                int y = margin.top;
+                int w = parent.getWidth() - (margin.left + margin.right);
+                int h = parent.getHeight() - (margin.top + margin.bottom);
+                
+                Component[] comps = parent.getComponents();
+                for (int i=0; i<comps.length; i++) {
+                    Component comp = comps[i];
+                    
+                    if (!comp.isVisible()) continue;
+                    
+                    Dimension dim = comp.getPreferredSize();
+                    comp.setBounds(x, y, dim.width, h);
+                    x += dim.width + SPACING;
+                }
+            }
+        }
+    }
+    
 }

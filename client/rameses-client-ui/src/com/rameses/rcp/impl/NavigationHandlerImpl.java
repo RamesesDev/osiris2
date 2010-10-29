@@ -32,7 +32,9 @@ public class NavigationHandlerImpl implements NavigationHandler {
             //if outcome is null or empty just refresh the current view
             curController.getCurrentView().refresh();
             
-        } else {
+        } 
+        //-- process Opener outcome
+        else {
             if( outcome instanceof Opener )  {
                 Opener opener = (Opener) outcome;
                 opener = ControlSupport.initOpener( opener, curController.getController() );
@@ -61,7 +63,13 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 
                 UIControllerContext controller = new UIControllerContext(opCon);
                 controller.setId(opener.getId());
+                
+                //check if opener has outcome
                 if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
+                    if ( "_close".equals( opener.getOutcome()) ) {
+                        curController.getCurrentView().refresh();
+                        return;
+                    }
                     controller.setCurrentView( opener.getOutcome() );
                 }
                 
@@ -84,7 +92,9 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     return;
                 }
                 
-            } else {
+            } 
+            //-- process String(expected) outcome
+            else {
                 String out = outcome+"";
                 if ( out.startsWith("_close") ) {
                     if ( !conStack.isEmpty() ) {

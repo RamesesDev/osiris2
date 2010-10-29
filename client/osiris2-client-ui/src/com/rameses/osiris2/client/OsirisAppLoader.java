@@ -39,13 +39,15 @@ public class OsirisAppLoader implements AppLoader {
             
             ClientSecurityProvider cs = (ClientSecurityProvider)startupApp.getSecurityProvider();
             ClientContext ctx = ClientContext.getCurrentContext();
+            
             ctx.setSecurityProvider(cs);
             ctx.setPlatform(platform);
             ctx.setClassLoader(loader);
             ctx.setMethodResolver( new OsirisMethodResolver() );
+            ctx.setAppEnv(env);
             
             OsirisContext.setSession(startupApp);
-            
+
             //load all loaders
             List loaders = startupApp.getInvokers("loader", false);
             if( loaders.size() > 0 ) {
@@ -69,6 +71,9 @@ public class OsirisAppLoader implements AppLoader {
         } catch(Exception ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
         }
+    }
+
+    public void restore() {
     }
     
 }

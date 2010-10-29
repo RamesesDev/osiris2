@@ -36,8 +36,9 @@ public abstract class ClientContext {
     private ControllerProvider controllerProvider;
     private ActionProvider actionProvider;
     private OpenerProvider openerProvider;
-    private Map headers = new HashMap();
     
+    private Map appEnv = new HashMap();
+    private Map headers = new HashMap();
     private Map properties = new HashMap();
     
     
@@ -76,7 +77,7 @@ public abstract class ClientContext {
     
     public final NavigationHandler getNavigationHandler() {
         if ( navigationHandler == null ) {
-            Iterator itr = Service.providers(NavigationHandler.class, Thread.currentThread().getContextClassLoader());
+            Iterator itr = Service.providers(NavigationHandler.class, getClassLoader());
             if ( itr.hasNext() ) {
                 navigationHandler = (NavigationHandler) itr.next();
             } else {
@@ -88,7 +89,7 @@ public abstract class ClientContext {
     
     public final ActionProvider getActionProvider() {
         if ( actionProvider == null ) {
-            Iterator itr = Service.providers(ActionProvider.class, Thread.currentThread().getContextClassLoader());
+            Iterator itr = Service.providers(ActionProvider.class, getClassLoader());
             if ( itr.hasNext() ) {
                 actionProvider = (ActionProvider) itr.next();
             }
@@ -98,7 +99,7 @@ public abstract class ClientContext {
     
     public final OpenerProvider getOpenerProvider() {
         if ( openerProvider == null ) {
-            Iterator itr = Service.providers(OpenerProvider.class, Thread.currentThread().getContextClassLoader());
+            Iterator itr = Service.providers(OpenerProvider.class, getClassLoader());
             if ( itr.hasNext() ) {
                 openerProvider = (OpenerProvider) itr.next();
             }
@@ -108,15 +109,14 @@ public abstract class ClientContext {
     
     public static final ClientContext getCurrentContext() {
         if ( currentContext == null ) {
-            Iterator itr = Service.providers(ClientContext.class, Thread.currentThread().getContextClassLoader());
-            if ( itr.hasNext() ) {
-                currentContext = (ClientContext) itr.next();
-            } else {
-                currentContext = new ClientContextImpl();
-            }
-            currentContext.taskManager = new TaskManager();
+            setCurrentContext( new ClientContextImpl() );
         }
         return currentContext;
+    }
+    
+    public static final void setCurrentContext(ClientContext context) {
+        currentContext = context;
+        currentContext.taskManager = new TaskManager();
     }
     
     public final TaskManager getTaskManager() {
@@ -133,6 +133,14 @@ public abstract class ClientContext {
     
     public Map getProperties() {
         return properties;
+    }
+    
+    public Map getAppEnv() {
+        return appEnv;
+    }
+    
+    public void setAppEnv(Map appEnv) {
+        this.appEnv = appEnv;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  ControllerProviderWrapper (class)  ">

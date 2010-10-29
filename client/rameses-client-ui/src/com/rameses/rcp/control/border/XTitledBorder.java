@@ -16,7 +16,6 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
-import javax.swing.JComponent;
 import javax.swing.UIManager;
 import javax.swing.border.AbstractBorder;
 
@@ -28,7 +27,7 @@ public class XTitledBorder extends AbstractBorder {
     private Color background;
     private Color titleBackground;
     private Color titleForeground;
-    private Insets titlePadding = new Insets(0,5,5,5);
+    private Insets titlePadding = new Insets(1,5,1,5);
     private Font font;
     private Color outline;
     private Color outlineShadow;
@@ -82,7 +81,7 @@ public class XTitledBorder extends AbstractBorder {
         poly.addPoint(x2, y2);
         poly.addPoint(x2+10, y);
         
-        //shadow
+        //shadow (show size is 2)
         g2.setColor(outlineShadow);
         g2.drawLine(x+1, y2+1, x2-2, y2+1);
         
@@ -98,16 +97,18 @@ public class XTitledBorder extends AbstractBorder {
         //draw the title
         g2.setColor(titleForeground);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g2.drawString(title, x + padding.left, y + padding.top + fm.getHeight());
+        g2.drawString(title, x + padding.left, y + padding.top + (fm.getHeight() - fm.getDescent()));
         
         g2.dispose();
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public Insets getBorderInsets(Component c) {
         FontMetrics fm = c.getFontMetrics(font);
         Insets p = titlePadding;
         
-        return new Insets(fm.getHeight()+p.top+p.bottom, 1,3,3);
+        //add the title drop shadow to the insets
+        return new Insets(fm.getHeight()+p.top+p.bottom+3, 1,3,3);
     }
     
     public String getTitle() {
@@ -165,12 +166,13 @@ public class XTitledBorder extends AbstractBorder {
     public void setTitlePadding(Insets titlePadding) {
         this.titlePadding = titlePadding;
     }
-
+    
     public Color getBackground() {
         return background;
     }
-
+    
     public void setBackground(Color background) {
         this.background = background;
     }
+    //</editor-fold>
 }

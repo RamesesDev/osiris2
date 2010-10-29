@@ -5,6 +5,7 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GradientPaint;
@@ -13,6 +14,7 @@ import java.awt.Graphics2D;
 import java.util.Collection;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.AbstractBorder;
 import javax.swing.border.EtchedBorder;
 
 /**
@@ -35,13 +37,15 @@ public class XToolBar extends JPanel implements UIControl{
     private FlowLayout flowLayout = new FlowLayout();
     private String orientation = "LEFT";
     
-    public XToolBar() {}
+    public XToolBar() {
+        setBorder(new XToolBarBorder());
+    }
     
-    //<editor-fold defaultstate="collapsed" desc="  Getter / Setter "> 
+    //<editor-fold defaultstate="collapsed" desc="  Getter / Setter ">
     public String[] getDepends() {
         return depends;
     }
-
+    
     public void setDepends(String[] depends) {
         this.depends = depends;
     }
@@ -53,15 +57,15 @@ public class XToolBar extends JPanel implements UIControl{
     public void setIndex(int index) {
         this.index = index;
     }
-
+    
     public void setBinding(Binding binding) {
         this.binding = binding;
     }
-
+    
     public Binding getBinding() {
         return binding;
     }
-
+    
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
     }
@@ -78,7 +82,7 @@ public class XToolBar extends JPanel implements UIControl{
     
     public void refresh() {
     }
-
+    
     public void load() {
         setBorder(new EtchedBorder());
         setOpaque(false);
@@ -109,12 +113,17 @@ public class XToolBar extends JPanel implements UIControl{
         SwingUtilities.updateComponentTreeUI(this);
     }
     
-    public void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
-        GradientPaint gradient = new GradientPaint(0, 0, UPCLR, 0, super.getHeight(), LOWCLR);
-        g2.setPaint(gradient);
-        g2.fillRect(0,0, super.getWidth(), super.getHeight());
-        super.paintComponent(g2);
-        g2.dispose();
+    private class XToolBarBorder extends AbstractBorder {
+        
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            
+            GradientPaint gradient = new GradientPaint(0, 0, UPCLR, 0, height, LOWCLR);
+            g2.setPaint(gradient);
+            g2.fillRect(0,0, width-1, height-1);
+            
+            g2.dispose();
+        }
     }
+    
 }

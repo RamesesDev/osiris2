@@ -28,24 +28,23 @@ public class Osiris2MainWindowListener implements MainWindowListener {
     }
     
     public boolean onClose() {
-        boolean canClose = true;
         for(MainWindowListener l: listeners) {
             try {
-                canClose = canClose && l.onClose();
-                if( !canClose ) break;
+                if( !l.onClose() ) return false;
                 
             } catch(Exception e) {
                 e.printStackTrace();
             }
         }
         
+        //stop taskmanager only if all listeners allow the platform to be closed
         try {
             ClientContext.getCurrentContext().getTaskManager().stop();
         } catch(Exception e) {
             e.printStackTrace();
         }
         
-        return canClose;
+        return true;
     }
     
     public void add(MainWindowListener listener) {
