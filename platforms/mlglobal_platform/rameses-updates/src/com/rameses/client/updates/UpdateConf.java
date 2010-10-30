@@ -84,6 +84,7 @@ public class UpdateConf extends DefaultHandler {
             SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
             parser.parse(bis, this);
         } catch(Exception ex) {
+            f.delete();
             throw ex;
         } finally {
             try { fis.close();  } catch(Exception ign){;}
@@ -173,6 +174,8 @@ public class UpdateConf extends DefaultHandler {
         {
             URL u = new URL(appurl);
             uc = u.openConnection();
+            //uc.connect();
+            
             modified = uc.getLastModified();
             
             if (modified != 0)

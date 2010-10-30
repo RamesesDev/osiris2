@@ -22,7 +22,7 @@ import java.util.Map;
 public class UpdateCenter {
     
     private String appurl;
-    private String appPath = System.getProperty("user.dir")+"/osiris2/modules";
+    private String appPath = System.getProperty("user.dir")+"/osiris2";
     private Map env;
     private URL[] urls;
     

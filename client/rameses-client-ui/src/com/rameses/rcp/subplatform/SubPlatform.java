@@ -21,6 +21,8 @@ public class SubPlatform implements Platform {
     public SubPlatform() {
     }
     
+    public void showStartupWindow(JComponent actionSource, JComponent comp, Map properties) {}
+    
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
         if ( mainWindow.closeCurrentDisplay() ) {
             windows.clear();

@@ -9,6 +9,8 @@
 
 package com.rameses.client.updates;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -70,17 +72,28 @@ public class ModuleEntry {
         URLConnection uc = null;
         InputStream is = null;
         FileOutputStream fos = null;
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
         File file = new File(appPath+name+"~");
+        
         try {
+            int buffSize = 1024 * 32;
+            
             fos = new FileOutputStream( file );
+            bos = new BufferedOutputStream(fos, buffSize);
+            
             URL u = new URL(hostPath + name);
             uc = u.openConnection();
             is = uc.getInputStream();
-            int i = -1;
-            while((i=is.read())!=-1) {
-                fos.write(i);
+            bis = new BufferedInputStream(is, buffSize);
+            
+            byte[] buff = new byte[buffSize];
+            int bytesRead = -1;
+            
+            while( (bytesRead = bis.read(buff)) != -1 ) {
+                bos.write(buff, 0, bytesRead);
             }
-            fos.flush();
+            bos.flush();
         } 
         catch (Exception e) {
             throw e;
@@ -93,7 +106,9 @@ public class ModuleEntry {
             } 
             catch (Exception ign) {;}
             try { is.close(); } catch (Exception ign) {;}
+            try { bis.close(); } catch (Exception ign) {;}
             try { fos.close(); } catch (Exception ign) {;}
+            try { bos.close(); } catch (Exception ign) {;}
         }
         
         File successFile = new File(appPath+name);

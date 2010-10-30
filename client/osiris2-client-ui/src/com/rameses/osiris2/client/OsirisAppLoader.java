@@ -62,7 +62,7 @@ public class OsirisAppLoader implements AppLoader {
                 env.put("canclose", "false" );
                 env.put("title", "Home");
                 env.put("id", "loader_workunits");
-                platform.showWindow(null, uip, env);
+                platform.showStartupWindow(null, uip, env);
             }
             startupApp.load();
             ctx.getTaskManager().start();

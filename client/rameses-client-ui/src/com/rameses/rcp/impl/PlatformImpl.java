@@ -26,6 +26,8 @@ public class PlatformImpl implements Platform {
     public PlatformImpl() {
     }
     
+    public void showStartupWindow(JComponent actionSource, JComponent comp, Map properties) { }
+    
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
         String id = (String) properties.get("id");
         if ( ValueUtil.isEmpty(id) )

@@ -14,6 +14,7 @@ public interface Platform {
      * actionSource must the component that triggers the action,
      * it could be a JButton, JMenu, etc.
      */
+    void showStartupWindow(JComponent actionSource, JComponent comp, Map properties);
     void showWindow(JComponent actionSource, JComponent comp, Map properties);
     boolean isWindowExists(String id);
     void activateWindow(String id);
