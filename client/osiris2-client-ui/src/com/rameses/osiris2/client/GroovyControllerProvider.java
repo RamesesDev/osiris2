@@ -5,6 +5,8 @@ import com.rameses.classutils.ClassDefUtil;
 import com.rameses.osiris2.CodeProvider;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class GroovyControllerProvider implements CodeProvider {
     
@@ -13,6 +15,13 @@ public class GroovyControllerProvider implements CodeProvider {
     
     public GroovyControllerProvider(ClassLoader cl) {
         this.loader = new GroovyClassLoader( cl );
+        //load all paths to locate groovy classes
+        if(cl instanceof URLClassLoader) {
+            URLClassLoader c = (URLClassLoader)cl;
+            for(URL u : c.getURLs()) {
+                loader.addURL(u);
+            }
+        }
     }
     
     public Class createClass(String source) {

@@ -41,7 +41,7 @@ public abstract class TemplateProvider implements Serializable {
         InputStream is = null;
         try {
             if( name.indexOf("://") < 0 ) {
-                is = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+                is = getClass().getClassLoader().getResourceAsStream(name);
             } else {
                 is = (new URL( name )).openStream();
             }
@@ -59,7 +59,7 @@ public abstract class TemplateProvider implements Serializable {
         public DefaultTemplateProvider() {
             //automatically include xslt cause this is quite common.
             providers = new Hashtable();
-            Iterator iter = Service.providers(TemplateProvider.class, Thread.currentThread().getContextClassLoader());
+            Iterator iter = Service.providers(TemplateProvider.class, getClass().getClassLoader());
             while(iter.hasNext()) {
                 TemplateProvider tp = (TemplateProvider)iter.next();
                 for(String s: tp.getExtensions()) {

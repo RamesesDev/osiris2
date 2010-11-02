@@ -13,7 +13,7 @@ public class DefaultSqlUnitResourceProvider implements SqlUnitResourceProvider {
     
     public DefaultSqlUnitResourceProvider() {
         //build the sql unit resource providers upon loading. not on demand!
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = getClass().getClassLoader();
         providers = new ArrayList();
         Iterator iter = Service.providers(SqlUnitResourceProvider.class, classLoader);
         while (iter.hasNext()) {

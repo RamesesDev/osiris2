@@ -24,7 +24,7 @@ public class DefaultSchemaResourceProvider implements SchemaResourceProvider  {
     private List<SchemaResourceProvider> providers;
     
     public InputStream getResource(String name) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = DefaultSchemaResourceProvider.class.getClassLoader();
         if (providers==null) {
             providers = new ArrayList();
             Iterator iter = Service.providers(SchemaResourceProvider.class, classLoader);

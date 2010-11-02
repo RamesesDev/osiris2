@@ -38,22 +38,17 @@ public final class InvokerUtil {
         invoke(invoker,null);
     }
     
-    public static void showWindow(Invoker invoker, String target, Map winParams) {
-        if ( !ValueUtil.isEmpty(target) ) {
-            invoker.setType(target);
-        }
-        if ( winParams != null ) {
-            invoker.getProperties().putAll(winParams);
-        }
-        invoke(invoker, null);
-    }
-    
     public static void invoke(Invoker invoker, Map params) {
-        invoke(invoker, params, null);
+        invoke(invoker, params, null, null);
     }
     
     public static void invoke(Invoker invoker, Map params, Object caller) {
+        invoke( invoker, params, caller, null );
+    }
+    
+    public static void invoke(Invoker invoker, Map params, Object caller, String extendedCaption) {
         try {
+            if(params==null) params = new HashMap();
             ClientContext ctx = ClientContext.getCurrentContext();
             Platform platform = ctx.getPlatform();
             
@@ -61,6 +56,11 @@ public final class InvokerUtil {
             
             //check if window id already exists
             String windowId = wuId + invoker.getCaption();
+            if(extendedCaption!=null) windowId = windowId + "_" +  extendedCaption;
+            
+            String caption = invoker.getCaption();
+            if(extendedCaption!=null) caption = caption + extendedCaption;
+            
             if ( platform.isWindowExists( windowId )) {
                 platform.activateWindow( windowId );
                 return;
@@ -77,7 +77,7 @@ public final class InvokerUtil {
             String action = invoker.getAction();
             u.setId( wuId );
             u.setName( wuId );
-            u.setTitle( invoker.getCaption());
+            u.setTitle( caption );
             
             String outcome = (String) u.init(params, action);
             String target = (String)invoker.getProperties().get("target");
@@ -113,6 +113,21 @@ public final class InvokerUtil {
             }
         }
     }
+
+    public static void showWindow(Invoker invoker, String target, Map winParams) {
+        showWindow( invoker, target, winParams, null );
+    }
+    
+    public static void showWindow(Invoker invoker, String target, Map winParams, String windowKey) {
+        if ( !ValueUtil.isEmpty(target) ) {
+            invoker.setType(target);
+        }
+        if ( winParams != null ) {
+            invoker.getProperties().putAll(winParams);
+        }
+        invoke(invoker, null, null, null);
+    }
+    
     
     public static Object invokeAction(InvokerAction action) {
         try {
@@ -221,7 +236,7 @@ public final class InvokerUtil {
     }
     
     /**
-     * This method returns a list of invokers from a folder path.
+     * returns a list of invokers from a folder path.
      */
     public static List lookupFolder( String name ) {
         if(name == null ) return null;
@@ -240,5 +255,54 @@ public final class InvokerUtil {
         }
         return invokers;
     }
+    
+    /**
+     * returns a the first opener based on the invoker type
+     */
+    public static Opener lookupOpener( String invType, Map params ) {
+        List<Invoker> list = lookup( invType );
+        if ( list.size() ==0 ) {
+            throw new RuntimeException("No invokers found for type [" + invType + "]");
+        }
+        Invoker inv = list.get(0);
+        String target = (String)inv.getProperties().get("target");
+        //if ( target !=null ) target = target.replaceAll("/^([^_])/", "_$1");
+        Opener opener = new Opener(inv.getWorkunitid());
+        opener.setCaption( inv.getCaption() );
+        opener.setAction( inv.getAction() );
+        opener.setTarget( target );
+        if(params!=null) opener.setParams( params );
+        return opener;
+    }
+    
+    public static List lookupOpeners( String invType, Map params ) {
+        List<Invoker> list = lookup( invType );
+        if ( list.size() ==0 ) {
+            throw new RuntimeException("No invokers found for type [" + invType + "]");
+        }
+        List openers = new ArrayList();
+        for(Invoker inv: list) {
+            String target = (String)inv.getProperties().get("target");
+            //if ( target !=null ) target = target.replaceAll("/^([^_])/", "_$1");
+            Opener opener = new Opener(inv.getWorkunitid());
+            opener.setCaption( inv.getCaption() );
+            opener.setAction( inv.getAction() );
+            opener.setTarget( target );
+            if(params!=null) opener.setParams( params );
+            openers.add(opener);
+        }
+        return openers;
+    }
+
+    public static Object invokeOpener( Opener opener ) {
+        return invokeOpener( opener, null );
+    }
+
+    public static Object invokeOpener( Opener opener, UIController caller ) {
+        ControlSupport.initOpener(opener, caller );
+        return ControlSupport.init(opener.getController().getCodeBean(), opener.getParams(), opener.getAction() );
+    }
+
+    
     
 }

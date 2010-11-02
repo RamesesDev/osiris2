@@ -18,7 +18,7 @@ import java.io.InputStream;
 public final class StreamUtil {
     
     public static String toString( String filePath ) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        ClassLoader loader = StreamUtil.class.getClassLoader();
         return toString(loader.getResourceAsStream( filePath ));
     }
     

@@ -59,7 +59,7 @@ public class SchemaConf {
     public List<SchemaProvider> getProviders() {
         if(providers==null) {
             providers = new ArrayList();
-            Iterator iter = Service.providers(SchemaProvider.class, Thread.currentThread().getContextClassLoader());
+            Iterator iter = Service.providers(SchemaProvider.class, SchemaConf.class.getClassLoader());
             while(iter.hasNext()) {
                 SchemaProvider sp = (SchemaProvider)iter.next();
                 sp.setSchemaManager( schemaManager );

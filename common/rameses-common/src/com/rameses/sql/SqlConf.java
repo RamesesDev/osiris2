@@ -27,7 +27,7 @@ public class SqlConf {
     
     public void load() {
         providers = new Hashtable();
-        Iterator iter = Service.providers(  SqlUnitProvider.class, Thread.currentThread().getContextClassLoader());
+        Iterator iter = Service.providers(  SqlUnitProvider.class, getClass().getClassLoader());
         while(iter.hasNext()) {
             SqlUnitProvider p = (SqlUnitProvider)iter.next();
             p.setConf(this);

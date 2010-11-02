@@ -23,7 +23,7 @@ public class CustomSqlResource implements SqlUnitResourceProvider {
     }
     
     public InputStream getResource(String name) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = getClass().getClassLoader();
         //if inputstream cannot be found by the providers, try classpath
         String fileName = "META-INF/sqld/" + name;
         InputStream is = classLoader.getResourceAsStream(fileName);

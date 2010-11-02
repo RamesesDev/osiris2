@@ -20,7 +20,7 @@ public abstract class CacheProvider {
     private static CacheProvider instance;
     
     public static CacheProvider getInstance() {
-        return getInstance(Thread.currentThread().getContextClassLoader());
+        return getInstance(CacheProvider.class.getClassLoader());
     }
     
     public static CacheProvider getInstance(ClassLoader classLoader) {

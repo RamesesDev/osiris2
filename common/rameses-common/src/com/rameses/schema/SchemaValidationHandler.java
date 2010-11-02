@@ -64,7 +64,7 @@ public class SchemaValidationHandler implements SchemaHandler {
         
         if(fieldValidators==null) {
             fieldValidators = new ArrayList();
-            Iterator iter = Service.providers(SimpleFieldValidator.class, Thread.currentThread().getContextClassLoader());
+            Iterator iter = Service.providers(SimpleFieldValidator.class, getClass().getClassLoader());
             try {
                 while(iter.hasNext()) {
                     SimpleFieldValidator d = (com.rameses.schema.SimpleFieldValidator)iter.next();

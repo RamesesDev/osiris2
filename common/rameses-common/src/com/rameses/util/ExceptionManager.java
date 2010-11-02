@@ -33,7 +33,7 @@ public final class ExceptionManager {
     public boolean handleError(Exception e) {
         if(errorHandlers==null) {
             errorHandlers = new ArrayList();
-            Iterator<ExceptionHandler> iter = Service.providers(ExceptionHandler.class, Thread.currentThread().getContextClassLoader());
+            Iterator<ExceptionHandler> iter = Service.providers(ExceptionHandler.class, getClass().getClassLoader());
             while(iter.hasNext()) {
                 errorHandlers.add(iter.next());
             }

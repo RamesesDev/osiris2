@@ -11,6 +11,7 @@ package com.rameses.rcp.common;
 
 import java.rmi.server.UID;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class Node {
     private boolean dynamic;
     private boolean leaf;
     private String icon;
-    private Map properties;
+    private Map properties = new HashMap();
     private boolean loaded;
     
     private List<NodeListener> listeners = new ArrayList();
@@ -137,5 +138,9 @@ public class Node {
         this.loaded = loaded;
     }
     //</editor-fold>
+
+    public void setProperties(Map properties) {
+        this.properties = properties;
+    }
     
 }
