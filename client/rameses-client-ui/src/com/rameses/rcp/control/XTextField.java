@@ -26,9 +26,10 @@ import javax.swing.JTextField;
  */
 public class XTextField extends JTextField implements UIInput, Validatable, ActiveControl {
     
+    protected Binding binding;
+    
     private int index;
     private String[] depends = new String[]{};
-    private Binding binding;
     private boolean nullWhenEmpty = true;
     private boolean readonly;
     private boolean showHint;

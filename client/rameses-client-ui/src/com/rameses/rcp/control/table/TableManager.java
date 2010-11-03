@@ -7,6 +7,7 @@
 
 package com.rameses.rcp.control.table;
 
+import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.XCheckBox;
@@ -53,7 +54,7 @@ import javax.swing.table.TableCellRenderer;
 
 public final class TableManager {
     
-    public static final Insets CELL_MARGIN = new Insets(1, 3, 1, 1);
+    public static final Insets CELL_MARGIN = new Insets(1, 5, 1, 5);
     public static final Color FOCUS_BG = new Color(254, 255, 208);
     public static final String HIDE_ON_ENTER = "hide.on.enter";
     
@@ -138,7 +139,9 @@ public final class TableManager {
         
         String type = col.getType()+"";
         if ( editor instanceof JCheckBox ) {
-            ((JCheckBox) editor).setHorizontalAlignment(SwingConstants.CENTER);
+            JCheckBox jcb = (JCheckBox) editor;
+            jcb.setHorizontalAlignment(SwingConstants.CENTER);
+            jcb.setBorderPainted(true);
             
         } else if ( editor instanceof XNumberField ) {
             XNumberField xnf = (XNumberField) editor;
@@ -170,7 +173,7 @@ public final class TableManager {
         if ( col.getAlignment() != null && editor instanceof JTextField ) {
             JTextField jtf = (JTextField) editor;
             if ( "right".equals(col.getAlignment().toLowerCase()) )
-                jtf.setHorizontalAlignment(SwingConstants.LEFT);
+                jtf.setHorizontalAlignment(SwingConstants.RIGHT);
             else if ( "center".equals(col.getAlignment().toLowerCase()))
                 jtf.setHorizontalAlignment(SwingConstants.CENTER);
             else if ( "left".equals(col.getAlignment().toLowerCase()) )
@@ -190,8 +193,14 @@ public final class TableManager {
             }
             
         } else {
-            Border b = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right);
-            editor.setBorder( b );
+            //border support
+            Border inner = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right);
+            Border border = UIManager.getBorder("Table.focusSelectedCellHighlightBorder");
+            if (border == null) {
+                border = UIManager.getBorder("Table.focusCellHighlightBorder");
+            }
+            
+            editor.setBorder(BorderFactory.createCompoundBorder(border, inner));
         }
     }
     //</editor-fold>
@@ -241,13 +250,13 @@ public final class TableManager {
     //<editor-fold defaultstate="collapsed" desc="  AbstractRenderer (class)  ">
     private static abstract class AbstractRenderer implements TableCellRenderer {
         
-        public abstract JComponent getComponent();
+        public abstract JComponent getComponent(JTable table, int row, int column);
         
         public abstract void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column);
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             TableComponent xtable = (TableComponent) table;
-            JComponent comp = getComponent();
+            JComponent comp = getComponent(table, row, column);
             comp.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
             comp.setFont(table.getFont());
             
@@ -300,6 +309,19 @@ public final class TableManager {
                 }
             }
             
+            //border support
+            Border inner = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right);
+            Border border = BorderFactory.createEmptyBorder(1,1,1,1);
+            if (hasFocus) {
+                if (isSelected) {
+                    border = UIManager.getBorder("Table.focusSelectedCellHighlightBorder");
+                }
+                if (border == null) {
+                    border = UIManager.getBorder("Table.focusCellHighlightBorder");
+                }
+            }
+            comp.setBorder(BorderFactory.createCompoundBorder(border, inner));
+            
             refresh(table, value, isSelected, hasFocus, row, column);
             return comp;
         }
@@ -314,10 +336,12 @@ public final class TableManager {
         
         StringRenderer() {
             label = new JLabel();
-            label.setVerticalAlignment(SwingConstants.TOP);
+            label.setVerticalAlignment(SwingConstants.CENTER);
         }
         
-        public JComponent getComponent() { return label; }
+        public JComponent getComponent(JTable table, int row, int column) {
+            return label;
+        }
         
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
             TableComponent tc = (TableComponent) table;
@@ -355,7 +379,7 @@ public final class TableManager {
             //set alignment if it is specified in the Column model
             if ( c.getAlignment() != null ) {
                 if ( "right".equals(c.getAlignment().toLowerCase()) )
-                    label.setHorizontalAlignment(SwingConstants.LEFT);
+                    label.setHorizontalAlignment(SwingConstants.RIGHT);
                 else if ( "center".equals(c.getAlignment().toLowerCase()))
                     label.setHorizontalAlignment(SwingConstants.CENTER);
                 else if ( "left".equals(c.getAlignment().toLowerCase()) )
@@ -379,15 +403,29 @@ public final class TableManager {
     private static class BooleanRenderer extends AbstractRenderer {
         
         private JCheckBox component;
+        private JLabel empty;
         
         BooleanRenderer() {
             component = new JCheckBox();
             component.setHorizontalAlignment(SwingConstants.CENTER);
+            component.setBorderPainted(true);
+            
+            //empty renderer when row object is null
+            empty = new JLabel("");
         }
         
-        public JComponent getComponent() { return component; }
+        public JComponent getComponent(JTable table, int row, int column) {
+            AbstractListModel alm = ((TableComponent) table).getListModel();
+            if ( alm.getItemList().get(row).getItem() == null )
+                return empty;
+                
+            return component;
+        }
         
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
+            AbstractListModel alm = ((TableComponent) table).getListModel();
+            if ( alm.getItemList().get(row).getItem() == null ) return;
+            
             component.setSelected("true".equals(value+""));
         }
     }

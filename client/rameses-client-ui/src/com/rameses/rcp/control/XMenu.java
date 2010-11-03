@@ -13,6 +13,11 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.BorderLayout;
+import java.awt.LayoutManager;
+import java.beans.Beans;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 public class XMenu extends JPanel implements UIControl {
@@ -27,8 +32,18 @@ public class XMenu extends JPanel implements UIControl {
     private Node selectedNode;
     
     public XMenu() {
+        super.setLayout(new BorderLayout());
+        setOpaque(false);
+        
+        if ( Beans.isDesignTime() ) {
+            JMenuBar jmb = new JMenuBar();
+            jmb.add(new JMenu("XMenu1"));
+            add(jmb);
+        }
         
     }
+
+    public void setLayout(LayoutManager mgr) {;}
     
     public String[] getDepends() {
         return depends;

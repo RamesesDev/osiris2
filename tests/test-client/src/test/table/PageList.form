@@ -67,6 +67,7 @@
     </Component>
     <Component class="com.rameses.rcp.control.XTable" name="xTable1">
       <Properties>
+        <Property name="columnMargin" type="int" value="20"/>
         <Property name="handler" type="java.lang.String" value="handler"/>
       </Properties>
     </Component>

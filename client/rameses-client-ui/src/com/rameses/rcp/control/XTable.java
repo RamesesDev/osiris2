@@ -54,9 +54,10 @@ import javax.swing.UIManager;
 
 public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
-    private TableComponent table = new TableComponent();
-    private ListScrollBar scrollBar = new ListScrollBar();
-    private RowHeaderView rowHeaderView = new RowHeaderView();
+    private TableComponent table;
+    private ListScrollBar scrollBar;
+    private RowHeaderView rowHeaderView;
+    private JScrollPane scrollPane;
     
     private AbstractListModel listModel;
     private String[] depends;
@@ -74,14 +75,15 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
     private void init() {
-        JScrollPane jsp = new JScrollPane(table);
-        jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-        jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jsp.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
-        jsp.setRowHeaderView(rowHeaderView);
-        jsp.setBorder(BorderFactory.createEmptyBorder());
+        table = new TableComponent();
+        scrollBar = new ListScrollBar();
         
-        jsp.addMouseWheelListener(new MouseWheelListener() {
+        //--create and decorate scrollpane for the JTable
+        scrollPane = new JScrollPane(table);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.addMouseWheelListener(new MouseWheelListener() {
             public void mouseWheelMoved(MouseWheelEvent e) {
                 int rotation = e.getWheelRotation();
                 if ( rotation == 0 ) return;
@@ -94,36 +96,50 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         });
         
         super.setLayout(new BorderLayout());
-        add(jsp, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
         add(new ScrollBarPanel(scrollBar), BorderLayout.EAST);
         setBorder(new TableBorder());
         
-        Color bg = (Color) UIManager.get("Table.evenBackground");
-        if ( bg == null ) bg = Color.WHITE;
-        table.setEvenBackground(bg);
+        //--default table properties
+        setShowRowHeader(false);
+        setShowHorizontalLines(false);
+        setRowMargin(0);
+        setShowVerticalLines(true);
+        setAutoResize(true);
         
-        Color fg = (Color) UIManager.get("Table.evenForeground");
-        if ( fg != null ) table.setEvenForeground(fg);
+        if ( table.getEvenBackground() == null ) {
+            Color bg = (Color) UIManager.get("Table.evenBackground");
+            if ( bg == null ) bg = table.getBackground();
+            table.setEvenBackground(bg);
+        }
         
-        bg = (Color) UIManager.get("Table.oddBackground");
-        if ( bg == null ) bg = new Color(225, 232, 246);
-        table.setOddBackground(bg);
+        if ( table.getEvenForeground() == null ) {
+            Color fg = (Color) UIManager.get("Table.evenForeground");
+            if ( fg != null ) table.setEvenForeground(fg);
+        }
         
-        fg = (Color) UIManager.get("Table.oddForeground");
-        if ( fg != null ) table.setOddForeground(fg);
+        if ( table.getOddBackground() == null ) {
+            Color bg = (Color) UIManager.get("Table.oddBackground");
+            if ( bg == null ) bg = new Color(225, 232, 246);
+            table.setOddBackground(bg);
+        }
         
+        if ( table.getOddForeground() == null ) {
+            Color fg = (Color) UIManager.get("Table.oddForeground");
+            if ( fg != null ) table.setOddForeground(fg);
+        }
+        
+        //--design time display
         if ( Beans.isDesignTime() ) {
-            rowHeaderView.setRowCount(1);
+            if ( rowHeaderView != null )
+                rowHeaderView.setRowCount(1);
+            
             setPreferredSize(new Dimension(200,80));
             table.setModel(new javax.swing.table.DefaultTableModel(
                     new Object [][] { {null, null} },
                     new String [] { "Title 1", "Title 2" }
             ));
         }
-        
-        table.setAutoResize(true);
-        table.getColumnModel().setColumnMargin(0);
-        table.setRowMargin(0);
     }
     //</editor-fold>
     
@@ -170,7 +186,9 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                 table.setListener(this);
                 table.setBinding(binding);
                 scrollBar.setListModel(listModel);
-                rowHeaderView.setRowCount( listModel.getRows() );
+                
+                if ( rowHeaderView != null )
+                    rowHeaderView.setRowCount( listModel.getRows() );
             }
             
         }
@@ -219,15 +237,19 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
             //we don't need to add entry to change log and refresh the table
             UIInputUtil.updateBeanValue(this, false, false);
         }
-        rowHeaderView.clearEditing();
+        
+        if ( rowHeaderView != null )
+            rowHeaderView.clearEditing();
     }
     
     public void editCellAt(int rowIndex, int colIndex) {
-        rowHeaderView.editRow(rowIndex);
+        if ( rowHeaderView != null )
+            rowHeaderView.editRow(rowIndex);
     }
     
     public void cancelRowEdit() {
-        rowHeaderView.clearEditing();
+        if ( rowHeaderView != null )
+            rowHeaderView.clearEditing();
     }
     //</editor-fold>
     
@@ -273,19 +295,19 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setLayout(LayoutManager mgr) {;}
     
-    public String getHandler() { return handler; }    
+    public String getHandler() { return handler; }
     public void setHandler(String handler) { this.handler = handler; }
     
-    public boolean isDynamic() { return dynamic; }    
+    public boolean isDynamic() { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
     
-    public void setShowHorizontalLines(boolean show) { table.setShowHorizontalLines(show); }    
+    public void setShowHorizontalLines(boolean show) { table.setShowHorizontalLines(show); }
     public boolean isShowHorizontalLines() { return table.getShowHorizontalLines(); }
     
-    public void setShowVerticalLines(boolean show) { table.setShowVerticalLines(show); }    
+    public void setShowVerticalLines(boolean show) { table.setShowVerticalLines(show); }
     public boolean isShowVerticalLines() { return table.getShowVerticalLines(); }
     
-    public void setAutoResize(boolean autoResize) { table.setAutoResize(autoResize); }    
+    public void setAutoResize(boolean autoResize) { table.setAutoResize(autoResize); }
     public boolean isAutoResize() { return table.isAutoResize(); }
     
     public void setRequestFocus(boolean focus) {
@@ -294,33 +316,48 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public void requestFocus() { table.requestFocus(); }
     
-    public void focusGained(FocusEvent e) { table.grabFocus(); }    
+    public void focusGained(FocusEvent e) { table.grabFocus(); }
     public void focusLost(FocusEvent e) {}
     
-    public Color getEvenBackground() { return table.getEvenBackground(); }    
+    public Color getEvenBackground() { return table.getEvenBackground(); }
     public void setEvenBackground(Color evenBackground) { table.setEvenBackground( evenBackground ); }
     
-    public Color getOddBackground() { return table.getOddBackground(); }    
+    public Color getOddBackground() { return table.getOddBackground(); }
     public void setOddBackground(Color oddBackground) { table.setOddBackground( oddBackground ); }
     
-    public Color getErrorBackground() { return table.getErrorBackground(); }    
+    public Color getErrorBackground() { return table.getErrorBackground(); }
     public void setErrorBackground(Color errorBackground) { table.setErrorBackground( errorBackground ); }
     
-    public Color getEvenForeground() { return table.getEvenForeground(); }    
+    public Color getEvenForeground() { return table.getEvenForeground(); }
     public void setEvenForeground(Color evenForeground) { table.setEvenForeground( evenForeground ); }
     
-    public Color getOddForeground() { return table.getOddForeground(); }    
+    public Color getOddForeground() { return table.getOddForeground(); }
     public void setOddForeground(Color oddForeground) { table.setOddForeground( oddForeground ); }
     
-    public Color getErrorForeground() { return table.getErrorForeground(); }    
+    public Color getErrorForeground() { return table.getErrorForeground(); }
     public void setErrorForeground(Color errorForeground) { table.setErrorForeground( errorForeground ); }
     
     public boolean isImmediate() { return true; }
     
-    public boolean isShowRowHeader() { return showRowHeader; }    
-    public void setShowRowHeader(boolean showRowHeader) { 
-        this.showRowHeader = showRowHeader; 
+    public boolean isShowRowHeader() { return showRowHeader; }
+    public void setShowRowHeader(boolean showRowHeader) {
+        this.showRowHeader = showRowHeader;
+        
+        if ( showRowHeader ) {
+            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
+            scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
+            rowHeaderView.setRowCount( table.getRowCount() );
+        } else {
+            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, null);
+            scrollPane.setRowHeaderView( (rowHeaderView = null) );
+        }
     }
+    
+    public int getColumnMargin() { return table.getColumnModel().getColumnMargin(); }
+    public void setColumnMargin(int margin) { table.getColumnModel().setColumnMargin(margin); }
+    
+    public int getRowMargin() { return table.getRowMargin(); }
+    public void setRowMargin(int margin) { table.setRowMargin(margin); }
     //</editor-fold>
     
     

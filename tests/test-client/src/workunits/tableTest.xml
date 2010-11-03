@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker folderid="/menu/file" caption="SubList"/>
-        <invoker type="toolbar" caption="SubList 1" permission="checkMcAddr"/>
+        <invoker folderid="/menu/file" caption="Table Test"/>
     </invokers>
     
     <code>
@@ -12,7 +11,7 @@
         import com.rameses.rcp.common.*;
         import test.model.*;
                 
-        public class SubListTestController  {
+        public class TableTestController  {
         
             def selectedItem;
             
@@ -21,29 +20,21 @@
             }
         
             def handler = [
-                createItem: { [:] },
                 fetchList: { data },
-                onAddItem: { data.add(it) },
-
-                onRemoveItem: {
-                    def members = selectedGroup?.item?.members;
-                    members?.remove( it );
-                },
 
                 getColumns: {
                     return [
                         new Column(name: "rownum", primary: true, width: 30),
-                        new Column(name: "item.name", caption: "Name", alignment: 'right', editable: true),
-                        new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
+                        new Column(name: "item.name", caption: "Name", alignment: 'right'),
+                        new Column(name: "item.balance", caption: "Balance", type: "decimal"),
                         new Column(name: "item.address", caption: "Address"),
                         new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date"),
-                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, items: "root.empTypes"),
-                        new Column(name: "item.single", caption: "Single", type: "checkbox", editable: true),
-                        new Column(name: "item.dummy", caption: " ")
+                        new Column(name: "item.empType", caption: "Employee Type"),
+                        new Column(name: "item.single", caption: "Single", type: "checkbox")
                     ];
                 }
 
-            ] as SubListModel;
+            ] as PageListModel;
             
             def data = [
                 [name:"11", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50], 
@@ -52,13 +43,7 @@
                 [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520],
                 [name:"21", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
                 [name:"22", address:"CEBU CITY", single: null, date: new Date(), balance: 2500], 
-                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700],
-                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520],
-                [name:"21", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"22", address:"CEBU CITY", single: null, date: new Date(), balance: 2500], 
-                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700]
+                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50]
 
             ];
             
@@ -74,6 +59,6 @@
     </code>
     
     <pages>
-        <page template="test.table.SubList"/>
+        <page template="test.table.TableTest"/>
     </pages>
 </workunit>

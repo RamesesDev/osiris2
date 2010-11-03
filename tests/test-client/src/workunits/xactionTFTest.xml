@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XActionTextField Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class XActionTFTestController  {
+        
+            @Binding
+            def binding;
+        
+            def entity = [:];
+            def handler;
+            def selected;
+            
+            def list = ['JAYROME VERGARA', 'ARNEL RETIZA', 'MIKE RAMOS', 'ROLANDO EVALLE'];
+            
+            def search() {
+                return new PopupOpener(name: 'xactionTFTest', outcome: 'popup', params: [handler: { o ->
+                    entity.taxpayer = o;
+                    binding.refresh('entity.taxpayer');
+                }]);
+            }
+            
+            def select() {
+                handler( selected );
+                return '_close';
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test2.XActionTFTest"/>
+        <page name="popup" template="test2.XActionTFTestPopup"/>
+    </pages>
+</workunit>

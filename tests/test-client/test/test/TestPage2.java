@@ -1,6 +1,9 @@
 package test;
 
-import javax.swing.JLabel;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.Action;
+
 /*
  * TestPage2.java
  *
@@ -17,47 +20,69 @@ public class TestPage2 extends javax.swing.JPanel {
     
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        formPanel1 = new com.rameses.rcp.util.FormPanel();
+        xTextField1 = new com.rameses.rcp.control.XTextField();
+        xDateField1 = new com.rameses.rcp.control.XDateField();
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/rameses/rcp/icons/loading32.gif")));
-        jButton1.setText("jButton1");
-        jButton1.setBorderPainted(false);
-        jButton1.setContentAreaFilled(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setIconTextGap(5);
-        jButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/com/rameses/rcp/icons/default.png")));
-        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/com/rameses/rcp/icons/search.png")));
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        formPanel1.setLayout(null);
 
-        jButton2.setText("jButton2");
+        com.rameses.rcp.control.border.XTitledBorder xTitledBorder1 = new com.rameses.rcp.control.border.XTitledBorder();
+        xTitledBorder1.setOutline(new java.awt.Color(153, 153, 153));
+        xTitledBorder1.setTitleBackground(new java.awt.Color(204, 204, 204));
+        formPanel1.setBorder(xTitledBorder1);
+        com.rameses.rcp.control.border.XUnderlineBorder xUnderlineBorder1 = new com.rameses.rcp.control.border.XUnderlineBorder();
+        xUnderlineBorder1.setLineColor(new java.awt.Color(204, 204, 255));
+        formPanel1.setCaptionBorder(xUnderlineBorder1);
+        xTextField1.setText("xTextField1");
+        formPanel1.add(xTextField1);
+        xTextField1.setBounds(80, 0, 72, 19);
+
+        xDateField1.setText("xDateField1");
+        formPanel1.add(xDateField1);
+        xDateField1.setBounds(80, 0, 78, 19);
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(formPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 147, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
+        );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jButton1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jButton2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .add(209, 209, 209))
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(43, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jButton1)
-                .add(33, 33, 33)
-                .add(jButton2)
-                .addContainerGap(210, Short.MAX_VALUE))
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(72, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private com.rameses.rcp.util.FormPanel formPanel1;
+    private javax.swing.JPanel jPanel1;
+    private com.rameses.rcp.control.XDateField xDateField1;
+    private com.rameses.rcp.control.XTextField xTextField1;
     // End of variables declaration//GEN-END:variables
     
 }

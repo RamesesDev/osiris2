@@ -3,6 +3,7 @@ package com.rameses.rcp.util;
 import com.rameses.rcp.common.FormControl;
 import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.control.XLabel;
+import com.rameses.rcp.control.border.XUnderlineBorder;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
@@ -40,13 +41,15 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
     private Insets padding;
     private Border origBorder;
     
+    //caption options
     private int captionWidth = 80;
     private String captionVAlignment = UIConstants.TOP;
     private String captionHAlignment = UIConstants.LEFT;
     private String captionOrientation = UIConstants.LEFT;
     private Font captionFont;
     private Color captionForeground;
-    private Insets captionPadding = new Insets(0,0,0,5);
+    private Border captionBorder = new XUnderlineBorder();
+    private Insets captionPadding = new Insets(0,1,0,5);
     private boolean addCaptionColon = true;
     
     private Binding binding;
@@ -130,7 +133,7 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  UIComposite properties  ">
+    //<editor-fold defaultstate="collapsed" desc="  control support properties  ">
     public List<? extends UIControl> getControls() {
         return controls;
     }
@@ -164,6 +167,58 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
     
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
+    }
+    
+    public void validateInput() {
+        actionMessage.clearMessages();
+        for(UIControl c: controls) {
+            if( !(c instanceof Validatable) ) continue;
+            
+            Validatable v = (Validatable) c;
+            v.validateInput();
+            if( v.getActionMessage().hasMessages() )
+                actionMessage.addMessage(v.getActionMessage());
+        }
+    }
+    
+    public ActionMessage getActionMessage() {
+        return actionMessage;
+    }
+    
+    public void requestFocus() {
+        focusFirstInput();
+    }
+    
+    public boolean focusFirstInput() {
+        for(UIControl c: controls) {
+            if( actionMessage.hasMessages() ) {
+                if( !(c instanceof Validatable) ) continue;
+                
+                Validatable v = (Validatable) c;
+                v.validateInput();
+                if( v.getActionMessage().hasMessages() ) {
+                    ((Component) v).requestFocus();
+                    return true;
+                }
+            } else if ( c instanceof UICompositeFocusable ) {
+                UICompositeFocusable uis = (UICompositeFocusable) c;
+                if ( uis.focusFirstInput() ) return true;
+                
+            } else if ( c instanceof UIInput ) {
+                UIInput u = (UIInput) c;
+                JComponent jc = (JComponent) c;
+                if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isVisible())
+                    continue;
+                
+                jc.requestFocus();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isHasNonDynamicContents() {
+        return hasNonDynamicContents;
     }
     //</editor-fold>
     
@@ -302,17 +357,16 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
     public boolean isAddCaptionColon() { return addCaptionColon; }
     public void setAddCaptionColon(boolean addCaptionColon) {
         this.addCaptionColon = addCaptionColon;
-        updateLabels();
+        updateLabelsCaption();
     }
     
-    private void updateLabels() {
+    private void updateLabelsCaption() {
         for(Component c: getComponents()) {
             if ( c instanceof ItemPanel ) {
                 XLabel lbl = ((ItemPanel)c).getLabelComponent();
                 lbl.setAddCaptionColon(addCaptionColon);
             }
         }
-        revalidate();
     }
     
     public Font getCaptionFont() { return captionFont; }
@@ -328,7 +382,6 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
                 lbl.setFont(captionFont);
             }
         }
-        revalidate();
     }
     
     public Color getCaptionForeground() { return captionForeground; }
@@ -344,7 +397,24 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
                 lbl.setForeground(captionForeground);
             }
         }
-        revalidate();
+    }
+    
+    public Border getCaptionBorder() {
+        return captionBorder;
+    }
+    
+    public void setCaptionBorder(Border captionBorder) {
+        this.captionBorder = captionBorder;
+        updateLabelsBorder();
+    }
+    
+    private void updateLabelsBorder() {
+        for(Component c: getComponents()) {
+            if ( c instanceof ItemPanel ) {
+                XLabel lbl = ((ItemPanel)c).getLabelComponent();
+                lbl.setBorder(captionBorder);
+            }
+        }
     }
     
     public void setRequired(boolean required) {}
@@ -352,58 +422,6 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
         return property.isRequired();
     }
     
-    
-    public void validateInput() {
-        actionMessage.clearMessages();
-        for(UIControl c: controls) {
-            if( !(c instanceof Validatable) ) continue;
-            
-            Validatable v = (Validatable) c;
-            v.validateInput();
-            if( v.getActionMessage().hasMessages() )
-                actionMessage.addMessage(v.getActionMessage());
-        }
-    }
-    
-    public ActionMessage getActionMessage() {
-        return actionMessage;
-    }
-    
-    public void requestFocus() {
-        focusFirstInput();
-    }
-    
-    public boolean focusFirstInput() {
-        for(UIControl c: controls) {
-            if( actionMessage.hasMessages() ) {
-                if( !(c instanceof Validatable) ) continue;
-                
-                Validatable v = (Validatable) c;
-                v.validateInput();
-                if( v.getActionMessage().hasMessages() ) {
-                    ((Component) v).requestFocus();
-                    return true;
-                }
-            } else if ( c instanceof UICompositeFocusable ) {
-                UICompositeFocusable uis = (UICompositeFocusable) c;
-                if ( uis.focusFirstInput() ) return true;
-                
-            } else if ( c instanceof UIInput ) {
-                UIInput u = (UIInput) c;
-                JComponent jc = (JComponent) c;
-                if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isVisible())
-                    continue;
-                
-                jc.requestFocus();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isHasNonDynamicContents() {
-        return hasNonDynamicContents;
-    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" Layout (Class) ">

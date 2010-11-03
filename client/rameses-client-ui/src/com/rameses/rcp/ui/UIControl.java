@@ -8,6 +8,9 @@ import com.rameses.rcp.framework.*;
  */
 public interface UIControl extends Comparable {
     
+    static final long serialVersionUID = 1L;
+    
+    
     String getName();
     
     /**

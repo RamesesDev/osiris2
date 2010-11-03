@@ -7,7 +7,7 @@
     <code>
         <![CDATA[
         
-        import com.rameses.common.annotations.*;
+        import com.rameses.rcp.annotations.*;
         import com.rameses.rcp.common.*;
         
                 

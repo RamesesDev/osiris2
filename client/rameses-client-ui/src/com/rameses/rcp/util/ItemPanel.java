@@ -69,6 +69,7 @@ class ItemPanel extends JPanel {
         label.setAddCaptionColon(parent.isAddCaptionColon());
         label.setFont(parent.getCaptionFont());
         label.setForeground(parent.getCaptionForeground());
+        label.setBorder(parent.getCaptionBorder());
         add(label, "label");
         
         if ( container != null ) {
