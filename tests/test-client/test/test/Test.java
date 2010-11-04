@@ -1,4 +1,5 @@
 package test;
+import com.rameses.rcp.framework.ChangeLog;
 import java.text.ParseException;
 import javax.swing.JDialog;
 import junit.framework.*;
@@ -24,6 +25,8 @@ public class Test extends TestCase {
 //        System.out.println("#eef433".matches("#[a-f\\d]{3,6}") );
 //    }
     
+
+    
     public void test2() throws ParseException {
         JDialog d = new JDialog();
         d.setModal(true);
@@ -31,6 +34,9 @@ public class Test extends TestCase {
         d.pack();
         d.setLocationRelativeTo(null);
         d.setVisible(true);
+        
+        ChangeLog log;
+        log.h
     }
     
 }
