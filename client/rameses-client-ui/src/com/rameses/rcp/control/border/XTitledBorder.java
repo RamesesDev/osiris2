@@ -38,7 +38,7 @@ public class XTitledBorder extends AbstractBorder {
         background = Color.WHITE;
         titleBackground = new Color(0,0,153);
         titleForeground = Color.WHITE;
-        outline = Color.BLACK;
+        outline = Color.GRAY;
         outlineShadow = Color.GRAY;
     }
     
@@ -82,7 +82,7 @@ public class XTitledBorder extends AbstractBorder {
         poly.addPoint(x2+10, y);
         
         //shadow (show size is 2)
-        g2.setColor(outlineShadow);
+        g2.setColor(new Color(shadow.getRed(), shadow.getGreen(), shadow.getBlue(), 60));
         g2.drawLine(x+1, y2+1, x2-2, y2+1);
         
         g2.setColor(new Color(shadow.getRed(), shadow.getGreen(), shadow.getBlue(), 40));

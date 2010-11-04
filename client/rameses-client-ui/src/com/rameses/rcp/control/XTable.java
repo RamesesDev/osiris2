@@ -101,6 +101,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         setBorder(new TableBorder());
         
         //--default table properties
+        setGridColor(new Color(217,216,216));
         setShowRowHeader(false);
         setShowHorizontalLines(false);
         setRowMargin(0);
@@ -358,6 +359,9 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public int getRowMargin() { return table.getRowMargin(); }
     public void setRowMargin(int margin) { table.setRowMargin(margin); }
+    
+    public Color getGridColor() { return table.getGridColor(); }
+    public void setGridColor(Color color) { table.setGridColor(color); }
     //</editor-fold>
     
     

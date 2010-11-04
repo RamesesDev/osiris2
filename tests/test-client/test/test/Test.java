@@ -27,7 +27,7 @@ public class Test extends TestCase {
     public void test2() throws ParseException {
         JDialog d = new JDialog();
         d.setModal(true);
-        d.setContentPane(new TestPage2());
+        d.setContentPane(new TestPage());
         d.pack();
         d.setLocationRelativeTo(null);
         d.setVisible(true);

@@ -68,7 +68,7 @@
             <Property name="captionBorder" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <PropertyBean type="com.rameses.rcp.control.border.XUnderlineBorder">
                 <Property name="lineColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="ff" green="cc" red="cc" type="rgb"/>
+                  <Color blue="d8" green="d8" red="d9" type="rgb"/>
                 </Property>
               </PropertyBean>
             </Property>

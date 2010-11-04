@@ -17,9 +17,11 @@ public class UILoaderStack extends Stack {
     
     private List loaders;
     private Object peek;
+    private boolean reloaded = false;
     
     public void setLoaders( List loaders ) {
         this.loaders = loaders;
+        this.reloaded = false;
     }
     
     public boolean empty() {
@@ -51,6 +53,15 @@ public class UILoaderStack extends Stack {
     public Object peek() {
         if( !loaders.isEmpty() ) {
             while(loaders.size()>0 && peek == null) {
+                OsirisSessionContext sessCtx = (OsirisSessionContext) OsirisContext.getSession();
+                
+                //if size is 1, this is the last loader usually the home page
+                //reload the menus/folders
+                if ( loaders.size() <= 1 && !reloaded ) {
+                    sessCtx.reload();
+                    reloaded = true;
+                }
+                
                 Invoker i = (Invoker) loaders.get(0);
                 String action = i.getAction();
                 String target = (String)i.getProperties().get("target");
@@ -58,7 +69,6 @@ public class UILoaderStack extends Stack {
                 ClientContext ctx = ClientContext.getCurrentContext();
                 
                 //check permission
-                OsirisSessionContext sessCtx = (OsirisSessionContext) OsirisContext.getSession();
                 if ( !sessCtx.checkPermission(i.getWorkunitid(), i.getPermission()) ) {
                     loaders.remove(0);
                     continue;
@@ -78,23 +88,14 @@ public class UILoaderStack extends Stack {
                 } else {
                     UIControllerContext uic = new UIControllerContext( c );
                     Object outcome = c.init( null, action );
-                    if ( !ValueUtil.isEmpty(outcome) && outcome instanceof String ) 
-                    {
-                        if ("_close".equals(outcome))
-                        {
-                            loaders.remove(0); 
-                            continue; 
-                        }    
-                        else     
+                    if ( !ValueUtil.isEmpty(outcome) && outcome instanceof String ) {
+                        if ("_close".equals(outcome)) {
+                            loaders.remove(0);
+                            continue;
+                        } else
                             uic.setCurrentView(outcome+"");
                     }
                     peek = uic;
-                    
-                    //if size is 1, this is the last loader usually the home page
-                    //reload the menus/folders
-                    if ( loaders.size() <= 1 ) {
-                        sessCtx.reload();
-                    }
                 }
             }
         }

@@ -34,7 +34,7 @@ import javax.swing.border.Border;
 
 public class FormPanel extends JPanel implements UIComposite, DynamicContainer, Validatable, ActiveControl, UIConstants {
     
-    private int cellspacing = 3;
+    private int cellspacing = 2;
     private Insets cellpadding = new Insets(0,0,0,0);
     private String orientation = UIConstants.VERTICAL;
     

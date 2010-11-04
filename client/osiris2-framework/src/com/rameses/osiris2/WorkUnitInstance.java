@@ -27,6 +27,8 @@ public class WorkUnitInstance implements Serializable {
     
     public WorkUnitInstance(WorkUnit workunit) {
         this.workunit = workunit;
+        this.id = workunit.getId();
+        this.title = workunit.getTitle();
         //set the current page as the default
         try {
             this.currentPage = getDefaultPage();

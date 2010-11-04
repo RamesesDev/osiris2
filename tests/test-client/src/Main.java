@@ -12,9 +12,9 @@ import javax.swing.UIManager;
 public class Main {
     
     public static void main(String[] args) throws Exception {        
-        try {
-            UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
-        } catch (Exception e) {;}
+//        try {
+//            UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
+//        } catch (Exception e) {;}
         
         Map m = new HashMap();
         m.put("default.host", "10.0.0.104:8080");

@@ -10,7 +10,6 @@ public class OsirisUIControllerProvider implements ControllerProvider {
     public UIController getController(String name) {
         SessionContext app = OsirisContext.getSession();
         WorkUnitInstance wi = app.getWorkUnit(name).newInstance();
-        //wi.setId(name);
         return new WorkUnitUIController( wi );
     }
     

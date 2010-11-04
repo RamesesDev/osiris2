@@ -32,7 +32,7 @@ public class TestPage2 extends javax.swing.JPanel {
         xTitledBorder1.setTitleBackground(new java.awt.Color(204, 204, 204));
         formPanel1.setBorder(xTitledBorder1);
         com.rameses.rcp.control.border.XUnderlineBorder xUnderlineBorder1 = new com.rameses.rcp.control.border.XUnderlineBorder();
-        xUnderlineBorder1.setLineColor(new java.awt.Color(204, 204, 255));
+        xUnderlineBorder1.setLineColor(new java.awt.Color(217, 216, 216));
         formPanel1.setCaptionBorder(xUnderlineBorder1);
         xTextField1.setText("xTextField1");
         formPanel1.add(xTextField1);

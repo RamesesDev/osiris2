@@ -26,7 +26,37 @@ public class PlatformImpl implements Platform {
     public PlatformImpl() {
     }
     
-    public void showStartupWindow(JComponent actionSource, JComponent comp, Map properties) { }
+    public void showStartupWindow(JComponent actionSource, JComponent comp, Map properties) {
+        String id = (String) properties.get("id");
+        if ( ValueUtil.isEmpty(id) )
+            throw new IllegalStateException("id is required for a page.");
+        
+        if ( windows.containsKey(id) ) return;
+        
+        String title = (String) properties.get("title");
+        if ( ValueUtil.isEmpty(title) ) title = id;
+        
+        String canClose = "false";
+        String modal = properties.get("modal")+"";
+        
+        JDialog parent = mainWindow.getComponent();
+        final PopupDialog d = new PopupDialog(parent);
+        d.setTitle(title);
+        d.setContentPane(comp);
+        d.setCanClose( !"false".equals(canClose) );
+        d.setId( id );
+        d.setPlatformImpl(this);
+        d.setModal(false);
+        d.pack();
+        d.setLocationRelativeTo(parent);
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                d.setVisible(true);
+            }
+        });
+        
+        windows.put(id, d);
+    }
     
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
         String id = (String) properties.get("id");
@@ -162,13 +192,13 @@ public class PlatformImpl implements Platform {
         }
         return msg;
     }
-
+    
     public void shutdown() {
         mainWindow.close();
     }
-
+    
     public void logoff() {
     }
-
+    
     
 }

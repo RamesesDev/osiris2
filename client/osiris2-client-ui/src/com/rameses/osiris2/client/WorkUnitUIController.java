@@ -1,7 +1,6 @@
 package com.rameses.osiris2.client;
 
 import com.rameses.rcp.framework.UIController;
-import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.Page;
 import com.rameses.osiris2.WorkUnitInstance;
 import com.rameses.rcp.util.ControlSupport;
@@ -19,8 +18,9 @@ public class WorkUnitUIController extends UIController {
     
     public WorkUnitUIController(WorkUnitInstance wu) {
         this.workunit = wu;
-        this.id = workunit.getId();
-        this.title = workunit.getTitle();
+        this.id = wu.getId();
+        this.name = wu.getId();
+        this.title = wu.getTitle();
     }
     
     public Object getCodeBean() {
