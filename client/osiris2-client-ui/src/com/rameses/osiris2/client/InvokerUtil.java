@@ -275,6 +275,10 @@ public final class InvokerUtil {
         return opener;
     }
     
+    public static List lookupOpeners( String invType) {
+        return lookupOpeners( invType, null );
+    }
+    
     public static List lookupOpeners( String invType, Map params ) {
         List<Invoker> list = lookup( invType );
         if ( list.size() ==0 ) {
