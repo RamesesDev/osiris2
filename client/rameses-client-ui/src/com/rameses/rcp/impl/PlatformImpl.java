@@ -199,6 +199,12 @@ public class PlatformImpl implements Platform {
     
     public void logoff() {
     }
+
+    public void lock() {
+    }
+
+    public void unlock() {
+    }
     
     
 }

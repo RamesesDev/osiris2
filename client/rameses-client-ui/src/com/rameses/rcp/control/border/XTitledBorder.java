@@ -16,7 +16,6 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
-import javax.swing.UIManager;
 import javax.swing.border.AbstractBorder;
 
 
@@ -27,19 +26,19 @@ public class XTitledBorder extends AbstractBorder {
     private Color background;
     private Color titleBackground;
     private Color titleForeground;
-    private Insets titlePadding = new Insets(1,5,1,5);
+    private Insets titlePadding = new Insets(2,4,2,4);
     private Font font;
     private Color outline;
     private Color outlineShadow;
     
     
     public XTitledBorder() {
-        font = UIManager.getFont("TitledBorder.font");
-        background = Color.WHITE;
-        titleBackground = new Color(0,0,153);
+        font = new Font("Arial", Font.BOLD, 11);
+        background = new Color(232,232,226);
+        titleBackground = new Color(167,156,146);
         titleForeground = Color.WHITE;
-        outline = Color.GRAY;
-        outlineShadow = Color.GRAY;
+        outline = new Color(204,204,204);
+        outlineShadow = new Color(204,204,204);
     }
     
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {

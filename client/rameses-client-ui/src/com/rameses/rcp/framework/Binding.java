@@ -19,8 +19,11 @@ import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.ui.UICompositeFocusable;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -84,6 +87,11 @@ public class Binding {
      */
     private Map properties = new HashMap();
     
+    /**
+     * EventManager is used to register any event listener for a specified UIControl name
+     */
+    private EventManager eventManager = new EventManager();
+    
     
     public Binding() {}
     
@@ -104,7 +112,14 @@ public class Binding {
         return validators.remove(validator);
     }
     
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+    
+    
     //<editor-fold defaultstate="collapsed" desc="  control binding  ">
+    private ControlEventSupport support = new ControlEventSupport();
+    
     public void register( UIControl control ) {
         controls.add( control );
         if( control.getDepends() != null ) {
@@ -121,8 +136,15 @@ public class Binding {
         if( !ValueUtil.isEmpty(control.getName()) ) {
             controlsIndex.put(control.getName(), control);
         }
+        
+        //for control event management support
+        if ( control instanceof Component ) {
+            Component c = (Component) control;
+            c.addMouseListener(support);
+            c.addKeyListener(support);
+        }
     }
-
+    
     public void init() {
         if ( _initialized ) return;
         
@@ -582,6 +604,42 @@ public class Binding {
                     refresh();
                 }
             }
+        }
+        
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  ControlEventSupport (class)  ">
+    private class ControlEventSupport implements MouseListener, KeyListener {
+        
+        public void mouseClicked(MouseEvent e) {}
+        public void mousePressed(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
+        
+        public void mouseReleased(MouseEvent e) {
+            if ( e.getButton() == MouseEvent.BUTTON1 ) {
+                ControlEvent evt = createControlEvent(e);
+                evt.setEventName(ControlEvent.LEFT_CLICK);
+                eventManager.notify( evt.getSource(), evt);
+                
+            } else if ( e.getButton() == MouseEvent.BUTTON3 ) {
+                ControlEvent evt = createControlEvent(e);
+                evt.setEventName(ControlEvent.RIGHT_CLICK);
+                eventManager.notify( evt.getSource(), evt);
+            }
+        }
+        
+        public void keyTyped(KeyEvent e) {}
+        public void keyPressed(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) {}
+        
+        private ControlEvent createControlEvent(ComponentEvent e) {
+            Component c = (Component) e.getSource();
+            ControlEvent evt = new ControlEvent();
+            evt.setSource( c.getName() );
+            evt.setSourceEvent(e);
+            return evt;
         }
         
     }

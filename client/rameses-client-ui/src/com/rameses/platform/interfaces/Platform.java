@@ -30,5 +30,7 @@ public interface Platform {
     //platform management methods
     void shutdown();
     void logoff();
+    void lock();
+    void unlock();
     
 }

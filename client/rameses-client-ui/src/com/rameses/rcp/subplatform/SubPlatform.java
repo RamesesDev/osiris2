@@ -85,6 +85,12 @@ public class SubPlatform implements Platform {
     
     public void logoff() {
     }
+
+    public void lock() {
+    }
+
+    public void unlock() {
+    }
     
     
 }

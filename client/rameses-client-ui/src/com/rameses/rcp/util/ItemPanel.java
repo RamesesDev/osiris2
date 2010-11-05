@@ -11,6 +11,7 @@ import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
+import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -19,12 +20,15 @@ import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 
 class ItemPanel extends JPanel {
@@ -69,7 +73,10 @@ class ItemPanel extends JPanel {
         label.setAddCaptionColon(parent.isAddCaptionColon());
         label.setFont(parent.getCaptionFont());
         label.setForeground(parent.getCaptionForeground());
-        label.setBorder(parent.getCaptionBorder());
+        
+        if ( !ValueUtil.isEmpty(label.getText()) )
+            label.setBorder(parent.getCaptionBorder());
+        
         add(label, "label");
         
         if ( container != null ) {
@@ -112,6 +119,13 @@ class ItemPanel extends JPanel {
                 panel.revalidate();
             } else if ( "showCaption".equals(propName)) {
                 panel.revalidate();
+            } else if ( "caption".equals(propName) ) {
+                Border b = panel.getLabelComponent().getBorder();
+                if ( ValueUtil.isEmpty(value) && !(b instanceof EmptyBorder)) {
+                    panel.getLabelComponent().setBorder(BorderFactory.createEmptyBorder());
+                } else if ( !ValueUtil.isEqual(b, formPanel.getCaptionBorder()) ) {
+                    panel.getLabelComponent().setBorder(formPanel.getCaptionBorder());
+                }
             }
         }
         

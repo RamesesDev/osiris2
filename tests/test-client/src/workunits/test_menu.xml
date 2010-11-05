@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XMenu Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TestMenuController  {
+        
+            def text;
+            def table;
+            def list = [[name: 'arnel', address: 'cebu city'],[name: 'jay', address: 'negros oriental']];
+            
+            def tableHandler = [
+                getColumns: {
+                    return [
+                        new Column(name: 'item.name', caption: 'Name'),
+                        new Column(name: 'item.address', caption: 'Address')
+                    ];
+                },
+                fetchList: { return list; }
+            ] as SubListModel;
+            
+            def menuHandler = [
+                fetchNodes: {
+                    return [
+                        new Node('file', 'File'),
+                        new Node('txn', 'Transaction'),
+                        new Node('report', 'Reports'),
+                        new Node(id: 'hlp', caption: 'Help', leaf: true)
+                    ];
+                },
+                openLeaf: {
+                    MsgBox.alert('Selecting menu.');
+                }
+            ] as TreeNodeModel;
+            
+            def tblMenuHandler = [
+                fetchNodes: {
+                    return [
+                        new Node(id: 'add', caption: 'Add Row', leaf: true),
+                        new Node(id: 'rmv', caption: 'Insert Row', leaf: true),
+                        new Node(id: 'rmv', caption: 'Delete Row', leaf: true)
+                    ];
+                },
+                openLeaf: {
+                    MsgBox.alert('Selecting menu.');
+                }
+            ] as TreeNodeModel;
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test2.XMenuTest"/>
+    </pages>
+</workunit>

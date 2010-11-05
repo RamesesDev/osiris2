@@ -10,6 +10,7 @@ package com.rameses.rcp.constant;
 
 public interface UIConstants {
     
+    //alignment and orientation constants
     static final String TOP = "TOP";
     static final String RIGHT = "RIGHT";
     static final String BOTTOM = "BOTTOM";
@@ -17,5 +18,10 @@ public interface UIConstants {
     static final String CENTER = "CENTER";
     static final String VERTICAL = "VERTICAL";
     static final String HORIZONTAL = "HORIZONTAL";
+    
+    //position constants (Menu)
+    static final String MOUSE_POSITION = "MOUSE_POSITION";
+    static final String COCONTROL_POSITION = "CONTROL_POSITION";
+    static final String CURSOR_POSITION = "CURSOR_POSITION";
     
 }
