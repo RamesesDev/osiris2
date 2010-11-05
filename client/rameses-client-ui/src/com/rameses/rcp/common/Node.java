@@ -30,6 +30,7 @@ public class Node {
     private String icon;
     private Map properties = new HashMap();
     private boolean loaded;
+    private String mnemonic;
     
     private List<NodeListener> listeners = new ArrayList();
     
@@ -141,6 +142,14 @@ public class Node {
 
     public void setProperties(Map properties) {
         this.properties = properties;
+    }
+
+    public String getMnemonic() {
+        return mnemonic;
+    }
+
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
     }
     
 }

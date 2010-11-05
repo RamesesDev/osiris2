@@ -41,9 +41,12 @@ import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.TableComponent;
 import com.rameses.rcp.control.table.TableHeaderBorder;
+import com.rameses.rcp.ui.WrapperControl;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import javax.swing.BorderFactory;
@@ -52,7 +55,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
+public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener, WrapperControl {
     
     private TableComponent table;
     private ListScrollBar scrollBar;
@@ -71,6 +74,27 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public XTable() {
         init();
+    }
+    
+    //-- channel events to TableComponent
+    public void addMouseListener(MouseListener l) {
+        table.addMouseListener(l);
+    }
+    
+    public void removeMouseListener(MouseListener l) {
+        table.removeMouseListener(l);
+    }
+
+    public void addKeyListener(KeyListener l) {
+        table.addKeyListener(l);
+    }
+
+    public void removeKeyListener(KeyListener l) {
+        table.removeKeyListener(l);
+    }
+
+    public Component getWrappedComponent() {
+        return table;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
@@ -294,6 +318,11 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setName(String name) {
+        super.setName(name);
+        if ( table != null ) table.setName(name);
+    }
+    
     public void setLayout(LayoutManager mgr) {;}
     
     public String getHandler() { return handler; }

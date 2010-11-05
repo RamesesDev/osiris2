@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Test 3"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+                
+        public class Test3Controller  {
+        
+            boolean saved = false;
+            def student = [:];
+            
+            public void saveToDisk() {
+                saved = true;
+                student.each { println it.key + "=" + it.value };
+            }
+            
+            public def close() {
+                println "closing application.";
+                return "_close";
+            }
+        
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test3.TestPage"/>
+    </pages>
+</workunit>

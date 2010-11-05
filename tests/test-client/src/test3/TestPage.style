@@ -1,0 +1,2 @@
+"student.*" [saved == false] { readonly: false; }
+"student.*" [saved == true] { readonly: true; }

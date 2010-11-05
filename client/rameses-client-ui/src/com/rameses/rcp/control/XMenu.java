@@ -1,7 +1,6 @@
 /*
- * XTree.java
+ * XMenu.java
  *
- * Created on August 2, 2010, 10:27 AM
  * @author jaycverg
  */
 
@@ -9,6 +8,7 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.Node;
 import com.rameses.rcp.common.TreeNodeModel;
+import com.rameses.rcp.control.menu.MenuProxy;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
@@ -31,6 +31,9 @@ public class XMenu extends JPanel implements UIControl {
     private TreeNodeModel nodeModel;
     private Node selectedNode;
     
+    private JMenuBar menuBar;
+    
+    
     public XMenu() {
         super.setLayout(new BorderLayout());
         setOpaque(false);
@@ -42,7 +45,7 @@ public class XMenu extends JPanel implements UIControl {
         }
         
     }
-
+    
     public void setLayout(LayoutManager mgr) {;}
     
     public String[] getDepends() {
@@ -69,13 +72,32 @@ public class XMenu extends JPanel implements UIControl {
         return binding;
     }
     
-    public void refresh() {}
+    public void refresh() {
+        if ( dynamic )
+            buildPlainMenu( null );
+    }
     
     public void load() {
         if( ValueUtil.isEmpty(handler) ) {
             throw new IllegalStateException( "XTree Error: A handler must be provided" );
         }
         nodeModel = (TreeNodeModel) UIControlUtil.getBeanValue(this, handler);
+        
+        menuBar = new JMenuBar();
+        add(menuBar);
+        if ( !dynamic )
+            buildPlainMenu( null );
+    }
+    
+    private void buildPlainMenu( Node parent ) {
+        menuBar.removeAll();
+        Node[] nodes = nodeModel.fetchNodes( nodeModel.getRootNode() );
+        if ( parent == null ) {
+            for(Node n : nodes) {
+                menuBar.add(new MenuProxy( this, nodeModel, n ));
+            }
+        }
+        menuBar.revalidate();
     }
     
     public int compareTo(Object o) {
@@ -96,7 +118,5 @@ public class XMenu extends JPanel implements UIControl {
     
     public void setHandler(String handler) {
         this.handler = handler;
-    }
-    
-    
+    }    
 }
