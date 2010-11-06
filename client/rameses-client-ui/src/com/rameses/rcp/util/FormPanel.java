@@ -71,7 +71,7 @@ public class FormPanel extends JPanel implements UIComposite, DynamicContainer, 
         setPadding(new Insets(5,5,5,5));
         setOpaque(false);
         
-        setCaptionFont(UIManager.getFont("Label.font"));
+        setCaptionFont(Font.decode("Arial-plain-11"));
         setCaptionForeground(UIManager.getColor("Label.foreground"));
     }
     

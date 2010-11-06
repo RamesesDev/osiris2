@@ -12,7 +12,6 @@ import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.util.ValueUtil;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -69,7 +68,7 @@ class ItemPanel extends JPanel {
         setOpaque(false);
         setLayout(new ItemPanelLayout(property));
         
-        label = new XLabel(true);        
+        label = new XLabel(true);
         label.setLabelFor(editor);
         label.setAddCaptionColon(parent.isAddCaptionColon());
         label.setFont(parent.getCaptionFont());
@@ -187,20 +186,23 @@ class ItemPanel extends JPanel {
         //<editor-fold defaultstate="collapsed" desc="  layout helper  ">
         private Rectangle layoutLabel(int x, int y, int w, int h, int captionWidth) {
             if (label != null && isShowCaption()) {
-                int cw = captionWidth;
                 Dimension dim = label.getPreferredSize();
                 String captionOrientation = formPanel.getCaptionOrientation();
                 
-                if ( (UIConstants.TOP.equals(captionOrientation) || UIConstants.BOTTOM.equals(captionOrientation)) && editor != null )
+                int cw = captionWidth;
+                int ch = h;
+                
+                if ( (UIConstants.TOP.equals(captionOrientation) || UIConstants.BOTTOM.equals(captionOrientation)) && editor != null ) {
                     cw = editor.getPreferredSize().width;
-                else if (cw <= 0)
+                    ch = dim.height;
+                } else if (cw <= 0)
                     cw = dim.width;
                 
-                label.setBounds(x, y, cw, dim.height);
+                label.setBounds(x, y, cw, ch);
                 
                 if ( UIConstants.TOP.equals(captionOrientation) ) {
-                    y += dim.height;
-                    h -= dim.height;
+                    y += ch;
+                    h -= ch;
                 } else {
                     x += cw;
                     w -= cw;

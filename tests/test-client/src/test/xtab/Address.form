@@ -28,7 +28,7 @@
       <SubComponents>
         <Container class="com.rameses.rcp.util.FormPanel" name="formPanel1">
           <Properties>
-            <Property name="captionOrientation" type="java.lang.String" value="TOP"/>
+            <Property name="captionOrientation" type="java.lang.String" value="BOTTOM"/>
             <Property name="captionWidth" type="int" value="120"/>
           </Properties>
           <SubComponents>

@@ -22,7 +22,7 @@ public class Address extends javax.swing.JPanel {
         xTextField3 = new com.rameses.rcp.control.XTextField();
         xTextField4 = new com.rameses.rcp.control.XTextField();
 
-        formPanel1.setCaptionOrientation(com.rameses.rcp.constant.UIConstants.TOP);
+        formPanel1.setCaptionOrientation(com.rameses.rcp.constant.UIConstants.BOTTOM);
         formPanel1.setCaptionWidth(120);
         xTextField1.setCaption("Street");
         xTextField1.setName("entity.street");
