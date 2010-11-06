@@ -7,11 +7,12 @@
 
 package com.rameses.osiris2.client;
 
+import com.rameses.osiris2.Invoker;
 import java.util.Map;
 
 
 public interface InvokerParameter {
     
-    Map getParams();
+    Map getParams(Invoker inv);
     
 }

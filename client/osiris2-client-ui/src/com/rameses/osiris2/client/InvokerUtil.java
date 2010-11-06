@@ -139,7 +139,7 @@ public final class InvokerUtil {
             
             if((target.endsWith("process")||target.endsWith("action"))) {
                 if ( invParam != null )
-                    invoke(inv, invParam.getParams());
+                    invoke(inv, invParam.getParams( inv ));
                 else
                     invoke(inv, null);
                 
@@ -151,7 +151,7 @@ public final class InvokerUtil {
                 opener.setCaption(inv.getCaption());
                 opener.setAction(inv.getAction());
                 if ( invParam != null ) {
-                    opener.setParams(invParam.getParams());
+                    opener.setParams(invParam.getParams( inv ));
                 }
                 
                 if ( target.endsWith("popup") ) {
@@ -266,7 +266,7 @@ public final class InvokerUtil {
         }
         Invoker inv = list.get(0);
         String target = (String)inv.getProperties().get("target");
-        //if ( target !=null ) target = target.replaceAll("/^([^_])/", "_$1");
+        if ( target != null ) target = target.replaceAll("^([^_])", "_$1");
         Opener opener = new Opener(inv.getWorkunitid());
         opener.setCaption( inv.getCaption() );
         opener.setAction( inv.getAction() );
@@ -287,7 +287,7 @@ public final class InvokerUtil {
         List openers = new ArrayList();
         for(Invoker inv: list) {
             String target = (String)inv.getProperties().get("target");
-            //if ( target !=null ) target = target.replaceAll("/^([^_])/", "_$1");
+            if ( target !=null ) target = target.replaceAll("^([^_])", "_$1");
             Opener opener = new Opener(inv.getWorkunitid());
             opener.setCaption( inv.getCaption() );
             opener.setAction( inv.getAction() );
