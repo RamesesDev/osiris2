@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XPanel Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test2Controller  {
+        
+            boolean showTop = true;
+            boolean showBottom = true;
+            
+            void toggleTop() { showTop = !showTop; }
+            void toggleBottom() { showBottom = !showBottom; }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test2.XPanelTest"/>
+    </pages>
+</workunit>

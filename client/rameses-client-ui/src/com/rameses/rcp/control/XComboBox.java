@@ -10,6 +10,7 @@ package com.rameses.rcp.control;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
@@ -59,15 +60,15 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     //<editor-fold defaultstate="collapsed" desc="  initComponents method  ">
     private void initComponents() {
-        try {
-            super.setFont((Font) UIManager.get("TextField.font"));
-        } catch(Exception e) {;}
-        
         UIManager.put("ComboBox.disabledForeground", getForeground());
         if ( Beans.isDesignTime() ) {
             model = new DefaultComboBoxModel(new Object[]{"Item 1"});
             super.setModel( model );
         }
+        
+        //default font
+        Font f = ThemeUI.getFont("XComboBox.font");
+        if ( f != null ) setFont( f );
     }
     //</editor-fold>
     

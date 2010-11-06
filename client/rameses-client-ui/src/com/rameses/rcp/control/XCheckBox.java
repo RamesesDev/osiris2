@@ -1,11 +1,13 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -32,6 +34,10 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
         setValue(value);
+        
+        //default font
+        Font f = ThemeUI.getFont("XCheckBox.font");
+        if ( f != null ) setFont( f );
     }
     
     public void load() {
@@ -100,7 +106,7 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
     }
-        
+    
     public boolean isNullWhenEmpty() {
         return false;
     }

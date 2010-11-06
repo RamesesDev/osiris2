@@ -7,7 +7,7 @@ import com.rameses.rcp.control.border.XUnderlineBorder;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
-import com.rameses.rcp.ui.DynamicContainer;
+import com.rameses.rcp.ui.ControlContainer;
 import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UICompositeFocusable;
 import com.rameses.rcp.ui.UIControl;
@@ -32,7 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-public class FormPanel extends JPanel implements UIComposite, DynamicContainer, Validatable, ActiveControl, UIConstants {
+public class FormPanel extends JPanel implements UIComposite, ControlContainer, Validatable, ActiveControl, UIConstants {
     
     private int cellspacing = 2;
     private Insets cellpadding = new Insets(0,0,0,0);

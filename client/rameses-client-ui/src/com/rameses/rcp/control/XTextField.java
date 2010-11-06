@@ -5,6 +5,7 @@ import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.support.TextDocument;
 import com.rameses.rcp.support.TextEditorSupport;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
@@ -14,6 +15,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -49,6 +51,10 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         TextEditorSupport.install(this); 
         
         addFocusListener(new XTextFieldSupport());
+        
+        //set default font
+        Font f = ThemeUI.getFont("XTextField.font");
+        if ( f != null ) setFont(f);
     }
     
     public void refresh() {

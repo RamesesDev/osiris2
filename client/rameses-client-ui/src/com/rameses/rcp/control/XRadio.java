@@ -8,12 +8,14 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
@@ -36,6 +38,10 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     
     public XRadio() {
         addItemListener(this);
+        
+        //default font
+        Font f = ThemeUI.getFont("XRadio.font");
+        if ( f != null ) setFont( f );
     }
     
     

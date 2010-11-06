@@ -14,10 +14,12 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.OpenerProvider;
 import com.rameses.rcp.framework.UIController;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import java.awt.Component;
+import java.awt.Font;
 import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +49,9 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
         if ( Beans.isDesignTime() ) {
             addTab("Tab 1", new JPanel());
         }
+        
+        Font f = ThemeUI.getFont("XTabbedPane.font");
+        if ( f != null ) setFont( f );
         
     }
     //</editor-fold>

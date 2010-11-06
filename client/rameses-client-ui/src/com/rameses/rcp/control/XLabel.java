@@ -1,6 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
@@ -8,6 +9,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Insets;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
@@ -47,6 +49,10 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public XLabel() {
         super();
         setPadding(new Insets(1,3,1,1));
+        
+        //default font
+        Font f = ThemeUI.getFont("XLabel.font");
+        if ( f != null ) setFont( f );
     }
     
     public XLabel(boolean forceUseActiveCaption) {
