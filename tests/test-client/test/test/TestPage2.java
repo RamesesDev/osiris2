@@ -27,20 +27,17 @@ public class TestPage2 extends javax.swing.JPanel {
 
         formPanel1.setLayout(null);
 
-        com.rameses.rcp.control.border.XTitledBorder xTitledBorder1 = new com.rameses.rcp.control.border.XTitledBorder();
-        xTitledBorder1.setOutline(new java.awt.Color(153, 153, 153));
-        xTitledBorder1.setTitleBackground(new java.awt.Color(204, 204, 204));
-        formPanel1.setBorder(xTitledBorder1);
+        formPanel1.setBorder(new com.rameses.rcp.control.border.XTitledBorder());
         com.rameses.rcp.control.border.XUnderlineBorder xUnderlineBorder1 = new com.rameses.rcp.control.border.XUnderlineBorder();
         xUnderlineBorder1.setLineColor(new java.awt.Color(217, 216, 216));
         formPanel1.setCaptionBorder(xUnderlineBorder1);
         xTextField1.setText("xTextField1");
         formPanel1.add(xTextField1);
-        xTextField1.setBounds(80, 0, 72, 19);
+        xTextField1.setBounds(80, 0, 67, 19);
 
         xDateField1.setText("xDateField1");
         formPanel1.add(xDateField1);
-        xDateField1.setBounds(80, 0, 78, 19);
+        xDateField1.setBounds(80, 0, 73, 19);
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

@@ -12,6 +12,7 @@ import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.util.ValueUtil;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -68,7 +69,7 @@ class ItemPanel extends JPanel {
         setOpaque(false);
         setLayout(new ItemPanelLayout(property));
         
-        label = new XLabel(true);
+        label = new XLabel(true);        
         label.setLabelFor(editor);
         label.setAddCaptionColon(parent.isAddCaptionColon());
         label.setFont(parent.getCaptionFont());
@@ -195,7 +196,7 @@ class ItemPanel extends JPanel {
                 else if (cw <= 0)
                     cw = dim.width;
                 
-                label.setBounds(x, y, cw, h);
+                label.setBounds(x, y, cw, dim.height);
                 
                 if ( UIConstants.TOP.equals(captionOrientation) ) {
                     y += dim.height;

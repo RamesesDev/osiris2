@@ -22,6 +22,7 @@ public class Address extends javax.swing.JPanel {
         xTextField3 = new com.rameses.rcp.control.XTextField();
         xTextField4 = new com.rameses.rcp.control.XTextField();
 
+        formPanel1.setCaptionOrientation(com.rameses.rcp.constant.UIConstants.TOP);
         formPanel1.setCaptionWidth(120);
         xTextField1.setCaption("Street");
         xTextField1.setName("entity.street");
@@ -53,7 +54,7 @@ public class Address extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1)
+            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     

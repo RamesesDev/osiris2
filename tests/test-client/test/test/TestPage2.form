@@ -56,14 +56,7 @@
         <Container class="com.rameses.rcp.util.FormPanel" name="formPanel1">
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <PropertyBean type="com.rameses.rcp.control.border.XTitledBorder">
-                <Property name="outline" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="99" green="99" red="99" type="rgb"/>
-                </Property>
-                <Property name="titleBackground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="cc" green="cc" red="cc" type="rgb"/>
-                </Property>
-              </PropertyBean>
+                <PropertyBean type="com.rameses.rcp.control.border.XTitledBorder"/>
             </Property>
             <Property name="captionBorder" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <PropertyBean type="com.rameses.rcp.control.border.XUnderlineBorder">
