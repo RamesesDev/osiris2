@@ -91,10 +91,13 @@ public abstract class MachineInfo {
     //</editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="IMPLEMENTATIONS">
-    public static class WindowsMachineInfo extends MachineInfo 
-    {
+    public static class WindowsMachineInfo extends MachineInfo {
+        private String macAddress;
+        
         public String getMacAddress() throws Exception 
         {
+            if(macAddress !=null) return macAddress;
+            
             String response = getProcessResponse("getmac");
             StringTokenizer tokenizer = new StringTokenizer(response, "\n");
   
@@ -111,8 +114,10 @@ public abstract class MachineInfo {
                         String macAddressCandidate = line.substring(0, idx).trim();
                         
                         // TODO: use a smart regular expression
-                        if ( macAddressCandidate.length() == 17 ) 
-                            return macAddressCandidate;
+                        if ( macAddressCandidate.length() == 17 )  {
+                            macAddress = macAddressCandidate;
+                            return macAddress;
+                        }    
                     }
                 }
                 counter++;
@@ -120,35 +125,13 @@ public abstract class MachineInfo {
             
             throw new ParseException("cannot read MAC address from [" + response + "]", 0);
         }        
-        
-        /*
-        public String getMacAddress() throws Exception 
-        {
-            String localHost = getLocalHost();
-            String ipConfigResponse = getProcessResponse("ipconfig");
-            StringTokenizer tokenizer = new StringTokenizer(ipConfigResponse, "\n");
-            String lastMacAddress = null;
-            
-            while(tokenizer.hasMoreTokens()) {
-                String line = tokenizer.nextToken().trim();
-                
-                // see if line contains MAC address
-                int macAddressPosition = line.indexOf(":");
-                if(macAddressPosition <= 0) continue;
-                
-                String macAddressCandidate = line.substring(macAddressPosition + 1).trim();
-                // TODO: use a smart regular expression
-                if ( macAddressCandidate.length() == 17 ) return macAddressCandidate;
-            }
-            
-            throw new ParseException("cannot read MAC address from [" + ipConfigResponse + "]", 0);
-        }
-         */
     }
     
     
     public static class LinuxMachineInfo extends MachineInfo {
+        private String macAddress;
         public String getMacAddress() throws Exception {
+            if(macAddress!=null) return macAddress;
             String localHost = getLocalHost();
             String ipConfigResponse = getProcessResponse("ifconfig");
             StringTokenizer tokenizer = new StringTokenizer(ipConfigResponse, "\n");
@@ -163,7 +146,10 @@ public abstract class MachineInfo {
                 
                 String macAddressCandidate = line.substring(macAddressPosition + 6).trim();
                 // TODO: use a smart regular expression
-                if ( macAddressCandidate.length() == 17 ) return macAddressCandidate;
+                if ( macAddressCandidate.length() == 17 ) {
+                    macAddress = macAddressCandidate;
+                    return macAddress;
+                }
             }
             
             throw new ParseException("cannot read MAC address for " + localHost + " from [" + ipConfigResponse + "]", 0);
@@ -171,7 +157,11 @@ public abstract class MachineInfo {
     }
     
     public static class MacMachineInfo extends MachineInfo {
+        private String macAddress;
+        
         public String getMacAddress() throws Exception {
+            if(macAddress!=null) return macAddress;
+            
             String localHost = getLocalHost();
             String ipConfigResponse = getProcessResponse("ifconfig");
             StringTokenizer tokenizer = new StringTokenizer(ipConfigResponse, "\n");
@@ -185,7 +175,10 @@ public abstract class MachineInfo {
                 
                 String macAddressCandidate = line.substring(macAddressPosition + 5).trim();
                 // TODO: use a smart regular expression
-                if ( macAddressCandidate.length() == 17 ) return macAddressCandidate;
+                if ( macAddressCandidate.length() == 17 ) {
+                    macAddress = macAddressCandidate;
+                    return macAddress;
+                }
             }
             throw new ParseException("cannot read MAC address for " + localHost + " from [" + ipConfigResponse + "]", 0);
         }
