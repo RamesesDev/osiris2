@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="_testSub" action="init"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test2Controller  {
+        
+            void init() {
+                println 'initing....';
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.subform.SubPage"/>
+    </pages>
+</workunit>
