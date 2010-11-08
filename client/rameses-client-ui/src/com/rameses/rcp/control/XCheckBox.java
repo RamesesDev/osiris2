@@ -10,8 +10,8 @@ import com.rameses.rcp.util.UIInputUtil;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
 import java.beans.Beans;
+import java.util.EventObject;
 import javax.swing.JCheckBox;
 
 /**
@@ -58,7 +58,7 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     }
     
     public void setValue(Object value) {
-        if ( value instanceof KeyEvent ) {
+        if ( value instanceof EventObject ) {
             refresh();
             setSelected(!isSelected());
         } else {

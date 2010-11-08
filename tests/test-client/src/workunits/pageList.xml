@@ -48,23 +48,14 @@
                 [name:"11", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50], 
                 [name:"12", address:"CEBU CITY", single: null, date: new Date(), balance: 1000], 
                 [name:"13", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520],
-                [name:"21", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"22", address:"CEBU CITY", single: null, date: new Date(), balance: 2500], 
-                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700],
-                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520],
-                [name:"21", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"22", address:"CEBU CITY", single: null, date: new Date(), balance: 2500], 
-                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
-                [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700]
+                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520]
 
             ];
             
             def empTypes = ['REGULAR', 'CASUAL'];
             
             void fireAction() {
-                
+                println data;
             }
             
         }

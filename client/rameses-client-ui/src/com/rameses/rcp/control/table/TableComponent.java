@@ -14,6 +14,7 @@ import java.awt.Rectangle;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -297,7 +298,7 @@ public class TableComponent extends JTable implements ListModelListener {
         if (editingMode) {
             Point point = (Point) currentEditor.getClientProperty(COLUMN_POINT);
             if (rowIndex != point.y || columnIndex != point.x) {
-                hideEditor(currentEditor, point.y, point.x, true);
+                hideEditor(currentEditor, point.y, point.x, true, true);
             }
         }
         
@@ -348,9 +349,12 @@ public class TableComponent extends JTable implements ListModelListener {
         return false;
     }
     
-    private void selectAll(JComponent comp) {
-        if ( comp instanceof JTextComponent ) {
-            ((JTextComponent) comp).selectAll();
+    private void selectAll(JComponent editor, EventObject evt) {
+        if ( editor instanceof JTextComponent ) {
+            ((JTextComponent) editor).selectAll();
+        }
+        else if ( editor instanceof JCheckBox ) {
+            ((UIInput) editor).setValue( evt );
         }
     }
     
@@ -388,12 +392,16 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     private void hideEditor(boolean commit) {
-        if ( !editingMode || currentEditor == null ) return;
-        Point point = (Point) currentEditor.getClientProperty(COLUMN_POINT);
-        hideEditor(currentEditor, point.y, point.x, commit);
+        hideEditor(commit, true);
     }
     
-    private void hideEditor(JComponent editor, int rowIndex, int colIndex, boolean commit) {
+    private void hideEditor(boolean commit, boolean grabFocus) {
+        if ( !editingMode || currentEditor == null ) return;
+        Point point = (Point) currentEditor.getClientProperty(COLUMN_POINT);
+        hideEditor(currentEditor, point.y, point.x, commit, grabFocus);
+    }
+    
+    private void hideEditor(JComponent editor, int rowIndex, int colIndex, boolean commit, boolean grabFocus) {
         if ( !commit ) {
             editor.setInputVerifier(null);
             ListItem item = listModel.getItemList().get(rowIndex);
@@ -408,7 +416,7 @@ public class TableComponent extends JTable implements ListModelListener {
         currentEditor = null;
         
         tableModel.fireTableRowsUpdated(rowIndex, rowIndex);
-        grabFocus();
+        if ( grabFocus ) grabFocus();
     }
     
     private boolean validateRow(int rowIndex) {
@@ -467,7 +475,7 @@ public class TableComponent extends JTable implements ListModelListener {
             if ( !refreshed ) {
                 input.refresh();
             }
-            selectAll(editor);
+            selectAll(editor, e);
         } else if ( isPrintableKey() ) {
             input.setValue( currentKeyEvent );
         } else {
@@ -595,7 +603,7 @@ public class TableComponent extends JTable implements ListModelListener {
             fromTempFocus = e.isTemporary();
             
             if ( !e.isTemporary() ) {
-                hideEditor(true);
+                hideEditor(true, false);
             }
         }
         
@@ -633,7 +641,7 @@ public class TableComponent extends JTable implements ListModelListener {
                 if ( commit ) {
                     focusNextCellFrom( point.y, point.x );
                 } else {
-                    hideEditor(comp, point.y, point.x, false);
+                    hideEditor(comp, point.y, point.x, false, true);
                 }
             }
         }
