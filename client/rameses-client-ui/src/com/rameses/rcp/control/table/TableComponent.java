@@ -179,11 +179,6 @@ public class TableComponent extends JTable implements ListModelListener {
             tableCol.setCellRenderer(cellRenderer);
             applyColumnProperties(tableCol, col);
             
-            if ( !(listModel instanceof SubListModel) ) {
-                col.setEditable(false);
-                continue;
-            }
-            
             if ( !ValueUtil.isEmpty(col.getEditableWhen()) ) {
                 col.setEditable(true);
             }
@@ -362,7 +357,6 @@ public class TableComponent extends JTable implements ListModelListener {
     private void focusNextCellFrom(int rowIndex, int colIndex) {
         int nextCol = findNextEditableColFrom(colIndex);
         int firstEditable = findNextEditableColFrom(-1);
-        SubListModel slm = (SubListModel) listModel;
         
         if ( nextCol >= 0 ) {
             this.changeSelection(rowIndex, nextCol, false, false);
@@ -371,8 +365,8 @@ public class TableComponent extends JTable implements ListModelListener {
             this.changeSelection(rowIndex+1, firstEditable, false, false);
             
         } else {
-            ListItem item = slm.getSelectedItem();
-            boolean lastRow = !(rowIndex + slm.getTopRow() < slm.getMaxRows());
+            ListItem item = listModel.getSelectedItem();
+            boolean lastRow = !(rowIndex + listModel.getTopRow() < listModel.getMaxRows());
             
             if ( item.getState() == 0 ) lastRow = false;
             
@@ -418,22 +412,21 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     private boolean validateRow(int rowIndex) {
-        SubListModel slm = (SubListModel) listModel;
         ActionMessage ac = new ActionMessage();
         itemBinding.validate(ac);
         if ( ac.hasMessages() ) {
-            slm.addErrorMessage(rowIndex, ac.toString());
+            listModel.addErrorMessage(rowIndex, ac.toString());
         } else {
-            slm.removeErrorMessage(rowIndex);
+            listModel.removeErrorMessage(rowIndex);
         }
         if ( ac.hasMessages() ) return false;
         
         try {
-            slm.validate( slm.getItemList().get(rowIndex) );
-            slm.removeErrorMessage(rowIndex);
+            listModel.validate( listModel.getItemList().get(rowIndex) );
+            listModel.removeErrorMessage(rowIndex);
         } catch (Exception e ) {
             String msg = getMessage(e);
-            slm.addErrorMessage(rowIndex, msg);
+            listModel.addErrorMessage(rowIndex, msg);
             return false;
         }
         

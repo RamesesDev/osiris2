@@ -12,10 +12,6 @@ import java.util.Map;
  */
 public abstract class SubListModel extends PageListModel {
     
-    private Column primaryColumn;
-    private Map<Object, String> errorMessages = new HashMap();
-    
-    
     protected void fetch() {
         if( dataList ==null) {
             Map map = new HashMap();
@@ -71,66 +67,4 @@ public abstract class SubListModel extends PageListModel {
         }
     }
     
-    public void addErrorMessage(int liIndex, String message) {
-        ListItem li = getItemList().get(liIndex);
-        if ( li.getItem() == null ) return;
-        
-        errorMessages.put(getRowId(li), message);
-    }
-    
-    public String getErrorMessage(int liIndex) {
-        ListItem li = getItemList().get(liIndex);
-        if ( li.getItem() == null ) return null;
-        
-        return errorMessages.get( getRowId(li) );
-    }
-    
-    public void removeErrorMessage(int liIndex) {
-        ListItem li = getItemList().get(liIndex);
-        if ( li.getItem() == null ) return;
-        
-        errorMessages.remove( getRowId(li) );
-    }
-    
-    public String getErrorMessages() {
-        if ( errorMessages.size() == 0 ) return null;
-        
-        StringBuffer sb = new StringBuffer();
-        boolean first = true;
-        for (Map.Entry me: errorMessages.entrySet()) {
-            if ( !first ) sb.append("\n");
-            else first = false;
-            sb.append("row " + me.getKey() + ": " + me.getValue());
-        }
-        
-        return sb.toString();
-    }
-    
-    private Object getRowId(ListItem li) {
-        Column pc = getPrimaryColumn();
-        if ( pc != null ) {
-            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-            String name = pc.getName();
-            Object value = resolver.getProperty(li, name);
-            if ( value != null ) return value;
-        }
-        
-        return li.getItem();
-    }
-    
-    public Column getPrimaryColumn() {
-        if ( primaryColumn == null ) {
-            Column[] cols = getColumns();
-            if ( cols != null && cols.length > 0 ) {
-                primaryColumn = cols[0];
-                for ( Column c : cols ) {
-                    if ( c.isPrimary() ) {
-                        primaryColumn = c;
-                        break;
-                    }
-                }
-            }
-        }
-        return primaryColumn;
-    }
 }

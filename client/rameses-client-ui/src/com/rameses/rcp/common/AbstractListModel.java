@@ -8,7 +8,10 @@
  */
 package com.rameses.rcp.common;
 
+import com.rameses.common.PropertyResolver;
+import com.rameses.rcp.framework.ClientContext;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,10 @@ public abstract class AbstractListModel {
     protected List<ListItem> items = new ArrayList<ListItem>();
     
     protected List dataList;
+    
+    private Column primaryColumn;
+    //used by XTable to register error messages
+    private Map<Object, String> errorMessages = new HashMap();
     
     /**
      * this contains items that have been selected
@@ -321,7 +328,7 @@ public abstract class AbstractListModel {
      *    this is used when you want explicitly set the selected items
      */
     public boolean checkSelected(Object obj) {
-        return checkedItems.contains(obj); 
+        return checkedItems.contains(obj);
     }
     
     public abstract void addItem( Object item );
@@ -379,5 +386,70 @@ public abstract class AbstractListModel {
         return checkedItems;
     }
     
+    /**
+     * these methods below are used by the XTable to register/retrieve/remove error messages
+     */
+    public void addErrorMessage(int liIndex, String message) {
+        ListItem li = getItemList().get(liIndex);
+        if ( li.getItem() == null ) return;
+        
+        errorMessages.put(getRowId(li), message);
+    }
+    
+    public String getErrorMessage(int liIndex) {
+        ListItem li = getItemList().get(liIndex);
+        if ( li.getItem() == null ) return null;
+        
+        return errorMessages.get( getRowId(li) );
+    }
+    
+    public void removeErrorMessage(int liIndex) {
+        ListItem li = getItemList().get(liIndex);
+        if ( li.getItem() == null ) return;
+        
+        errorMessages.remove( getRowId(li) );
+    }
+    
+    public String getErrorMessages() {
+        if ( errorMessages.size() == 0 ) return null;
+        
+        StringBuffer sb = new StringBuffer();
+        boolean first = true;
+        for (Map.Entry me: errorMessages.entrySet()) {
+            if ( !first ) sb.append("\n");
+            else first = false;
+            sb.append("row " + me.getKey() + ": " + me.getValue());
+        }
+        
+        return sb.toString();
+    }
+    
+    private Object getRowId(ListItem li) {
+        Column pc = getPrimaryColumn();
+        if ( pc != null ) {
+            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
+            String name = pc.getName();
+            Object value = resolver.getProperty(li, name);
+            if ( value != null ) return value;
+        }
+        
+        return li.getItem();
+    }
+    
+    public Column getPrimaryColumn() {
+        if ( primaryColumn == null ) {
+            Column[] cols = getColumns();
+            if ( cols != null && cols.length > 0 ) {
+                primaryColumn = cols[0];
+                for ( Column c : cols ) {
+                    if ( c.isPrimary() ) {
+                        primaryColumn = c;
+                        break;
+                    }
+                }
+            }
+        }
+        return primaryColumn;
+    }
     
 }

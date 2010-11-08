@@ -10,7 +10,6 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
-import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.table.TableManager;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIInput;
@@ -84,15 +83,15 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public void removeMouseListener(MouseListener l) {
         table.removeMouseListener(l);
     }
-
+    
     public void addKeyListener(KeyListener l) {
         table.addKeyListener(l);
     }
-
+    
     public void removeKeyListener(KeyListener l) {
         table.removeKeyListener(l);
     }
-
+    
     public Component getWrappedComponent() {
         return table;
     }
@@ -294,13 +293,10 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     
     public void validateInput() {
-        if ( listModel instanceof SubListModel ) {
-            SubListModel slm = (SubListModel) listModel;
-            String errmsg = slm.getErrorMessages();
-            actionMessage.clearMessages();
-            if ( errmsg != null ) {
-                actionMessage.addMessage(null, errmsg, null);
-            }
+        String errmsg = listModel.getErrorMessages();
+        actionMessage.clearMessages();
+        if ( errmsg != null ) {
+            actionMessage.addMessage(null, errmsg, null);
         }
     }
     
