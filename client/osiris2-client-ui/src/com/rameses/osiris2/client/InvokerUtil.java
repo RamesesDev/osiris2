@@ -39,32 +39,16 @@ public final class InvokerUtil {
     }
     
     public static void invoke(Invoker invoker, Map params) {
-        invoke(invoker, params, null, null);
+        invoke(invoker, params, null);
     }
     
     public static void invoke(Invoker invoker, Map params, Object caller) {
-        invoke( invoker, params, caller, null );
-    }
-    
-    public static void invoke(Invoker invoker, Map params, Object caller, String extendedCaption) {
         try {
             if(params==null) params = new HashMap();
             ClientContext ctx = ClientContext.getCurrentContext();
             Platform platform = ctx.getPlatform();
             
             String wuId = invoker.getWorkunitid();
-            
-            //check if window id already exists
-            String windowId = wuId + invoker.getCaption();
-            if(extendedCaption!=null) windowId = windowId + "_" +  extendedCaption;
-            
-            String caption = invoker.getCaption();
-            if(extendedCaption!=null) caption = caption + extendedCaption;
-            
-            if ( platform.isWindowExists( windowId )) {
-                platform.activateWindow( windowId );
-                return;
-            }
             
             ControllerProvider cp = ctx.getControllerProvider();
             UIController u = cp.getController( wuId );
@@ -77,9 +61,18 @@ public final class InvokerUtil {
             String action = invoker.getAction();
             u.setId( wuId );
             u.setName( wuId );
-            u.setTitle( caption );
+            u.setTitle( invoker.getCaption() );
             
             String outcome = (String) u.init(params, action);
+            
+            String windowId = u.getId();
+
+            //check if window id already exists
+            if ( platform.isWindowExists( windowId )) {
+                platform.activateWindow( windowId );
+                return;
+            }
+            
             String target = (String)invoker.getProperties().get("target");
             if( target == null ) target = "_window";
             
@@ -115,17 +108,13 @@ public final class InvokerUtil {
     }
 
     public static void showWindow(Invoker invoker, String target, Map winParams) {
-        showWindow( invoker, target, winParams, null );
-    }
-    
-    public static void showWindow(Invoker invoker, String target, Map winParams, String windowKey) {
         if ( !ValueUtil.isEmpty(target) ) {
             invoker.setType(target);
         }
         if ( winParams != null ) {
             invoker.getProperties().putAll(winParams);
         }
-        invoke(invoker, null, null, null);
+        invoke(invoker, null, null);
     }
     
     
@@ -137,21 +126,25 @@ public final class InvokerUtil {
             String target = (String)inv.getProperties().get("target");
             if( target == null ) target = "_window";
             
+            Map props = null;
+            String caption = null;
+            if( invParam !=null ) {
+                props = invParam.getParams(inv);
+                caption = (String)props.remove( "formTitle" );
+            }
+            if(caption==null) caption = inv.getCaption();
+            
             if((target.endsWith("process")||target.endsWith("action"))) {
-                if ( invParam != null )
-                    invoke(inv, invParam.getParams( inv ));
-                else
-                    invoke(inv, null);
-                
+                invoke( inv, props );
                 return null;
                 
             } else {
                 Opener opener = new Opener(inv.getWorkunitid());
-                opener.setId(inv.getWorkunitid() + "_" + inv.getCaption());
-                opener.setCaption(inv.getCaption());
+                opener.setId(inv.getWorkunitid() + "_" + caption );
+                opener.setCaption(caption);
                 opener.setAction(inv.getAction());
-                if ( invParam != null ) {
-                    opener.setParams(invParam.getParams( inv ));
+                if ( props != null ) {
+                    opener.setParams(props);
                 }
                 
                 if ( target.endsWith("popup") ) {
@@ -267,8 +260,11 @@ public final class InvokerUtil {
         Invoker inv = list.get(0);
         String target = (String)inv.getProperties().get("target");
         if ( target != null ) target = target.replaceAll("^([^_])", "_$1");
+        
+        String caption = (String)params.remove("formTitle");
+        if(caption==null) caption = inv.getCaption();
         Opener opener = new Opener(inv.getWorkunitid());
-        opener.setCaption( inv.getCaption() );
+        opener.setCaption( caption );
         opener.setAction( inv.getAction() );
         opener.setTarget( target );
         if(params!=null) opener.setParams( params );

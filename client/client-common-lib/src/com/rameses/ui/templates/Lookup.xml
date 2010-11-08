@@ -1,0 +1,10 @@
+<workunit>
+    <invokers>
+        <invoker type="queryActions" caption="&lt;html&gt;&lt;u&gt;Show Filter&lt;u&gt;&lt;html&gt;" action="showFilter" visibleWhen="#{query==null}" icon="com/rameses/images/filter.png"/>
+        <invoker type="queryActions" caption="&lt;html&gt;&lt;u&gt;Hide Filter&lt;u&gt;&lt;html&gt;" action="hideFilter" visibleWhen="#{query!=null}" icon="com/rameses/images/filter.png"/>
+    </invokers>
+    <pages>
+        <page template="com.rameses.ui.templates.LookupPage"/>
+        <page name="query" template="com.rameses.ui.templates.BlankQueryPage"/>
+    </pages>
+</workunit>

@@ -1,0 +1,30 @@
+package com.rameses.client.ui;
+
+import com.rameses.rcp.common.*;
+import com.rameses.rcp.annotations.*;
+import com.rameses.osiris2.client.*;
+
+public class DataFormControllerTemplate extends com.rameses.client.ui.DataForm {
+
+    public String getFormTitle() {
+        return '<form title here>'
+    }
+
+    public def createEntity( o ) {
+        //entity = <new entity>
+        return 'new-form';
+    }
+    public def openEntity( o ) {
+        //entity = <read from somewhere>
+        return 'default';
+    }
+    public def saveNewEntity( o ) {
+        //entity = <update entity to somewhere>
+        return null;
+    }
+    public def updateEntity( o ) {
+        //entity = <save to somewhere>
+        return null;
+    }
+
+}

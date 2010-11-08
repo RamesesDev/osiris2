@@ -129,7 +129,6 @@ public final class ControlSupport {
         if( opener.getCaption()==null ) {
             opener.setCaption( controller.getName() );
         }
-        
         Object o = controller.init(opener.getParams(), opener.getAction());
         if ( o != null && o instanceof String ) {
             opener.setOutcome( (String)o );

@@ -1,0 +1,4 @@
+"showFilter" [true] { 
+    contentAreaFilled: true;
+    background: #ff0000;
+}
