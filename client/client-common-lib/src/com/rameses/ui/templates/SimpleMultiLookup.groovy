@@ -4,14 +4,15 @@ import com.rameses.rcp.common.*;
 import com.rameses.rcp.annotations.*;
 import com.rameses.osiris2.client.*;
 
-public abstract class SingleLookup {
+public abstract class SimpleMultiLookup {
 
-    def search;
     def queryOpener = new Opener(outcome:"query");
+    def search;
     def query = null;
     def formActions; 
+    def formTitle = "No Title specfied";
     def selectHandler;
-    def formTitle;
+    def included = [];
 
     public void showFilter() {
         if(queryOpener==null) queryOpener = getQueryOpener();
@@ -23,10 +24,24 @@ public abstract class SingleLookup {
     }
 
     def listHandler = [
-        getRows : { return 25; },
-        getColumns : { return getColumns(); }, 
-        fetchList :  { o-> return fetchList( o ) }
-    ] as PageListModel;
+        getColumns : {
+            def cols = [ new Column(name: "selected", caption: "", maxWidth:25, type: boolean, editable:true) ];
+            cols.addAll( getColumns() );
+            return cols;
+         },
+         fetchList :  { o->
+            return fetchList( o );
+         },
+         checkItem : { item,selected->
+            if(selected) 
+                included.add( item )
+            else
+            included.remove( item );
+         },
+         checkSelected : { o->
+            return included.contains( o );
+         }
+    ] as SubListModel;
 
     public abstract def getColumns();
     public abstract List fetchList( def o );
@@ -42,7 +57,7 @@ public abstract class SingleLookup {
     public def select() {
         if(selectedItem==null) throw new Exception("Please choose at least one item");
         if(selectHandler==null) throw new Exception("Please provide a selectHandler");
-        selectHandler(selectedItem);
+        selectHandler(included.unique());
         return "_close";
     }
 
