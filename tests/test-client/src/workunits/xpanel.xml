@@ -2,6 +2,9 @@
 <workunit>
     <invokers>
         <invoker folderid="/menu/file" caption="XPanel Test"/>
+        
+        <invoker type="formActions" caption="Toggle Top" action="toggleTop"/>
+        <invoker type="formActions" caption="Toggle Bottom" action="toggleBottom"/>
     </invokers>
     
     <code>

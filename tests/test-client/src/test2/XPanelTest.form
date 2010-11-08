@@ -12,15 +12,11 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="xActionBar1" alignment="0" pref="395" max="32767" attributes="0"/>
                   <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="xButton2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="xButton3" min="-2" max="-2" attributes="0"/>
-                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -30,12 +26,9 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="xButton2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="xButton3" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel1" pref="313" max="32767" attributes="0"/>
+              <Component id="xActionBar1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+              <Component id="jPanel1" pref="311" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -125,7 +118,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="171" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="169" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -162,16 +155,10 @@
         </Container>
       </SubComponents>
     </Container>
-    <Component class="com.rameses.rcp.control.XButton" name="xButton2">
+    <Component class="com.rameses.rcp.control.XActionBar" name="xActionBar1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Toggle Top"/>
-        <Property name="name" type="java.lang.String" value="toggleTop"/>
-      </Properties>
-    </Component>
-    <Component class="com.rameses.rcp.control.XButton" name="xButton3">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Toggle Bottom"/>
-        <Property name="name" type="java.lang.String" value="toggleBottom"/>
+        <Property name="name" type="java.lang.String" value="formActions"/>
+        <Property name="useToolBar" type="boolean" value="false"/>
       </Properties>
     </Component>
   </SubComponents>
