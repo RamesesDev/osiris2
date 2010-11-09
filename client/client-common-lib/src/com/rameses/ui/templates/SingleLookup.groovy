@@ -29,7 +29,7 @@ public abstract class SingleLookup {
     ] as PageListModel;
 
     public abstract def getColumns();
-    public abstract List fetchList( def o );
+    public abstract def fetchList( def o );
 
     public def getQueryOpener() { 
         return queryOpener; 
