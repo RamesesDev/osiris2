@@ -20,6 +20,7 @@ import com.rameses.rcp.framework.ControllerProvider;
 import com.rameses.rcp.framework.UIControllerContext;
 import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.common.ExpressionResolver;
+import com.rameses.rcp.common.Action;
 import com.rameses.rcp.common.Opener;
 import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
@@ -66,7 +67,7 @@ public final class InvokerUtil {
             String outcome = (String) u.init(params, action);
             
             String windowId = u.getId();
-
+            
             //check if window id already exists
             if ( platform.isWindowExists( windowId )) {
                 platform.activateWindow( windowId );
@@ -106,7 +107,7 @@ public final class InvokerUtil {
             }
         }
     }
-
+    
     public static void showWindow(Invoker invoker, String target, Map winParams) {
         if ( !ValueUtil.isEmpty(target) ) {
             invoker.setType(target);
@@ -174,13 +175,39 @@ public final class InvokerUtil {
         List invList = lookup(type);
         for(Object o: invList) {
             Invoker inv = (Invoker)  o;
-            InvokerAction ia = new InvokerAction(inv, param);
-            ia.setCaption(inv.getCaption());
-            ia.getProperties().putAll(inv.getProperties());
-            
-            actions.add(ia);
+            actions.add( createInvokerAction(inv, param) );
         }
         return actions;
+    }
+    
+    private static Action createInvokerAction(Invoker inv, InvokerParameter param) {
+        InvokerAction a = new InvokerAction(inv, param);
+        
+        Map invProps = new HashMap(inv.getProperties());
+        a.setName( (String) invProps.remove("action") );
+        a.setCaption( (String) invProps.remove("caption") );
+        if(inv.getIndex()!=null) {
+            a.setIndex(inv.getIndex());
+        }
+        
+        a.setIcon((String)invProps.remove("icon"));
+        a.setImmediate( "true".equals(invProps.remove("immediate")+"") );
+        a.setUpdate( "true".equals(invProps.remove("update")+"") );
+        a.setVisibleWhen( (String) invProps.remove("visibleWhen") );
+        
+        String mnemonic = (String) invProps.remove("mnemonic");
+        if ( !ValueUtil.isEmpty(mnemonic) ) {
+            a.setMnemonic(mnemonic.charAt(0));
+        }
+        
+        Object tooltip = invProps.remove("tooltip");
+        if ( !ValueUtil.isEmpty(tooltip) ) {
+            a.setTooltip(tooltip+"");
+        }
+        
+        if ( !invProps.isEmpty() ) a.getProperties().putAll( invProps );
+        
+        return a;
     }
     
     public static List lookup(String type) {
@@ -293,16 +320,16 @@ public final class InvokerUtil {
         }
         return openers;
     }
-
+    
     public static Object invokeOpener( Opener opener ) {
         return invokeOpener( opener, null );
     }
-
+    
     public static Object invokeOpener( Opener opener, UIController caller ) {
         ControlSupport.initOpener(opener, caller );
         return ControlSupport.init(opener.getController().getCodeBean(), opener.getParams(), opener.getAction() );
     }
-
+    
     
     
 }
