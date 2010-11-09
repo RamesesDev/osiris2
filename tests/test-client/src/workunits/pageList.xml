@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="PageList Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import test.model.*;
+                
+        public class SubListTestController  {
+        
+            def selectedItem;
+            
+            def getSelectedName() {
+                return selectedItem?.item?.name;
+            }
+        
+            def handler = [
+                createItem: { [:] },
+                fetchList: { data },
+                onAddItem: { data.add(it) },
+
+                onRemoveItem: {
+                    def members = selectedGroup?.item?.members;
+                    members?.remove( it );
+                },
+
+                getColumns: {
+                    return [
+                        new Column(name: "rownum", primary: true, width: 30),
+                        new Column(name: "item.name", caption: "Name", alignment: 'right', editable: true),
+                        new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
+                        new Column(name: "item.address", caption: "Address"),
+                        new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date"),
+                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, items: "root.empTypes"),
+                        new Column(name: "item.single", caption: "Single", type: "checkbox", editable: true),
+                        new Column(name: "item.dummy", caption: " ")
+                    ];
+                }
+
+            ] as PageListModel;
+            
+            def data = [
+                [name:"11", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50], 
+                [name:"12", address:"CEBU CITY", single: null, date: new Date(), balance: 1000], 
+                [name:"13", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520]
+
+            ];
+            
+            def empTypes = ['REGULAR', 'CASUAL'];
+            
+            void fireAction() {
+                println data;
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.table.SubList"/>
+    </pages>
+</workunit>

@@ -14,6 +14,7 @@ import java.awt.Rectangle;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -179,11 +180,6 @@ public class TableComponent extends JTable implements ListModelListener {
             tableCol.setCellRenderer(cellRenderer);
             applyColumnProperties(tableCol, col);
             
-            if ( !(listModel instanceof SubListModel) ) {
-                col.setEditable(false);
-                continue;
-            }
-            
             if ( !ValueUtil.isEmpty(col.getEditableWhen()) ) {
                 col.setEditable(true);
             }
@@ -302,7 +298,7 @@ public class TableComponent extends JTable implements ListModelListener {
         if (editingMode) {
             Point point = (Point) currentEditor.getClientProperty(COLUMN_POINT);
             if (rowIndex != point.y || columnIndex != point.x) {
-                hideEditor(currentEditor, point.y, point.x, true);
+                hideEditor(currentEditor, point.y, point.x, true, true);
             }
         }
         
@@ -353,16 +349,18 @@ public class TableComponent extends JTable implements ListModelListener {
         return false;
     }
     
-    private void selectAll(JComponent comp) {
-        if ( comp instanceof JTextComponent ) {
-            ((JTextComponent) comp).selectAll();
+    private void selectAll(JComponent editor, EventObject evt) {
+        if ( editor instanceof JTextComponent ) {
+            ((JTextComponent) editor).selectAll();
+        }
+        else if ( editor instanceof JCheckBox ) {
+            ((UIInput) editor).setValue( evt );
         }
     }
     
     private void focusNextCellFrom(int rowIndex, int colIndex) {
         int nextCol = findNextEditableColFrom(colIndex);
         int firstEditable = findNextEditableColFrom(-1);
-        SubListModel slm = (SubListModel) listModel;
         
         if ( nextCol >= 0 ) {
             this.changeSelection(rowIndex, nextCol, false, false);
@@ -371,8 +369,8 @@ public class TableComponent extends JTable implements ListModelListener {
             this.changeSelection(rowIndex+1, firstEditable, false, false);
             
         } else {
-            ListItem item = slm.getSelectedItem();
-            boolean lastRow = !(rowIndex + slm.getTopRow() < slm.getMaxRows());
+            ListItem item = listModel.getSelectedItem();
+            boolean lastRow = !(rowIndex + listModel.getTopRow() < listModel.getMaxRows());
             
             if ( item.getState() == 0 ) lastRow = false;
             
@@ -394,12 +392,16 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     private void hideEditor(boolean commit) {
-        if ( !editingMode || currentEditor == null ) return;
-        Point point = (Point) currentEditor.getClientProperty(COLUMN_POINT);
-        hideEditor(currentEditor, point.y, point.x, commit);
+        hideEditor(commit, true);
     }
     
-    private void hideEditor(JComponent editor, int rowIndex, int colIndex, boolean commit) {
+    private void hideEditor(boolean commit, boolean grabFocus) {
+        if ( !editingMode || currentEditor == null ) return;
+        Point point = (Point) currentEditor.getClientProperty(COLUMN_POINT);
+        hideEditor(currentEditor, point.y, point.x, commit, grabFocus);
+    }
+    
+    private void hideEditor(JComponent editor, int rowIndex, int colIndex, boolean commit, boolean grabFocus) {
         if ( !commit ) {
             editor.setInputVerifier(null);
             ListItem item = listModel.getItemList().get(rowIndex);
@@ -414,26 +416,25 @@ public class TableComponent extends JTable implements ListModelListener {
         currentEditor = null;
         
         tableModel.fireTableRowsUpdated(rowIndex, rowIndex);
-        grabFocus();
+        if ( grabFocus ) grabFocus();
     }
     
     private boolean validateRow(int rowIndex) {
-        SubListModel slm = (SubListModel) listModel;
         ActionMessage ac = new ActionMessage();
         itemBinding.validate(ac);
         if ( ac.hasMessages() ) {
-            slm.addErrorMessage(rowIndex, ac.toString());
+            listModel.addErrorMessage(rowIndex, ac.toString());
         } else {
-            slm.removeErrorMessage(rowIndex);
+            listModel.removeErrorMessage(rowIndex);
         }
         if ( ac.hasMessages() ) return false;
         
         try {
-            slm.validate( slm.getItemList().get(rowIndex) );
-            slm.removeErrorMessage(rowIndex);
+            listModel.validate( listModel.getItemList().get(rowIndex) );
+            listModel.removeErrorMessage(rowIndex);
         } catch (Exception e ) {
             String msg = getMessage(e);
-            slm.addErrorMessage(rowIndex, msg);
+            listModel.addErrorMessage(rowIndex, msg);
             return false;
         }
         
@@ -474,7 +475,7 @@ public class TableComponent extends JTable implements ListModelListener {
             if ( !refreshed ) {
                 input.refresh();
             }
-            selectAll(editor);
+            selectAll(editor, e);
         } else if ( isPrintableKey() ) {
             input.setValue( currentKeyEvent );
         } else {
@@ -602,7 +603,7 @@ public class TableComponent extends JTable implements ListModelListener {
             fromTempFocus = e.isTemporary();
             
             if ( !e.isTemporary() ) {
-                hideEditor(true);
+                hideEditor(true, false);
             }
         }
         
@@ -640,7 +641,7 @@ public class TableComponent extends JTable implements ListModelListener {
                 if ( commit ) {
                     focusNextCellFrom( point.y, point.x );
                 } else {
-                    hideEditor(comp, point.y, point.x, false);
+                    hideEditor(comp, point.y, point.x, false, true);
                 }
             }
         }

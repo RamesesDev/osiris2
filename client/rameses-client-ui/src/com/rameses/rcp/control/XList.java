@@ -148,7 +148,7 @@ public class XList extends JList implements UIControl, ListSelectionListener {
     }
     
     public void valueChanged(ListSelectionEvent e) {
-        if ( getSelectedIndex() != -1 ) {
+        if ( getSelectedIndex() != -1 && !e.getValueIsAdjusting() ) {
             PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
             if ( isMultiselect() ) {
                 res.setProperty(binding.getBean(), getName(), getSelectedValues());

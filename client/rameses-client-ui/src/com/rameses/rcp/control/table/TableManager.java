@@ -9,7 +9,6 @@ package com.rameses.rcp.control.table;
 
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
-import com.rameses.rcp.common.SubListModel;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
 import com.rameses.rcp.control.XDateField;
@@ -296,16 +295,14 @@ public final class TableManager {
             }
             
             TableComponent tc = (TableComponent) table;
-            if ( tc.getListModel() instanceof SubListModel ) {
-                SubListModel slm = (SubListModel) tc.getListModel();
-                String errmsg = slm.getErrorMessage(row);
-                
-                if (errmsg != null) {
-                    if (!hasFocus) {
-                        comp.setBackground( xtable.getErrorBackground() );
-                        comp.setForeground( xtable.getErrorForeground() );
-                        comp.setOpaque(true);
-                    }
+            AbstractListModel lm = tc.getListModel();
+            String errmsg = lm.getErrorMessage(row);
+            
+            if (errmsg != null) {
+                if (!hasFocus) {
+                    comp.setBackground( xtable.getErrorBackground() );
+                    comp.setForeground( xtable.getErrorForeground() );
+                    comp.setOpaque(true);
                 }
             }
             
@@ -418,7 +415,7 @@ public final class TableManager {
             AbstractListModel alm = ((TableComponent) table).getListModel();
             if ( alm.getItemList().get(row).getItem() == null )
                 return empty;
-                
+            
             return component;
         }
         

@@ -123,15 +123,16 @@ public final class ControlSupport {
                 injectCaller( callee, callee.getClass(), caller.getCodeBean());
             }
             opener.setController( controller );
+            
+            Object o = controller.init(opener.getParams(), opener.getAction());
+            if ( o != null && o instanceof String ) {
+                opener.setOutcome( (String)o );
+            }
         }
         
         UIController controller = opener.getController();
         if( opener.getCaption()==null ) {
             opener.setCaption( controller.getName() );
-        }
-        Object o = controller.init(opener.getParams(), opener.getAction());
-        if ( o != null && o instanceof String ) {
-            opener.setOutcome( (String)o );
         }
         
         return opener;

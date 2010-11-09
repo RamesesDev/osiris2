@@ -16,6 +16,7 @@ import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.common.ExpressionResolver;
+import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.util.ValueUtil;
@@ -28,6 +29,7 @@ import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
@@ -132,13 +134,24 @@ public class XActionBar extends JPanel implements UIComposite {
             btn.putClientProperty("visibleWhen", action.getVisibleWhen());
             btn.setBinding(binding);
             
-            Map props = action.getProperties();
+            Map props = new HashMap(action.getProperties());
             try {
-                btn.setAccelerator(props.get("shortcut")+"");
+                btn.setAccelerator(props.remove("shortcut")+"");
             } catch(Exception ign){;}
             
             if ( props.get("target") != null ) {
-                btn.setTarget(props.get("target")+"");
+                btn.setTarget(props.remove("target")+"");
+            }
+            
+            //map out other properties
+            if ( !props.isEmpty() ) {
+                PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+                for(Object entry : props.entrySet()) {
+                    Map.Entry me = (Map.Entry) entry;
+                    try {
+                        res.setProperty( btn, (String) me.getKey(), me.getValue());
+                    }catch(Exception e){;}
+                }
             }
             
             Map params = action.getParams();
@@ -249,7 +262,7 @@ public class XActionBar extends JPanel implements UIComposite {
         else
             this.orientationVAlignment = UIConstants.TOP;
     }
-
+    
     public boolean focusFirstInput() {
         return false;
     }

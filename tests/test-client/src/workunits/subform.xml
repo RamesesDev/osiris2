@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="SubForm Test"/>
+        <invoker folderid="/menu/file" caption="SubForm Test (using table)" action="view2"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.osiris2.client.*;
+        
+                
+        public class Test2Controller  {
+        
+            def selected;
+        
+            def view2() { return 'page2'; }
+            
+            def items = [
+                'ONE', 'TWO', 'THREE'
+            ];
+            
+            def listHandler = [
+                getColumns: { [ new Column('item', 'List') ] },
+                fetchList: { items }
+            ] as SubListModel;
+            
+            def getSubOpener() {
+                println selected;
+                return InvokerUtil.lookupOpener('_testSub', [:]);
+            }
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test.subform.Page1"/>
+        <page name="page2" template="test.subform.Page2"/>
+    </pages>
+</workunit>
