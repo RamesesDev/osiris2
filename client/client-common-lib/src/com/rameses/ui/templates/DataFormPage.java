@@ -27,7 +27,6 @@ public class DataFormPage extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
-        setPreferredSize(new java.awt.Dimension(710, 400));
         headerPanel.setLayout(new java.awt.BorderLayout());
 
         headerPanel.setOpaque(false);

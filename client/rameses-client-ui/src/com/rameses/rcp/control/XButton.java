@@ -33,9 +33,11 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     private String expression;
     private Map params = new HashMap();
     private String permission;
+    private String visibleWhen;
     
     private String accelerator;
     private KeyStroke acceleratorKS;
+    
     
     public XButton() {
         setOpaque(false);
@@ -44,6 +46,17 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     
     
     public void refresh() {
+        if (!ValueUtil.isEmpty(visibleWhen)) {
+            ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+            Object value = er.evaluate(binding.getBean(), visibleWhen);
+            if ( "false".equals(value+"") ) {
+                setVisible(false);
+                return;
+            }
+            else if (!isVisible()) {
+                setVisible(true);
+            }
+        }
         if (!ValueUtil.isEmpty(expression)) {
             ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
             Object value = er.evaluate(binding.getBean(), expression);
@@ -92,13 +105,13 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     
     public ControlProperty getControlProperty() { return property; }
     
-    public boolean isShowCaption() { return property.isShowCaption(); }    
+    public boolean isShowCaption() { return property.isShowCaption(); }
     public void setShowCaption(boolean show) { property.setShowCaption(show); }
     
     public String getCaption() { return property.getCaption(); }
     public void setCaption(String caption) { property.setCaption(caption); }
     
-    public int getCaptionWidth() { return property.getCaptionWidth(); }    
+    public int getCaptionWidth() { return property.getCaptionWidth(); }
     public void setCaptionWidth(int width) { property.setCaptionWidth(width); }
     
     public String getTarget() { return target; }
@@ -120,6 +133,9 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     
     public String getPermission() { return permission; }
     public void setPermission(String permission) { this.permission = permission; }
+    
+    public String getVisibleWhen() { return visibleWhen; }
+    public void setVisibleWhen(String visibleWhen) { this.visibleWhen = visibleWhen; }
     //</editor-fold>
     
 }
