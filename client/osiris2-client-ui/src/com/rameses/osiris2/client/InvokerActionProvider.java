@@ -8,6 +8,7 @@ import com.rameses.rcp.framework.ActionProvider;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,29 +85,29 @@ public class InvokerActionProvider implements ActionProvider {
     private Action createAction(Invoker inv,Object context) {
         Action a = new Action( inv.getName()==null? inv.getCaption()+"":inv.getName() );
         
-        a.setName( inv.getAction() );
-        a.setCaption(inv.getCaption());
+        Map invProps = new HashMap(inv.getProperties());
+        a.setName( (String) invProps.remove("action") );
+        a.setCaption( (String) invProps.remove("caption") );
         if(inv.getIndex()!=null) {
             a.setIndex(inv.getIndex());
         }
         
-        Map invProps = inv.getProperties();
-        a.setIcon((String)invProps.get("icon"));
-        a.setImmediate( "true".equals(invProps.get("immediate")+"") );
-        a.setUpdate( "true".equals(invProps.get("update")+"") );
-        a.setVisibleWhen( (String) invProps.get("visibleWhen") );
+        a.setIcon((String)invProps.remove("icon"));
+        a.setImmediate( "true".equals(invProps.remove("immediate")+"") );
+        a.setUpdate( "true".equals(invProps.remove("update")+"") );
+        a.setVisibleWhen( (String) invProps.remove("visibleWhen") );
         
-        String mnemonic = (String) invProps.get("mnemonic");
+        String mnemonic = (String) invProps.remove("mnemonic");
         if ( !ValueUtil.isEmpty(mnemonic) ) {
             a.setMnemonic(mnemonic.charAt(0));
         }
         
-        Object tooltip = invProps.get("tooltip");
+        Object tooltip = invProps.remove("tooltip");
         if ( !ValueUtil.isEmpty(tooltip) ) {
             a.setTooltip(tooltip+"");
         }
         
-        a.getProperties().putAll( invProps );
+        if ( !invProps.isEmpty() ) a.getProperties().putAll( invProps );
         
         return a;
     }

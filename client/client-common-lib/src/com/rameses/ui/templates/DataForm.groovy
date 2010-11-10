@@ -21,14 +21,13 @@ public abstract class DataForm {
     def entity;
     def saveHandler;
     def editmode = 'read';
+    def formTitle = "No title specified";
 
     //switches in conjunction with the DataForm.xml. set to true if you want this displayed.
     boolean _promptBeforeSave = true;
     boolean _saveAndContinue = false;
     boolean _saveAndClose = true;
     boolean _save = true;
-
-    public abstract String getFormTitle();
 
     public def createEntity( o ) { 
         throw new Exception('Please override createEntity( o ).'); 

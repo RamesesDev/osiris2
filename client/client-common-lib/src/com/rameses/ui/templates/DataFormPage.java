@@ -23,7 +23,6 @@ public class DataFormPage extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         xActionBar1 = new com.rameses.rcp.control.XActionBar();
         statusPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -64,23 +63,15 @@ public class DataFormPage extends javax.swing.JPanel {
         add(headerPanel, java.awt.BorderLayout.NORTH);
 
         statusPanel.setPreferredSize(new java.awt.Dimension(100, 30));
-        jLabel1.setText("Status:");
-
         org.jdesktop.layout.GroupLayout statusPanelLayout = new org.jdesktop.layout.GroupLayout(statusPanel);
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(statusPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jLabel1)
-                .addContainerGap(597, Short.MAX_VALUE))
+            .add(0, 642, Short.MAX_VALUE)
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, statusPanelLayout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(jLabel1)
-                .addContainerGap())
+            .add(0, 30, Short.MAX_VALUE)
         );
         add(statusPanel, java.awt.BorderLayout.SOUTH);
 
@@ -89,7 +80,6 @@ public class DataFormPage extends javax.swing.JPanel {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel headerPanel;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel statusPanel;
     private com.rameses.rcp.control.XActionBar xActionBar1;

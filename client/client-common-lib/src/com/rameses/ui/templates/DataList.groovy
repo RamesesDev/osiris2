@@ -10,6 +10,7 @@ public abstract class DataList {
     def queryOpener = new Opener(outcome:"query");
     def query = null;
     def _formActions;
+    def formTitle = "No title specified";
 
     public def getFormActions() {
         if(_formActions==null) {
@@ -39,11 +40,10 @@ public abstract class DataList {
         }
     ] as PageListModel;
 
-    public abstract String getFormTitle();
     public abstract String getEntityName();
 
     public abstract def getColumns();
-    public abstract List fetchList( def o );
+    public abstract def fetchList( def o );
 
     public def getQueryOpener() { 
         return queryOpener; 
