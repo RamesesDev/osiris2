@@ -23,7 +23,7 @@
 
                 new FormControl(type: 'combo', properties:[ 
                     name: 'entity.detail', caption: 'Detail', items: 'details', depends: 'entity.item',
-                    preferredSize: "200,19", required: true, dynamic: true, allowNull: false
+                    preferredSize: "200,19", required: true, dynamic: true, allowNull: false, immediate: true
                 ])
             ];
             

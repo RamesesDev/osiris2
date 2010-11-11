@@ -139,6 +139,8 @@ public class ModuleParser implements URLFilter {
                     ParserUtil.loadAttributes( in, in.getProperties(), attributes,appContext.getPropertyResolver() );
                     module.getInvokers().add( in );
                 } else if(qName.equals("code")) {
+                    String className = attributes.getValue("class");
+                    if ( className != null ) workunit.setClassName(className);
                     sb.delete(0, sb.length());
                 } else if(qName.equals("pageflow")) {
                     pageFlow = new PageFlow();

@@ -35,6 +35,9 @@ public class WorkUnit implements Serializable {
     private String codeSource;
     private Class sourceClass;
     
+    private String className;
+    
+    
     public WorkUnit() {
     }
     
@@ -43,7 +46,7 @@ public class WorkUnit implements Serializable {
     }
     
     // <editor-fold defaultstate="collapsed" desc="ADD MEMBER UTILITY">
- 
+    
     
     public void addPage( Page page ) {
         //add a default name if page does not yet exist
@@ -123,7 +126,7 @@ public class WorkUnit implements Serializable {
         wi.setTitle(title);
         return wi;
     }
-
+    
     public Map getPages() {
         return pages;
     }
@@ -131,33 +134,33 @@ public class WorkUnit implements Serializable {
     public Page getDefaultPage() {
         return defaultPage;
     }
-
+    
     public PageFlow getPageFlow() {
         return pageFlow;
     }
-
+    
     public void setPageFlow(PageFlow pageFlow) {
         this.pageFlow = pageFlow;
     }
-
+    
     public Map getProperties() {
         return properties;
     }
-
+    
     public String toString() {
         return getId();
     }
-
+    
     public boolean equals(Object object) {
         if( object == null || !(object instanceof WorkUnit)) return false;
-        WorkUnit w = (WorkUnit)object;        
+        WorkUnit w = (WorkUnit)object;
         return getId().equals( w.getId() );
     }
-
+    
     public Module getModule() {
         return module;
     }
-
+    
     public void setModule(Module module) {
         this.module = module;
     }
@@ -165,22 +168,47 @@ public class WorkUnit implements Serializable {
     public String getId() {
         return getModule().getNamespace() + ":" + getName();
     }
-
+    
     public void setCodeSource(String codeSource) {
         this.codeSource = codeSource;
     }
     
     public Object getCodeInstance() {
-        try {
-            CodeProvider provider = module.getAppContext().getCodeProvider();
-            if(sourceClass==null) {
-                sourceClass = provider.createClass(codeSource);
+        CodeProvider provider = module.getAppContext().getCodeProvider();
+        if ( codeSource != null && codeSource.trim().length() > 0 ) {
+            try {
+                if(sourceClass==null) {
+                    sourceClass = provider.createClass(codeSource);
+                }
+                if(sourceClass != null) {
+                    return provider.createObject(sourceClass);
+                }
+            } catch(Exception ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
             }
-            return provider.createObject(sourceClass);
         }
-        catch(Exception ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
+        
+        if ( className != null ) {
+            try {
+                if ( sourceClass == null ) {
+                    sourceClass = provider.loadClass(className);
+                }
+                if(sourceClass != null) {
+                    return provider.createObject(sourceClass);
+                }
+            } catch(Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         }
+        throw new RuntimeException("Code Source or Class Name must be provided in workunit.code");
     }
-   
+    
+    public String getClassName() {
+        return className;
+    }
+    
+    public void setClassName(String className) {
+        this.className = className;
+    }
+    
 }

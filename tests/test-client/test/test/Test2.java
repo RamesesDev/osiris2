@@ -7,6 +7,8 @@
 
 package test;
 
+import com.rameses.rcp.common.MsgBox;
+import javax.swing.JTextField;
 import junit.framework.*;
 
 /**
@@ -20,7 +22,10 @@ public class Test2 extends TestCase {
     }
     
     public void testHello() {
-        System.out.println( Math.round( Math.random() * 5 ) );
+        MsgBox.alert(new JTextField("Message."){{
+            setEditable(false);
+            setBorder(null);
+        }});
     }
 
 }

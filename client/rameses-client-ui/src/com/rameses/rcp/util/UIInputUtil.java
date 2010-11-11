@@ -20,6 +20,7 @@ import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -80,7 +81,9 @@ public class UIInputUtil {
                 if ( addLog ) {
                     binding.getChangeLog().addEntry(bean, name, beanValue, inputValue);
                 }
-                if ( refresh ) control.refresh();
+                if ( refresh && control instanceof JTextComponent ) {
+                    control.refresh();
+                }
                 
                 binding.notifyDepends(control);
             }

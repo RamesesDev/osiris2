@@ -143,6 +143,13 @@ public class XActionBar extends JPanel implements UIComposite {
                 btn.setTarget(props.remove("target")+"");
             }
             
+            if ( props.get("default") != null ) {
+                String dfb = props.remove("default")+"";
+                if ( dfb.equals("true") && getRootPane()!=null && getRootPane().getDefaultButton()==null) {
+                    getRootPane().setDefaultButton(btn);
+                }
+            }
+            
             //map out other properties
             if ( !props.isEmpty() ) {
                 PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();

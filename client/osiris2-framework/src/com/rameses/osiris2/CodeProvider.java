@@ -14,6 +14,7 @@ package com.rameses.osiris2;
  * @author elmo
  */
 public interface CodeProvider {
+    Class loadClass(String className);
     Class createClass(String source);
     Object createObject(Class clazz);
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker type="formActions" caption="Action From Parent" action="fireAction"/>
+    </invokers>
+    
+    <code class="test.groovy.TestController" />
+    
+    <pages>
+        <page template="test2.ExtendsPage"/>
+    </pages>
+</workunit>

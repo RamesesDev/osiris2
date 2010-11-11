@@ -28,7 +28,7 @@ public class GroovyControllerProvider implements CodeProvider {
         try {
             return loader.parseClass( new ByteArrayInputStream(source.getBytes()) );
         } catch(Exception ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
+            throw new RuntimeException(ex.getMessage(), ex);
         }
     }
     
@@ -38,7 +38,15 @@ public class GroovyControllerProvider implements CodeProvider {
             ClassDefUtil.getInstance().injectFields(retVal, fieldHandler);
             return retVal;
         } catch(Exception ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
+            throw new RuntimeException(ex.getMessage(), ex);
+        }
+    }
+
+    public Class loadClass(String className) {
+        try {
+            return loader.loadClass(className);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
         }
     }
  

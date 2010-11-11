@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--   -->
+<workunit extends="workunits/template1.xml">
+    <invokers>
+        <invoker folderid="/menu/file" caption="Extends Parent Template"/>
+        
+        <invoker type="formActions" caption="Action From Child" action="fireAction"/>
+    </invokers>
+    <code>
+        import com.rameses.rcp.common.*;
+        
+        public class Controller1 extends test.groovy.TestController {
+            
+            public void fireAction() {
+                MsgBox.alert('overriding fire action from parent.');
+            }
+            
+        }
+    </code>
+</workunit>
