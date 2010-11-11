@@ -118,17 +118,33 @@ public class ModuleParser implements URLFilter {
                         workunit.getProperties().remove("extends");
                         String arr[] = s.split(",");
                         for(int i=0; i<arr.length; i++) {
-                            String p = null;
+                            String module = null;
+                            String path = null;
                             try {
-                                p = arr[i].trim();                
-                                URL u = loader.getResource(p);
+                                path = arr[i].trim();
+                                if ( path.matches("^[^/]+:/.+") ) {
+                                    String[] ss = path.split(":/");
+                                    module = ss[0];
+                                    path = ss[1];
+                                }
+                                URL u = null;
+                                if ( module == null ){
+                                    u = loader.getResource(path);
+                                } else {
+                                    Module m = workunit.getModule().getAppContext().getModule(module);
+                                    if ( m == null )
+                                        throw new RuntimeException("Module " + module + " not found.");
+                                    
+                                    u = m.getResource(path);
+                                }
+                                
                                 SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
                                 if(u!=null) {
                                     WorkUnitParser wp = new WorkUnitParser(workunit);
                                     parser.parse( u.openStream(), wp );
                                 }
                             }catch(Exception e) {
-                                System.out.println("PARSING ERROR. PATH " + p + " does not exist!");
+                                System.out.println("ERROR PARSING " + arr[i] + "! DETAILS: " + e.getMessage());
                             }
                         }
                     }
