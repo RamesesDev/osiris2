@@ -11,6 +11,7 @@ package com.rameses.rcp.subplatform;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
+import com.rameses.platform.interfaces.SubWindow;
 import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.framework.ClientContext;
 import java.awt.BorderLayout;
@@ -102,6 +103,8 @@ public class SubPlatformWindow extends JPanel implements MainWindow {
     //<editor-fold defaultstate="collapsed" desc="  ViewPanel (class)  ">
     private class ViewPanel extends JPanel implements ViewContext {
         
+        private SubWindow parent;
+        
         ViewPanel(JComponent c) {
             setLayout(new BorderLayout());
             add(c);
@@ -122,6 +125,14 @@ public class SubPlatformWindow extends JPanel implements MainWindow {
             if ( contentPane.getComponentCount() == 0) return;
             Component c = contentPane.getComponent(0);
             if ( c instanceof ViewContext ) ((ViewContext) c).display();
+        }
+
+        public void setSubWindow(SubWindow subWindow) {
+            parent = subWindow;
+        }
+
+        public SubWindow getSubWindow() {
+            return parent;
         }
         
     }

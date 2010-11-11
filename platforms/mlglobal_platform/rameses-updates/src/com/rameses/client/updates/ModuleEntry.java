@@ -9,23 +9,13 @@
 
 package com.rameses.client.updates;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  *
  * @author elmo
  * States 
- *  0 = no change
- *  1 = create
- *  2 = modify
- *  3 = remove
  *
  */
 public class ModuleEntry {
@@ -34,14 +24,19 @@ public class ModuleEntry {
     private double version = 0.0;
     private double size = 0.0;
     private String appPath;
-    private String hostPath;
-    private int state = Status.NO_CHANGE;
-    
+    private String fileName;
     
     public ModuleEntry(String n, String v, String sz) {
         this.name = n;
         if(v!=null)this.version = Double.parseDouble(v);
         if(sz!=null) this.size = Double.parseDouble(sz);
+         if(version==0.0) {
+            fileName = name;
+        }
+        else {
+            String vr = (version+"").replaceAll("\\.", "_");
+            fileName = name.substring(0, name.lastIndexOf(".")) + "-" + vr + ".jar" ;
+        }
     }
 
     public boolean equals(Object obj) {
@@ -54,117 +49,22 @@ public class ModuleEntry {
         return name;
     }
     
-    public String getAppPath() {
+    public String getModulePath() {
         return appPath;
     }
 
-    public void setAppPath(String appPath) {
+    public void setModulePath(String appPath) {
         this.appPath = appPath;
-        if( !this.appPath.endsWith("/")) this.appPath = this.appPath + "/";
-    }
-
-    public void setHostPath(String hostPath) {
-        this.hostPath = hostPath;
-        if( !this.hostPath.endsWith("/")) this.hostPath = this.hostPath + "/";
-    }
-    
-    public void download() throws Exception {
-        URLConnection uc = null;
-        InputStream is = null;
-        FileOutputStream fos = null;
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        File file = new File(appPath+name+"~");
-        
-        try {
-            int buffSize = 1024 * 32;
-            
-            fos = new FileOutputStream( file );
-            bos = new BufferedOutputStream(fos, buffSize);
-            
-            URL u = new URL(hostPath + name);
-            uc = u.openConnection();
-            is = uc.getInputStream();
-            bis = new BufferedInputStream(is, buffSize);
-            
-            byte[] buff = new byte[buffSize];
-            int bytesRead = -1;
-            
-            while( (bytesRead = bis.read(buff)) != -1 ) {
-                bos.write(buff, 0, bytesRead);
-            }
-            bos.flush();
-        } 
-        catch (Exception e) {
-            throw e;
-        }
-        finally {
-            try {
-                if( uc instanceof HttpURLConnection ) {
-                    ((HttpURLConnection)uc).disconnect();
-                }
-            } 
-            catch (Exception ign) {;}
-            try { is.close(); } catch (Exception ign) {;}
-            try { bis.close(); } catch (Exception ign) {;}
-            try { fos.close(); } catch (Exception ign) {;}
-            try { bos.close(); } catch (Exception ign) {;}
-        }
-        
-        File successFile = new File(appPath+name);
-        file.renameTo(successFile);
-    }
-    
-    public void replace() throws Exception {
-        delete();
-        download();
-    }
-    
-    public void delete() {
-        File f = new File(appPath+name);
-        if(f.exists()) f.delete();
-    }
-
-    public void update() throws Exception {
-        switch( state ) {
-            case Status.REMOVE:
-                delete();
-                break;
-                
-            case Status.CREATE:
-            case Status.MODIFY:
-                System.out.println("replacing " + name);   
-                delete();
-                download();
-                break;
-                
-        }
-    }
-
-    public double getVersion() {
-        return version;
-    }
-
-    public double getSize() {
-        return size;
-    }
-
-    public void setState(int state) {
-        this.state = state;
     }
     
     public URL getURL() throws Exception {
         //for counter measure, ensure that file exists!
-        File f = new File(appPath+name);
-        if(!f.exists()) {
-            this.download();
-            
-        }
+        File f = new File(appPath+getFilename());
         return f.toURL();
     }
-
-    public int getState() {
-        return state;
+    
+    public String getFilename() {
+       return fileName;
     }
     
 }

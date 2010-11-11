@@ -5,6 +5,7 @@ import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.control.border.XUnderlineBorder;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.BindingListener;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.ControlContainer;
@@ -24,7 +25,9 @@ import java.awt.LayoutManager;
 import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -60,7 +63,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     private ControlProperty property = new ControlProperty();
     private ActionMessage actionMessage = new ActionMessage();
     
-    private boolean hasNonDynamicContents;
+    private List<UIControl> nonDynamicControls = new ArrayList();
     
     //internal flag
     private boolean _loaded;
@@ -80,18 +83,21 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     
     protected void addImpl(Component comp, Object constraints, int index) {
         ItemPanel p = null;
+        Component control = comp;
         //check if it is a containable component
         if ( comp instanceof ActiveControl ) {
             p = new ItemPanel(this, comp);
         } else if ( comp instanceof JScrollPane ) {
-            Component view = ((JScrollPane) comp).getViewport().getView();
-            if ( view instanceof ActiveControl ) {
-                p = new ItemPanel(this, view, comp);
+            control = ((JScrollPane) comp).getViewport().getView();
+            if ( control instanceof ActiveControl ) {
+                p = new ItemPanel(this, control, comp);
             }
         }
         
         if ( p != null ) {
-            if ( !_loaded ) hasNonDynamicContents = true;
+            if ( !_loaded && control instanceof UIControl )
+                nonDynamicControls.add( (UIControl) control );
+            
             super.addImpl(p, constraints, index);
         }
     }
@@ -150,14 +156,11 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     public boolean isDynamic() { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
     
-    public void refresh() {
-        for(UIControl uic: controls) {
-            uic.refresh();
-        }
-    }
+    public void refresh() {}
     
     public void load() {
         _loaded = true;
+        binding.addBindingListener(new FormPanelBindingListener());
         build();
     }
     
@@ -190,35 +193,46 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     }
     
     public boolean focusFirstInput() {
-        for(UIControl c: controls) {
-            if( actionMessage.hasMessages() ) {
-                if( !(c instanceof Validatable) ) continue;
-                
-                Validatable v = (Validatable) c;
-                v.validateInput();
-                if( v.getActionMessage().hasMessages() ) {
-                    ((Component) v).requestFocus();
+        List<UIControl> allControls = new ArrayList();
+        if ( !nonDynamicControls.isEmpty() )
+            allControls.addAll( nonDynamicControls );    
+        
+        allControls.addAll(controls);
+        
+        try {
+            for(UIControl c: allControls) {
+                if( actionMessage.hasMessages() ) {
+                    if( !(c instanceof Validatable) ) continue;
+                    
+                    Validatable v = (Validatable) c;
+                    v.validateInput();
+                    if( v.getActionMessage().hasMessages() ) {
+                        ((Component) v).requestFocus();
+                        return true;
+                    }
+                } else if ( c instanceof UICompositeFocusable ) {
+                    UICompositeFocusable uis = (UICompositeFocusable) c;
+                    if ( uis.focusFirstInput() ) return true;
+                    
+                } else if ( c instanceof UIInput ) {
+                    UIInput u = (UIInput) c;
+                    JComponent jc = (JComponent) c;
+                    if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isVisible())
+                        continue;
+                    
+                    jc.requestFocus();
                     return true;
                 }
-            } else if ( c instanceof UICompositeFocusable ) {
-                UICompositeFocusable uis = (UICompositeFocusable) c;
-                if ( uis.focusFirstInput() ) return true;
-                
-            } else if ( c instanceof UIInput ) {
-                UIInput u = (UIInput) c;
-                JComponent jc = (JComponent) c;
-                if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isVisible())
-                    continue;
-                
-                jc.requestFocus();
-                return true;
             }
+            
+        } catch(Exception e) {;} finally {
+            allControls = null;
         }
         return false;
     }
     
     public boolean isHasNonDynamicContents() {
-        return hasNonDynamicContents;
+        return !nonDynamicControls.isEmpty();
     }
     //</editor-fold>
     
@@ -513,4 +527,53 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  FormPanelBindingListener (class)  ">
+    private class FormPanelBindingListener implements BindingListener {
+        
+        public void notifyDepends(UIControl u, Binding parent) {
+            if ( ValueUtil.isEmpty(u.getName()) ) return;
+            Set<UIControl> refreshed = new HashSet();
+            for( UIControl control : controls ) {
+                if ( !isDependent( u.getName(), control ) ) continue;
+                _doRefresh( control, refreshed );
+            }
+            refreshed.clear();
+            refreshed = null;
+        }
+        
+        private boolean isDependent( String parentName, UIControl child ) {
+            if ( child.getDepends() != null ) {
+                for(String s : child.getDepends()) {
+                    if ( parentName.matches(s) ) return true;
+                }
+            }
+            return false;
+        }
+        
+        public void refresh(String regEx) {
+            Set<UIControl> refreshed = new HashSet();
+            for( UIControl uu : controls ) {
+                String name = uu.getName();
+                if ( regEx != null && name != null && !name.matches(regEx) ){
+                    continue;
+                }
+                
+                _doRefresh( uu, refreshed );
+            }
+            refreshed.clear();
+            refreshed = null;
+        }
+        
+        private void _doRefresh( UIControl u, Set refreshed ) {
+            if( refreshed.add(u) ) {
+                u.refresh();
+            }
+        }
+        
+        public void validate(ActionMessage actionMessage, Binding parent) {}
+        public void formCommit() {}
+        public void update() {}
+        
+    }
+    //</editor-fold>
 }

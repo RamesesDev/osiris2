@@ -40,7 +40,6 @@ import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.TableComponent;
 import com.rameses.rcp.control.table.TableHeaderBorder;
-import com.rameses.rcp.ui.WrapperControl;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
@@ -54,7 +53,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener, WrapperControl {
+public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
     private TableComponent table;
     private ListScrollBar scrollBar;
@@ -91,11 +90,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public void removeKeyListener(KeyListener l) {
         table.removeKeyListener(l);
     }
-    
-    public Component getWrappedComponent() {
-        return table;
-    }
-    
+
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
     private void init() {
         table = new TableComponent();

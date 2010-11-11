@@ -14,6 +14,7 @@ import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.MethodResolver;
+import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.common.Validator;
 import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.ui.UICompositeFocusable;
@@ -91,6 +92,11 @@ public class Binding {
      * EventManager is used to register any event listener for a specified UIControl name
      */
     private EventManager eventManager = new EventManager();
+    
+    /**
+     * Reference to the ViewContext
+     */
+    private ViewContext viewContext;
     
     
     public Binding() {}
@@ -398,30 +404,6 @@ public class Binding {
     }
     
     /**
-     * fireAction can be used to programmatically invoke a
-     * bean action (emulating a UICommand action) that can
-     * trigger a navigation process
-     */
-    @Deprecated
-    public void fireAction(String action) {
-        if ( ValueUtil.isEmpty(action) ) return;
-        try {
-            ClientContext ctx = ClientContext.getCurrentContext();
-            Object outcome = null;
-            if ( !action.startsWith("_")) {
-                MethodResolver mr = ctx.getMethodResolver();
-                outcome = mr.invoke(getBean(), action, null, null);
-            } else {
-                outcome = action;
-            }
-            fireNavigation(outcome);
-            
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-    
-    /**
      * fireNavigation can be used to programmatically trigger the navigation handler
      * from the controller's code bean
      */
@@ -463,6 +445,14 @@ public class Binding {
         if ( name == null ) return null;
         
         return controlsIndex.get(name);
+    }
+    
+    /**
+     *
+     */
+    public void setTitle(String title) {
+        if ( viewContext != null && viewContext.getSubWindow() != null )
+            viewContext.getSubWindow().setTitle(title);
     }
     //</editor-fold>
     
@@ -644,5 +634,13 @@ public class Binding {
         
     }
     //</editor-fold>
+    
+    public ViewContext getViewContext() {
+        return viewContext;
+    }
+    
+    public void setViewContext(ViewContext viewContext) {
+        this.viewContext = viewContext;
+    }
     
 }

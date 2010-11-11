@@ -1,5 +1,6 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.platform.interfaces.SubWindow;
 import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.control.XButton;
 import java.awt.BorderLayout;
@@ -20,6 +21,9 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     private Stack<UIControllerContext> controllers = new Stack();
     private boolean defaultBtnAdded;
     private XButton defaultBtn;
+    
+    private SubWindow parent;
+    
     
     public UIControllerPanel() {
         super.setLayout(new BorderLayout());
@@ -59,6 +63,7 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
         if ( current != null ) {
             UIViewPanel p = current.getCurrentView();
             Binding binding = p.getBinding();
+            binding.setViewContext(this);
             defaultBtn = binding.getDefaultButton();
             if ( defaultBtn != null ) {
                 defaultBtnAdded = false;
@@ -110,6 +115,14 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
             UIViewPanel p = current.getCurrentView();
             p.getBinding().focusFirstInput();
         }
+    }
+
+    public void setSubWindow(SubWindow subWindow) {
+        this.parent = subWindow;
+    }
+
+    public SubWindow getSubWindow() {
+        return parent;
     }
     
 }

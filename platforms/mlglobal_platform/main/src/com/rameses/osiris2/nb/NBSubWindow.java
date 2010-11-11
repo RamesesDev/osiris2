@@ -96,8 +96,14 @@ public class NBSubWindow extends TopComponent implements SubWindow
     {
         Component c = getComponent(0);
         if (c instanceof ViewContext) {
-            return ((ViewContext) c);
+            ViewContext vc = (ViewContext) c;
+            if ( vc.getSubWindow() == null ) vc.setSubWindow(this);
+            return vc;
         }
         return null;
-    }   
+    }
+
+    public void setTitle(String title) {
+        setDisplayName(title);
+    }
 }
