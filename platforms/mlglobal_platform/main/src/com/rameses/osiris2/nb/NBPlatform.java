@@ -39,10 +39,11 @@ public class NBPlatform implements Platform {
     public void showStartupWindow(JComponent actionSource, JComponent comp, Map properties) {
         String title = (String) properties.get("title");
         
-        if ( title != null )
-            startupWindow.setDisplayName(title);
+        //if ( title != null )
+        //    startupWindow.setDisplayName(title);
         
         startupWindow.removeAll();
+        SwingUtilities.updateComponentTreeUI( startupWindow );
         startupWindow.add(comp);
     }
     
@@ -214,8 +215,11 @@ public class NBPlatform implements Platform {
     public void logoff() {
         try {
             if ( closeAll() ) {
+                ((StartupWindow)startupWindow).start();
+                /*
                 NBPlatformLoader.DownloadResult res = NBPlatformLoader.download();
                 res.getAppLoader().load( res.getClassLoader(), res.getEnv(), this);
+                 */
             }
             
         } catch(Exception e) {
@@ -248,6 +252,8 @@ public class NBPlatform implements Platform {
                 win.closeWindow();
             }
         }
+        
+        //SwingUtilities.updateComponentTreeUI( f.getContentPane() );
         
         return true;
     }

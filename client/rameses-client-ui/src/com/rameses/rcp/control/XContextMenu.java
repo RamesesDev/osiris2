@@ -15,7 +15,6 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ControlEvent;
 import com.rameses.rcp.framework.EventListener;
 import com.rameses.rcp.ui.UIControl;
-import com.rameses.rcp.ui.WrapperControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
@@ -95,16 +94,16 @@ public class XContextMenu extends JPanel implements UIControl, EventListener {
         
         if ( popupMenu.getComponentCount() == 0 ) return;
         
+        Component source = target;
         Point p = null;
-        if ( UIConstants.MOUSE_POSITION.equals(menuPosition) && evt.getSourceEvent() instanceof MouseEvent )
-            p = ((MouseEvent) evt.getSourceEvent()).getPoint();
-        else
+        if ( UIConstants.MOUSE_POSITION.equals(menuPosition) && evt.getSourceEvent() instanceof MouseEvent ) {
+            MouseEvent me = (MouseEvent) evt.getSourceEvent();
+            p = me.getPoint();
+            source = (Component) me.getSource();
+        } else
             p = target.getLocation();
         
-        if ( target instanceof WrapperControl )
-            popupMenu.show( ((WrapperControl)target).getWrappedComponent(), p.x, p.y);
-        else
-            popupMenu.show(target, p.x, p.y);
+        popupMenu.show(source, p.x, p.y);
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">

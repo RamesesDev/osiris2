@@ -1,5 +1,6 @@
 package com.rameses.rcp.framework;
 
+import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.ui.ControlContainer;
 import com.rameses.rcp.ui.UIControl;
 import java.awt.BorderLayout;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 public class UIViewPanel extends JPanel implements ContainerListener {
     
     protected Binding binding;
+    
     
     public UIViewPanel() {
         super();
@@ -82,5 +84,4 @@ public class UIViewPanel extends JPanel implements ContainerListener {
     public void refresh() {
         binding.refresh();
     }
-    
 }

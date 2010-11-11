@@ -7,8 +7,6 @@
 
 package test;
 
-import com.rameses.osiris2.Folder;
-import com.rameses.osiris2.client.OsirisContext;
 import junit.framework.*;
 
 /**
@@ -22,7 +20,7 @@ public class Test2 extends TestCase {
     }
     
     public void testHello() {
-
+        System.out.println( Math.round( Math.random() * 5 ) );
     }
 
 }

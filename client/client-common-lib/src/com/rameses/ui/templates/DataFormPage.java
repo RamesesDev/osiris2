@@ -22,11 +22,9 @@ public class DataFormPage extends javax.swing.JPanel {
         xLabel2 = new com.rameses.rcp.control.XLabel();
         jPanel3 = new javax.swing.JPanel();
         xActionBar1 = new com.rameses.rcp.control.XActionBar();
-        statusPanel = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
 
-        setPreferredSize(new java.awt.Dimension(710, 400));
         headerPanel.setLayout(new java.awt.BorderLayout());
 
         headerPanel.setOpaque(false);
@@ -63,26 +61,12 @@ public class DataFormPage extends javax.swing.JPanel {
 
         add(headerPanel, java.awt.BorderLayout.NORTH);
 
-        statusPanel.setPreferredSize(new java.awt.Dimension(100, 30));
-        org.jdesktop.layout.GroupLayout statusPanelLayout = new org.jdesktop.layout.GroupLayout(statusPanel);
-        statusPanel.setLayout(statusPanelLayout);
-        statusPanelLayout.setHorizontalGroup(
-            statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 642, Short.MAX_VALUE)
-        );
-        statusPanelLayout.setVerticalGroup(
-            statusPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 30, Short.MAX_VALUE)
-        );
-        add(statusPanel, java.awt.BorderLayout.SOUTH);
-
     }// </editor-fold>//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel headerPanel;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel statusPanel;
     private com.rameses.rcp.control.XActionBar xActionBar1;
     private com.rameses.rcp.control.XLabel xLabel2;
     // End of variables declaration//GEN-END:variables

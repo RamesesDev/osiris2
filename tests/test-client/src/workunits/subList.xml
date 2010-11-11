@@ -33,7 +33,7 @@
                 getColumns: {
                     return [
                         new Column(name: "rownum", primary: true, width: 30),
-                        new Column(name: "item.name", caption: "Name", alignment: 'right', editable: true),
+                        new Column(name: "item.name", caption: "Name", alignment: 'right', editableWhen: '#{item.name == null}'),
                         new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
                         new Column(name: "item.address", caption: "Address"),
                         new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date"),

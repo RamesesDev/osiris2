@@ -4,8 +4,6 @@ import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

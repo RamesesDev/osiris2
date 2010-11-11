@@ -18,5 +18,7 @@ public interface ViewContext {
     
     boolean close();
     void display();
+    void setSubWindow(SubWindow subWindow);
+    SubWindow getSubWindow();
     
 }

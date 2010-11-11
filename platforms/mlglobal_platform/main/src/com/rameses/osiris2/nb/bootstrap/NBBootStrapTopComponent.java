@@ -1,7 +1,11 @@
 package com.rameses.osiris2.nb.bootstrap;
 
 import com.rameses.osiris2.nb.NBManager;
+import com.rameses.osiris2.nb.StartupWindow;
+import com.rameses.platform.interfaces.ViewContext;
+import java.awt.Component;
 import java.io.Serializable;
+import javax.swing.SwingUtilities;
 import org.openide.ErrorManager;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -9,7 +13,7 @@ import org.openide.windows.WindowManager;
 
 
 
-final class NBBootStrapTopComponent extends TopComponent {
+final class NBBootStrapTopComponent extends TopComponent implements StartupWindow {
     
     private static NBBootStrapTopComponent instance;
     private static final String PREFERRED_ID = "NBBootStrapTopComponent";
@@ -17,7 +21,8 @@ final class NBBootStrapTopComponent extends TopComponent {
     private NBBootStrapTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(NBBootStrapTopComponent.class, "CTL_NBBootStrapTopComponent"));
-        setToolTipText(NbBundle.getMessage(NBBootStrapTopComponent.class, "HINT_NBBootStrapTopComponent"));
+        //setToolTipText(NbBundle.getMessage(NBBootStrapTopComponent.class, "HINT_NBBootStrapTopComponent"));
+        setDisplayName("Startup");
     }
     
     
@@ -54,12 +59,11 @@ final class NBBootStrapTopComponent extends TopComponent {
     }
     
     public int getPersistenceType() {
-        return TopComponent.PERSISTENCE_ALWAYS;
+        return TopComponent.PERSISTENCE_NEVER;
     }
     
     public void componentOpened() {
-        NBManager.getInstance().init(this);
-        add( new DownloadPanel() );
+        start();
     }
     
     public void componentClosed() {}
@@ -75,7 +79,20 @@ final class NBBootStrapTopComponent extends TopComponent {
     public boolean canClose() {
         return false;
     }
-    
+
+    public void start() {
+        NBManager.getInstance().init(this);
+        removeAll();
+        SwingUtilities.updateComponentTreeUI(this);
+        add( new DownloadPanel() );
+    }
+
+    protected void addImpl(Component comp, Object constraints, int index) {
+        super.addImpl(comp, constraints, index);
+        if ( comp instanceof ViewContext ) {
+            ((ViewContext) comp).display();
+        }
+    }
     
     final static class ResolvableHelper implements Serializable {
         private static final long serialVersionUID = 1L;
