@@ -11,13 +11,18 @@ import com.rameses.beaninfo.AbstractBeanInfo;
 import com.rameses.beaninfo.editor.ComponentsOrientationPropertyEditor;
 import com.rameses.beaninfo.editor.HorizontalAlignmentPropertyEditor;
 import com.rameses.beaninfo.editor.VerticalAlignmentPropertyEditor;
+import java.awt.Image;
 import java.beans.BeanDescriptor;
 import java.beans.PropertyDescriptor;
+import javax.swing.ImageIcon;
 
 
 public class XActionBarBeanInfo extends AbstractBeanInfo {
     
+    private ImageIcon icon;
+    
     public XActionBarBeanInfo() {
+
     }
 
     public Class getBeanClass() {

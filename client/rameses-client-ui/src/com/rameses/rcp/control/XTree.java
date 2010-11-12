@@ -48,7 +48,6 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
     private DefaultMutableTreeNode root;
     private DefaultTreeModel model;
     private TreeNodeModel nodeModel;
-    private Node selectedNode;
     private DefaultNode defaultNode;
     
     
@@ -101,7 +100,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         addMouseListener(  new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
                 if(me.getClickCount()==2) {
-                    openNode(selectedNode);
+                    openNode(nodeModel.getSelectedNode());
                 }
             }
         });
@@ -110,7 +109,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0), "openNode");
         getActionMap().put("openNode", new AbstractAction(){
             public void actionPerformed(ActionEvent e) {
-                openNode(selectedNode);
+                openNode(nodeModel.getSelectedNode());
             }
         });
     }
@@ -142,10 +141,10 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
     
     public void valueChanged(TreeSelectionEvent e) {
         defaultNode = ((DefaultNode)e.getPath().getLastPathComponent());
-        selectedNode = defaultNode.getNode();
+        nodeModel.setSelectedNode( defaultNode.getNode() );
         if(getName()!=null ) {
             PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
-            res.setProperty(binding.getBean(), getName(), selectedNode);
+            res.setProperty(binding.getBean(), getName(), nodeModel.getSelectedNode());
             binding.notifyDepends(this);
         }
     }

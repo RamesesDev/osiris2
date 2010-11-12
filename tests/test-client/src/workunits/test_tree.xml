@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XTree Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TestMenuController  {
+        
+            def text;
+            def table;
+
+            def handler = [
+                fetchNodes: { p->
+                    return [
+                        new Node(p.id+'/file', 'File'),
+                        new Node(p.id+'/txn', 'Transaction'),
+                        new Node(p.id+'/report', 'Reports'),
+                        new Node(id: p.id+'/hlp', caption: 'Help', leaf: true)
+                    ];
+                },
+                openLeaf: { n->
+                    MsgBox.alert("Selecting item [$n.id]");
+                },
+                openFolder: { n->
+                    MsgBox.alert("Opening folder [$n.id]");
+                }
+            ] as TreeNodeModel;
+            
+            def open() {
+                handler.openSelected();
+            }
+
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test2.XTreeTest"/>
+    </pages>
+</workunit>
