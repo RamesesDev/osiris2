@@ -8,12 +8,9 @@
 package testutils;
 
 import com.rameses.util.DateUtil;
-import groovy.lang.Binding;
-import groovy.lang.GroovyObjectSupport;
-import groovy.lang.GroovyShell;
+import com.rameses.util.TimeUtil;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 import junit.framework.*;
 
 /**
@@ -39,15 +36,22 @@ public class DateUtilTest extends TestCase {
         System.out.println(DateUtil.getFormattedTime(tp, "US"));
     }
     
-    public void testGroovyBinding() {
-        Map map = new HashMap();
-        Map person = new HashMap();
-        person.put("name","elmo");
-        map.put("person", person);
-        
-        
+    public void testCheckTime1() {
+        Date d = new Date();
+        String pattern = "08:00-12:00 MWF";
+        TimeUtil.ScheduleBean t = new TimeUtil.ScheduleBean(pattern);
+        assertTrue( t.isMon() );
+        assertTrue( t.isWed() );
+        assertTrue( t.isFri() );
+        assertFalse( t.isTue() );
+        assertFalse( t.isThu() );
     }
-    
+
+    public void testCheckTime2() {
+        Timestamp d = java.sql.Timestamp.valueOf( "2010-11-15 18:30:00");
+        String pattern = "17:00-19:00 MWF";
+        assertTrue( TimeUtil.checkSchedule( d, pattern ));
+    }
     
     
     

@@ -27,21 +27,18 @@ public class InvokerProxy {
     private Map<String, Class> map = new Hashtable<String, Class>();
     private GroovyClassLoader loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
     
-    private static InvokerProxy instance;
+    private static InvokerProxy instance = new InvokerProxy();
     
     public static InvokerProxy getInstance() {
-        if( instance == null ) {
-            instance = new InvokerProxy();
-        }
         return instance;
     }
     
     
-    public Object create( String name ) throws Exception {
+    public synchronized Object create( String name ) throws Exception {
         return create(name, null);
     }
     
-    public Object create( String name, String hostKey) throws Exception {
+    public synchronized Object create( String name, String hostKey) throws Exception {
         HttpInvokerClient client = HttpClientManager.getInstance().getService(hostKey, OsirisContext.getSession().getEnv());
         Class clazz = null;
         if(! map.containsKey(name)) {
@@ -54,7 +51,7 @@ public class InvokerProxy {
         return Proxy.newProxyInstance(loader, new Class[]{clazz}, new MyHandler(name, client));
     }
     
-    public void reset() {
+    public synchronized void reset() {
         map.clear();
         //loader.clearCache();
         loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
