@@ -1,0 +1,7 @@
+<workunit>
+  <invokers>
+        <invoker type="listFormActions" caption="New" index="0" action="create" permission="create" icon="com/rameses/images/document.gif" target="window"/>
+        <invoker type="listFormActions" caption="Open" index="2" action="open" permission="edit" icon="com/rameses/images/folder-open.gif" target="window"/>
+        <invoker type="listOpen" caption="Open" index="2" action="open" permission="edit" icon="com/rameses/images/folder-open.gif"  target="window"/>
+    </invokers>
+</workunit>

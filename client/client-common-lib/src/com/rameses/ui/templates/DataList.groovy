@@ -11,11 +11,22 @@ public abstract class DataList {
     def query = null;
     def _formActions;
     def formTitle = "No title specified";
+    def listEntityName;
+    def entityName;
+    def invoker;
+
+    @Controller
+    def controller;
 
     public def getFormActions() {
-        if(_formActions==null) {
-            _formActions = InvokerUtil.lookupActions( getEntityName() + ":formActions", 
-                    { inv -> return getInvokerParams( inv ) } as InvokerParameter )  
+        if(_formActions==null && entityName !=null) {
+            if(!listEntityName) listEntityName = entityName + "_list";
+            def p = { inv -> return getInvokerParams( inv ) } as InvokerParameter;
+            _formActions = InvokerUtil.lookupActions( "listFormActions", p ).findAll {
+                System.out.println( "invoker ." + it.invoker.workunitname + " = " + entityName )
+                it.invoker.module.name == controller.workunit.module.name && 
+                it.invoker.workunitname == entityName
+            }
         }
         return _formActions;
     }        
@@ -34,13 +45,11 @@ public abstract class DataList {
         getColumns : { return getColumns(); }, 
         fetchList :  { o-> return fetchList( o ) }, 
         onOpenItem : { o,col-> 
-            def params = getOpenParams();
-            params.saveHandler = saveHandler;    
-            InvokerUtil.lookupOpener( getEntityName() + ":open", params  ); 
+            def params = getInvokerParams( [action:"open"] );
+            InvokerUtil.lookupOpeners( "listOpen", params  ).find{ it.name == controller.module.name+":"+entityName } 
         }
     ] as PageListModel;
 
-    public abstract String getEntityName();
 
     public abstract def getColumns();
     public abstract def fetchList( def o );
@@ -72,6 +81,7 @@ public abstract class DataList {
             p = getParams(inv);
         
         if ( p ) map.putAll( p );
+        map.put( "entityName", entityName );
         return map;
     }
 
