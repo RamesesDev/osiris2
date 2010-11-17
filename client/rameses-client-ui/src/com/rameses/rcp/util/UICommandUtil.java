@@ -33,10 +33,7 @@ public class UICommandUtil {
             if(permission!=null && controllerName !=null) {
                 permission = controllerName+"."+permission;
             }
-            
-            if( !ControlSupport.isPermitted(permission))
-                throw new Exception("There is no sufficient privilege to perform this action.");
-            
+
             binding.formCommit();
             validate(command, binding);
             
