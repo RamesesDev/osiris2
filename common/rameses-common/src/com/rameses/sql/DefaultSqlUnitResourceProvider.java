@@ -23,7 +23,7 @@ public class DefaultSqlUnitResourceProvider implements SqlUnitResourceProvider {
     }
     
     public InputStream getResource(String name) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = getClass().getClassLoader();
         InputStream is = null;
         for(SqlUnitResourceProvider sp : providers) {
             try {
