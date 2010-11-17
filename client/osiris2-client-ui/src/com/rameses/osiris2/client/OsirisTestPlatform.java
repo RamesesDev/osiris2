@@ -11,8 +11,7 @@ package com.rameses.osiris2.client;
 
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.rcp.support.ResURLStreamHandlerFactory;
-import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,7 +25,9 @@ public final class OsirisTestPlatform {
     }
     
     public static void runTest(Map map) throws Exception {
-        URL.setURLStreamHandlerFactory(new ResURLStreamHandlerFactory(Thread.currentThread().getContextClassLoader()));
+        if ( map == null ) map = new HashMap();
+        map.put("app.title", "Osiris Test Platform");
+        
         OsirisAppLoader loader = new OsirisAppLoader();
         Platform platform = ClientContext.getCurrentContext().getPlatform();
         loader.load(Thread.currentThread().getContextClassLoader(), map, platform);

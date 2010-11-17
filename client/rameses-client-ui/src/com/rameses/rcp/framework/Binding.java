@@ -1,8 +1,6 @@
 
 package com.rameses.rcp.framework;
 
-import com.rameses.classutils.ClassDefUtil;
-import com.rameses.rcp.annotations.Close;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.ui.UIComposite;
@@ -15,6 +13,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.MethodResolver;
 import com.rameses.platform.interfaces.ViewContext;
+import com.rameses.rcp.annotations.Close;
 import com.rameses.rcp.common.Validator;
 import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.ui.UICompositeFocusable;
@@ -79,7 +78,7 @@ public class Binding {
     private boolean _initialized = false;
     
     private KeyListener changeLogKeySupport = new ChangeLogKeySupport();
-    private List<String> closeMethods;
+    private String closeMethod;
     private List<Validator> validators = new ArrayList();
     
     /**
@@ -366,15 +365,13 @@ public class Binding {
     }
     
     public boolean close() {
-        if ( closeMethods == null ) return true;
+        if ( closeMethod == null ) return true;
         
         try {
             MethodResolver mr = ClientContext.getCurrentContext().getMethodResolver();
-            for ( String mname: closeMethods ) {
-                Object o = mr.invoke(bean, mname, new Class[]{}, new Object[]{});
-                if ( "false".equals(o+"") ) {
-                    return false;
-                }
+            Object o = mr.invoke(bean, closeMethod, new Class[]{}, new Object[]{});
+            if ( "false".equals(o+"") ) {
+                return false;
             }
             
         } catch(Exception e) {
@@ -478,24 +475,13 @@ public class Binding {
     
     public void setBean(Object bean) {
         this.bean = bean;
-        injectAnnotations( bean, bean.getClass() );
-        initAnnotatedMethods();
+        initAnnotatedFields( bean, bean.getClass() );
+        initAnnotatedMethods( bean, bean.getClass() );
         _load();
     }
-    
-    public void initAnnotatedMethods() {
-        if ( closeMethods != null ) return;
-        
-        closeMethods = new ArrayList();
-        ClassDefUtil cdu = ClassDefUtil.getInstance();
-        Method[] cm = cdu.findAnnotatedMethods(bean.getClass(), Close.class);
-        for (Method m: cm) {
-            closeMethods.add( m.getName() );
-        }
-    }
-    
+
     public void reinjectAnnotations() {
-        injectAnnotations( bean, bean.getClass() );
+        initAnnotatedFields( bean, bean.getClass() );
     }
     
     private void _load() {
@@ -538,7 +524,7 @@ public class Binding {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
-    private void injectAnnotations( Object o, Class clazz ) {
+    private void initAnnotatedFields( Object o, Class clazz ) {
         if( o == null) return ;
         
         //check for field annotations
@@ -576,7 +562,20 @@ public class Binding {
         
         Class superClass = clazz.getSuperclass();
         if( superClass != null ) {
-            injectAnnotations( o, superClass );
+            initAnnotatedFields( o, superClass );
+        }
+    }
+    
+    private void initAnnotatedMethods( Object o, Class clazz ) {
+        for(Method m: clazz.getDeclaredMethods()) {
+            if ( m.isAnnotationPresent(Close.class) ) {
+                closeMethod = m.getName();
+                return;
+            }
+        }
+        Class superClazz = clazz.getSuperclass();
+        if ( superClazz != null ) {
+            initAnnotatedMethods( o, superClazz );
         }
     }
     //</editor-fold>

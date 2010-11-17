@@ -81,7 +81,6 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     
                     Map props = new HashMap();
                     props.put("id", controller.getId());
-                    //props.put("title", opener.getCaption());
                     props.put("title", controller.getTitle() );
                     props.put("modal", opener.isModal());
 

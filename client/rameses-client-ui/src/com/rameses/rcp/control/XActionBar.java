@@ -188,10 +188,11 @@ public class XActionBar extends JPanel implements UIComposite {
             if (!btn.isVisible()) continue;
             
             toolbarComponent.add(btn);
-            Object df = btn.getClientProperty("default.button");
-            if (df!=null && df.toString().equals("true") && binding.getDefaultButton() == null) {
-                binding.setDefaultButton(btn);
-            }
+            
+//            Object df = btn.getClientProperty("default.button");
+//            if (df!=null && df.toString().equals("true") && binding.getDefaultButton() == null) {
+//                binding.setDefaultButton(btn);
+//            }
         }
         
         SwingUtilities.updateComponentTreeUI(this);

@@ -76,7 +76,7 @@ public final class ReportUtil {
             String oDir = name.substring(0, name.lastIndexOf("/"));
             String oFname = name.substring(name.lastIndexOf("/"));
             String cusReportName = oDir + "/" + cusDir + oFname;
-            URL u = Thread.currentThread().getContextClassLoader().getResource(cusReportName);
+            URL u = ReportUtil.class.getClassLoader().getResource(cusReportName);
             if (u != null) name = cusReportName;
         }
         
@@ -96,7 +96,7 @@ public final class ReportUtil {
                 
                 
                 File f = new File(reportName);
-                URL u = Thread.currentThread().getContextClassLoader().getResource(name);
+                URL u = ReportUtil.class.getClassLoader().getResource(name);
                 is = u.openStream();
                 uc = u.openConnection();
                 long newModified = uc.getLastModified();
@@ -127,7 +127,7 @@ public final class ReportUtil {
             }
         } else if( name.endsWith(".jasper") ) {
             try {
-                URL u = Thread.currentThread().getContextClassLoader().getResource(name);
+                URL u = ReportUtil.class.getClassLoader().getResource(name);
                 return (JasperReport) JRLoader.loadObject(u);
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);

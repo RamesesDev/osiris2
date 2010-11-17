@@ -64,6 +64,7 @@ public abstract class DataForm {
         def outcome = saveNewEntity( entity );
         if(saveHandler) saveHandler(entity);
         editmode = 'read';
+        changeLog.clear();
         return outcome;
     }
 
@@ -71,6 +72,7 @@ public abstract class DataForm {
         if ( _promptBeforeSave && !MsgBox.confirm(promptMessage) ) return;
         updateEntity( entity );
         if(saveHandler) saveHandler(entity);
+        changeLog.clear();
         return "_close";
     }
 
@@ -79,6 +81,7 @@ public abstract class DataForm {
         def outcome = updateEntity( entity );
         if(saveHandler) saveHandler(entity);
         editmode = 'read';
+        changeLog.clear();
         return outcome;
     }
 
@@ -86,6 +89,7 @@ public abstract class DataForm {
         if ( _promptBeforeSave && !MsgBox.confirm(promptMessage) ) return;
         updateEntity( entity );
         if(saveHandler) saveHandler(entity);
+        changeLog.clear();
         return null;
     }
     
@@ -94,6 +98,7 @@ public abstract class DataForm {
         def outcome = (editmode == 'edit')? updateEntity( entity ) : saveNewEntity( entity );
         if(saveHandler) saveHandler(entity);
         editmode = 'read';
+        changeLog.clear();
         return outcome;
     }
 
@@ -105,7 +110,6 @@ public abstract class DataForm {
 
     @Close
     public boolean onClose() {
-        println "---> closing....";
         if ( changeLog.hasChanges() ) {
             return MsgBox.confirm(closeMessage);
         }

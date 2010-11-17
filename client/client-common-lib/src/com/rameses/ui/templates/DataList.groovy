@@ -36,7 +36,7 @@ public abstract class DataList {
         onOpenItem : { o,col-> 
             def params = getOpenParams();
             params.saveHandler = saveHandler;    
-            InvokerUtil.lookupOpener( getEntityName() + ":open", params  ); 
+            InvokerUtil.lookupOpener( getEntityName() + ":open", getOpenParams()  ); 
         }
     ] as PageListModel;
 

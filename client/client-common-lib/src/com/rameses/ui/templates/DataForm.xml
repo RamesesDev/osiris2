@@ -1,5 +1,6 @@
 <workunit>
     <invokers>
+        <invoker type="formActions" caption="Close" action="_close"  immediate="true"/>
         <invoker type="formActions" caption="Edit" action="edit" immediate="true" permission="edit" icon="com/rameses/images/edit.gif" visibleWhen="#{editmode == 'read'}"/>
         <invoker type="formActions" caption="Save" action="save" icon="com/rameses/images/save.gif" visibleWhen="#{_save and editmode != 'read'}"/>
         <invoker type="formActions" caption="Save and Close" action="saveAndClose" visibleWhen="#{_saveAndClose and editmode != 'read' and editmode!= 'create'}"/>

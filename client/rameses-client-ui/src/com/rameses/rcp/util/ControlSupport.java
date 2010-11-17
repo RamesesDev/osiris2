@@ -131,8 +131,8 @@ public final class ControlSupport {
         }
         
         UIController controller = opener.getController();
-        if( opener.getCaption()==null ) {
-            opener.setCaption( controller.getName() );
+        if( controller.getTitle() == null ) {
+            controller.setTitle( controller.getName() );
         }
         
         return opener;

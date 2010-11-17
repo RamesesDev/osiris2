@@ -16,7 +16,7 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -27,11 +27,12 @@ import javax.swing.SwingUtilities;
  */
 public class MainDialog implements MainWindow {
     
-    private JDialog dialog = new JDialog();
+    private JFrame dialog = new JFrame();
     private MainWindowListener listener;
     
     public MainDialog() {
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setTitle("Main Dialog");
+        dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dialog.setLayout( new BorderLayout() );
         
         JPanel dummy = new JPanel();
@@ -45,7 +46,7 @@ public class MainDialog implements MainWindow {
         });
     }
     
-    public JDialog getComponent() { return dialog; }
+    public JFrame getComponent() { return dialog; }
     
     public void show() {
         SwingUtilities.invokeLater(new Runnable() {

@@ -7,9 +7,10 @@
 
 package test;
 
-import com.rameses.rcp.common.MsgBox;
-import javax.swing.JTextField;
+import java.lang.reflect.Field;
 import junit.framework.*;
+import test.annotation.ClassName;
+import test.annotation.TestClass;
 
 /**
  *
@@ -17,15 +18,13 @@ import junit.framework.*;
  */
 public class Test2 extends TestCase {
     
+    
     public Test2(String testName) {
         super(testName);
     }
     
     public void testHello() {
-        MsgBox.alert(new JTextField("Message."){{
-            setEditable(false);
-            setBorder(null);
-        }});
+        
     }
-
+    
 }
