@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -39,7 +40,7 @@ public class PlatformImpl implements Platform {
         String canClose = "false";
         String modal = properties.get("modal")+"";
         
-        JDialog parent = mainWindow.getComponent();
+        JFrame parent = mainWindow.getComponent();
         final PopupDialog d = new PopupDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
@@ -71,7 +72,7 @@ public class PlatformImpl implements Platform {
         String canClose = (String) properties.get("canclose");
         String modal = properties.get("modal")+"";
         
-        JDialog parent = mainWindow.getComponent();
+        JFrame parent = mainWindow.getComponent();
         final PopupDialog d = new PopupDialog(parent);
         d.setTitle(title);
         d.setContentPane(comp);
@@ -102,15 +103,17 @@ public class PlatformImpl implements Platform {
         
         String modal = properties.get("modal")+"";
         
-        JDialog parent = mainWindow.getComponent();
+        JFrame parent = mainWindow.getComponent();
+        PopupDialog dd = null;
         if ( actionSource != null ) {
             Window w = getParentWindow(actionSource);
             if ( w instanceof JDialog ) {
-                parent = (JDialog) w;
+                dd = new PopupDialog((JDialog) w);
             }
         }
+        if ( dd == null ) dd = new PopupDialog(parent);
         
-        final PopupDialog d = new PopupDialog(parent);
+        final PopupDialog d = dd;
         d.setTitle(title);
         d.setContentPane(comp);
         d.setId( id );

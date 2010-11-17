@@ -7,8 +7,8 @@
 
 package test;
 
-import com.rameses.rcp.common.MsgBox;
-import javax.swing.JTextField;
+import com.rameses.persistence.EntityManager;
+import com.rameses.rcp.framework.Binding;
 import junit.framework.*;
 
 /**
@@ -17,15 +17,15 @@ import junit.framework.*;
  */
 public class Test2 extends TestCase {
     
+    
     public Test2(String testName) {
         super(testName);
     }
     
     public void testHello() {
-        MsgBox.alert(new JTextField("Message."){{
-            setEditable(false);
-            setBorder(null);
-        }});
+//        EntityManager em;
+//        Binding b;
+        InvokerUtil.lookup("", null);
     }
-
+    
 }

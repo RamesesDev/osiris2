@@ -28,7 +28,9 @@ import java.beans.Beans;
 import java.util.Arrays;
 import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.InputVerifier;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -52,6 +54,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private String itemKey;
     
     protected DefaultComboBoxModel model;
+    private boolean updating;
     
     
     public XComboBox() {
@@ -91,7 +94,12 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
         if ( immediate ) {
             super.addItemListener(this);
         } else {
-            super.setInputVerifier(UIInputUtil.VERIFIER);
+            super.setInputVerifier(new InputVerifier() {
+                public boolean verify(JComponent input) {
+                    if ( isPopupVisible() ) return true;
+                    return UIInputUtil.VERIFIER.verify(input);
+                }
+            });
         }
     }
     
@@ -129,6 +137,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     }
     
     private void buildList() {
+        updating = true;
         model.removeAllElements(); //clear combo model
         
         if ( allowNull ) {
@@ -149,6 +158,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             addItem(o, caption+"");
         }
         SwingUtilities.updateComponentTreeUI(this);
+        updating = false;
     }
     
     private void addItem(Object value, String text) {
@@ -162,7 +172,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     }
     
     public void itemStateChanged(ItemEvent e) {
-        if ( e.getStateChange() == ItemEvent.SELECTED ) {
+        if ( e.getStateChange() == ItemEvent.SELECTED && !updating ) {
             UIInputUtil.updateBeanValue(this);
         }
     }

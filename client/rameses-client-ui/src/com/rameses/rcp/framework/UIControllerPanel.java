@@ -43,11 +43,14 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
         });
     }
     
-    private void attachDefaultButton() {
+    //visible in the package
+    void attachDefaultButton() {
         JRootPane rp = getRootPane();
         if ( rp != null ) {
             rp.setDefaultButton(defaultBtn);
             defaultBtnAdded = true;
+        } else {
+            defaultBtnAdded = false;
         }
     }
     
@@ -65,12 +68,6 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
             Binding binding = p.getBinding();
             binding.setViewContext(this);
             defaultBtn = binding.getDefaultButton();
-            if ( defaultBtn != null ) {
-                defaultBtnAdded = false;
-                //try to attach the default button
-                attachDefaultButton();
-            }
-            
             add( p );
             p.refresh();
             binding.focusFirstInput();
@@ -116,11 +113,11 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
             p.getBinding().focusFirstInput();
         }
     }
-
+    
     public void setSubWindow(SubWindow subWindow) {
         this.parent = subWindow;
     }
-
+    
     public SubWindow getSubWindow() {
         return parent;
     }

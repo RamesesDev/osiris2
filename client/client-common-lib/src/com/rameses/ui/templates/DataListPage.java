@@ -8,7 +8,7 @@ import com.rameses.rcp.ui.annotations.StyleSheet;
  * @author jaycverg
  */
 
-@StyleSheet("com/rameses/client/ui/DataListPage.style")
+@StyleSheet("com/rameses/ui/templates/DataListPage.style")
 public class DataListPage extends javax.swing.JPanel {
     
     public DataListPage() {

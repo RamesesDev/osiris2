@@ -13,6 +13,7 @@ import java.awt.Container;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 
 public class PopupDialog extends JDialog implements SubWindow, WindowListener {
@@ -24,6 +25,11 @@ public class PopupDialog extends JDialog implements SubWindow, WindowListener {
     
     public PopupDialog() {
         super();
+        init();
+    }
+    
+    public PopupDialog(JFrame parent) {
+        super(parent);
         init();
     }
     
@@ -83,6 +89,7 @@ public class PopupDialog extends JDialog implements SubWindow, WindowListener {
     public void windowOpened(WindowEvent e) {
         if ( viewContext != null ) {
             viewContext.display();
+            viewContext.setSubWindow(this);
         }
     }
     

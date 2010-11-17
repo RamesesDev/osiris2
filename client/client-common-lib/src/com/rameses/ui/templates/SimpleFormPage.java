@@ -8,7 +8,7 @@ import com.rameses.rcp.ui.annotations.StyleSheet;
  * @author jaycverg
  */
 
-@StyleSheet("com/rameses/client/ui/DataForm.style")
+@StyleSheet("com/rameses/ui/templates/DataForm.style")
 public class SimpleFormPage extends javax.swing.JPanel {
     
     public SimpleFormPage() {
