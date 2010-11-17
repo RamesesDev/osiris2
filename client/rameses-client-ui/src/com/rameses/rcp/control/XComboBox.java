@@ -54,6 +54,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     private String itemKey;
     
     protected DefaultComboBoxModel model;
+    private boolean updating;
     
     
     public XComboBox() {
@@ -136,6 +137,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     }
     
     private void buildList() {
+        updating = true;
         model.removeAllElements(); //clear combo model
         
         if ( allowNull ) {
@@ -156,6 +158,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             addItem(o, caption+"");
         }
         SwingUtilities.updateComponentTreeUI(this);
+        updating = false;
     }
     
     private void addItem(Object value, String text) {
@@ -169,7 +172,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     }
     
     public void itemStateChanged(ItemEvent e) {
-        if ( e.getStateChange() == ItemEvent.SELECTED ) {
+        if ( e.getStateChange() == ItemEvent.SELECTED && !updating ) {
             UIInputUtil.updateBeanValue(this);
         }
     }

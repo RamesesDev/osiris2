@@ -20,6 +20,7 @@ import java.util.Map;
 public class Invoker implements Serializable, Comparable {
     
     private String workunitid;
+    private String workunitname;
     private String name;
     private String caption;
     private String ref;
@@ -164,6 +165,14 @@ public class Invoker implements Serializable, Comparable {
 
     public void setModule(Module module) {
         this.module = module;
+    }
+
+    public String getWorkunitname() {
+        return workunitname;
+    }
+
+    public void setWorkunitname(String workunitname) {
+        this.workunitname = workunitname;
     }
 
    

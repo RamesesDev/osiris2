@@ -7,10 +7,9 @@
 
 package test;
 
-import java.lang.reflect.Field;
+import com.rameses.persistence.EntityManager;
+import com.rameses.rcp.framework.Binding;
 import junit.framework.*;
-import test.annotation.ClassName;
-import test.annotation.TestClass;
 
 /**
  *
@@ -24,7 +23,9 @@ public class Test2 extends TestCase {
     }
     
     public void testHello() {
-        
+//        EntityManager em;
+//        Binding b;
+        InvokerUtil.lookup("", null);
     }
     
 }

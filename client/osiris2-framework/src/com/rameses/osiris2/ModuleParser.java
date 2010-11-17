@@ -152,6 +152,7 @@ public class ModuleParser implements URLFilter {
                     Invoker in = new Invoker();
                     in.setModule( module );
                     in.setWorkunitid( module.getName() + ":" + workunit.getName() );
+                    in.setWorkunitname( workunit.getName() );
                     ParserUtil.loadAttributes( in, in.getProperties(), attributes,appContext.getPropertyResolver() );
                     module.getInvokers().add( in );
                 } else if(qName.equals("code")) {

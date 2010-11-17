@@ -223,6 +223,10 @@ public class Binding {
         for (BindingListener bl : listeners) {
             bl.refresh(regEx);
         }
+        
+        if ( viewContext instanceof UIControllerPanel ) {
+            ((UIControllerPanel) viewContext).attachDefaultButton();
+        }
     }
     
     private void _doRefresh( UIControl u, Set refreshed ) {
