@@ -29,6 +29,8 @@ public abstract class DataForm {
     boolean _saveAndClose = true;
     boolean _save = true;
 
+    def entityName;
+
     public def createEntity( o ) { 
         throw new Exception('Please override createEntity( o ).'); 
     }
