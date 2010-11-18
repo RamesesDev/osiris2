@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 /**
@@ -83,6 +84,8 @@ public class MainDialog implements MainWindow {
         } else if ( constraint.equals(MainWindow.MENUBAR)) {
             dialog.setJMenuBar((JMenuBar) comp);
         } else if ( constraint.equals(MainWindow.TOOLBAR) ) {
+            if ( comp instanceof JToolBar )
+                ((JToolBar) comp).setFloatable(false);
             if ( dialog.getComponentCount() > 1 ) {
                 dialog.remove(1);
             }

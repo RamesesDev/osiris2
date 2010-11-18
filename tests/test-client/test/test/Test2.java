@@ -7,6 +7,9 @@
 
 package test;
 
+import com.rameses.osiris2.client.InvokerAction;
+import com.rameses.osiris2.client.InvokerUtil;
+import com.rameses.osiris2.client.WorkUnitUIController;
 import com.rameses.persistence.EntityManager;
 import com.rameses.rcp.framework.Binding;
 import junit.framework.*;
@@ -25,7 +28,11 @@ public class Test2 extends TestCase {
     public void testHello() {
 //        EntityManager em;
 //        Binding b;
-        InvokerUtil.lookup("", null);
+        WorkUnitUIController c;
+        c.getWorkunit().getWorkunit();
+        InvokerAction ia;
+        InvokerUtil.lookupOpeners("", null);
+        Opener o;
     }
     
 }
