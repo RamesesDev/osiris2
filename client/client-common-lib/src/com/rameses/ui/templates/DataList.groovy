@@ -11,10 +11,19 @@ public abstract class DataList {
     def query = null;
     def _formActions;
     def formTitle = "No title specified";
-    def entityName;
+    def _entityName;
 
     @Controller
     def controller;
+
+    public def getEntityName() {
+        if(!_entityName) {
+            _entityName = controller.workunit.workunit.name;
+            _entityName = _entityName[0..(_entityName.lastIndexOf('_list')-1)];
+        }
+        return _entityName;
+    }
+
 
     public def getFormActions() {
         if(_formActions==null && entityName !=null) {

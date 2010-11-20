@@ -9,6 +9,7 @@
 
 package com.rameses.client.updates;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class UpdateCenter {
     
     private String appurl;
-    private String appPath = System.getProperty("user.dir")+"/osiris2/modules";
+    private String appPath = System.getProperty("user.dir")+"/osiris2";
     private Map env;
     private URL[] urls;
     
@@ -38,61 +39,38 @@ public class UpdateCenter {
         return appPath;
     }
     
-    public void start() throws Exception {
+    public void start() throws Exception 
+    {
         System.out.println("starting update");
-        UpdateConf conf = new UpdateConf(appurl,appPath);
-        conf.init();
+        String hostPath = UpdateCenterUtil.buildHostPath( appurl );
+
+        UpdateConf conf = UpdateCenterUtil.getUpdateConf(appurl, appPath );
         
-        boolean needsUpdate = true;
-        List<ModuleEntry> oldModules = new ArrayList<ModuleEntry>();
-        if( conf.exists()) {
-            if( conf.isIncomplete() ) {
-                conf.revert();
-            }
-            conf.load();
-            if( conf.hasUpdates() ) {
-                oldModules = conf.getOldModules();
-                conf.download();
-            } 
-            else {
-                needsUpdate = false;
-            }
-        } else {
-            conf.download();
+        //compare the modules with old list, whatever is remaining should be deleted
+        List<String> oldList = UpdateCenterUtil.getExistingFiles( conf.getModulePath() );
+        List<ModuleEntry> forDownload = new ArrayList();
+        for(ModuleEntry me: conf.getModules() ) {
+            String fileName = me.getFilename();
+            boolean existing = oldList.remove(fileName);
+            if(!existing) forDownload.add( me ); 
         }
         
-        List<ModuleEntry> newModules = conf.getModules();
+        //delete all files that are not used anymore.
+        for( String s : oldList ) {
+            File ff = new File( conf.getModulePath() + s );
+            ff.delete();
+        }
         
-        if( needsUpdate) {
-            for(ModuleEntry me: newModules) {
-                int idx = oldModules.indexOf(me);
-                if(idx>=0) {
-                    ModuleEntry oldEntry = oldModules.get(idx);
-                    if(oldEntry.getVersion()<me.getVersion()) {
-                        me.setState(Status.MODIFY);
-                    }
-                    oldModules.remove(idx);                    
-                } 
-                else {
-                    me.setState(Status.CREATE);
-                }
-            }
-            
-            //REMOVE ALL OLD MODULES
-            for(ModuleEntry old: oldModules) {
-                old.delete();
-            }
-            
-            for(ModuleEntry me: newModules) {
-                me.update();
-            }
-            conf.complete();
+        //download all new modules
+        for(ModuleEntry me : forDownload) {
+            System.out.println("... updating " + me.getFilename() );
+            UpdateCenterUtil.download( hostPath, me );
         }
         
         env = conf.getEnv();
-        urls = new URL[newModules.size()];
+        urls = new URL[conf.getModules().size()];
         int i = 0;
-        for(ModuleEntry me: newModules) {
+        for(ModuleEntry me: conf.getModules()) {
             urls[i++] = me.getURL();
         }
     }
