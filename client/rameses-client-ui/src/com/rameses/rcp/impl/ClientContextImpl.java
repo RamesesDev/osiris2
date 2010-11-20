@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 public class ClientContextImpl extends ClientContext {
     
-    private Platform platform = new PlatformImpl();
+    private Platform platform;
     private PropertyResolver propResolver = new PropertyResolverImpl();
     private MethodResolver methodResolver = new MethodResolverImpl();
     private ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -65,6 +65,9 @@ public class ClientContextImpl extends ClientContext {
     }
     
     public Platform getPlatform() {
+        if ( platform == null ) 
+            platform = new PlatformImpl(); //default impl
+        
         return platform;
     }
     
