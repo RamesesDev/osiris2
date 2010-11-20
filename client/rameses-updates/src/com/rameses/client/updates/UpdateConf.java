@@ -3,14 +3,8 @@ package com.rameses.client.updates;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,36 +25,15 @@ public class UpdateConf extends DefaultHandler {
     private String confPath;
     private long lastModified;
     
-    private String hostPath;
     private String appPath;
     private String appurl;
+    private String modulePath;
     
-    public UpdateConf(String appurl, String appPath) {
+    public UpdateConf(String appurl, String appPath, String confPath ) {
         this.appurl = appurl;
         this.appPath = appPath;
-    }
-    
-    public void init() throws Exception {
-        //check malformed url first
-        try {
-            URL u = new URL(appurl);
-        } 
-        catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-        
-        int lastIndex = appurl.lastIndexOf("/");
-        String appName = appurl.substring(appurl.lastIndexOf("/",lastIndex-1 )+1, lastIndex );
-        hostPath = appurl.substring(0, appurl.lastIndexOf("/")+1);
-
-        if( !appPath.endsWith("/") ) appPath = appPath + "/";
-        appPath = appPath + appName;
-        
-        //create the directories
-        File f = new File(appPath);
-        if(!f.exists()) f.mkdirs();
-        
-        confPath = appPath + "/update.xml";
+        this.confPath = confPath;
+        this.modulePath = confPath.substring(0, confPath.lastIndexOf("/") + 1);
     }
     
     public void load() throws Exception {
@@ -83,6 +56,7 @@ public class UpdateConf extends DefaultHandler {
             SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
             parser.parse(bis, this);
         } catch(Exception ex) {
+            f.delete();
             throw ex;
         } finally {
             try { fis.close();  } catch(Exception ign){;}
@@ -99,8 +73,7 @@ public class UpdateConf extends DefaultHandler {
             String sz = attr.getValue("size");
             String version = attr.getValue("version");
             ModuleEntry me = new ModuleEntry(name,version,sz);
-            me.setAppPath(appPath);
-            me.setHostPath(hostPath);
+            me.setModulePath(modulePath);
             
             //ensure no double entry
             if( getModules().indexOf(me)<0 ) {
@@ -150,124 +123,18 @@ public class UpdateConf extends DefaultHandler {
         return lastModified;
     }
     
+    /*
     public void setHostPath(String hostPath) {
         this.hostPath = hostPath;
     }
+     */
     
     public void setAppPath(String appPath) {
         this.appPath = appPath;
     }
     
-    
-    
-    public void download() throws Exception {
-        
-        //check if there is an existing conf then rename it.
-        createTemp();
-        
-        URLConnection uc = null;
-        File f = new File(confPath);
-        long modified = 0;
-        InputStream is = null;
-        ObjectOutputStream oos = null;
-        try {
-            URL u = new URL(appurl);
-            uc = u.openConnection();
-            modified = uc.getLastModified();
-            
-            is = uc.getInputStream();
-            int i = 0;
-            StringBuffer sb = new StringBuffer();
-            while( (i=is.read())!=-1) {
-                sb.append((char)i);
-            }
-
-            Object o = CipherUtil.encode((Serializable)sb.toString());
-            oos = new ObjectOutputStream(new FileOutputStream(f));
-            oos.writeObject( o );
-            
-            oos.flush();
-        } 
-        catch(Exception ex) {
-            throw ex;
-        } 
-        finally {
-            try {
-                if( uc instanceof HttpURLConnection) {
-                    ((HttpURLConnection)uc).disconnect();
-                }
-            } catch(Exception ign){;}
-            try { oos.close(); } catch(Exception ign){;}
-            try { is.close(); } catch(Exception ign){;}
-        }
-        
-        //after downloading, reload the conf
-        f.setLastModified(modified);
-
-        load();
-    }
-    
-    public boolean hasUpdates() {
-        URLConnection uc = null;
-        InputStream is = null;
-        try {
-            URL u = new URL(appurl);
-            uc = u.openConnection();
-            long modified = uc.getLastModified();
-            if(modified==0) return false;
-            if(modified == lastModified)
-                return false;
-            return true;
-        } catch(Exception ex) {
-            return false;
-        } finally {
-            try {
-                if( uc instanceof HttpURLConnection) {
-                    ((HttpURLConnection)uc).disconnect();
-                }
-            } catch(Exception ign){;}
-            try { is.close(); } catch(Exception ign){;}
-        }
-    }
-    
-    public boolean exists() {
-        return new File(confPath).exists();
-    }
-    
-    public void createTemp() {
-        File f = new File(confPath);
-        if(f.exists()) {
-            File tmp = new File(confPath+"~");
-            f.renameTo(tmp);
-        }
-    }
-
-    public boolean isIncomplete() {
-        return new File(confPath+"~").exists();
-    }
-    
-    //revert if incomplete
-    public void revert() {
-        File f = new File(confPath+"~");
-        File f1 = new File(confPath);
-        if( f1.exists() ) {
-            f1.delete();
-        }
-        if(f.exists()) {
-            f.renameTo(f1);
-        }
-    }
-    
-    //removes the temp file
-    public void complete() {
-        File f = new File(confPath+"~");
-        f.delete();
-    }
- 
-    public List<ModuleEntry> getOldModules() {
-        List<ModuleEntry> list = new ArrayList<ModuleEntry>();
-        list.addAll( this.modules );
-        return list;
+    public String getModulePath() {
+        return modulePath;
     }
     
 }
