@@ -7,12 +7,12 @@
 
 package test;
 
-import com.rameses.osiris2.client.InvokerAction;
-import com.rameses.osiris2.client.InvokerUtil;
 import com.rameses.osiris2.client.WorkUnitUIController;
-import com.rameses.persistence.EntityManager;
-import com.rameses.rcp.framework.Binding;
+import java.util.Map;
+import java.util.Set;
+import javax.swing.UIManager;
 import junit.framework.*;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
@@ -29,10 +29,20 @@ public class Test2 extends TestCase {
 //        EntityManager em;
 //        Binding b;
         WorkUnitUIController c;
-        c.getWorkunit().getWorkunit();
-        InvokerAction ia;
-        InvokerUtil.lookupOpeners("", null);
-        Opener o;
+        //c.getWorkunit().getWorkunit();
+//        InvokerAction ia;
+//        InvokerUtil.lookupOpeners("", null);
+//        Opener o;
+        
+        Set<Map.Entry<Object, Object>> set = (Set<Map.Entry<Object, Object>>) UIManager.getLookAndFeel().getDefaults().entrySet();
+        for(Map.Entry me: set) {
+            if ( me.getKey().toString().contains("control") )
+                System.out.println(me);
+        }
     }
+    
+//    private class Handler extends DefaultHandler {
+//        
+//    }
     
 }
