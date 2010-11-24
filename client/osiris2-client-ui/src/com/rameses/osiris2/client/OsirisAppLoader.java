@@ -49,7 +49,7 @@ public class OsirisAppLoader implements AppLoader {
             Thread.currentThread().setContextClassLoader(loader);
             
             OsirisContext.setSession(startupApp);
-
+            
             //load all loaders
             List loaders = startupApp.getInvokers("loader", false);
             if( loaders.size() > 0 ) {
@@ -74,7 +74,7 @@ public class OsirisAppLoader implements AppLoader {
             throw new IllegalStateException(ex.getMessage(), ex);
         }
     }
-
+    
     public void restore() {
     }
     

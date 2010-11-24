@@ -26,23 +26,8 @@ public class Test2 extends TestCase {
     }
     
     public void testHello() {
-//        EntityManager em;
-//        Binding b;
-        WorkUnitUIController c;
-        //c.getWorkunit().getWorkunit();
-//        InvokerAction ia;
-//        InvokerUtil.lookupOpeners("", null);
-//        Opener o;
         
-        Set<Map.Entry<Object, Object>> set = (Set<Map.Entry<Object, Object>>) UIManager.getLookAndFeel().getDefaults().entrySet();
-        for(Map.Entry me: set) {
-            if ( me.getKey().toString().contains("control") )
-                System.out.println(me);
-        }
     }
-    
-//    private class Handler extends DefaultHandler {
-//        
-//    }
+
     
 }
