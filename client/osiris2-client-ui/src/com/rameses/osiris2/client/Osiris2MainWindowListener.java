@@ -57,4 +57,8 @@ public class Osiris2MainWindowListener implements MainWindowListener {
         listeners.remove(listener);
     }
     
+    public void clear() {
+        listeners.clear();
+    }
+    
 }

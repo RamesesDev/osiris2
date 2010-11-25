@@ -2,10 +2,10 @@ package com.rameses.rcp.framework;
 
 import com.rameses.platform.interfaces.SubWindow;
 import com.rameses.platform.interfaces.ViewContext;
-import com.rameses.rcp.control.XButton;
 import java.awt.BorderLayout;
 import java.awt.LayoutManager;
 import java.util.Stack;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
@@ -20,7 +20,6 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     
     private Stack<UIControllerContext> controllers = new Stack();
     private boolean defaultBtnAdded;
-    private XButton defaultBtn;
     
     private SubWindow parent;
     
@@ -33,7 +32,7 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
         //attached to its rootpane
         addAncestorListener(new AncestorListener() {
             public void ancestorAdded(AncestorEvent event) {
-                if ( defaultBtn != null && !defaultBtnAdded ) {
+                if ( getDefaultButton() != null && !defaultBtnAdded ) {
                     attachDefaultButton();
                 }
             }
@@ -47,11 +46,19 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     void attachDefaultButton() {
         JRootPane rp = getRootPane();
         if ( rp != null ) {
-            rp.setDefaultButton(defaultBtn);
+            rp.setDefaultButton(getDefaultButton());
             defaultBtnAdded = true;
         } else {
             defaultBtnAdded = false;
         }
+    }
+    
+    private JButton getDefaultButton() {
+        UIControllerContext current = getCurrentController();
+        if ( current == null ) return null;
+        if ( current.getCurrentView() == null ) return null;
+        
+        return current.getCurrentView().getBinding().getDefaultButton();
     }
     
     public UIControllerPanel(UIControllerContext controller) {
@@ -67,7 +74,6 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
             UIViewPanel p = current.getCurrentView();
             Binding binding = p.getBinding();
             binding.setViewContext(this);
-            defaultBtn = binding.getDefaultButton();
             add( p );
             p.refresh();
             binding.focusFirstInput();

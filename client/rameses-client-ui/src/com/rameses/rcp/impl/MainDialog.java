@@ -12,7 +12,10 @@ package com.rameses.rcp.impl;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JComponent;
@@ -21,6 +24,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.AbstractBorder;
 
 /**
  *
@@ -89,9 +94,27 @@ public class MainDialog implements MainWindow {
             if ( dialog.getComponentCount() > 1 ) {
                 dialog.remove(1);
             }
+            comp.setBorder(new ToolbarBorder());
             dialog.add(comp, BorderLayout.NORTH, 1);
         }
         SwingUtilities.updateComponentTreeUI( dialog.getContentPane() );
+    }
+    
+    private class ToolbarBorder extends AbstractBorder {
+        
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics g2 = g.create();
+            g2.setColor(UIManager.getColor("controlShadow"));
+            g2.drawLine(x, height-1, width-1, height-1);
+            g2.setColor(UIManager.getColor("controlHighlight"));
+            g2.drawLine(x, height-2, width-1, height-2);
+            g2.dispose();
+        }
+
+        public Insets getBorderInsets(Component c) {
+            return new Insets(1,1,4,1);
+        }
+        
     }
     
 }

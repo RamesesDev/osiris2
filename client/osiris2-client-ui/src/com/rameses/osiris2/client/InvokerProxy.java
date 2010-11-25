@@ -78,8 +78,6 @@ public class InvokerProxy {
                 return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
             }
             catch(Exception e) {
-                System.out.println("ERROR CLASS " + e.getClass().getName());
-                e.printStackTrace();
                 throw e;
             }
         }
