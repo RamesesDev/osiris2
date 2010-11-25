@@ -1,6 +1,7 @@
 package com.rameses.invoker.client;
 
 import com.rameses.util.CipherUtil;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -98,34 +99,30 @@ public class HttpInvokerClient {
                 if( (retval instanceof String) && retval.equals("#NULL")  ) {
                     retval = null;
                 }
-                if( retval instanceof Exception ) 
+                if( retval instanceof Exception )
                     throw (Exception)retval;
                 
                 break;
-            } catch(UnknownHostException uhe) {
-                currentRound++;
-                if( currentRound >= rounds ) {
-                    throw uhe;
-                } else {
-                    host = getHosts()[currentRound];
+            } 
+            catch (Exception ex) {
+                if( (ex instanceof UnknownHostException)
+                    || (ex instanceof ConnectException) 
+                    || (ex instanceof SocketTimeoutException)
+                    || (ex instanceof IOException)) {
+                        System.out.println("cant connect to " + host + ". retry another");
+                        //find the next host
+                        currentRound++;
+                        if( currentRound >= rounds ) {
+                            throw ex;
+                        } else {
+                            host = getHosts()[currentRound];
+                        }
                 }
-            } catch(ConnectException ce) {
-                currentRound++;
-                if( currentRound >= rounds ) {
-                    throw ce;
-                } else {
-                    host = getHosts()[currentRound];
+                else {
+                    throw ex;
                 }
-            } catch(SocketTimeoutException se) {
-                currentRound++;
-                if( currentRound >= rounds ) {
-                    throw se;
-                } else {
-                    host = getHosts()[currentRound];
-                }
-            } catch (Exception ex) {
-                throw ex;
-            } finally {
+            } 
+            finally {
                 if (out != null) try { out.close(); } catch (Exception ign){;}
                 if (in != null) try { in.close(); } catch (Exception ign){;}
                 if (conn != null) try { conn.disconnect(); } catch (Exception ign){;}
@@ -133,8 +130,6 @@ public class HttpInvokerClient {
         }
         return retval;
     }
-    
-   
     
     
     // <editor-fold defaultstate="collapsed" desc="GETTER/SETTER">
@@ -178,11 +173,11 @@ public class HttpInvokerClient {
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
-
+    
     public String getAppContext() {
         return appContext;
     }
-
+    
     public void setAppContext(String appContext) {
         this.appContext = appContext;
     }
