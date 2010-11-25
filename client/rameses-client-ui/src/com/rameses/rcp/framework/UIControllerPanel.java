@@ -45,8 +45,9 @@ public class UIControllerPanel extends JPanel implements NavigatablePanel, ViewC
     //visible in the package
     void attachDefaultButton() {
         JRootPane rp = getRootPane();
-        if ( rp != null ) {
-            rp.setDefaultButton(getDefaultButton());
+        JButton btn = getDefaultButton();
+        if ( btn != null && rp != null && rp.getDefaultButton() != btn ) {
+            rp.setDefaultButton( btn );
             defaultBtnAdded = true;
         } else {
             defaultBtnAdded = false;
