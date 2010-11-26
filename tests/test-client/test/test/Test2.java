@@ -7,12 +7,8 @@
 
 package test;
 
-import com.rameses.osiris2.client.WorkUnitUIController;
-import java.util.Map;
-import java.util.Set;
-import javax.swing.UIManager;
+import java.text.SimpleDateFormat;
 import junit.framework.*;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *

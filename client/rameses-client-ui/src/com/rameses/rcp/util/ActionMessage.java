@@ -9,9 +9,10 @@
 
 package com.rameses.rcp.util;
 
+import java.awt.Component;
 import java.text.MessageFormat;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -19,7 +20,8 @@ import java.util.Set;
  */
 public class ActionMessage {
     
-    private Set<String> messages = new LinkedHashSet();
+    private List<String> messages = new ArrayList();
+    private Component source;
     
     public void addMessage(String code, String message, Object[] args) {
         message = MessageUtil.getMessage(code, message, "errors");
@@ -32,14 +34,20 @@ public class ActionMessage {
     
     public void addMessage(ActionMessage message) {
         messages.addAll(message.messages);
+        
+        if ( source == null && message.source != null)
+            source = message.source;
     }
     
     public void addMessage(ActionMessage message, String parentCaption) {
         messages.add(parentCaption + " (");
         for (String msg : message.messages) {
-            messages.add("\t" + msg);
+            messages.add(msg);
         }
         messages.add(")");
+        
+        if ( source == null && message.source != null)
+            source = message.source;
     }
     
     public boolean hasMessages() {
@@ -59,5 +67,13 @@ public class ActionMessage {
             first = false;
         }
         return sb.toString();
+    }
+    
+    public Component getSource() {
+        return source;
+    }
+    
+    public void setSource(Component source) {
+        this.source = source;
     }
 }

@@ -9,6 +9,7 @@
 
 package com.rameses.rcp.ui;
 
+import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.util.ActionMessage;
 import java.util.ArrayList;
@@ -48,6 +49,14 @@ public class BindingConnector implements BindingListener {
         }
     }
     
+    public void validateBean(ValidatorEvent evt) {
+        for(Binding sb: subBindings) {
+            ValidatorEvent subEvt = new ValidatorEvent(sb);
+            sb.validateBean(subEvt);
+            evt.add(subEvt);
+        }
+    }
+    
     public void notifyDepends(UIControl control, Binding parent) {
         for (Binding sb : subBindings) {
             sb.notifyDepends(control);
@@ -71,11 +80,11 @@ public class BindingConnector implements BindingListener {
             sb.update();
         }
     }
-
+    
     public UIControl getParent() {
         return parent;
     }
-
+    
     public void setParent(UISubControl parent) {
         this.parent = parent;
     }

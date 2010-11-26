@@ -11,14 +11,19 @@ import javax.swing.UIManager;
 
 public class Main {
     
-    public static void main(String[] args) throws Exception {        
+    public static void main(String[] args) throws Exception {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            String os = System.getProperty("os.name");
+            if ( os.toLowerCase().contains("windows") )                
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            else
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            
         } catch (Exception e) {;}
         
         Map m = new HashMap();
         m.put("default.host", "10.0.0.104:8080");
         OsirisTestPlatform.runTest(m);
     }
-
+    
 }

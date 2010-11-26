@@ -1,6 +1,7 @@
 package com.rameses.rcp.util;
 
 import com.rameses.rcp.common.FormControl;
+import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.control.border.XUnderlineBorder;
@@ -571,9 +572,10 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         }
         
         public void validate(ActionMessage actionMessage, Binding parent) {}
+        public void validateBean(ValidatorEvent evt) {}
         public void formCommit() {}
         public void update() {}
-        
+
     }
     //</editor-fold>
 }

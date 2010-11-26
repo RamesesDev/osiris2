@@ -86,12 +86,14 @@ public class UICommandUtil {
         ActionMessage am = new ActionMessage();
         binding.validate(am);
         if ( am.hasMessages() ) {
+            if ( am.getSource() != null ) am.getSource().requestFocus();
             throw new BusinessException(am.toString());
         }
         
-        ValidatorEvent evt = new ValidatorEvent();
+        ValidatorEvent evt = new ValidatorEvent(binding);
         binding.validateBean(evt);
         if ( evt.hasMessages() ) {
+            if ( evt.getSource() != null ) evt.getSource().requestFocus();
             throw new BusinessException(evt.toString());
         }
     }
