@@ -12,6 +12,8 @@ package com.rameses.util;
 import java.security.MessageDigest;
 import java.util.Hashtable;
 import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
@@ -21,6 +23,10 @@ public abstract class Encoder {
     
     protected static Map<String,Encoder> encoders = new Hashtable<String,Encoder>();
     public abstract String encode(String v);
+    public abstract String encode(String v, String seed);
+    
+    //caseType = 0=any case 1=lowercase 2=uppercase. lowercase is default.
+    public abstract String encode(String v, String seed, int caseType);
     
     public static MD5Encoder MD5 = new MD5Encoder();
     public static SHA1Encoder SHA1 = new SHA1Encoder();
@@ -28,6 +34,16 @@ public abstract class Encoder {
     public Encoder() {
     }
     
+    public String toHexString(byte[] hash) {
+        String hexDigit = "0123456789abcdef";
+        StringBuffer sb = new StringBuffer(hash.length);
+        for (int i=0; i< hash.length; i++) {
+            int b = hash[i] & 0xFF;
+            sb.append(hexDigit.charAt(b >>> 4));
+            sb.append(hexDigit.charAt(b & 0xF));
+        }
+        return sb.toString();
+    }
     
     public static Encoder get(String name) {
         if(name.equalsIgnoreCase("md5")) {
@@ -43,18 +59,27 @@ public abstract class Encoder {
             try {
                 MessageDigest md = MessageDigest.getInstance("MD5");
                 md.update(value.getBytes());
-                
                 byte[] hash =  md.digest();
-                String hexDigit = "0123456789abcdef";
-                StringBuffer sb = new StringBuffer(hash.length);
-                for (int i=0; i< hash.length; i++) {
-                    int b = hash[i] & 0xFF;
-                    sb.append(hexDigit.charAt(b >>> 4));
-                    sb.append(hexDigit.charAt(b & 0xF));
-                }
-                return sb.toString();
+                return toHexString(hash);
             } catch(Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+        public String encode(String v, String seed) {
+            return encode(v,seed,1);
+        }
+        
+        public String encode(String v, String seed, int caseType) {
+            try {
+                if(caseType==1)seed = seed.toLowerCase();
+                else if(caseType==2)seed = seed.toUpperCase();
+                SecretKeySpec skey = new SecretKeySpec(seed.getBytes(), "HmacMD5");
+                Mac mac = Mac.getInstance("HmacMD5");
+                mac.init(skey);
+                byte[] hash = mac.doFinal(v.getBytes());
+                return toHexString(hash);
+            } catch(Exception e){
+                throw new RuntimeException(e);
             }
         }
     }
@@ -65,18 +90,28 @@ public abstract class Encoder {
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA1");
                 md.update(value.getBytes());
-                
                 byte[] hash =  md.digest();
-                String hexDigit = "0123456789ABCDEF";
-                StringBuffer sb = new StringBuffer(hash.length);
-                for (int i=0; i< hash.length; i++) {
-                    int b = hash[i] & 0xFF;
-                    sb.append(hexDigit.charAt(b >>> 4));
-                    sb.append(hexDigit.charAt(b & 0xF));
-                }
-                return sb.toString();
+                return toHexString(hash);
             } catch(Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+        
+        public String encode(String v, String seed) {
+            return encode(v,seed,1);
+        }
+
+        public String encode(String v, String seed, int caseType) {
+            try {
+                if(caseType==1)seed = seed.toLowerCase();
+                else if(caseType==2)seed = seed.toUpperCase();
+                SecretKeySpec skey = new SecretKeySpec(seed.getBytes(), "HmacSHA1");
+                Mac mac = Mac.getInstance("HmacSHA1");
+                mac.init(skey);
+                byte[] hash = mac.doFinal(v.getBytes());
+                return toHexString(hash);
+            } catch(Exception e){
+                throw new RuntimeException(e);
             }
         }
         
