@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class TestProxy extends AbstractScriptServiceProxy {
 
-    private long timeout = 10000;
+    private long timeout = 10000 * 2;
     private long delay = 2000;
     
     private GroovyClassLoader classLoader;
@@ -75,6 +75,7 @@ public class TestProxy extends AbstractScriptServiceProxy {
                     //do nothing, let it die gracefully
                 }
                 timeleft = timeleft - delay;
+                //System.out.println("time left " + timeleft);
             }
             System.out.println("finished");
         }

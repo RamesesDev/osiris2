@@ -9,7 +9,8 @@
 
 package com.rameses.invoker.client;
 
-import com.rameses.common.AsyncListener;
+import com.rameses.common.AsyncHandler;
+import com.rameses.common.AsyncResponse;
 
 /**
  *
@@ -18,13 +19,15 @@ import com.rameses.common.AsyncListener;
 public class ResponseHandler {
     
     private String requestId;
-    private AsyncListener listener;
+    private AsyncHandler listener;
     private HttpScriptService scriptService;
+    private AsyncResponse response;
     
-    public ResponseHandler(HttpScriptService svc, String requestId, AsyncListener h) {
+    public ResponseHandler(HttpScriptService svc, AsyncResponse response, AsyncHandler h) {
         this.listener = h;
         this.scriptService = svc;
-        this.requestId = requestId;
+        this.response = response;
+        this.requestId = (String)response.get("id");
     }
     
     public boolean execute() {

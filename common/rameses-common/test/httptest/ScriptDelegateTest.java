@@ -12,7 +12,6 @@ import com.rameses.invoker.client.HttpInvokerClient;
 import com.rameses.invoker.client.HttpScriptService;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.JOptionPane;
 import junit.framework.*;
 
 /**
@@ -32,18 +31,17 @@ public class ScriptDelegateTest extends TestCase {
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
-    public void testSampleScript() throws Exception {
+    public void testSimpleInvoke1() throws Exception {
         Map env = new HashMap();
         env.put("default.host", "10.0.0.118:8080");
         env.put("app.context", "mlglobal");
+        env.put("session_checked", true);
         HttpInvokerClient c = HttpClientManager.getInstance() .getService( env );
         HttpScriptService d = new HttpScriptService(c);
-        Map m = new HashMap();
-        
-        d.invoke("TestService", "test2", new Object[]{"elmo"},new HashMap());
-       
+        System.out.println( d.invoke("TestService", "test", new Object[]{"elmo"},env) );
     }
 
    
+    
     
 }

@@ -9,6 +9,7 @@
 
 package com.rameses.scripting;
 
+import com.rameses.annotations.Async;
 import com.rameses.annotations.ProxyMethod;
 import java.lang.reflect.Method;
 
@@ -25,16 +26,17 @@ public final class InterfaceBuilder {
         for( Method m : sc.getDeclaredMethods() ) {
             if( m.isAnnotationPresent(ProxyMethod.class)) {
                 proxyMethodExist = true;
-                sbody.append(m.getReturnType().getName()+ " ");
-                sbody.append( m.getName() + "(" );
-                int i = 0;
-                for( Class c: m.getParameterTypes() ) {
-                    if( i!=0) sbody.append(", ");
-                    sbody.append(c.getCanonicalName());
-                    sbody.append(" p" + i );
-                    i++;
+                buildMethodText(m, sbody, m.getParameterTypes() );
+                
+                //if there is an async marker, add an extra method for the handler
+                if( m.isAnnotationPresent(Async.class)) {
+                    Class[] parms = new Class[m.getParameterTypes().length+1];
+                    for(int j=0; j<parms.length-1;j++) {
+                        parms[j] = m.getParameterTypes()[j];
+                    }
+                    parms[parms.length-1] = Object.class;
+                    buildMethodText(m, sbody, parms );
                 }
-                sbody.append(") ; \n");
             }
         }
         if(!proxyMethodExist) return null;
@@ -60,5 +62,18 @@ public final class InterfaceBuilder {
         return sb.toString();
     }
     
+    
+    private static void buildMethodText(Method m, StringBuffer sb, Class[] paramTypes ) {
+        sb.append(m.getReturnType().getName()+ " ");
+        sb.append( m.getName() + "(" );
+        int i = 0;
+        for( Class c: paramTypes ) {
+            if( i!=0) sb.append(", ");
+            sb.append(c.getCanonicalName());
+            sb.append(" p" + i );
+            i++;
+        }
+        sb.append(") ; \n");
+    }
     
 }

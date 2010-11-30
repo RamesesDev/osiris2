@@ -10,7 +10,6 @@
 package com.rameses.invoker.client;
 
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,15 +34,10 @@ public abstract class AbstractScriptServiceProxy  {
         this.scriptService = new HttpScriptService(client);
     }
     
-    
     public Object create(String name) {
-        return create(name, new HashMap());
-    }
-    
-    public Object create(String name, Map handlers) {
         Class cls = getScriptInterfaceProvider().getInterface(name, scriptService);
         ClassLoader loader = getScriptInterfaceProvider().getProxyClassLoader();
-        return Proxy.newProxyInstance(loader, new Class[]{cls}, new InvokerHandler(this, scriptService, name, handlers, getEnv()));
+        return Proxy.newProxyInstance(loader, new Class[]{cls}, new InvokerHandler(this, scriptService, name, getEnv()));
     }
     
 }

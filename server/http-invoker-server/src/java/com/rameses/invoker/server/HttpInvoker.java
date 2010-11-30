@@ -69,13 +69,16 @@ public class HttpInvoker extends HttpServlet {
         }
     }
     
+
+    /***
+     * this will locate all methods that matches the name, with the same arg count.
+     */
     private Method[] getMethodByName(Object bean, String name, int argCount) throws Exception {
         List list = new ArrayList();
         Method[] methods = bean.getClass().getMethods();
         for (int i=0; i<methods.length; i++) {
             if (!methods[i].getName().equals(name)) continue;
             if (methods[i].getParameterTypes().length != argCount) continue;
-            
             list.add(methods[i]);
         }
         return (Method[]) list.toArray(new Method[]{});

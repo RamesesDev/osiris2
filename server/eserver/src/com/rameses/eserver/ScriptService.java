@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.common.AsyncResponse;
 import com.rameses.scripting.ScriptExecutor;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptServiceLocal;
@@ -127,7 +128,12 @@ public class ScriptService implements ScriptServiceLocal {
             ObjectMessage ob = session.createObjectMessage();
             ob.setObject((Serializable) map);
             sender.send(ob);
-            return requestId;
+            
+            AsyncResponse response = new AsyncResponse();
+            response.put("id", requestId);
+            return response;
+            
+            
         } catch(Exception e1) {
             throw new IllegalStateException(e1);
         } finally {

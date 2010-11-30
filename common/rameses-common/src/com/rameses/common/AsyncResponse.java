@@ -9,10 +9,8 @@
 
 package com.rameses.common;
 
-/**
- *
- * @author ms
- */
-public interface AsyncListener {
-    void onMessage(Object o);
+import java.util.HashMap;
+
+public class AsyncResponse extends HashMap  {
+    
 }
