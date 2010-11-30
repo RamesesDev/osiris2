@@ -1,6 +1,7 @@
 
 package com.rameses.rcp.framework;
 
+import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.ui.UIComposite;
@@ -73,11 +74,17 @@ public class Binding {
     private XButton defaultButton;
     private StyleRule[] styleRules;
     
-    //flags
+    //page binding flags
     private List<UIControl> _depends = new ArrayList();
     private boolean _initialized = false;
     
     private KeyListener changeLogKeySupport = new ChangeLogKeySupport();
+    
+    
+    //annotation support
+    private boolean annotationScanIsDone;
+    private Field bindingField;
+    private Field changeLogField;
     private String closeMethod;
     private List<Validator> validators = new ArrayList();
     
@@ -283,7 +290,6 @@ public class Binding {
     
     //<editor-fold defaultstate="collapsed" desc="  utility methods  ">
     public void validate(ActionMessage actionMessage) {
-        boolean first = !actionMessage.hasMessages();
         for ( Validatable vc: validatables ) {
             Component comp = (Component) vc;
             if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isVisible() ) {
@@ -299,10 +305,9 @@ public class Binding {
             vc.validateInput();
             ActionMessage ac = vc.getActionMessage();
             if ( ac.hasMessages() ) {
-                if ( first ) {
-                    first = false;
-                    ((Component) vc).requestFocus();
-                }
+                if ( ValueUtil.isEmpty(actionMessage.getSource()) )
+                    actionMessage.setSource( comp );
+                
                 actionMessage.addMessage(ac);
             }
         }
@@ -315,6 +320,10 @@ public class Binding {
     public void validateBean(ValidatorEvent evt) {
         for(Validator v: validators) {
             v.validate(evt);
+        }
+        
+        for (BindingListener bl: listeners) {
+            bl.validateBean(evt);
         }
     }
     
@@ -432,6 +441,7 @@ public class Binding {
      * you want to focus a control after displaying an error message
      */
     public void focus(String name) {
+        if ( name == null ) return;
         UIControl c = controlsIndex.get(name);
         if ( c != null ) {
             Component comp = (Component) c;
@@ -457,7 +467,7 @@ public class Binding {
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    //<editor-fold defaultstate="collapsed" desc="  getters/setters  ">
     public boolean isInitialized() {
         return _initialized;
     }
@@ -483,7 +493,7 @@ public class Binding {
         initAnnotatedMethods( bean, bean.getClass() );
         _load();
     }
-
+    
     public void reinjectAnnotations() {
         initAnnotatedFields( bean, bean.getClass() );
     }
@@ -525,16 +535,63 @@ public class Binding {
     public void setProperties(Map properties) {
         this.properties = properties;
     }
+    
+    public ViewContext getViewContext() {
+        return viewContext;
+    }
+    
+    public void setViewContext(ViewContext viewContext) {
+        this.viewContext = viewContext;
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void initAnnotatedFields( Object o, Class clazz ) {
-        if( o == null) return ;
+        if( o == null) return;
+        
+        if ( annotationScanIsDone ) {
+            boolean accessible;
+            if ( bindingField != null ) {
+                accessible = bindingField.isAccessible();
+                bindingField.setAccessible(true);
+                try {
+                    bindingField.set(o, Binding.this );
+                } catch(Exception ex) {
+                    System.out.println("ERROR injecting @Binding "  + ex.getMessage() );
+                }
+                bindingField.setAccessible(accessible);
+            }
+            if ( changeLogField != null ) {
+                accessible = changeLogField.isAccessible();
+                changeLogField.setAccessible(true);
+                try {
+                    changeLogField.set(o, Binding.this );
+                } catch(Exception ex) {
+                    System.out.println("ERROR injecting @Binding "  + ex.getMessage() );
+                }
+                changeLogField.setAccessible(accessible);
+            }
+            return;
+        }
         
         //check for field annotations
         for( Field f: clazz.getDeclaredFields() ) {
             boolean accessible = f.isAccessible();
             if( f.isAnnotationPresent(com.rameses.rcp.annotations.Binding.class)) {
+                com.rameses.rcp.annotations.Binding b = f.getAnnotation(com.rameses.rcp.annotations.Binding.class);
+                String[] values = b.validators();
+                PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+                for(String s: values) {
+                    try {
+                        Object v = res.getProperty(getBean(), s);
+                        if ( v instanceof Validator ) {
+                            validators.add( (Validator) v );
+                        }
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                
                 f.setAccessible(true);
                 try {
                     f.set(o, Binding.this );
@@ -542,6 +599,9 @@ public class Binding {
                     System.out.println("ERROR injecting @Binding "  + ex.getMessage() );
                 }
                 f.setAccessible(accessible);
+                
+                bindingField = f;
+                
             } else if( f.isAnnotationPresent(com.rameses.rcp.annotations.ChangeLog.class)) {
                 f.setAccessible(true);
                 
@@ -561,6 +621,8 @@ public class Binding {
                     System.out.println("ERROR injecting @ChangeLog "  + ex.getMessage() );
                 }
                 f.setAccessible(accessible);
+                
+                changeLogField = f;
             }
         }
         
@@ -568,6 +630,8 @@ public class Binding {
         if( superClass != null ) {
             initAnnotatedFields( o, superClass );
         }
+        
+        annotationScanIsDone = true;
     }
     
     private void initAnnotatedMethods( Object o, Class clazz ) {
@@ -583,6 +647,7 @@ public class Binding {
         }
     }
     //</editor-fold>
+        
     
     //<editor-fold defaultstate="collapsed" desc="  ChangeLogKeySupport (class)  ">
     private class ChangeLogKeySupport implements KeyListener {
@@ -637,13 +702,5 @@ public class Binding {
         
     }
     //</editor-fold>
-    
-    public ViewContext getViewContext() {
-        return viewContext;
-    }
-    
-    public void setViewContext(ViewContext viewContext) {
-        this.viewContext = viewContext;
-    }
     
 }
