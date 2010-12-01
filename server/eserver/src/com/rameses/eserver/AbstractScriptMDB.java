@@ -4,6 +4,7 @@ package com.rameses.eserver;
 import com.rameses.invoker.client.HttpScriptService;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ejb.EJBException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -11,6 +12,7 @@ import javax.jms.ObjectMessage;
 public abstract class AbstractScriptMDB implements MessageListener {
     
     public void onMessage(Message message) {
+        String requestId = null;
         try {
             Map map = (Map)((ObjectMessage)message).getObject();
             if( map == null ) return;
@@ -32,34 +34,33 @@ public abstract class AbstractScriptMDB implements MessageListener {
             if(host!=null) sameServer = host.equals(origin);
             
             String responseHandler = (String)map.get("responseHandler");
-            String requestId = (String)map.get("requestId");
+            requestId = (String)map.get("requestId");
             boolean loop = (map.get("loop")!=null) ? true : false;
+            
+            Map ae = new HashMap();
+            ae.put("loop", 0);
+            ae.put("requestId", requestId);
+            env.put("async-event", ae);
             
             //execute the result;
             if(!loop) {
                 Object result = ScriptServiceDelegate.getScriptService().invoke( "~" +script,method,params,env );
                 if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId, originAppContext, originPort);
             } else {
-                if(env==null) env = new HashMap();
-
-                Map ae = new HashMap();
-                ae.put("loop", 0);
-                env.put("async-event", ae);
-                
-                
                 while( true ) {
                     int i = Integer.parseInt(ae.get("loop")+"");
                     ae.put("loop", i + 1);
                     Object result = ScriptServiceDelegate.getScriptService().invoke("~" +script,method,params,env);
                     if(result!=null) {
                         if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId, originAppContext, originPort);
+                        if( result instanceof Exception ) break;
                     } else {
                         break;
                     }
                 }
             }
         } catch(Exception ex) {
-            ex.printStackTrace();
+            throw new EJBException(ex);
         }
     }
     
@@ -75,8 +76,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
             }
             if(sameServer) {
                 ScriptServiceDelegate.getScriptService().invoke(script,method,new Object[]{result},env);
-            } 
-            else {
+            } else {
                 Map m = new HashMap();
                 m.put("response.host", origin + ":" + originPort );
                 m.put("app.context", originAppContext );

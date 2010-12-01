@@ -9,77 +9,104 @@
 
 package com.rameses.osiris2.client;
 
+import com.rameses.invoker.client.AbstractScriptServiceProxy;
+import com.rameses.invoker.client.ResponseHandler;
+import com.rameses.rcp.common.ScheduledTask;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.invoker.client.HttpInvokerClient;
-import com.rameses.invoker.client.HttpClientManager;
+import com.rameses.invoker.client.ScriptInterfaceProvider;
+import com.rameses.rcp.common.MsgBox;
+import com.rameses.util.BreakException;
+import com.rameses.util.ExceptionManager;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Hashtable;
 import java.util.Map;
 
-public class InvokerProxy {
+public class InvokerProxy extends AbstractScriptServiceProxy {
     
-    private final static String INVOKER = "ScriptService";
-    private Map<String, Class> map = new Hashtable<String, Class>();
-    private GroovyClassLoader loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
+    private GroovyClassLoader classLoader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
+    private ScriptInterfaceProvider scriptProvider = new GroovyScriptInterfaceProvider();
     
-    private static InvokerProxy instance = new InvokerProxy();
+    private static InvokerProxy instance;
     
-    public static InvokerProxy getInstance() {
+    public synchronized static InvokerProxy getInstance() {
+        if ( instance == null ) {
+            instance = new InvokerProxy();
+        }
         return instance;
     }
     
     
-    public synchronized Object create( String name ) throws Exception {
-        return create(name, null);
+    public InvokerProxy() {
+        super(OsirisContext.getSession().getEnv());
     }
-    
-    public synchronized Object create( String name, String hostKey) throws Exception {
-        HttpInvokerClient client = HttpClientManager.getInstance().getService(hostKey, OsirisContext.getSession().getEnv());
-        Class clazz = null;
-        if(! map.containsKey(name)) {
-            byte[] b = (byte[])client.invoke(INVOKER+".getScriptInfo", new Object[]{name});
-            InputStream is = new ByteArrayInputStream(b);
-            clazz = loader.parseClass(is);
-            map.put(name, clazz);
-        }
-        clazz = map.get(name);
-        return Proxy.newProxyInstance(loader, new Class[]{clazz}, new MyHandler(name, client));
+
+    public Map getEnv() {
+        return OsirisContext.getEnv();
     }
-    
+   
     public synchronized void reset() {
-        map.clear();
-        //loader.clearCache();
-        loader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
+        classLoader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
         instance = null;
     }
     
+    protected ScriptInterfaceProvider getScriptInterfaceProvider() {
+        return scriptProvider;
+    }
     
-    public class MyHandler implements InvocationHandler {
+    public void invokeLater(ResponseHandler handler) {
+        AsyncTask task = new AsyncTask(handler);
+        ClientContext.getCurrentContext().getTaskManager().addTask(task);
+    }
+    
+    
+    private class AsyncTask extends ScheduledTask {
         
-        private HttpInvokerClient client;
-        private String serviceName;
-        private String machineKey;
+        private ResponseHandler handler;
+        private int counter = 0;
         
-        public MyHandler(String serviceName, HttpInvokerClient client) {
-            this.serviceName = serviceName;
-            this.client = client;
+        
+        AsyncTask(ResponseHandler handler) {
+            this.handler = handler;
         }
         
-        public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-            if( method.getName().equals("toString")) return serviceName;
-            
-            Map headers = ClientContext.getCurrentContext().getHeaders();
+        public long getInterval() {
+            return 2000;
+        }
+        
+        public void execute() {
             try {
-                return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, headers } );
+                if ( handler.execute() ) {
+                    counter = 0;
+                } else {
+                    counter++;
+                }
+            } catch(BreakException be) {
+                counter = 10;
+            } catch(Exception e) {
+                MsgBox.err( ExceptionManager.getOriginal(e) );
+                counter = 10;
             }
-            catch(Exception e) {
-                throw e;
-            }
+        }
+        
+        public boolean accept() {
+            return true;
+        }
+        
+        public boolean isEnded() {
+            return counter >= 10;
+        }
+        
+    }
+    
+    
+    private class GroovyScriptInterfaceProvider extends ScriptInterfaceProvider {
+        
+        protected Class parseClass(byte[] bytes) {
+            return classLoader.parseClass( new ByteArrayInputStream(bytes));
+        }
+        
+        public ClassLoader getProxyClassLoader() {
+            return classLoader;
         }
     }
     

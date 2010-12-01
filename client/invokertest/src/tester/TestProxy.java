@@ -72,7 +72,7 @@ public class TestProxy extends AbstractScriptServiceProxy {
                     Thread.sleep(delay );
                 }
                 catch(Exception e) {
-                    //do nothing, let it die gracefully
+                    e.printStackTrace();
                 }
                 timeleft = timeleft - delay;
                 //System.out.println("time left " + timeleft);
