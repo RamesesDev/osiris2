@@ -1,3 +1,4 @@
+
 /*
  * InvokerUtil.java
  *
@@ -107,6 +108,27 @@ public final class InvokerUtil {
             }
         }
     }
+    
+    /*
+    public static void invoke( Opener opener ) {
+        Opener o = (Opener)invokeOpener( opener );
+        
+        Map winParams = new HashMap();
+        if ( opener.getProperties() != null ) {
+            winParams.putAll( opener.getProperties() );
+        }
+        winParams.put("id", opener.getId() );
+        winParams.put("title", opener.getCaption() );
+        String target = opener.getTarget();
+        //ClientContext.getCurrentContext().getPlatform().s
+        
+        if ( "_popup".equals(target) || "popup".equals(target) ) {
+            ClientContext.getCurrentContext().getPlatform().getMainWindow().s
+        } else {
+            ClientContext.getCurrentContext().getPlatform().showWindow(null, panel, winParams);
+        }
+    }
+    */
     
     public static void showWindow(Invoker invoker, String target, Map winParams) {
         if ( !ValueUtil.isEmpty(target) ) {

@@ -43,12 +43,20 @@ public final class MenuUtil {
             if(items!=null) {
                 for (Object o : items) {
                     Folder f = (Folder)o;
+                    String separator = null;
+                    JMenuItem mi = null;
                     if( f.getInvoker() ==null ) {
-                        list.add(new MenuProxy((Folder) o));
+                        separator = (String) f.getProperties().get("separator");
+                        mi = new MenuProxy((Folder) o);
                     }
                     else {
-                        list.add(new MenuItemProxy((Folder)o));
+                        separator = (String) f.getInvoker().getProperties().get("separator");
+                        mi = new MenuItemProxy((Folder)o);
                     }
+                    if(separator!=null && separator.trim().length()>0 ) {
+                        mi.putClientProperty("separator", separator);
+                    }
+                    list.add( mi );
                 }
             }
         }
@@ -63,6 +71,7 @@ public final class MenuUtil {
     }
     
     private static class MenuProxy extends JMenu {
+        
         private boolean init;
         private String id;
         
@@ -79,9 +88,20 @@ public final class MenuUtil {
 
         public int getComponentCount() {
             if(!init) {
-                for(JMenuItem mi: getMenuCollection( id ) ) {
+                List<JMenuItem> menus = getMenuCollection( id );
+                int sz = menus.size(); 
+                for( int i=0; i<sz; i++ ) {
+                    JMenuItem mi = menus.get(i);
+                    String separator = (String)mi.getClientProperty("separator");
+                    if( i>0 && separator!=null && separator.equalsIgnoreCase("before")) {
+                        String pseparator = (String)menus.get(i-1).getClientProperty("separator");
+                        if(pseparator==null || !pseparator.equalsIgnoreCase("after")) {
+                            addSeparator();
+                        }
+                    }
                     add(mi);
-                }        
+                    if( (i!=sz-1) && separator!=null && separator.equalsIgnoreCase("after")) addSeparator();
+                }
                 init = true;
             }
             return super.getComponentCount();
