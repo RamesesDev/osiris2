@@ -80,7 +80,7 @@ public final class InvokerUtil {
             
             if((target.endsWith("process")||target.endsWith("action"))) {
                 if ( outcome instanceof Opener ) {
-                    invoke( (Opener) outcome );
+                    invoke( (Opener) outcome, u );
                 }
             } else {
                 UIControllerContext uic = new UIControllerContext( u );
@@ -112,7 +112,11 @@ public final class InvokerUtil {
     }
     
     public static void invoke( Opener opener ) {
-        ControlSupport.initOpener(opener, null);
+        invoke( opener, null );
+    }
+    
+    public static void invoke( Opener opener, UIController caller ) {
+        ControlSupport.initOpener(opener, caller);
         
         UIControllerContext uic = new UIControllerContext( opener.getController() );
         UIControllerPanel panel = new UIControllerPanel( uic );
