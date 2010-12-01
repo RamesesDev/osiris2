@@ -101,6 +101,10 @@ public final class ControlSupport {
     }
     
     public static Opener initOpener( Opener opener, UIController caller ) {
+        return initOpener(opener, caller, true);
+    }
+    
+    public static Opener initOpener( Opener opener, UIController caller, boolean invokeOpenerAction ) {
         if ( caller != null && ValueUtil.isEmpty(opener.getName()) ) {
             opener.setController( caller );
             
@@ -124,9 +128,11 @@ public final class ControlSupport {
             }
             opener.setController( controller );
             
-            Object o = controller.init(opener.getParams(), opener.getAction());
-            if ( o != null && o instanceof String ) {
-                opener.setOutcome( (String)o );
+            if ( invokeOpenerAction ) {
+                Object o = controller.init(opener.getParams(), opener.getAction());
+                if ( o != null && o instanceof String ) {
+                    opener.setOutcome( (String)o );
+                }
             }
         }
         
