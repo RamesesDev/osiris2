@@ -9,6 +9,7 @@ package testutils;
 
 import com.rameses.util.DateUtil;
 import com.rameses.util.TimeUtil;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.Date;
 import junit.framework.*;
