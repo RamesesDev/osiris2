@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/async" caption="Async Test 1" action="init"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.common.*;
+        import com.rameses.osiris2.client.*;
+        
+                
+        public class Test1Controller  {
+            
+            @Service('SearchService')
+            def svc;
+        
+            def search;
+            def list = [];
+            
+            
+            public void init() {
+                OsirisContext.env.session_checked = true;
+            }
+            
+            public void doSearch() {
+                list.clear();
+                listHandler.load();
+                svc.search( search, { resp ->
+                    if ( resp.status == AsyncResult.COMPLETED ) {
+                        MsgBox.alert( 'done' );
+                    }
+                    else if ( resp.value ) {
+                        list.addAll( resp.value );
+                        listHandler.load();
+                    }
+                } as AsyncHandler );
+            }
+            
+            def listHandler = [            
+                getColumns: {
+                    [new Column('item', 'Name')]
+                },
+                fetchList: { list }
+            ] as SubListModel;
+            
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.AsyncPage"/>
+    </pages>
+</workunit>

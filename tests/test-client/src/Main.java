@@ -23,6 +23,7 @@ public class Main {
         
         Map m = new HashMap();
         m.put("default.host", "10.0.0.104:8080");
+        m.put("app.context", "mlglobal");
         OsirisTestPlatform.runTest(m);
     }
     

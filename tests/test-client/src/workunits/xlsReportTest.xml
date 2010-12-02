@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/report" caption="Xls Report Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.osiris2.reports.*;
+        
+                
+        public class Test1Controller  {
+            
+            public void export() {
+                def exporter = [
+                    getColumns: {
+                        [
+                            new Column('name', 'Name'),
+                            new Column('address', 'Address')
+                        ]
+                    },
+                    getData: {
+                        [
+                            [name: 'Jayrome Vergara', address: 'cebu city'],
+                            [name: 'Arnel Retiza', address: 'bogo, cebu'],
+                            [name: 'Donie Evalle', address: 'naga, cebu']
+                        ]
+                    },
+                    getOutputStream: {
+                        new FileOutputStream('/home/rameses/Desktop/report.csv')
+                    }
+                ] as CsvExporter;
+                
+                exporter.export();
+            }            
+            
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="test1.XlsTestPage"/>
+    </pages>
+</workunit>

@@ -11,6 +11,7 @@ package com.rameses.invoker.client;
 
 import com.rameses.common.AsyncHandler;
 import com.rameses.common.AsyncResponse;
+import com.rameses.common.AsyncResult;
 import com.rameses.util.BreakException;
 import com.rameses.util.ExceptionManager;
 
@@ -19,6 +20,8 @@ import com.rameses.util.ExceptionManager;
  * @author ms
  */
 public class ResponseHandler {
+    
+    private static final long serialVersionUID = 1L;
     
     private String requestId;
     private AsyncHandler listener;
@@ -39,20 +42,19 @@ public class ResponseHandler {
                 Object result = scriptService.getPollData(requestId);
                 if( result == null ) {
                     break;
-                } 
-                else if(result instanceof Exception ) {
+                } else if(result instanceof BreakException ) {
+                    throw (BreakException) result;
+                } else if(result instanceof Exception ) {
                     throw ExceptionManager.getOriginal((Exception)result);
-                }
-                else {
-                    listener.onMessage( result );
+                } else {
+                    listener.onMessage( new AsyncResult( result, AsyncResult.PROCESSING ) );
                     counter++;
                 }
             }
-        } 
-        catch(BreakException be) {
+        } catch(BreakException be) {
+            listener.onMessage( new AsyncResult(null, AsyncResult.COMPLETED) );
             throw be;
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             throw new RuntimeException(e);
         }
         return (counter > 0);

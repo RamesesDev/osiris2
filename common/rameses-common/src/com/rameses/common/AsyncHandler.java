@@ -14,5 +14,8 @@ package com.rameses.common;
  * @author ms
  */
 public interface AsyncHandler {
-    void onMessage(Object o);
+    
+    static final long serialVersionUID = 1L;
+    
+    void onMessage(AsyncResult o);
 }

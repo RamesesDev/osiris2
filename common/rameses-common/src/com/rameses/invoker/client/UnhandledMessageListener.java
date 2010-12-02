@@ -10,6 +10,7 @@
 package com.rameses.invoker.client;
 
 import com.rameses.common.AsyncHandler;
+import com.rameses.common.AsyncResult;
 
 /**
  *
@@ -17,7 +18,7 @@ import com.rameses.common.AsyncHandler;
  */
 public class UnhandledMessageListener implements AsyncHandler {
     
-    public void onMessage(Object o) {
+    public void onMessage(AsyncResult o) {
         System.out.println("unhandled message " + o);
     }
 }

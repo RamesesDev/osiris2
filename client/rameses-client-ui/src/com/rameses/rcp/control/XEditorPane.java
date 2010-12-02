@@ -17,11 +17,13 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;
-
+import javax.swing.text.html.HTMLDocument;
 
 public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
     
@@ -30,6 +32,8 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
     private int index;
     private boolean nullWhenEmpty = true;
     private boolean readonly;
+    private String linkAction;
+    private String baseUrl;
     
     private ControlProperty property = new ControlProperty();
     
@@ -47,6 +51,7 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
                 processHyperlinkEvent(e);
             }
         });
+        
     }
     
     //<editor-fold defaultstate="collapsed" desc="  processHyperlinkEvent  ">
@@ -56,10 +61,19 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
             try {
                 String desc = e.getDescription();
                 if ( !ValueUtil.isEmpty(desc) )  {
-                    String[] aa = desc.split("\\?");
+                    String method = null;
                     Object[] param = null;
-                    if ( aa.length > 1 ) param = new Object[]{ aa[1] };
-                    Object outcome = ControlSupport.invoke(binding.getBean(), aa[0], param);
+                    
+                    if ( !ValueUtil.isEmpty(linkAction) ) {
+                        method = linkAction;
+                        param = new Object[]{ desc };
+                    } else {
+                        String[] aa = desc.split("\\?");
+                        method = aa[0];
+                        if ( aa.length > 1 ) param = new Object[]{ aa[1] };
+                    }
+                    
+                    Object outcome = ControlSupport.invoke(binding.getBean(), method, param);
                     ControlSupport.fireNavigation(this, outcome);
                 }
             } catch(Exception ex){
@@ -71,6 +85,18 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
     
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
+        if ( !ValueUtil.isEmpty(baseUrl) && getDocument() instanceof HTMLDocument ) {
+            try {
+                Object url = UIControlUtil.getBeanValue(this, baseUrl);
+                if ( url instanceof URL )
+                    ((HTMLDocument) getDocument()).setBase( (URL) url );
+                else
+                    ((HTMLDocument) getDocument()).setBase(new URL( url.toString() ));
+                
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            }
+        }
         setValue(value);
         setCaretPosition(0);
     }
@@ -170,6 +196,21 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
     }
-    //</editor-fold>
     
+    public String getLinkAction() {
+        return linkAction;
+    }
+    
+    public void setLinkAction(String linkAction) {
+        this.linkAction = linkAction;
+    }
+    
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+    
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+    //</editor-fold>
 }

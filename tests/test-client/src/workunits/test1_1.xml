@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="Dynamic Controls Test"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class Test1Controller  {
+        
+            def entity = [:];
+        
+            def formControls = [];
+            
+            void showData() {
+                println entity;
+            }
+            
+            void save() {
+                if ( entity.address == null ) {
+                    entity.address = [:];
+                    entity.contact = [:];
+                    formControls = [                        
+                        new FormControl(type: 'label', properties:[ font: 'Tahoma bold 12', text: 'Address', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
+                        new FormControl(type: 'separator', properties:[ showCaption: false, preferredSize: "0,5"]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.street', caption: 'Street', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.barangay', caption: 'Barangay', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.city', caption: 'City', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.address.province', caption: 'Province', preferredSize: "200,19", required: true]),
+
+                        new FormControl(type: 'label', properties:[ font: 'Tahoma bold 12', text: 'Contact Info', showCaption: false, preferredSize: "0,20", foreground: "rgb(0,0,102)"]),
+                        new FormControl(type: 'separator', properties:[ showCaption: false, preferredSize: "0,5"]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.contact.mobile', caption: 'Mobile', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.contact.email', caption: 'Email', preferredSize: "200,19", required: true]),
+                        new FormControl(type: 'text', properties:[ name: 'entity.contact.phone', caption: 'Phone', preferredSize: "200,19", required: true])
+                    ];
+                }
+                else {
+                    showData();
+                }
+            }
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="formpanel.Page"/>
+    </pages>
+</workunit>
