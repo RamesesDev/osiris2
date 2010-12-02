@@ -65,7 +65,7 @@ public final class InvokerUtil {
             u.setName( wuId );
             u.setTitle( invoker.getCaption() );
             
-            String outcome = (String) u.init(params, action);
+            Object outcome = u.init(params, action);
             
             String windowId = u.getId();
             
@@ -79,12 +79,14 @@ public final class InvokerUtil {
             if( target == null ) target = "_window";
             
             if((target.endsWith("process")||target.endsWith("action"))) {
-                //do nothing
+                if ( outcome instanceof Opener ) {
+                    invoke( (Opener) outcome, u );
+                }
             } else {
                 UIControllerContext uic = new UIControllerContext( u );
                 uic.setId(windowId);
                 if ( !ValueUtil.isEmpty(outcome) ) {
-                    uic.setCurrentView(outcome);
+                    uic.setCurrentView(outcome.toString());
                 }
                 UIControllerPanel panel = new UIControllerPanel( uic );
                 Map winParams = new HashMap();
@@ -109,26 +111,31 @@ public final class InvokerUtil {
         }
     }
     
-    /*
     public static void invoke( Opener opener ) {
-        Opener o = (Opener)invokeOpener( opener );
+        invoke( opener, null );
+    }
+    
+    public static void invoke( Opener opener, UIController caller ) {
+        ControlSupport.initOpener(opener, caller);
+        
+        UIControllerContext uic = new UIControllerContext( opener.getController() );
+        UIControllerPanel panel = new UIControllerPanel( uic );
         
         Map winParams = new HashMap();
         if ( opener.getProperties() != null ) {
             winParams.putAll( opener.getProperties() );
         }
-        winParams.put("id", opener.getId() );
-        winParams.put("title", opener.getCaption() );
+        
+        winParams.put("id", uic.getId() );
+        winParams.put("title", uic.getTitle() );
         String target = opener.getTarget();
-        //ClientContext.getCurrentContext().getPlatform().s
         
         if ( "_popup".equals(target) || "popup".equals(target) ) {
-            ClientContext.getCurrentContext().getPlatform().getMainWindow().s
+            ClientContext.getCurrentContext().getPlatform().showPopup(null, panel, winParams);
         } else {
             ClientContext.getCurrentContext().getPlatform().showWindow(null, panel, winParams);
         }
     }
-    */
     
     public static void showWindow(Invoker invoker, String target, Map winParams) {
         if ( !ValueUtil.isEmpty(target) ) {
@@ -348,7 +355,7 @@ public final class InvokerUtil {
     }
     
     public static Object invokeOpener( Opener opener, UIController caller ) {
-        ControlSupport.initOpener(opener, caller );
+        ControlSupport.initOpener(opener, caller, false);
         return ControlSupport.init(opener.getController().getCodeBean(), opener.getParams(), opener.getAction() );
     }
     

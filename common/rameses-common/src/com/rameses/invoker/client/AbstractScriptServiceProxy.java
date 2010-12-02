@@ -34,7 +34,7 @@ public abstract class AbstractScriptServiceProxy  {
         this.scriptService = new HttpScriptService(client);
     }
     
-    public Object create(String name) {
+    public synchronized Object create(String name) {
         Class cls = getScriptInterfaceProvider().getInterface(name, scriptService);
         ClassLoader loader = getScriptInterfaceProvider().getProxyClassLoader();
         return Proxy.newProxyInstance(loader, new Class[]{cls}, new InvokerHandler(this, scriptService, name, getEnv()));

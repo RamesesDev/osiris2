@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="XTabbedPane Test 2" target="process" action="fire" />
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        
+                
+        public class TabTest2Controller  {
+
+            def fire() {
+                MsgBox.alert('firing fire.');
+                return new Opener(name: '___tabTest');
+            }
+        
+        }
+        
+        ]]>
+    </code>
+</workunit>

@@ -11,6 +11,8 @@ package com.rameses.invoker.client;
 
 import com.rameses.common.AsyncHandler;
 import com.rameses.common.AsyncResponse;
+import com.rameses.util.BreakException;
+import com.rameses.util.ExceptionManager;
 
 /**
  *
@@ -32,15 +34,26 @@ public class ResponseHandler {
     
     public boolean execute() {
         int counter = 0;
-        while(true) {
-            Object result = scriptService.getPollData(requestId);
-            if( result == null ) {
-                break;
+        try {
+            while(true) {
+                Object result = scriptService.getPollData(requestId);
+                if( result == null ) {
+                    break;
+                } 
+                else if(result instanceof Exception ) {
+                    throw ExceptionManager.getOriginal((Exception)result);
+                }
+                else {
+                    listener.onMessage( result );
+                    counter++;
+                }
             }
-            else {
-                listener.onMessage( result );
-                counter++;
-            }
+        } 
+        catch(BreakException be) {
+            throw be;
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
         }
         return (counter > 0);
     }

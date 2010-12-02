@@ -51,8 +51,10 @@ public class InvokerHandler implements InvocationHandler {
                     System.out.println(ex.getMessage());
                 }
             }
+            
             return o;
         } catch(Exception e) {
+            e.printStackTrace();
             throw e;
         }
     }

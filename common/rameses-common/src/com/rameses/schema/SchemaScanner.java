@@ -10,6 +10,7 @@
 package com.rameses.schema;
 
 import com.rameses.common.PropertyResolver;
+import com.rameses.util.BreakException;
 import com.rameses.util.ExprUtil;
 import java.util.Map;
 

@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.schema;
+package com.rameses.util;
 
 /**
  *

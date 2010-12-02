@@ -144,14 +144,13 @@ public class ScriptService implements ScriptServiceLocal {
     }
 
     public void pushResponse(String requestId, Object data) {
-        SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
         ObjectOutputStream oos = null;
         ByteArrayOutputStream bos = null;
         try {
-            ctx.openConnection();
             bos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bos);
             oos.writeObject( data );
+            SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
             SqlExecutor qe = ctx.createNamedExecutor("eserver:async-push");
             qe.setParameter(1,"RESP:"+new UID());
             qe.setParameter(2, requestId );
@@ -162,15 +161,15 @@ public class ScriptService implements ScriptServiceLocal {
             throw new EJBException(e);
         }
         finally {
-            ctx.closeConnection();
+            try {oos.close();} catch(Exception ign){;}
+            try {bos.close();} catch(Exception ign){;}
         }
     }
 
     public Object getPollData(String requestId) {
-        SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
         ObjectInputStream ois = null;
         try {
-            ctx.openConnection();
+            SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
             Map map = (Map)ctx.createNamedQuery("eserver:async-poll").setParameter(1,requestId).getSingleResult();
             if(map==null) return null;
             String objid = (String)map.get( "objid" );
@@ -184,7 +183,6 @@ public class ScriptService implements ScriptServiceLocal {
             throw new EJBException(e);
         }
         finally {
-            ctx.closeConnection();
             try {ois.close();} catch(Exception ign){;}
         }
     }

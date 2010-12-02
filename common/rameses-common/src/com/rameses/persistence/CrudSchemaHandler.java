@@ -9,7 +9,7 @@
 
 package com.rameses.persistence;
 
-import com.rameses.schema.BreakException;
+import com.rameses.util.BreakException;
 import com.rameses.schema.ComplexField;
 import com.rameses.schema.LinkField;
 import com.rameses.schema.Schema;

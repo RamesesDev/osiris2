@@ -27,7 +27,7 @@ public abstract class ScriptInterfaceProvider {
     public static ScriptInterfaceProvider getInstance() {
         return instance;
     }
-
+    
     private Map<String,Class> interfaces = new HashMap();
     protected abstract Class parseClass(byte[] bytes);
     public abstract ClassLoader getProxyClassLoader();
@@ -35,19 +35,22 @@ public abstract class ScriptInterfaceProvider {
     public ScriptInterfaceProvider() {
     }
     
-    public final Class getInterface(String name, HttpScriptService svc) {
-        Class cls = interfaces.get(name);
-        if(cls==null) {
-            synchronized(interfaces) {
+    public synchronized final Class getInterface(String name, HttpScriptService svc) {
+        try {
+            Class cls = interfaces.get(name);
+            if(cls==null) {
                 if( !interfaces.containsKey(name) ) {
                     byte[] bytes = svc.getScriptInfo( name );
                     Class clazz = parseClass(bytes);
-                    interfaces.put( name, clazz );    
+                    interfaces.put( name, clazz );
                 }
+                cls = interfaces.get(name);
             }
-            cls = interfaces.get(name); 
+            return cls;
+            
+        } catch(Exception e) {
+            throw new RuntimeException(e);
         }
-        return cls;
     }
     
     
