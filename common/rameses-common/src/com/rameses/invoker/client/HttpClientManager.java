@@ -57,7 +57,7 @@ public final class HttpClientManager {
                 String s = (String) env.get( hostKey);
                 if( s != null ) {
                     if(s.startsWith("~")) {
-                        client.setSecured(true);
+                        client.setSecured(false);
                         s = s.substring(1);
                     }
                     String hosts[] = s.split(";");

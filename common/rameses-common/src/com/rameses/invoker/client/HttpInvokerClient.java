@@ -17,7 +17,7 @@ public class HttpInvokerClient {
     
     private String protocol = "http";
     private String host = "localhost:8080";
-    private boolean secured = false;
+    private boolean secured = true;
     private String appContext;
     
     private String[] hosts;
@@ -38,7 +38,7 @@ public class HttpInvokerClient {
     }
     
     
-    private Object[] filterData( Object[] params ) throws Exception {
+    private Object[] filterRequest( Object[] params ) throws Exception {
         if(params == null ) params = new Object[]{};
         if( secured )
             return (Object[])CipherUtil.encode( (Serializable)params);
@@ -46,6 +46,12 @@ public class HttpInvokerClient {
             return params;
     }
     
+    private Object filterResponse( Object result ) throws Exception {
+        if(secured)
+            return CipherUtil.decode( (Serializable)result );
+        else
+            return result;
+    }
     
     public  Object invoke(String serviceName, Object[] params) throws Exception {
         //determine first the no. of round robins.
@@ -77,7 +83,7 @@ public class HttpInvokerClient {
             ObjectOutputStream out = null;
             ObjectInputStream in = null;
             try {
-                Object[] data = filterData( params );
+                Object[] data = filterRequest( params );
                 
                 StringBuffer urlHost = new StringBuffer(buildHostPath(host));
                 if (serviceName != null && serviceName.trim().length() > 0)
@@ -95,7 +101,7 @@ public class HttpInvokerClient {
                 
                 out.writeObject(data);
                 in = new ObjectInputStream(conn.getInputStream());
-                retval =  in.readObject();
+                retval =  filterResponse(in.readObject());
                 if( (retval instanceof String) && retval.equals("#NULL")  ) {
                     retval = null;
                 }

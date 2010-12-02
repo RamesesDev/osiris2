@@ -12,16 +12,20 @@ import org.apache.commons.beanutils.MethodUtils;
 
 public class HttpInvoker extends HttpServlet {
     
-    protected Object[] filterData( Object obj ) throws Exception {
+    protected Object[] filterInput( Object obj ) throws Exception {
         return  (Object[])obj;
     }
     
+    protected Object filterOutput( Object obj ) throws Exception {
+        return obj;
+    }
+
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
         try {
             in = new ObjectInputStream(req.getInputStream());
-            Object[] values = filterData( in.readObject() );
+            Object[] values = filterInput( in.readObject() );
             StringBuffer reqPath = new StringBuffer();
             if ( req.getPathInfo() != null ) {
                 reqPath.append(req.getPathInfo());
@@ -57,12 +61,17 @@ public class HttpInvoker extends HttpServlet {
             }
             
             out = new ObjectOutputStream(res.getOutputStream());
-            out.writeObject(response);
+            out.writeObject(filterOutput(response));
         } 
         catch (Exception ex) {
-            Exception ne = ExceptionManager.getOriginal(ex);
-            out = new ObjectOutputStream(res.getOutputStream());
-            out.writeObject(ne);
+            try {
+                Exception ne = ExceptionManager.getOriginal(ex);
+                out = new ObjectOutputStream(res.getOutputStream());
+                out.writeObject(filterOutput(ne));
+            }
+            catch(Exception ign){
+                System.out.println("error in filtering output");
+            }
         } 
         finally {
             try { out.close(); } catch (Exception ex) {;}
