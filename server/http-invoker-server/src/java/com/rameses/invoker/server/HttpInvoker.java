@@ -3,8 +3,6 @@ package com.rameses.invoker.server;
 import com.rameses.util.ExceptionManager;
 import java.io.*;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import javax.naming.InitialContext;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -34,7 +32,6 @@ public class HttpInvoker extends HttpServlet {
             }
             
             String[] pathInfos = reqPath.toString().split("\\.");
-            
             InitialContext ctx = new InitialContext();
             String appContext = "";
             if( req.getContextPath() != null && req.getContextPath().trim().length()>0 && !req.getContextPath().equals("/") ) {
@@ -42,7 +39,7 @@ public class HttpInvoker extends HttpServlet {
             }
             Object bean = ctx.lookup(appContext + pathInfos[0].substring(1) + "/local");
             
-            Method[] methods = getMethodByName(bean, pathInfos[1], values.length);
+            Method[] methods = InvokerHelper.getMethodByName(bean, pathInfos[1], values.length);
             boolean methodFound = false;
             Object response = null;
             
@@ -79,18 +76,6 @@ public class HttpInvoker extends HttpServlet {
     }
     
 
-    /***
-     * this will locate all methods that matches the name, with the same arg count.
-     */
-    private Method[] getMethodByName(Object bean, String name, int argCount) throws Exception {
-        List list = new ArrayList();
-        Method[] methods = bean.getClass().getMethods();
-        for (int i=0; i<methods.length; i++) {
-            if (!methods[i].getName().equals(name)) continue;
-            if (methods[i].getParameterTypes().length != argCount) continue;
-            list.add(methods[i]);
-        }
-        return (Method[]) list.toArray(new Method[]{});
-    }
+    
     
 }

@@ -10,6 +10,7 @@
 package com.rameses.eserver;
 
 
+import com.rameses.util.ExprUtil;
 import com.rameses.util.SysMap;
 import com.rameses.util.URLUtil;
 import java.io.InputStream;
@@ -141,7 +142,11 @@ public final class AppContext {
     }
     
     public static Object getProperty( String pname ) {
-        return sysmap.get( pname );
+        Object result =  sysmap.get( pname );
+        if(result!=null && (result instanceof String)) {
+            result = ExprUtil.substituteValues( (String)result, sysmap );
+        }
+        return result;
     }
     
     public static String getHost() {

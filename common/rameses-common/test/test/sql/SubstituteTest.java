@@ -8,6 +8,7 @@
 package test.sql;
 
 import com.rameses.util.ExprUtil;
+import com.rameses.util.SysMap;
 import java.util.HashMap;
 import java.util.Map;
 import junit.framework.*;
@@ -28,7 +29,7 @@ public class SubstituteTest extends TestCase {
     protected void tearDown() throws Exception {
     }
     
-    public void xtestSubstitute() throws Exception {
+    public void testSubstitute() throws Exception {
         String c = " and name = ${lastname}";
         Map map = new HashMap();
         map.put("condition", c);
@@ -44,12 +45,20 @@ public class SubstituteTest extends TestCase {
     
     
     public void testSubstitute1() throws Exception {
-        String c = "$P{Q1}, $P{Q2}";
+        String c = "$P{Q11}, $P{Q2}";
         Map map = new HashMap();
         map.put("condition", c);
         //String sql = "${xcondition} select from o ${xcondition} ${fields}";
-        String sql  ="select * from data where p in  (${condition})";
+        String sql  ="select * from data where p in  (#{condition})";
         System.out.println( ExprUtil.substituteValues( sql, map ));
     }
+    
+    public void testSubstitute2() throws Exception {
+        SysMap map = new SysMap();
+        System.out.println(map.get("user.dir"));
+        String c = "${user.dir}/hello.html";
+        System.out.println(ExprUtil.substituteValues(c, map ));
+    }
+    
     
 }
