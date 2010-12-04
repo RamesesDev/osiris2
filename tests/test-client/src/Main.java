@@ -24,6 +24,7 @@ public class Main {
         Map m = new HashMap();
         m.put("default.host", "10.0.0.104:8080");
         m.put("app.context", "mlglobal");
+        m.put("app.help", "http://10.0.0.104:8080/mlglobal-downloads/help");
         OsirisTestPlatform.runTest(m);
     }
     

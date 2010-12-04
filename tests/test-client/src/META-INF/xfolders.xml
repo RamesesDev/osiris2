@@ -4,5 +4,6 @@
         <folder id="file" caption="File" />
         <folder id="async" caption="Async" />
         <folder id="report" caption="Reports" />
+        <folder id="help" caption="Help" index="99999"/>
     </folder>
 </folders>
