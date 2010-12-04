@@ -61,6 +61,7 @@ public final class ExprUtil {
     public static String substituteValues(String name, Map map, PropertyResolver resolver) {
         if( name == null ) return null;
         if(name.trim().length()==0) return "";
+        if(!name.contains("$") &&  !name.contains("#")) return name;
         Matcher m = p.matcher(name);
         StringBuffer sb = new StringBuffer();
         int start = 0;
