@@ -96,7 +96,6 @@ public class XWebBrowser extends JEditorPane implements UIControl {
     
     private void refreshContent() {
         try {
-            document.setBase( new URL(model.getBaseUrl()) );
             super.setPage( model.getLocation() );
         } catch (Exception ex) {
             MsgBox.err(ex);

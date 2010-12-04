@@ -29,15 +29,15 @@ class CustomImgView extends ImageView {
         return loadingIcon;
     }
 
-    public URL getImageURL() {
-        URL u = super.getImageURL();
-        try {
-            return CacheUtil.getCache(u, "IMG");
-            
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return u;
-    }
+//    public URL getImageURL() {
+//        URL u = super.getImageURL();
+//        try {
+//            return CacheUtil.getCache(u, "IMG");
+//            
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//        return u;
+//    }
     
 }
