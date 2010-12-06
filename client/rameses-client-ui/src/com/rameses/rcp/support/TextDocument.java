@@ -55,9 +55,9 @@ public class TextDocument extends PlainDocument {
         }
         
         if(maxlength>0) {
-            if(getLength()+str.length()>maxlength) {
-                //MsgBox.err("Text is too long. Maximum length is " + getMaxlength());
-                return;
+            if (getLength() >= maxlength) return;
+            if (getLength()+str.length() > maxlength) {
+                str = str.substring(0, maxlength - getLength());
             }
         }
         
@@ -68,7 +68,6 @@ public class TextDocument extends PlainDocument {
         
         super.insertString(offs, str, a);
     }
-    
     
 }
 

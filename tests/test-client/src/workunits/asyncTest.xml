@@ -18,6 +18,7 @@
             @Service('SearchService')
             def svc;
         
+            def search2;
             def search;
             def list = [];
             

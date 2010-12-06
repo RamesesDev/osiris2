@@ -15,13 +15,15 @@ import javax.swing.text.Element;
 import javax.swing.text.html.ImageView;
 
 
-class CustomImgView extends ImageView {
+class HTMLImageView extends ImageView {
     
+    private String context;
     private ImageIcon loadingIcon;
     
     
-    CustomImgView(Element elem) {
+    HTMLImageView(Element elem, String context) {
         super(elem);
+        this.context = context;
         loadingIcon = ControlSupport.getImageIcon("com/rameses/rcp/icons/loading32.gif");
     }
     
@@ -29,15 +31,4 @@ class CustomImgView extends ImageView {
         return loadingIcon;
     }
 
-//    public URL getImageURL() {
-//        URL u = super.getImageURL();
-//        try {
-//            return CacheUtil.getCache(u, "IMG");
-//            
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
-//        return u;
-//    }
-    
 }

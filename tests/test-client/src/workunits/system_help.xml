@@ -10,6 +10,7 @@
         <invoker type="formActions" tooltip="Forward" action="forward" icon="system/images/arrowright.gif" shortcut="ctrl F"/>
         <invoker type="formActions" tooltip="Refresh" action="htmlModel.refresh" icon="system/images/refresh.png" shortcut="ctrl R"/>
         <invoker type="formActions" tooltip="Home" action="clear" icon="system/images/home.png" shortcut="ctrl C"/>
+        <invoker type="formActions" caption="Clear Cache" action="htmlModel.clearCache" shortcut="ctrl L"/>
     </invokers>
     
     <code>
@@ -57,7 +58,7 @@
             public void setSelectedResult( value ) {
                 _selectedResult = value;
                 if ( _selectedResult ) {
-                    htmlModel.location = helpPath + _selectedResult.path;
+                    htmlModel.setLocation( helpPath + _selectedResult.path );
                     binding.refresh('formActions');
                 }
             }

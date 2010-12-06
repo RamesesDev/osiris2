@@ -48,7 +48,6 @@ public class OsirisSubAppLoader implements AppLoader {
             ctx.setSecurityProvider(cs);
             ctx.setPlatform(platform);
             ctx.setClassLoader(loader);
-            ctx.setMethodResolver( new OsirisMethodResolver() );
             ctx.setAppEnv(env);
             
             Thread.currentThread().setContextClassLoader(loader);

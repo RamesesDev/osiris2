@@ -12,8 +12,8 @@ package com.rameses.util;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,12 +41,12 @@ public class ValueUtil {
     }
     
     public static final boolean isEmpty(Object obj) {
-        if ( obj == null)
-            return true;
-        if ( obj instanceof String && ((String) obj).trim().length() == 0)
-            return true;
+        if ( obj == null)                return true;
+        if ( obj instanceof Map )        return ((Map) obj).isEmpty();
+        if ( obj instanceof Collection ) return ((Collection) obj).isEmpty();
+        if ( obj.getClass().isArray() )   return ((Object[]) obj).length == 0;
         
-        return false;
+        return obj.toString().trim().length() == 0;
     }
     
     public static String getValueAsString(Class type, Object value) {

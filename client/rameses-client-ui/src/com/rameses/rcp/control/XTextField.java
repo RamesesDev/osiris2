@@ -34,8 +34,13 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     private String[] depends = new String[]{};
     private boolean nullWhenEmpty = true;
     private boolean readonly;
-    private boolean showHint;
     private String hint;
+    private String inputFormat;
+    private String inputFormatErrorMsg;
+    private String[] replaceExpr;
+    private String[] replaceString;
+    
+    private boolean showHint;
     private boolean isHintShown;
     private int hintYPos;
     private int hintXPos;
@@ -45,10 +50,9 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     protected ControlProperty property = new ControlProperty();
     protected ActionMessage actionMessage = new ActionMessage();
     
-    public XTextField() 
-    {
+    public XTextField() {
         document.setTextCase(TextCase.UPPER);
-        TextEditorSupport.install(this); 
+        TextEditorSupport.install(this);
         
         addFocusListener(new XTextFieldSupport());
         
@@ -57,6 +61,20 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         if ( f != null ) setFont(f);
     }
     
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if( showHint ) {
+            if( isHintShown ) {
+                g.setColor(Color.LIGHT_GRAY);
+                g.setFont(getFont());
+                hintYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
+                hintXPos = getInsets().left;
+                g.drawString(" " + getHint(), hintXPos, hintYPos);
+            }
+        }
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  UIControl implementation  ">
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
         setValue(value);
@@ -76,25 +94,23 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public void validateInput() {
         actionMessage.clearMessages();
         property.setErrorMessage(null);
-        if ( isRequired() && ValueUtil.isEmpty( getText() ) ) {
-            actionMessage.addMessage("1001", "{0} is required.", new Object[] {getCaption()});
-            property.setErrorMessage(actionMessage.toString());
-        }
-    }
-    
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if( showHint ) {
-            if( isHintShown ) {
-                g.setColor(Color.LIGHT_GRAY);
-                g.setFont(getFont());
-                hintYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
-                hintXPos = getInsets().left;
-                g.drawString(" " + getHint(), hintXPos, hintYPos);
+        if ( ValueUtil.isEmpty( getText() ) ) {
+            if ( isRequired() ) {
+                actionMessage.addMessage("1001", "{0} is required.", new Object[] { getCaption() });
             }
+        } else if ( !ValueUtil.isEmpty(inputFormat) && !getText().matches(inputFormat) ) {
+            String msg = null;
+            if ( inputFormatErrorMsg != null ) msg = inputFormatErrorMsg;
+            else msg = "Invalid input format for {0}";
+            
+            actionMessage.addMessage(null, msg, new Object[]{ getCaption() });
+        }
+        
+        if ( actionMessage.hasMessages() ) {
+            property.setErrorMessage( actionMessage.toString() );
         }
     }
-    
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setName(String name) {
@@ -106,6 +122,13 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         String txtValue = getText();
         if ( ValueUtil.isEmpty(txtValue) && nullWhenEmpty )
             return null;
+        
+        if ( replaceExpr != null && replaceString != null ) {
+            for(int i=0; i<replaceExpr.length; ++i) {
+                if ( replaceString.length <= i) break;
+                txtValue = txtValue.replaceAll( replaceExpr[i], replaceString[i] );
+            }
+        }
         
         return txtValue;
     }
@@ -209,7 +232,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public void setTextCase(TextCase textCase) {
         document.setTextCase(textCase);
     }
-
+    
     public int getMaxLength() {
         return document.getMaxlength();
     }
@@ -253,6 +276,37 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         showHint = !ValueUtil.isEmpty(hint);
     }
     
+    public String getInputFormat() {
+        return inputFormat;
+    }
+    
+    public void setInputFormat(String inputFormat) {
+        this.inputFormat = inputFormat;
+    }
+    
+    public String getInputFormatErrorMsg() {
+        return inputFormatErrorMsg;
+    }
+    
+    public void setInputFormatErrorMsg(String inputFormatErrorMsg) {
+        this.inputFormatErrorMsg = inputFormatErrorMsg;
+    }
+    
+    public String[] getReplaceExpr() {
+        return replaceExpr;
+    }
+    
+    public void setReplaceExpr(String[] replaceExpr) {
+        this.replaceExpr = replaceExpr;
+    }
+    
+    public String[] getReplaceString() {
+        return replaceString;
+    }
+    
+    public void setReplaceString(String[] replaceString) {
+        this.replaceString = replaceString;
+    }
     //</editor-fold>
     
     
@@ -278,4 +332,5 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         
     }
     //</editor-fold>
+    
 }
