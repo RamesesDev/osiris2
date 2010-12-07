@@ -33,6 +33,8 @@ public final class AppContext {
     private static String path;
     private static String host;
     private static DataSource systemDs;
+    private static String appPathDir;
+    
     
     //this should load all app.conf defined.
     public static void load() {
@@ -46,10 +48,11 @@ public final class AppContext {
         try {
             URL u1 = Thread.currentThread().getContextClassLoader().getResource( "META-INF/application.xml" );
             if(u1!=null) {
-                URL u2 = URLUtil.getParentUrl( u1 );
-                URL u3 = URLUtil.getParentUrl( u2 );
-                String p = u3.getPath();
-                name = p.substring(p.lastIndexOf("/")+1, p.lastIndexOf(".") );
+                URL u2 = URLUtil.getParentUrl( u1 );    
+                URL u3 = URLUtil.getParentUrl( u2 );    
+                appPathDir = u3.getPath();
+                if(appPathDir.startsWith("/")) appPathDir = appPathDir.substring(1);
+                name = appPathDir.substring(appPathDir.lastIndexOf("/")+1, appPathDir.lastIndexOf(".") );
             } else {
                 name = "";
             }
@@ -83,6 +86,11 @@ public final class AppContext {
                 props.load(is);
                 properties.putAll(props);
             }
+            
+            //built-in reserved keywords
+            properties.put("app.name", getName());
+            properties.put("app.path.dir", getAppPathDir());
+            
             sysmap = new SysMap( properties );
         } 
         catch(Exception ex) {
@@ -152,6 +160,9 @@ public final class AppContext {
     public static String getHost() {
         return host;
     }
-    
+
+    public static String getAppPathDir() {
+        return appPathDir;
+    }
     
 }
