@@ -2,38 +2,28 @@ package com.rameses.rcp.support;
 
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
-import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.text.JTextComponent;
+import javax.swing.JComboBox;
 
-
-public class TextEditorSupport {
+public class ComboBoxEditorSupport {
     
-    public static TextEditorSupport install(JTextComponent component) {
-        TextEditorSupport s = new TextEditorSupport(component);
-        component.putClientProperty(TextEditorSupport.class, s);
+    public static ComboBoxEditorSupport install(JComboBox component) {
+        ComboBoxEditorSupport s = new ComboBoxEditorSupport(component);
+        component.putClientProperty(ComboBoxEditorSupport.class, s);
         return s;
     }
     
-    private JTextComponent component;
+    private JComboBox component;
     private Color origBackground;
     private Color focusBackground;
     private FocusListener focusListener;
     
-    private TextEditorSupport(JTextComponent component) {
+    private ComboBoxEditorSupport(JComboBox component) {
         this.component = component;
         
         focusListener = new SupportFocusListener();
         component.addFocusListener(focusListener);
-        
-        Insets margin = UIManager.getInsets("TextField.margin");
-        if (margin != null) {
-            Insets ins = new Insets(margin.top, margin.left, margin.bottom, margin.right);
-            component.setMargin(ins);
-        }
         
         focusBackground = ThemeUI.getColor("XTextField.focusBackground");
     }
@@ -42,11 +32,10 @@ public class TextEditorSupport {
         public void focusGained(FocusEvent focusEvent) {
             try {
                 origBackground = component.getBackground();
-                if ( component.isEditable() ) {
-                    component.setBackground( focusBackground );
-                }
-                if ( component instanceof JTextField )
-                    component.selectAll();
+                component.setBackground( focusBackground );
+                
+                if ( component.isEditable() && component.getEditor() != null )
+                    component.getEditor().selectAll();
                 
             } catch(Exception ign) {;}
         }

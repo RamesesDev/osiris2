@@ -44,12 +44,14 @@ public class DataListPage extends javax.swing.JPanel {
         formPanel1.setCaption("Search");
         formPanel1.setCaptionBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         formPanel1.setCaptionHAlignment(com.rameses.rcp.constant.UIConstants.RIGHT);
+        formPanel1.setCaptionVAlignment(com.rameses.rcp.constant.UIConstants.CENTER);
         formPanel1.setOrientation(com.rameses.rcp.constant.UIConstants.HORIZONTAL);
         formPanel1.setPadding(new java.awt.Insets(0, 0, 0, 0));
         xActionTextField1.setActionName("listHandler.doSearch");
         xActionTextField1.setCaption("Search");
+        xActionTextField1.setHint("Type keywords here");
         xActionTextField1.setName("search");
-        xActionTextField1.setPreferredSize(new java.awt.Dimension(200, 19));
+        xActionTextField1.setPreferredSize(new java.awt.Dimension(200, 22));
         formPanel1.add(xActionTextField1);
 
         xLabel2.setBackground(new java.awt.Color(102, 102, 102));

@@ -10,6 +10,7 @@ package com.rameses.rcp.control;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.support.ComboBoxEditorSupport;
 import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
@@ -72,6 +73,8 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
         //default font
         Font f = ThemeUI.getFont("XComboBox.font");
         if ( f != null ) setFont( f );
+        
+        ComboBoxEditorSupport.install(this);
     }
     //</editor-fold>
     

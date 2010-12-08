@@ -19,9 +19,11 @@ public class XActionTFTest extends javax.swing.JPanel {
         xTextField1 = new com.rameses.rcp.control.XTextField();
 
         xActionTextField1.setActionName("search");
+        xActionTextField1.setHint("Type Taxpayername Here");
         xActionTextField1.setIndex(-1);
         xActionTextField1.setName("entity.taxpayer");
 
+        xTextField1.setHint("Type Taxpayer Address Here");
         xTextField1.setName("entity.address");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);

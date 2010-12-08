@@ -40,17 +40,21 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         IconedTextFieldSupport support = new IconedTextFieldSupport();
         addMouseListener(support);
         addMouseMotionListener(support);
-        addActionListener(this);        
+        addActionListener(this);
     }
     
     public AbstractIconedTextField(String iconPath) {
         this();
         
-        if ( Beans.isDesignTime() ) return;
-        
-        ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
-        URL url = loader.getResource(iconPath);
-        setIcon(new ImageIcon(url));
+        if ( Beans.isDesignTime() ) {
+            ClassLoader loader = getClass().getClassLoader();
+            URL url = loader.getResource(iconPath);
+            setIcon(new ImageIcon(url));
+        } else {
+            ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
+            URL url = loader.getResource(iconPath);
+            setIcon(new ImageIcon(url));
+        }
     }
     
     
@@ -63,11 +67,11 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         actionPerformed();
     }
     
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g.create();
+    public void paint(Graphics g) {
+        super.paint(g);
         
         if(icon != null) {
+            Graphics2D g2 = (Graphics2D) g.create();
             if( !isFocusable() ) {
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
             } else if( mouseOverImage == true ) {
@@ -80,8 +84,8 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
                 else
                     g2.drawImage( icon.getImage(), XPAD, (this.getHeight() - imgHeight) / 2 , null);
             }
+            g2.dispose();
         }
-        g2.dispose();
     }
     
     public void setBorder(Border border) {

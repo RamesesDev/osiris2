@@ -85,6 +85,7 @@
                   </Border>
                 </Property>
                 <Property name="captionHAlignment" type="java.lang.String" value="RIGHT"/>
+                <Property name="captionVAlignment" type="java.lang.String" value="CENTER"/>
                 <Property name="orientation" type="java.lang.String" value="HORIZONTAL"/>
                 <Property name="padding" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 0, 0, 0]"/>
@@ -95,9 +96,10 @@
                   <Properties>
                     <Property name="actionName" type="java.lang.String" value="listHandler.doSearch"/>
                     <Property name="caption" type="java.lang.String" value="Search"/>
+                    <Property name="hint" type="java.lang.String" value="Type keywords here"/>
                     <Property name="name" type="java.lang.String" value="search"/>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[200, 19]"/>
+                      <Dimension value="[200, 22]"/>
                     </Property>
                   </Properties>
                 </Component>

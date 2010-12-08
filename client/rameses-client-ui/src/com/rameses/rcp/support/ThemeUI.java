@@ -18,6 +18,9 @@ public final class ThemeUI {
     }
     
     public static Color getColor(String key) {
+        if ( "XTextField.focusBackground".equals(key) )
+            return new Color(254, 255, 208);
+        
         return null;
     }
 }

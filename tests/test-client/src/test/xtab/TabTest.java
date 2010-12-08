@@ -26,11 +26,13 @@ public class TabTest extends javax.swing.JPanel {
 
         formPanel1.setCaptionWidth(100);
         xTextField1.setCaption("Record No.");
+        xTextField1.setHint("Record No.");
         xTextField1.setName("entity.recordno");
         xTextField1.setPreferredSize(new java.awt.Dimension(100, 19));
         formPanel1.add(xTextField1);
 
         xTextField2.setCaption("Description");
+        xTextField2.setHint("Description");
         xTextField2.setName("entity.description");
         xTextField2.setPreferredSize(new java.awt.Dimension(250, 19));
         formPanel1.add(xTextField2);
@@ -50,16 +52,10 @@ public class TabTest extends javax.swing.JPanel {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(xTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 356, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(layout.createSequentialGroup()
-                            .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
-                            .addContainerGap())
-                        .add(layout.createSequentialGroup()
-                            .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap(369, Short.MAX_VALUE)))))
+                    .add(xTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 356, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(formPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+                    .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -67,7 +63,7 @@ public class TabTest extends javax.swing.JPanel {
                 .addContainerGap()
                 .add(formPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(xTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                .add(xTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(xButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())

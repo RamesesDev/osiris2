@@ -38,12 +38,14 @@
     <Component class="com.rameses.rcp.control.XActionTextField" name="xActionTextField1">
       <Properties>
         <Property name="actionName" type="java.lang.String" value="search"/>
+        <Property name="hint" type="java.lang.String" value="Type Taxpayername Here"/>
         <Property name="index" type="int" value="-1"/>
         <Property name="name" type="java.lang.String" value="entity.taxpayer"/>
       </Properties>
     </Component>
     <Component class="com.rameses.rcp.control.XTextField" name="xTextField1">
       <Properties>
+        <Property name="hint" type="java.lang.String" value="Type Taxpayer Address Here"/>
         <Property name="name" type="java.lang.String" value="entity.address"/>
       </Properties>
     </Component>

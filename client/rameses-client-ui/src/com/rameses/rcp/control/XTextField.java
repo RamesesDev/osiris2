@@ -17,8 +17,6 @@ import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JTextField;
 
@@ -42,11 +40,8 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     private boolean showHint;
     private boolean isHintShown;
-    private int hintYPos;
-    private int hintXPos;
     
     private TextDocument document = new TextDocument();
-    
     protected ControlProperty property = new ControlProperty();
     protected ActionMessage actionMessage = new ActionMessage();
     
@@ -54,23 +49,20 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         document.setTextCase(TextCase.UPPER);
         TextEditorSupport.install(this);
         
-        addFocusListener(new XTextFieldSupport());
-        
         //set default font
         Font f = ThemeUI.getFont("XTextField.font");
         if ( f != null ) setFont(f);
     }
     
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if( showHint ) {
-            if( isHintShown ) {
-                g.setColor(Color.LIGHT_GRAY);
-                g.setFont(getFont());
-                hintYPos = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
-                hintXPos = getInsets().left;
-                g.drawString(" " + getHint(), hintXPos, hintYPos);
-            }
+    public void paint(Graphics g) {
+        super.paint(g);
+        
+        if( showHint && ValueUtil.isEmpty(getText()) ) {
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(getFont());
+            int x = getInsets().left;
+            int y = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
+            g.drawString(" " + getHint(), x, y);
         }
     }
     
@@ -306,30 +298,6 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     public void setReplaceString(String[] replaceString) {
         this.replaceString = replaceString;
-    }
-    //</editor-fold>
-    
-    
-    //<editor-fold defaultstate="collapsed" desc="  XTextFieldSupport  ">
-    private class XTextFieldSupport implements FocusListener {
-        public void focusGained(FocusEvent e) {
-            if(showHint) {
-                isHintShown = false;
-                repaint();
-            }
-        }
-        
-        public void focusLost(FocusEvent e) {
-            if(showHint) {
-                if(ValueUtil.isEmpty(getText()))
-                    isHintShown = true;
-                else
-                    isHintShown = false;
-                
-                repaint();
-            }
-        }
-        
     }
     //</editor-fold>
     

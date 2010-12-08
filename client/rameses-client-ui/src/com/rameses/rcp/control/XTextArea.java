@@ -4,6 +4,7 @@ import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.support.TextDocument;
+import com.rameses.rcp.support.TextEditorSupport;
 import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
@@ -36,6 +37,7 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public XTextArea() {
         super();
+        TextEditorSupport.install(this);
         
         //default trim space option for TextArea
         textDocument.setTrimSpaceOption(TrimSpaceOption.NONE);
