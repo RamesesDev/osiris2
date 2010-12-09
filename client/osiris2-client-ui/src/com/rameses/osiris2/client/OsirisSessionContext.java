@@ -10,6 +10,7 @@
 package com.rameses.osiris2.client;
 
 import com.rameses.osiris2.AppContext;
+import com.rameses.osiris2.Invoker;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.rcp.framework.ClientContext;
@@ -23,6 +24,8 @@ import javax.swing.JMenuBar;
  * @author elmo
  */
 public class OsirisSessionContext extends SessionContext {
+    
+    private boolean offline = false;
     
     private Map profile = new HashMap();
     
@@ -59,5 +62,30 @@ public class OsirisSessionContext extends SessionContext {
     public void setProfile(Map profile) {
         this.profile = profile;
     }
+
+    public boolean checkInvoker(Invoker inv) {
+        if( offline ) {
+            String a = (String)inv.getProperties().get("allowOffline");
+            if(a==null) return false;
+            try {
+                return Boolean.parseBoolean( a );
+            }
+            catch(Exception ign) {
+                return false;
+            }
+        }
+        else{
+            return true;
+        }
+    }
+
+    public boolean isOffline() {
+        return offline;
+    }
+
+    public void setOffline(boolean offline) {
+        this.offline = offline;
+    }
+
     
 }

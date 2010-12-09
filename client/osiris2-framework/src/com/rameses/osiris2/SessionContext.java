@@ -102,6 +102,12 @@ public class SessionContext {
         return getInvokers(type, true);
     }
     
+    //this is an overridable additional method to allow the application provider to 
+    //have additional chcking of the invoker before allowing it to be accessed
+    public boolean checkInvoker( Invoker inv ) {
+        return true;
+    }
+    
     public List getInvokers( String type, boolean applySecurity ) {
         if (!invokers.containsKey(type)) {
             List list = new ArrayList();
@@ -111,9 +117,14 @@ public class SessionContext {
             while (iter.hasNext()) {
                 Invoker inv = (Invoker)iter.next();
                 String itype = (inv.getType() == null) ? "folder" : inv.getType();
+                boolean showIt = true;
                 
-                if (itype.matches(type)) {
-                    if (applySecurity == false || checkSecurity(inv.getWorkunitid(), inv.getRoles(), inv.getPermission())) {
+                String permission = inv.getPermission();
+                if( permission!=null && permission.trim().length()>0) {
+                    showIt = checkInvoker(inv);
+                }
+                if (showIt && itype.matches(type)) {
+                    if (applySecurity == false || checkSecurity(inv.getWorkunitid(), inv.getRoles(), permission )) {
                         list.add(inv);
                     }
                 }
