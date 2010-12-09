@@ -17,4 +17,10 @@ public interface ListModelListener
     void refreshItemRemoved(int fromRow, int toRow);
     void refreshSelectedItem();
     
+    /**
+     * This is called when the model fires its rebuildColumns method.
+     * This is called when the list of collumns changed.
+     */
+    void rebuildColumns();
+    
 }

@@ -1,77 +1,72 @@
 package com.rameses.osiris2.reports;
 
-import groovy.lang.Writable;
-import groovy.text.GStringTemplateEngine;
-import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
 
 /**
- * @description
- * cell height and width settings: new Column(name:"name", caption:"Column Title", properties:[width:150, height:15]);
- * height must not be greater than 22;
+ * @author jaycverg
  */
-
 public abstract class ReportExporter {
     
+    public static Properties index = new Properties();
+    public static Map<String, ReportExporter> exporters = new HashMap();
+    
+    static {
+        try {
+            Enumeration e = ReportExporter.class.getClassLoader().getResources("META-INF/report-exporters.properties");
+            while( e.hasMoreElements() ) {
+                URL u = (URL) e.nextElement();
+                index.load( u.openStream() );
+            }
+            
+        }catch(Exception e) {;}
+    }
+    
+    public static final ReportExporter get(String name) {
+        if ( exporters.get(name) == null && index.containsKey(name) ) {
+            try {
+                ClassLoader loader = ReportExporter.class.getClassLoader();
+                exporters.put(name, (ReportExporter) loader.loadClass(index.getProperty(name)).newInstance());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            } 
+        }
+        return exporters.get(name);
+    }
+    
+    
     public abstract JRExporter getExporter();
-    public abstract OutputStream getOutputStream();
-    public abstract Object getData();
-    public abstract List getColumns();
     
+    public final void export(ReportModel model, String output) {
+        try {
+            export(model, new FileOutputStream(output));
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
     
-    public final void export() throws Exception {
-        Writable w = null;
+    public final void export(ReportModel model, OutputStream output) {
         OutputStream os = null;
         try{
-            Map binding = new HashMap();
-            binding.put("columns", getColumns() );
-            URL url = getClass().getClassLoader().getResource("com/rameses/osiris2/reports/templates/report-exporter.template");
-            GStringTemplateEngine engine = new GStringTemplateEngine();
-            w = engine.createTemplate(url).make(binding);
-            
-            JasperPrint jp = getReport( w );
-            
+            JasperPrint jp = model.getReport();
             JRExporter exporter = getExporter();
-            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, (os = getOutputStream()) );
+            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, (os = output) );
             exporter.setParameter(JRExporterParameter.JASPER_PRINT, jp);
             exporter.exportReport();
         }catch(Exception e){
-            throw e;
+            throw new RuntimeException(e);
         } finally{
             try{os.close();}catch(Exception ign){}
         }
     }
-    
-    private JasperPrint getReport( Writable w )throws Exception{
-        ByteArrayInputStream bais = null;
-        try{
-            String template = w.toString();
-            bais = new ByteArrayInputStream(template.getBytes("UTF-8"));
-            
-            if ( isDebug() ) System.out.println(template);
-            
-            bais.close();
-            ReportDataSource ds = new ReportDataSource( getData() );
-            JasperReport report = JasperCompileManager.compileReport(bais);
-            return JasperFillManager.fillReport(report, new HashMap(), ds);
-        }catch(Exception e){
-            throw e;
-        } finally{
-            try{bais.close();}catch(Exception ign){}
-        }
-    }
-    
-    //overridable
-    public boolean isDebug() { return false; }
     
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workunit>
     <invokers>
-        <invoker folderid="/menu/report" caption="Xls Report Test"/>
+        <invoker folderid="/menu/report" action="init" caption="Xls Report Test"/>
     </invokers>
     
     <code>
@@ -13,28 +13,29 @@
         
                 
         public class Test1Controller  {
+        
+            def reportModel = [
+                getReportName: { "Test Report" },
+                getColumns: {
+                    [
+                        new Column('name', 'Name'),
+                        new Column('address', 'Address'),
+                        new Column('zipcode', 'Zip Code'),
+                    ]
+                },
+                getReportData: {
+                    [
+                        [name: 'Jayrome Vergara', address: 'cebu city', zipcode: '6000'],
+                        [name: 'Arnel Retiza', address: 'bogo, cebu', zipcode: '6000'],
+                        [name: 'Donie Evalle', address: 'naga, cebu', zipcode: '6000']
+                    ];
+                }
+            ] as DynamicReportModel;
+            
+            void init() {}
             
             public void export() {
-                def exporter = [
-                    getColumns: {
-                        [
-                            new Column('name', 'Name'),
-                            new Column('address', 'Address')
-                        ]
-                    },
-                    getData: {
-                        [
-                            [name: 'Jayrome Vergara', address: 'cebu city'],
-                            [name: 'Arnel Retiza', address: 'bogo, cebu'],
-                            [name: 'Donie Evalle', address: 'naga, cebu']
-                        ]
-                    },
-                    getOutputStream: {
-                        new FileOutputStream('/home/rameses/Desktop/report.csv')
-                    }
-                ] as CsvExporter;
-                
-                exporter.export();
+                ReportExporter.xls.export(reportModel, '/home/rameses/Desktop/report.xls');
             }            
             
         }
