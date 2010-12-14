@@ -407,8 +407,6 @@ public class TableComponent extends JTable implements ListModelListener {
             if ( item.getItem() != null ) {
                 ((UIInput) editor).refresh();
             }
-        } else {
-            listModel.updateSelectedItem();
         }
         
         editor.setVisible(false);
@@ -416,6 +414,7 @@ public class TableComponent extends JTable implements ListModelListener {
         editingMode = false;
         currentEditor = null;
         
+        if ( commit ) listModel.updateSelectedItem();        
         tableModel.fireTableRowsUpdated(rowIndex, rowIndex);
         if ( grabFocus ) grabFocus();
     }
