@@ -407,6 +407,8 @@ public class TableComponent extends JTable implements ListModelListener {
             if ( item.getItem() != null ) {
                 ((UIInput) editor).refresh();
             }
+        } else {
+            listModel.updateSelectedItem();
         }
         
         editor.setVisible(false);
