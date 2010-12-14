@@ -90,9 +90,16 @@ public final class InvokerUtil {
                 }
                 UIControllerPanel panel = new UIControllerPanel( uic );
                 Map winParams = new HashMap();
+                
                 if ( invoker.getProperties() != null ) {
-                    winParams.putAll( invoker.getProperties() );
+                    Map props = invoker.getProperties();
+                    winParams.putAll( props );
+                    
+                    if ( props.get("alwaysOnTop") != null ) {
+                        winParams.put("alwaysOnTop", Boolean.valueOf( props.get("alwaysOnTop")+"") );
+                    }
                 }
+                
                 winParams.put("id", uic.getId());
                 winParams.put("title", uic.getTitle());
                 

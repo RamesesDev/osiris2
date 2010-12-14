@@ -112,12 +112,12 @@ public class Osiris2Startup extends HttpServlet {
     }
     
     private String resolveValue(String value) {
-        StringBuffer sb = new StringBuffer();        
         Matcher m = Pattern.compile("\\$\\{(.*)\\}").matcher(value);
         boolean found = m.find();
         
         if ( !found ) return value;
         
+        StringBuffer sb = new StringBuffer();
         while(found) {
             m.appendReplacement(sb, System.getProperty(m.group(1)) );
             found = m.find();

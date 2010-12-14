@@ -27,11 +27,20 @@ public class DefaultTableModel extends AbstractTableModel {
         columnList.clear();
         if ( listModel == null ) return;
         
+        indexColumns();
+    }
+    
+    private void indexColumns() {
         for ( Column col : listModel.getColumns() ) {
             if ( col.isVisible() ) {
                 columnList.add(col);
             }
         }
+    }
+    
+    public void reIndexColumns() {
+        columnList.clear();
+        indexColumns();
     }
     
     public AbstractListModel getListModel() {

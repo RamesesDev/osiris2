@@ -1,6 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.util.ValueUtil;
 import java.awt.AlphaComposite;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -45,16 +46,7 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
     
     public AbstractIconedTextField(String iconPath) {
         this();
-        
-        if ( Beans.isDesignTime() ) {
-            ClassLoader loader = getClass().getClassLoader();
-            URL url = loader.getResource(iconPath);
-            setIcon(new ImageIcon(url));
-        } else {
-            ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
-            URL url = loader.getResource(iconPath);
-            setIcon(new ImageIcon(url));
-        }
+        setIcon(iconPath);
     }
     
     
@@ -72,7 +64,7 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         
         if(icon != null) {
             Graphics2D g2 = (Graphics2D) g.create();
-            if( !isFocusable() ) {
+            if( !isFocusable() && !Beans.isDesignTime() ) {
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
             } else if( mouseOverImage == true ) {
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
@@ -105,6 +97,10 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         super.setBorder(newBorder);
     }
     
+    public String getOrientation() {
+        return orientation;
+    }
+    
     public void setOrientation(String orient) {
         this.orientation = orient;
         Insets insets = super.getMargin();
@@ -124,19 +120,28 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
     
     public void setIcon(ImageIcon icon) {
         this.icon = icon;
-        imgWidth = icon.getIconWidth();
-        imgHeight = icon.getIconHeight();
+        if ( icon != null ) {
+            imgWidth = icon.getIconWidth();
+            imgHeight = icon.getIconHeight();
+        }
     }
     
     public void setIcon(String path) {
-        try{
-            ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
-            URL url = loader.getResource(path);
-            
-            this.icon = new ImageIcon(url);
-            imgWidth = icon.getIconWidth();
-            imgHeight = icon.getIconHeight();
-        }catch(Exception ex) {}
+        if ( ValueUtil.isEmpty(path) ) {
+            setIcon( (ImageIcon) null );
+        } else {
+            try{
+                ClassLoader loader = null;
+                if ( Beans.isDesignTime() ) {
+                    loader = getClass().getClassLoader();
+                } else {
+                    loader = ClientContext.getCurrentContext().getClassLoader();
+                }
+                
+                URL url = loader.getResource(path);                
+                setIcon( new ImageIcon(url) );
+            }catch(Exception ex) {}
+        }
     }
     
     

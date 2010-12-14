@@ -16,6 +16,7 @@ import java.beans.Beans;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -33,7 +34,7 @@ import javax.swing.event.ChangeListener;
  * @author Windhel
  */
 
-public class XImageViewer extends JPanel implements UIControl{
+public class XImageViewer extends JPanel implements UIControl {
     
     private BufferedImage image;
     private Binding binding;
@@ -41,6 +42,7 @@ public class XImageViewer extends JPanel implements UIControl{
     private boolean advanced;
     private boolean fitImage;
     private String[] depends;
+    private boolean dynamic;
     
     private int width;
     private int height;
@@ -71,7 +73,19 @@ public class XImageViewer extends JPanel implements UIControl{
     
     public void setLayout(LayoutManager mgr) {;}
     
-    //<editor-fold defaultstate="collapsed" desc="  attachAdvancedOptions  ">
+    public void refresh() {
+        if ( dynamic ) render();
+    }
+    
+    public void load() {
+        if ( !dynamic ) render();
+    }
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  helper method(s)  ">
     private void attachAdvancedOptions() {
         if( advanced ) {
             if ( columnHeader == null ) {
@@ -100,6 +114,45 @@ public class XImageViewer extends JPanel implements UIControl{
         }
     }
     
+    private void render() {
+        Object value = UIControlUtil.getBeanValue(this);
+        try {
+            if(value instanceof String) {
+                image = ImageIO.read(new File(value.toString()));
+            } else if(value instanceof byte[]) {
+                image = ImageIO.read(new ByteArrayInputStream((byte[])value));
+            } else if(value instanceof Image) {
+                image = (BufferedImage)value;
+            } else if(value instanceof ImageIcon) {
+                image = (BufferedImage)((ImageIcon)value).getImage();
+            } else if(value instanceof InputStream) {
+                image = ImageIO.read((InputStream)value);
+            } else if(value instanceof File) {
+                image = ImageIO.read((File)value);
+            } else if(value instanceof URL) {
+                image = ImageIO.read((URL) value);
+            }
+            
+            if ( image != null ) {
+                width = image.getWidth(null);
+                height = image.getHeight(null);
+            }
+            
+            if(advanced == true) {
+                fitImage = false;
+                jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+            }
+            if(fitImage == true) {
+                advanced = false;
+                jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+            }
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
@@ -143,51 +196,15 @@ public class XImageViewer extends JPanel implements UIControl{
     public void setFitImage(boolean fitImage) {
         this.fitImage = fitImage;
     }
+    
+    public boolean isDynamic() {
+        return dynamic;
+    }
+    
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
     //</editor-fold>
-    
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        try {
-            if(value instanceof String) {
-                image = ImageIO.read(new File(value.toString()));
-            } else if(value instanceof byte[]) {
-                image = ImageIO.read(new ByteArrayInputStream((byte[])value));
-            } else if(value instanceof Image) {
-                image = (BufferedImage)value;
-            } else if(value instanceof ImageIcon) {
-                image = (BufferedImage)((ImageIcon)value).getImage();
-            } else if(value instanceof InputStream) {
-                image = ImageIO.read((InputStream)value);
-            } else if(value instanceof File) {
-                image = ImageIO.read((File)value);
-            }
-            
-            if ( image != null ) {
-                width = image.getWidth(null);
-                height = image.getHeight(null);
-            }
-            
-            if(advanced == true) {
-                fitImage = false;
-                jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-            }
-            if(fitImage == true) {
-                advanced = false;
-                jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-            }
-            
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void load() {}
-    
-    public int compareTo(Object o) {
-        return UIControlUtil.compare(this, o);
-    }
     
     
     //<editor-fold defaultstate="collapsed" desc="  ImageCanvas (class)  ">
@@ -195,6 +212,9 @@ public class XImageViewer extends JPanel implements UIControl{
         
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
+            
+            if ( image == null ) return;
+            
             if(isFitImage() == true && Beans.isDesignTime() == false) {
                 calculateFit();
                 Graphics2D g2 = (Graphics2D)g.create();
@@ -209,10 +229,12 @@ public class XImageViewer extends JPanel implements UIControl{
         }
         
         public Dimension getPreferredSize() {
+            if ( image == null ) return super.getPreferredSize();
+            
             if(isFitImage() == true && Beans.isDesignTime() == false) {
                 calculateFit();
                 return new Dimension( image.getWidth(), image.getHeight());
-            }else
+            } else
                 return new Dimension(width, height);
         }
         
@@ -222,7 +244,8 @@ public class XImageViewer extends JPanel implements UIControl{
             scale = Math.min(scaleWidth, scaleHeight);
             fitPercentageWidth = (jsp.getViewport().getExtentSize().getWidth() - (scale * image.getWidth()))/2;
             fitPercentageHeight = (jsp.getViewport().getExtentSize().getHeight() - (scale * image.getHeight()))/2;
-         }
-        //</editor-fold>
+        }
     }
+    //</editor-fold>
+    
 }

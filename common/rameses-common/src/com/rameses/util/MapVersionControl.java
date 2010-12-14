@@ -34,8 +34,7 @@ public final class MapVersionControl {
             if(!ValueUtil.isEqual(value, x )) {
                 if(value!=null &&  (value instanceof Map) && (x instanceof Map)  ) {
                     processDiff( (Map)value, (Map)x, fieldName + "." , handler );
-                } 
-                else if( value!=null &&  (value instanceof List) && (x instanceof List)) {
+                } else if( value!=null &&  (value instanceof List) && (x instanceof List)) {
                     List list1 = (List)value;
                     List list2 = (List)x;
                     if(list1.size()>0) {
@@ -44,14 +43,12 @@ public final class MapVersionControl {
                             Object listVal = list1.get(i);
                             if(i >= sz2) {
                                 handler.addItem( fieldName,i,listVal );
-                            }
-                            else {
+                            } else {
                                 Object listVal2 = list2.get( i );
                                 if(listVal!=listVal2) {
                                     if((listVal instanceof Map) && (listVal2 instanceof Map)) {
                                         processDiff( (Map)listVal, (Map)listVal2, fieldName +"["+i+"].", handler);
-                                    }
-                                    else {
+                                    } else {
                                         handler.update( fieldName+"["+i+"]", listVal );
                                     }
                                 }
@@ -65,7 +62,7 @@ public final class MapVersionControl {
         }
     }
     
-     
+    
     private interface DiffHandler {
         void addItem( String name, int pos, Object value );
         void update( String name, Object value );
@@ -82,7 +79,7 @@ public final class MapVersionControl {
             m.put("oldValue", value );
             diff.put( name, m   );
         }
-
+        
         public void addItem(String name, int pos, Object value) {
             Map m = new HashMap();
             m.put("action", "remove");
@@ -107,7 +104,7 @@ public final class MapVersionControl {
             }
             m.put("newValue", value );
         }
-
+        
         public void addItem(String name, int pos, Object value) {
             Map m = new HashMap();
             m.put("action", "add");
@@ -117,10 +114,10 @@ public final class MapVersionControl {
             diff.put( name+"["+pos+"]", m  );
         }
     }
-
-     /**
-     * This method returns a diff map. A diff is a Map of change maps 
-     * using the field name and position as the key 
+    
+    /**
+     * This method returns a diff map. A diff is a Map of change maps
+     * using the field name and position as the key
      * A change map includes the type of action: add,update,remove
      */
     public Map diff( Map comp1, Map comp2 ) {
@@ -130,10 +127,10 @@ public final class MapVersionControl {
         
         return diff;
     }
-
+    
     /**
      * This method creates a merged map or new copy. You need to run first the
-     * a diff operation.    
+     * a diff operation.
      * @param oldVersion old map version
      * @param diff result of running a diff operation
      * @return
@@ -162,11 +159,10 @@ public final class MapVersionControl {
                 for(String s: arr ) {
                     if(s.contains("[")) {
                         String xname = s.substring(0, s.indexOf("["));
-                        int idx = Integer.valueOf( s.substring(s.indexOf("[")+1,s.indexOf("]"))).intValue(); 
+                        int idx = Integer.valueOf( s.substring(s.indexOf("[")+1,s.indexOf("]"))).intValue();
                         List list = (List)context.get(xname);
                         context = (Map)list.get(idx);
-                    }
-                    else {
+                    } else {
                         context = (Map)context.get(s);
                     }
                 }
@@ -179,7 +175,7 @@ public final class MapVersionControl {
         for( Object o : comp2.entrySet() ) {
             Map.Entry me = (Map.Entry)o;
             Object value = me.getValue();
-            String name = me.getKey().toString();   
+            String name = me.getKey().toString();
             
             String fieldName = name;
             if(prefix!=null) fieldName = prefix + "." + name;
@@ -193,12 +189,10 @@ public final class MapVersionControl {
                 //if there is a change then replace the whole node. otherwise scan it
                 if(change!=null) {
                     subContext.put( name, change.get("newValue") );
-                }
-                else {
+                } else {
                     scanCopy( subContext, oldContext, fieldName, diff );
                 }
-            }
-            else if( value!=null && (value instanceof List)) {
+            } else if( value!=null && (value instanceof List)) {
                 List list = (List)value;
                 List newList = new ArrayList();
                 context.put( name, newList );
@@ -211,10 +205,18 @@ public final class MapVersionControl {
                     //do not do anything if there is a change
                     //bec. if there is a change it is only for removal
                     if(change==null) {
-                        Map oldItem = (Map)list.get( i );    
-                        Map newItem = new HashMap();
-                        newList.add( newItem );
-                        scanCopy( newItem, oldItem, testName, diff );
+                        Object ox = list.get( i );
+                        if ( ox instanceof Map ) {
+                            Map oldItem = (Map) ox;
+                            Map newItem = new HashMap();
+                            newList.add( newItem );
+                            scanCopy( newItem, oldItem, testName, diff );
+                        } else {
+                            newList.add( ox );
+                        }
+                    } else if (change.get("action").equals("update")) {
+                        Object ox = change.get("newValue");
+                        newList.add( ox );
                     }
                 }
                 
@@ -223,11 +225,10 @@ public final class MapVersionControl {
                     String testName = fieldName + "["+i+"]";
                     Map change = (Map) diff.remove( testName );
                     if(change==null) break;
-                    Map item = (Map)change.get("value");
-                    newList.add(item);
+                    
+                    newList.add( change.get("value") );
                 }
-            }
-            else {
+            } else {
                 Object nv = value;
                 Map change = (Map)diff.remove( fieldName );
                 if(change!=null) {
@@ -239,9 +240,9 @@ public final class MapVersionControl {
     }
     
     /***
-     * This procedure checks the contents of two diffs 
-     * It returns a new Map of conflict maps which contain the maps of 
-     * two conflicts.If there is no conflict a null value is returned. 
+     * This procedure checks the contents of two diffs
+     * It returns a new Map of conflict maps which contain the maps of
+     * two conflicts.If there is no conflict a null value is returned.
      */
     public Map checkConflict(  Map diff1, Map diff2 ) {
         Map conflict = new HashMap();
@@ -258,7 +259,7 @@ public final class MapVersionControl {
                 conflict.put(k, entry);
             }
         }
-        if(conflict.size()==0) 
+        if(conflict.size()==0)
             return null;
         else
             return conflict;

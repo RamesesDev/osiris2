@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="deployer" basedir=".">
+    
+    <target name="deploy">
+        <copy todir="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/mlglobal/apps/mlglobal.ear" 
+              overwrite="true"
+              file="../dist/http-image-server.war"/>
+        <touch file="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/mlglobal/apps/mlglobal.ear/META-INF/application.xml" />
+    </target>    
+    
+</project>

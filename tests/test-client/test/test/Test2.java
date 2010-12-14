@@ -7,8 +7,7 @@
 
 package test;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileOutputStream;
 import junit.framework.*;
 
 /**
@@ -22,9 +21,9 @@ public class Test2 extends TestCase {
         super(testName);
     }
     
-    public void testHello() {
-        
-    }
+    public void testHello() throws Exception {
 
+    }
+    
     
 }

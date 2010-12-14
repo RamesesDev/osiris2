@@ -14,6 +14,7 @@ import java.awt.event.KeyListener;
 import java.beans.Beans;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -138,6 +139,10 @@ public class XDateField extends AbstractIconedTextField {
     
     public void setUseDatePickerModel(boolean useDatePickerModel) {
         this.useDatePickerModel = useDatePickerModel;
+        if ( useDatePickerModel )
+            setIcon("com/rameses/rcp/icons/calendar.png");
+        else
+            setIcon((ImageIcon)null);
     }
     
     //</editor-fold>
@@ -160,7 +165,6 @@ public class XDateField extends AbstractIconedTextField {
         
         if(isUseDatePickerModel()) {
             dpm = new DatePickerModel(this);
-            super.setIcon("com/rameses/rcp/icons/search.png");
         }
     }
     
@@ -207,7 +211,7 @@ public class XDateField extends AbstractIconedTextField {
     }
     
     public void actionPerformed() {
-        if(isUseDatePickerModel()) {
+        if(isUseDatePickerModel() && !Beans.isDesignTime()) {
             dpm.showCalendar();
         }
     }

@@ -387,6 +387,15 @@ public abstract class AbstractListModel {
     }
     
     /**
+     * This is called when the list of columns changed.
+     * This method will notify the listener to re-index the list of columns.
+     */
+    public void rebuildColumns() {
+        primaryColumn = null;
+        if ( listener != null ) listener.rebuildColumns();
+    }
+
+    /**
      * these methods below are used by the XTable to register/retrieve/remove error messages
      */
     public void addErrorMessage(int liIndex, String message) {

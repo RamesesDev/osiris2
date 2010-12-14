@@ -5,7 +5,6 @@ import com.rameses.osiris2.nb.StartupWindow;
 import com.rameses.platform.interfaces.ViewContext;
 import java.awt.Component;
 import java.io.Serializable;
-import javax.swing.SwingUtilities;
 import org.openide.ErrorManager;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -75,18 +74,16 @@ final class NBBootStrapTopComponent extends TopComponent implements StartupWindo
     protected String preferredID() {
         return PREFERRED_ID;
     }
-
+    
     public boolean canClose() {
         return false;
     }
-
+    
     public void start() {
         NBManager.getInstance().init(this);
-        removeAll();
-        SwingUtilities.updateComponentTreeUI(this);
         add( new DownloadPanel() );
     }
-
+    
     protected void addImpl(Component comp, Object constraints, int index) {
         super.addImpl(comp, constraints, index);
         if ( comp instanceof ViewContext ) {

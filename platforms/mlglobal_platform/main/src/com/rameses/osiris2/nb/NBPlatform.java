@@ -215,6 +215,13 @@ public class NBPlatform implements Platform {
     public void logoff() {
         try {
             if ( closeAll() ) {
+                
+                //clean up the screen.
+                NBManager.getInstance().getHeaderBar().removeAll();
+                NBManager.getInstance().getStatusView().removeAll();
+                startupWindow.removeAll();
+                SwingUtilities.updateComponentTreeUI( startupWindow );
+        
                 ((StartupWindow)startupWindow).start();
                 /*
                 NBPlatformLoader.DownloadResult res = NBPlatformLoader.download();

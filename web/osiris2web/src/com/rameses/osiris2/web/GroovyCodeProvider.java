@@ -46,6 +46,13 @@ public class GroovyCodeProvider implements CodeProvider {
         }
     }
     
+    public Class loadClass(String className) {
+        try {
+            return loader.loadClass(className);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
     
 }
 

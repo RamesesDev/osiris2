@@ -33,8 +33,10 @@ public class NBHeaderBar extends JLayeredPane {
         if ( layout.jcHeader != null ) {
             remove(layout.jcHeader);
         }
-        add(top, DEFAULT_LAYER);
-        layout.jcHeader = top;
+        if(top!=null){
+            add(top, DEFAULT_LAYER);
+            layout.jcHeader = top;
+        }
         SwingUtilities.updateComponentTreeUI(this);
     }
     
@@ -42,8 +44,10 @@ public class NBHeaderBar extends JLayeredPane {
         if ( layout.jcFooter != null ) {
             remove(layout.jcFooter);
         }
-        add(bottom, DEFAULT_LAYER);
-        layout.jcFooter = bottom;
+        if(bottom!=null) {
+            add(bottom, DEFAULT_LAYER);
+            layout.jcFooter = bottom;
+        }
         SwingUtilities.updateComponentTreeUI(this);
     }
     

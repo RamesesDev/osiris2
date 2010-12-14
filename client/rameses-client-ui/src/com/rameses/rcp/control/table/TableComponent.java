@@ -56,7 +56,7 @@ public class TableComponent extends JTable implements ListModelListener {
     //row foreground color options
     private Color evenForeground;
     private Color oddForeground;
-    private Color errorForeground;
+    private Color errorForeground = Color.BLACK;
     
     private Binding binding;
     
@@ -352,8 +352,7 @@ public class TableComponent extends JTable implements ListModelListener {
     private void selectAll(JComponent editor, EventObject evt) {
         if ( editor instanceof JTextComponent ) {
             ((JTextComponent) editor).selectAll();
-        }
-        else if ( editor instanceof JCheckBox ) {
+        } else if ( editor instanceof JCheckBox ) {
             ((UIInput) editor).setValue( evt );
         }
     }
@@ -536,6 +535,12 @@ public class TableComponent extends JTable implements ListModelListener {
     
     public void refreshSelectedItem() {
         tableListener.rowChanged();
+    }
+    
+    public void rebuildColumns() {
+//        tableModel.reIndexColumns();
+//        buildColumns();
+        setListModel( listModel );
     }
     //</editor-fold>
     

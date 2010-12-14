@@ -7,35 +7,19 @@
 
 package com.rameses.rcp.control;
 
-import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.ActiveControl;
-import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
-import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
-import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 
-public class XFileBrowser extends JPanel implements UIInput, Validatable, ActiveControl, ActionListener {
+public class XFileBrowser extends AbstractIconedTextField implements UIInput, Validatable, ActiveControl {
     
-    private Binding binding;
-    private String[] depends;
-    private int index;
     private JFileChooser fchooser;
     private FileFilter filter;
     private String customFilter;
@@ -44,12 +28,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     private boolean selectFilesOnly = true;
     private String fileNamePattern = ".*";
     private String dialogType = "open";
-    private boolean readonly;
-    private ControlProperty property = new ControlProperty();
-    private ActionMessage actionMessage = new ActionMessage();
     
-    private JTextField txtField;
-    private JButton btnBrowse;
     
     
     public XFileBrowser() {
@@ -63,31 +42,16 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
         
         setMultiSelect(false);
         setSelectFilesOnly(true);
-        
-        txtField = new JTextField();
-        txtField.setEditable(false);
-        txtField.addActionListener(this);
-        txtField.addMouseListener( new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                actionPerformed(null);
-            }
-        });
-        
-        btnBrowse = new JButton("Browse");
-        btnBrowse.addActionListener(this);
-        
-        setLayout(new BorderLayout());
-        add( txtField, BorderLayout.CENTER );
-        add( btnBrowse, BorderLayout.EAST );
-        
-        Dimension d = txtField.getPreferredSize();
-        setPreferredSize( new Dimension(100, d.height));
+        setIcon("com/rameses/rcp/icons/folder_open.png");
+        setOrientation( super.ICON_ON_RIGHT );
+        super.setEditable(false);
     }
+    
+    public void setEditable(boolean b) {;}
     //</editor-fold>
     
-    
-    public void actionPerformed(ActionEvent e) {
-        if ( !txtField.isFocusable() || !txtField.isEnabled() ) {
+    public void actionPerformed() {
+        if ( !isFocusable() || !isEnabled() ) {
             return;
         }
         
@@ -104,6 +68,10 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
         refresh();
     }
     
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  refresh/load  ">
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
@@ -114,16 +82,16 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
                 for ( int i = 0; i < arr.length; ++i ) {
                     if ( i > 0 ) sb.append(", ");
                     sb.append(arr[i]+"");
-                    txtField.setText( sb.toString() );
+                    setText( sb.toString() );
                 }
                 fchooser.setSelectedFiles( (File[]) arr);
             } else {
-                txtField.setText( value+"" );
+                setText( value+"" );
                 fchooser.setSelectedFile( (File) value);
             }
             
         } else {
-            txtField.setText("");
+            setText("");
             if ( multiSelect ) {
                 fchooser.setSelectedFiles(null);
             } else {
@@ -140,41 +108,7 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
     }
     //</editor-fold>
     
-    public int compareTo(Object o) {
-        return UIControlUtil.compare(this, o);
-    }
-    
-    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public void setName(String name) {
-        super.setName(name);
-        txtField.setText(name);
-    }
-    
-    public String[] getDepends() {
-        return depends;
-    }
-    
-    public void setDepends(String[] depends) {
-        this.depends = depends;
-    }
-    
-    public int getIndex() {
-        return index;
-    }
-    
-    public void setIndex(int index) {
-        this.index = index;
-    }
-    
-    public void setBinding(Binding binding) {
-        this.binding = binding;
-    }
-    
-    public Binding getBinding() {
-        return binding;
-    }
-    
     public Object getValue() {
         return multiSelect? fchooser.getSelectedFiles() : fchooser.getSelectedFile();
     }
@@ -236,100 +170,8 @@ public class XFileBrowser extends JPanel implements UIInput, Validatable, Active
         this.dialogType = dialogType;
     }
     
-    public void setReadonly(boolean readonly) {
-        this.readonly = readonly;
-        btnBrowse.setEnabled(!readonly);
-        btnBrowse.setFocusable(!readonly);
-        txtField.setFocusable(!readonly);
-    }
-    
-    public boolean isReadonly() {
-        return readonly;
-    }
-    
-    public String getCaption() {
-        return property.getCaption();
-    }
-    
-    public void setCaption(String caption) {
-        property.setCaption(caption);
-    }
-    
-    public char getCaptionMnemonic() {
-        return property.getCaptionMnemonic();
-    }
-    
-    public void setCaptionMnemonic(char c) {
-        property.setCaptionMnemonic(c);
-    }
-    
-    public boolean isRequired() {
-        return property.isRequired();
-    }
-    
-    public void setRequired(boolean required) {
-        property.setRequired(required);
-    }
-
-    public int getCaptionWidth() {
-        return property.getCaptionWidth();
-    }
-    
-    public void setCaptionWidth(int width) {
-        property.setCaptionWidth(width);
-    }
-    
-    public boolean isShowCaption() {
-        return property.isShowCaption();
-    }
-    
-    public void setShowCaption(boolean showCaption) {
-        property.setShowCaption(showCaption);
-    }
-        
-    public void validateInput() {
-        actionMessage.clearMessages();
-        property.setErrorMessage(null);
-        if ( isRequired() && ValueUtil.isEmpty(getValue()) ) {
-            actionMessage.addMessage("1001", "${0} is required", new Object[]{ getCaption() });
-            property.setErrorMessage( actionMessage.toString() );
-        }
-    }
-    
-    public ActionMessage getActionMessage() {
-        return actionMessage;
-    }
-    
-    public ControlProperty getControlProperty() {
-        return property;
-    }
-    
-    public void requestFocus() {
-        setRequestFocus(true);
-    }
-    
-    public void setRequestFocus(boolean focus) {
-        if ( focus ) btnBrowse.requestFocus();
-    }
-    
     public boolean isImmediate() {
         return true;
-    }
-    
-    public String getText() {
-        return btnBrowse.getText();
-    }
-    
-    public void setText(String text) {
-        btnBrowse.setText(text);
-    }
-    
-    public Icon getIcon() {
-        return btnBrowse.getIcon();
-    }
-    
-    public void setIcon(Icon icon) {
-        btnBrowse.setIcon(icon);
     }
     //</editor-fold>
     

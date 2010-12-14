@@ -130,10 +130,11 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
             KeyEvent ke = (KeyEvent) value;
             setText( ke.getKeyChar()+"" );
         } else {
-            if ( value != null )
+            if ( value == null ) {
+                setText("");                
+            } else if ( !ValueUtil.isEqual(value, getText()) ) {
                 setText(value.toString());
-            else
-                setText("");
+            }
         }
     }
     
