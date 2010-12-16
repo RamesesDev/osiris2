@@ -9,6 +9,7 @@
 
 package com.rameses.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 
@@ -135,6 +136,10 @@ public class NumberToWords {
         }
         
         return wn + strDec;
+    }
+    
+    public String convert(BigDecimal d) {
+        return convert(d.doubleValue());
     }
     
     public String getCents(String cents) {
