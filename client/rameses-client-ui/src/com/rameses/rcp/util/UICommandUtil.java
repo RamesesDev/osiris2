@@ -25,14 +25,6 @@ public class UICommandUtil {
             ClientContext ctx = ClientContext.getCurrentContext();
             MethodResolver resolver = ctx.getMethodResolver();
             Binding binding = command.getBinding();
-            String permission = command.getPermission();
-            String controllerName = null;
-            if(binding.getController()!=null) {
-                controllerName = binding.getController().getName();
-            }
-            if(permission!=null && controllerName !=null) {
-                permission = controllerName+"."+permission;
-            }
 
             binding.formCommit();
             validate(command, binding);

@@ -17,7 +17,7 @@ public enum TrimSpaceOption
         
         String str = value.trim();
         if(type == 2) {
-            str = value.replaceAll("\\s{2,}", " ");
+            str = str.replaceAll("\\s{2,}", " ");
         }
         return str;
     }
