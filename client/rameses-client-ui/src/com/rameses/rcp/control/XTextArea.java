@@ -33,14 +33,12 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     private boolean readonly;
     
     private TextDocument textDocument = new TextDocument();
+    private TrimSpaceOption trimSpaceOption = TrimSpaceOption.NONE;
     
     
     public XTextArea() {
         super();
         TextEditorSupport.install(this);
-        
-        //default trim space option for TextArea
-        textDocument.setTrimSpaceOption(TrimSpaceOption.NONE);
         
         //default font
         Font f = ThemeUI.getFont("XTextArea.font");
@@ -83,6 +81,10 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
         String text = getText();
         if ( ValueUtil.isEmpty(text) && nullWhenEmpty )
             return null;
+        
+        if ( trimSpaceOption != null ) {
+            text = trimSpaceOption.trim(text);
+        }
         
         return text;
     }
@@ -154,7 +156,7 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     public void setShowCaption(boolean show) {
         property.setShowCaption(show);
     }
-
+    
     public int getCaptionWidth() {
         return property.getCaptionWidth();
     }
@@ -180,11 +182,11 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     }
     
     public TrimSpaceOption getTrimSpaceOption() {
-        return textDocument.getTrimSpaceOption();
+        return trimSpaceOption;
     }
     
     public void setTrimSpaceOption(TrimSpaceOption option) {
-        textDocument.setTrimSpaceOption(option);
+        this.trimSpaceOption = option;
     }
     
     public void setReadonly(boolean readonly) {

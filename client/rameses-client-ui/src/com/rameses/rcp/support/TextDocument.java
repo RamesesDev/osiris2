@@ -8,27 +8,19 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 public class TextDocument extends PlainDocument {
+    
     private Logger logger;
-    private TrimSpaceOption trimSpaceOption;
     private TextCase textCase;
     private int maxlength;
     
+    
     public TextDocument() {
         this.logger = Logger.getLogger(getClass().getName());
-        this.trimSpaceOption = TrimSpaceOption.ALL;
         this.textCase = TextCase.NONE;
         this.maxlength = -1;
     }
     
     // <editor-fold defaultstate="collapsed" desc=" Getter/Setter ">
-    public TrimSpaceOption getTrimSpaceOption() {
-        return trimSpaceOption;
-    }
-    
-    public void setTrimSpaceOption(TrimSpaceOption trimSpaceOption) {
-        this.trimSpaceOption = trimSpaceOption;
-    }
-    
     public TextCase getTextCase() {
         return textCase;
     }
@@ -49,11 +41,6 @@ public class TextDocument extends PlainDocument {
     // </editor-fold>
     
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-        //check the trim space option
-        if(trimSpaceOption!=null) {
-            str = trimSpaceOption.trim(str);
-        }
-        
         if(maxlength>0) {
             if (getLength() >= maxlength) return;
             if (getLength()+str.length() > maxlength) {
@@ -68,6 +55,6 @@ public class TextDocument extends PlainDocument {
         
         super.insertString(offs, str, a);
     }
-    
+
 }
 

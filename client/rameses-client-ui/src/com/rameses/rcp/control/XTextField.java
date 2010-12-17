@@ -42,6 +42,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     private boolean isHintShown;
     
     private TextDocument document = new TextDocument();
+    private TrimSpaceOption trimSpaceOption = TrimSpaceOption.ALL;
     protected ControlProperty property = new ControlProperty();
     protected ActionMessage actionMessage = new ActionMessage();
     
@@ -57,7 +58,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     public void paint(Graphics g) {
         super.paint(g);
         
-        if( showHint && ValueUtil.isEmpty(getText()) ) {
+        if( showHint && getDocument().getLength() == 0 ) {
             g.setColor(Color.LIGHT_GRAY);
             g.setFont(getFont());
             int x = getInsets().left;
@@ -115,6 +116,10 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         if ( ValueUtil.isEmpty(txtValue) && nullWhenEmpty )
             return null;
         
+        if ( trimSpaceOption != null ) {
+            txtValue = trimSpaceOption.trim(txtValue);
+        }
+        
         if ( replaceExpr != null && replaceString != null ) {
             for(int i=0; i<replaceExpr.length; ++i) {
                 if ( replaceString.length <= i) break;
@@ -131,7 +136,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
             setText( ke.getKeyChar()+"" );
         } else {
             if ( value == null ) {
-                setText("");                
+                setText("");
             } else if ( !ValueUtil.isEqual(value, getText()) ) {
                 setText(value.toString());
             }
@@ -235,11 +240,11 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     }
     
     public TrimSpaceOption getTrimSpaceOption() {
-        return document.getTrimSpaceOption();
+        return trimSpaceOption;
     }
     
     public void setTrimSpaceOption(TrimSpaceOption option) {
-        document.setTrimSpaceOption(option);
+        this.trimSpaceOption = option;
     }
     
     public void setReadonly(boolean readonly) {

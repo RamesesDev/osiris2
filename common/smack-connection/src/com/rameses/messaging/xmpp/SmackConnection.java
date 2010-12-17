@@ -69,8 +69,13 @@ public class SmackConnection extends MessagingConnection implements PacketListen
     public void sendMessage(Message message) {
         for(String receiver: message.getReceivers()) {
             org.jivesoftware.smack.packet.Message smackMessage = new org.jivesoftware.smack.packet.Message();
+            
             smackMessage.setFrom( message.getSender() );
-            smackMessage.setTo( receiver + "@" + getHost() );
+            
+            if(receiver.indexOf("@")<0) 
+                receiver = receiver + "@" + getHost();
+
+            smackMessage.setTo( receiver );
             smackMessage.setBody( message.getBody() );
             smackMessage.setSubject( message.getSubject() );
             if(  message.getChannel()!=null) {
