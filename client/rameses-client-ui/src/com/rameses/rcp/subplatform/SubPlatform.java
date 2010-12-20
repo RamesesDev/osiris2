@@ -91,6 +91,9 @@ public class SubPlatform implements Platform {
 
     public void unlock() {
     }
+
+    public void showFloatingWindow(JComponent owner, JComponent comp, Map properties) {
+    }
     
     
 }

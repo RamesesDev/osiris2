@@ -32,7 +32,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
             //if outcome is null or empty just refresh the current view
             curController.getCurrentView().refresh();
             
-        } 
+        }
         //-- process Opener outcome
         else {
             if( outcome instanceof Opener )  {
@@ -40,7 +40,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 opener = ControlSupport.initOpener( opener, curController.getController() );
                 
                 String opTarget = opener.getTarget()+"";
-                boolean self = !opTarget.matches("_window|_popup");
+                boolean self = !opTarget.matches("_window|_popup|_floating");
                 String id = opener.getController().getId();
                 
                 if ( !self && platform.isWindowExists( id ) ) {
@@ -80,19 +80,30 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     UIControllerPanel uic = new UIControllerPanel(controller);
                     
                     Map props = new HashMap();
+                    if ( opener.getProperties().size() > 0 ) {
+                        props.putAll( opener.getProperties() );
+                    }
+                    
                     props.put("id", controller.getId());
                     props.put("title", controller.getTitle() );
                     props.put("modal", opener.isModal());
-
+                    
                     if ( "_popup".equals(opener.getTarget()) ) {
                         platform.showPopup(sourceComp, uic, props);
+                    } else if ( opener instanceof FloatingOpener ) {
+                        FloatingOpener fo = (FloatingOpener) opener;
+                        JComponent owner = (JComponent) source.getBinding().find( fo.getOwner() );
+                        if ( !ValueUtil.isEmpty(fo.getOrientation()) ) 
+                            props.put("orientation", fo.getOrientation());
+                        
+                        platform.showFloatingWindow(owner, uic, props);
                     } else {
                         platform.showWindow(sourceComp, uic, props);
                     }
                     return;
                 }
                 
-            } 
+            }
             //-- process String(expected) outcome
             else {
                 String out = outcome+"";
