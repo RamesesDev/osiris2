@@ -34,7 +34,6 @@ public class PageList extends javax.swing.JPanel {
 
         jLabel2.setText("Selected from model");
 
-        xTable1.setColumnMargin(20);
         xTable1.setHandler("handler");
 
         xLabel1.setText("xLabel1");
