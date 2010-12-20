@@ -8,8 +8,10 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.Node;
+import com.rameses.rcp.common.NodeFilter;
 import com.rameses.rcp.common.NodeListener;
 import com.rameses.rcp.common.TreeNodeModel;
+import com.rameses.rcp.common.TreeNodeModelListener;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.util.ControlSupport;
@@ -24,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -37,7 +41,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 
-public class XTree extends JTree implements UIControl, TreeSelectionListener {
+public class XTree extends JTree implements UIControl, TreeSelectionListener, TreeNodeModelListener {
     
     private Binding binding;
     private int index;
@@ -86,7 +90,10 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
         if( ValueUtil.isEmpty(handler) ) {
             throw new IllegalStateException( "XTree Error: A handler must be provided" );
         }
+        
         nodeModel = (TreeNodeModel) UIControlUtil.getBeanValue(this, handler);
+        nodeModel.setListener(this);
+        
         root = new DefaultNode(nodeModel.getRootNode());
         
         model = new DefaultTreeModel(root, true);
@@ -155,6 +162,51 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener {
     
     public void setHandler(String handler) {
         this.handler = handler;
+    }
+    
+    public Node findNode(NodeFilter filter) {
+        DefaultNode parent = (DefaultNode) model.getRoot();
+        Node n = parent.getNode();
+        if ( filter.accept(n) ) return n;
+        
+        return doFindNode(parent, filter);
+    }
+    
+    private Node doFindNode(DefaultNode parent, NodeFilter filter) {
+        for(int i = 0; i < parent.getChildCount(); ++i) {
+            DefaultNode child = (DefaultNode) parent.getChildAt(i);
+            Node n = child.getNode();
+            if ( filter.accept(n) ) return n;
+            
+            if ( n.isLoaded() && child.getChildCount() > 0 ) {
+                Node nn = doFindNode(child, filter);
+                if ( nn != null ) return nn;
+            }
+        }
+        return null;
+    }
+    
+    public List<Node> findNodes(NodeFilter filter) {
+        List<Node> nodes = new ArrayList();
+        DefaultNode parent = (DefaultNode) model.getRoot();
+        Node n = parent.getNode();
+        if ( filter.accept(n) ) nodes.add(n);
+        
+        doCollectNodeList(parent, filter, nodes);
+        
+        return nodes;
+    }
+    
+    private void doCollectNodeList(DefaultNode parent, NodeFilter filter, List nodes) {
+        for(int i = 0; i < parent.getChildCount(); ++i) {
+            DefaultNode child = (DefaultNode) parent.getChildAt(i);
+            Node n = child.getNode();
+            if ( filter.accept(n) ) nodes.add(n);
+            
+            if ( n.isLoaded() && child.getChildCount() > 0 ) {
+                doCollectNodeList(child, filter, nodes);
+            }
+        }
     }
     
     

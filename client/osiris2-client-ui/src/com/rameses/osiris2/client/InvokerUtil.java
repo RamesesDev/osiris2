@@ -176,21 +176,7 @@ public final class InvokerUtil {
                 return null;
                 
             } else {
-                Opener opener = new Opener(inv.getWorkunitid());
-                opener.setId(inv.getWorkunitid() + "_" + caption );
-                opener.setCaption(caption);
-                opener.setAction(inv.getAction());
-                if ( props != null ) {
-                    opener.setParams(props);
-                }
-                
-                if ( target.endsWith("popup") ) {
-                    opener.setTarget("_popup");
-                } else if ( target.endsWith("window") ) {
-                    opener.setTarget("_window");
-                }
-                
-                return opener;
+                return createOpener(inv, props, caption);
             }
         } catch(Exception ex) {
             Exception e = ExceptionManager.getOriginal(ex);
@@ -320,18 +306,7 @@ public final class InvokerUtil {
         if ( list.size() ==0 ) {
             throw new RuntimeException("No invokers found for type [" + invType + "]");
         }
-        Invoker inv = list.get(0);
-        String target = (String)inv.getProperties().get("target");
-        if ( target != null ) target = target.replaceAll("^([^_])", "_$1");
-        
-        String caption = (String)params.remove("formTitle");
-        if(caption==null) caption = inv.getCaption();
-        Opener opener = new Opener(inv.getWorkunitid());
-        opener.setCaption( caption );
-        opener.setAction( inv.getAction() );
-        opener.setTarget( target );
-        if(params!=null) opener.setParams( params );
-        return opener;
+        return createOpener(list.get(0), params);
     }
     
     public static List lookupOpeners( String invType) {
@@ -345,13 +320,7 @@ public final class InvokerUtil {
         }
         List openers = new ArrayList();
         for(Invoker inv: list) {
-            String target = (String)inv.getProperties().get("target");
-            if ( target !=null ) target = target.replaceAll("^([^_])", "_$1");
-            Opener opener = new Opener(inv.getWorkunitid());
-            opener.setCaption( inv.getCaption() );
-            opener.setAction( inv.getAction() );
-            opener.setTarget( target );
-            if(params!=null) opener.setParams( params );
+            Opener opener = createOpener(inv, params);
             openers.add(opener);
         }
         return openers;
@@ -386,6 +355,10 @@ public final class InvokerUtil {
          if ( target !=null ) target = target.replaceAll("^([^_])", "_$1");
          opener.setTarget( target );
          if(params!=null) opener.setParams( params );
+         
+         if( inv.getProperties().size() > 0 ) 
+             opener.getProperties().putAll( inv.getProperties() );
+         
          return opener;
     }
     

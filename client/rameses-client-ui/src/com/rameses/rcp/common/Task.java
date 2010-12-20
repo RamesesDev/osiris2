@@ -6,7 +6,7 @@ import java.util.List;
 public abstract class Task {
     
     private boolean cancelled;
-    private boolean ended;
+    private boolean ended = true;
     private List<TaskListener> listeners = new ArrayList();
     
     protected boolean _started;

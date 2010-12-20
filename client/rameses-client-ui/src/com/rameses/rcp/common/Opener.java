@@ -44,10 +44,12 @@ public class Opener {
     }
     
     public String getId() {
-        if ( id == null )
-            return name;
+        StringBuffer sb = new StringBuffer();
+        if ( id != null )      sb.append(id);
+        if ( name != null )    sb.append(name);
+        if ( caption != null ) sb.append(caption);
         
-        return name + "_" + id;
+        return sb.toString();
     }
     
     public void setId(String id) {

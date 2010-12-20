@@ -3,7 +3,6 @@ import com.rameses.messaging.Message;
 import com.rameses.messaging.MessageListener;
 import com.rameses.messaging.TextMessage;
 import com.rameses.messaging.xmpp.SmackConnection;
-import javax.swing.JOptionPane;
 import junit.framework.*;
 /*
  * Test2.java
@@ -35,10 +34,9 @@ public class Test2 extends TestCase {
         TextMessage m = new TextMessage();
         m.setBody("hello world.");
         m.setSubject("Test message");
-        m.addReceiver("admin@etracs.org");
+        m.addReceiver("dk1ax3kj6l@etracs.org");
         
         con.sendMessage( m );
-        JOptionPane.showMessageDialog(null, "wainting...");
     }
     
     private class Listener implements MessageListener {

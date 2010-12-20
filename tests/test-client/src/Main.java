@@ -17,7 +17,7 @@ public class Main {
             if ( os.toLowerCase().contains("windows") )                
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             else
-                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                UIManager.setLookAndFeel("com.jgoodies.plaf.plastic.PlasticXPLookAndFeel");
             
         } catch (Exception e) {;}
         

@@ -1,8 +1,11 @@
 package com.rameses.rcp.common;
 
+import java.util.List;
+
 public abstract class TreeNodeModel {
     
     private Node selectedNode;
+    private TreeNodeModelListener listener;
     
     public TreeNodeModel() {
     }
@@ -22,11 +25,11 @@ public abstract class TreeNodeModel {
         //do nothing
         return null;
     }
-
+    
     public Node getSelectedNode() {
         return selectedNode;
     }
-
+    
     public void setSelectedNode(Node selectedNode) {
         this.selectedNode = selectedNode;
     }
@@ -34,9 +37,31 @@ public abstract class TreeNodeModel {
     public Object openSelected() {
         if ( selectedNode == null ) return null;
         
-        if ( selectedNode.isLeaf() ) 
+        if ( selectedNode.isLeaf() )
             return openLeaf( selectedNode );
         
         return openFolder( selectedNode );
+    }
+    
+    public TreeNodeModelListener getListener() {
+        return listener;
+    }
+    
+    public void setListener(TreeNodeModelListener listener) {
+        this.listener = listener;
+    }
+    
+    public final Node findNode(NodeFilter filter) {
+        if ( listener == null )
+            throw new RuntimeException("No TreeNodeModelListener found.");
+        
+        return listener.findNode(filter);
+    }
+    
+    public final List<Node> findNodes(NodeFilter filter) {
+        if ( listener == null )
+            throw new RuntimeException("No TreeNodeModelListener found.");
+        
+        return listener.findNodes(filter);
     }
 }
