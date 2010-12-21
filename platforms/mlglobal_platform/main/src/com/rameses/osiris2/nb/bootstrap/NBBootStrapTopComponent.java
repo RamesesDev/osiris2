@@ -1,7 +1,7 @@
 package com.rameses.osiris2.nb.bootstrap;
 
 import com.rameses.osiris2.nb.NBManager;
-import com.rameses.osiris2.nb.StartupWindow;
+import com.rameses.osiris2.nb.windows.StartupWindow;
 import com.rameses.platform.interfaces.ViewContext;
 import java.awt.Component;
 import java.io.Serializable;
