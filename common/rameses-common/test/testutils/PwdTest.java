@@ -7,7 +7,9 @@
 
 package testutils;
 
-import com.rameses.util.Encoder;
+import com.rameses.util.ExprUtil;
+import java.util.HashMap;
+import java.util.Map;
 import junit.framework.*;
 
 /**
@@ -28,8 +30,12 @@ public class PwdTest extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testHello() {
-        System.out.println( Encoder.MD5.encode( "loren", "12345"));
+        //System.out.println( Encoder.MD5.encode( "loren", "12345"));
         //"e791b43af91c0523b2095b3841413ece"
+        Map map = new HashMap();
+        map.put("filter", " where lastname like $P{lastname}");
+        String s = "select o from where ${filter} ";
+        System.out.println( ExprUtil.substituteValues( s, map ));
     }
 
 }
