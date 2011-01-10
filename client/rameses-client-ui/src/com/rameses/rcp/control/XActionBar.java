@@ -78,7 +78,9 @@ public class XActionBar extends JPanel implements UIComposite {
         buildToolbar();
     }
     
-    public void load() {}
+    public void load() {
+        buildButtons();
+    }
     
     public void reload() {
         buildButtons();
