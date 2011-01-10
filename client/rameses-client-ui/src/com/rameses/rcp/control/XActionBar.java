@@ -62,10 +62,14 @@ public class XActionBar extends JPanel implements UIComposite {
     //flag
     private boolean dirty;
     
+    private XButton buttonTemplate;
+    
     
     public XActionBar() {
         super.setLayout(new OuterLayout());
         setUseToolBar(true);
+        
+        buttonTemplate = new XButton();
     }
     
     public void setLayout(LayoutManager mgr) {;}
@@ -74,9 +78,7 @@ public class XActionBar extends JPanel implements UIComposite {
         buildToolbar();
     }
     
-    public void load() {
-        buildButtons();
-    }
+    public void load() {}
     
     public void reload() {
         buildButtons();
@@ -84,6 +86,14 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
+    }
+    
+    public XButton getButtonTemplate() {
+        return buttonTemplate;
+    }
+    
+    public void setButtonTemplate(XButton buttonTemplate) {
+        this.buttonTemplate = buttonTemplate;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
