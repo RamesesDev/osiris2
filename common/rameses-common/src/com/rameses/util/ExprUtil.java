@@ -19,29 +19,34 @@ import java.util.regex.Pattern;
  * this class is used by sql as well as 
  */
 public final class ExprUtil {
-    
-    
-    private static final Pattern p = Pattern.compile("(?:#|\\$)\\{(.*?)\\}");
+        
+    private static final Pattern p = Pattern.compile("(#|\\$)\\{.*?\\}");
     
     public static String substituteValues( String expr, Map xvalues ) {
         return substituteValues( expr, xvalues, null );
     }
     
     public static String substituteValues(String name, Map map, PropertyResolver resolver) {
-        if( name == null || name.trim().length()==0 ) return null;
-        if( !name.contains("$") &&  !name.contains("#") ) return name;
-        
+        if( name == null ) return null;
+        if(name.trim().length()==0) return "";
+        if(!name.contains("$") &&  !name.contains("#")) return name;
         Matcher m = p.matcher(name);
         StringBuffer sb = new StringBuffer();
+        int start = 0;
         while(m.find()) {
-            String s = m.group(1);
-            String rep = (resolver==null)? map.get(s)+"" : resolver.getProperty(map, s)+"";
-            m.appendReplacement(sb, rep);
+            String s = m.group().substring(2, m.group().length()-1);
+            sb.append( name.substring(start, m.start()) );
+            if(resolver==null)
+                sb.append( map.get(s)+"" );
+            else
+                sb.append( resolver.getProperty(map, s) );
+            start = m.end();
         }
-        m.appendTail(sb);
-        
+        sb.append( name.substring(start));
         return sb.toString();
     }
+    
+    
     
     
     
