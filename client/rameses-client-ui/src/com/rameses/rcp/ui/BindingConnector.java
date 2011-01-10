@@ -31,8 +31,15 @@ public class BindingConnector implements BindingListener {
     }
     
     public void setParentBinding(Binding parentBinding) {
-        this.parentBinding = parentBinding;
-        parentBinding.addBindingListener(this);
+        if ( parentBinding == this.parentBinding ) return;
+        
+        if ( this.parentBinding != null )
+            this.parentBinding.removeListener(this);
+        
+        if( parentBinding != null )
+            parentBinding.addBindingListener(this);
+        
+        this.parentBinding = parentBinding;        
     }
     
     public List<Binding> getSubBindings() {

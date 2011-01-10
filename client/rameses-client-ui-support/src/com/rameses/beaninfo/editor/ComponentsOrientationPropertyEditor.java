@@ -11,7 +11,7 @@ public class ComponentsOrientationPropertyEditor extends PropertyEditorSupport {
     public ComponentsOrientationPropertyEditor() {
         values = new String[]
         {
-            UIConstants.HORIZONTAL, UIConstants.VERTICAL
+            UIConstants.HORIZONTAL, UIConstants.VERTICAL, UIConstants.FLOW
         };
     }
     

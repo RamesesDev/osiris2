@@ -33,6 +33,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
@@ -145,16 +146,16 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         return controls;
     }
     
-    public String[] getDepends() { return depends; }
+    public String[] getDepends()             { return depends; }
     public void setDepends(String[] depends) { this.depends = depends; }
     
-    public int getIndex() { return index; }
+    public int getIndex()           { return index; }
     public void setIndex(int index) { this.index = index; }
     
-    public Binding getBinding() { return binding; }
+    public Binding getBinding()             { return binding; }
     public void setBinding(Binding binding) { this.binding = binding; }
     
-    public boolean isDynamic() { return dynamic; }
+    public boolean isDynamic()              { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
     
     public void refresh() {}
@@ -265,7 +266,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
             add( (Component)uic );
         }
         
-        revalidate();
+        SwingUtilities.updateComponentTreeUI(this);
     }
     
     private List getFormControls() {

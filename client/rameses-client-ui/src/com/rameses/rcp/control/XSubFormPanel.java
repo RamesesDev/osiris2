@@ -24,6 +24,8 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
  *
@@ -55,6 +57,17 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             setPreferredSize( new Dimension(40,40) );
             setBackground( Color.decode("#e3e3e3") );
         }
+        
+        addAncestorListener(new AncestorListener() {
+            public void ancestorMoved(AncestorEvent event) {}
+            public void ancestorAdded(AncestorEvent event) {
+                if(binding != null)
+                    bindingConnector.setParentBinding(binding);
+            }
+            public void ancestorRemoved(AncestorEvent event) {
+                bindingConnector.setParentBinding(null);
+            }
+        });
     }
     
     public XSubFormPanel(Opener o) {
@@ -94,6 +107,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
         if ( !dynamic ) {
             buildForm();
         }
+        bindingConnector.setParentBinding(binding);
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
@@ -220,7 +234,6 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     public void setBinding(Binding binding) {
         this.binding = binding;
-        bindingConnector.setParentBinding(binding);
     }
     
     public Binding getBinding() {
