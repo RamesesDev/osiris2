@@ -15,6 +15,7 @@ import com.rameses.rcp.ui.ControlContainer;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -58,6 +59,18 @@ public class XPanel extends JPanel implements UIControl, ControlContainer {
             updateContent(false);
         else if ( !contentVisible )
             updateContent(true);
+        
+        
+        //temporary solution. to support parent whose layout is a CardLayout.
+        //There is a limitation to this solution. The XPanel's Card name must be the
+        //name of the component. i.e. edit Card name and name msut be the same
+        if( "true".equals(res+"") ) {
+            LayoutManager lm = super.getParent().getLayout();
+            if(lm instanceof CardLayout) {
+                CardLayout cl = (CardLayout)lm;
+                cl.show( super.getParent(), this.getName() );
+            }
+        }
     }
     
     private void updateContent(boolean visible) {
@@ -183,5 +196,6 @@ public class XPanel extends JPanel implements UIControl, ControlContainer {
     public void setEmptyTextHAlignment(int alignment) {
         label.setHorizontalAlignment(alignment);
     }
+    
     
 }
