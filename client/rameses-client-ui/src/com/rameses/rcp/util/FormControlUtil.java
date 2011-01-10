@@ -29,7 +29,7 @@ public class FormControlUtil {
     private static final String CONF = "META-INF/form-controls.properties";
     private static FormControlUtil instance;
     
-    public static final FormControlUtil getInstance() {
+    public static synchronized final FormControlUtil getInstance() {
         if ( instance == null ) {
             instance = new FormControlUtil();
         }

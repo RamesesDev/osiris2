@@ -18,10 +18,11 @@ public interface UIConstants {
     static final String CENTER = "CENTER";
     static final String VERTICAL = "VERTICAL";
     static final String HORIZONTAL = "HORIZONTAL";
+    static final String FLOW = "FLOW";
     
     //position constants (Menu)
     static final String MOUSE_POSITION = "MOUSE_POSITION";
-    static final String COCONTROL_POSITION = "CONTROL_POSITION";
+    static final String CONTROL_POSITION = "CONTROL_POSITION";
     static final String CURSOR_POSITION = "CURSOR_POSITION";
     
 }
