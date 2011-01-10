@@ -9,6 +9,7 @@ package com.rameses.osiris2.client;
 
 import com.rameses.util.ValueUtil;
 import groovy.lang.GroovyShell;
+import java.io.InputStream;
 
 
 public class GroovyObjectDeserializer {
@@ -26,12 +27,10 @@ public class GroovyObjectDeserializer {
     
     public Object deserialize(String data) {
         if ( ValueUtil.isEmpty(data) ) return null;
-        
         GroovyShell gs = null;
         try {
             gs = new GroovyShell();
             return gs.evaluate(data);
-            
         } catch(Exception e) {
             throw new IllegalStateException("Data deserialization error", e);
         } finally {
@@ -39,4 +38,17 @@ public class GroovyObjectDeserializer {
         }
     }
     
+    public Object deserialize(InputStream data) {
+        if ( ValueUtil.isEmpty(data) ) return null;
+        GroovyShell gs = null;
+        try {
+            gs = new GroovyShell();
+            return gs.evaluate(data);
+        } catch(Exception e) {
+            throw new IllegalStateException("Data deserialization error", e);
+        } finally {
+            gs = null;
+        }
+    }
+
 }

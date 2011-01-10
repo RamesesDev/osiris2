@@ -7,8 +7,7 @@ import com.rameses.osiris2.client.*;
 public abstract class DataList {
 
     def search;
-    def queryOpener = new Opener(outcome:"query");
-    def query = null;
+    def query = new Opener(outcome:"query");
     def _formActions;
     def formTitle = "No title specified";
     def _entityName;
@@ -37,12 +36,10 @@ public abstract class DataList {
     }        
 
     public void showFilter() {
-        if(queryOpener==null) queryOpener = getQueryOpener();
-        query = queryOpener;
     }
             
     public void hideFilter() {
-        query = null;
+        
     }
 
     def listHandler = [
@@ -59,10 +56,6 @@ public abstract class DataList {
     public abstract def getColumns();
     public abstract def fetchList( def o );
 
-    public def getQueryOpener() { 
-        return queryOpener; 
-    }
-
     def saveHandler = { o->
         listHandler.load();
     }
@@ -73,7 +66,7 @@ public abstract class DataList {
  
     public def getParams( inv )  { return [:] }
     public def getCreateParams() { return [:] }
-    public def getOpenParams()   { return [:] }
+    public def getOpenParams()   { return [entity:selectedItem] }
 
     public def getInvokerParams(def inv) {
         def map = [saveHandler: saveHandler ];
