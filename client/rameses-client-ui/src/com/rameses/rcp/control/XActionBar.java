@@ -23,6 +23,7 @@ import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.beans.Beans;
@@ -57,6 +58,10 @@ public class XActionBar extends JPanel implements UIComposite {
     
     private List<XButton> buttons = new ArrayList();
     private JComponent toolbarComponent;
+    
+    //flag
+    private boolean dirty;
+    
     
     public XActionBar() {
         super.setLayout(new OuterLayout());
@@ -122,80 +127,84 @@ public class XActionBar extends JPanel implements UIComposite {
             boolean allowed = ControlSupport.isPermitted(permission);
             if (!allowed) continue;
             
-            XButton btn = new XButton();
-            btn.setName(action.getName());
-            btn.setText(action.getCaption());
-            btn.setIndex(action.getIndex());
-            btn.setUpdate(action.isUpdate());
-            btn.setImmediate(action.isImmediate());
-            btn.setMnemonic(action.getMnemonic());
-            btn.setToolTipText(action.getTooltip());
-            btn.setIcon(ControlSupport.getImageIcon(action.getIcon()));
-            btn.putClientProperty("visibleWhen", action.getVisibleWhen());
-            btn.setBinding(binding);
-            
-            Map props = new HashMap(action.getProperties());
-            try {
-                btn.setAccelerator(props.remove("shortcut")+"");
-            } catch(Exception ign){;}
-            
-            if ( props.get("target") != null ) {
-                btn.setTarget(props.remove("target")+"");
-            }
-            
-            if ( props.get("default") != null ) {
-                String dfb = props.remove("default")+"";
-                if ( dfb.equals("true")) {
-                    btn.putClientProperty("default.button", true);
-                }
-            }
-            
-            //map out other properties
-            if ( !props.isEmpty() ) {
-                PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
-                for(Object entry : props.entrySet()) {
-                    Map.Entry me = (Map.Entry) entry;
-                    try {
-                        res.setProperty( btn, (String) me.getKey(), me.getValue());
-                    }catch(Exception e){;}
-                }
-            }
-            
-            Map params = action.getParams();
-            if (params != null && params.size() > 0) {
-                btn.getParams().putAll(params);
-            }
-            
-            if ( !action.getClass().getName().equals(Action.class.getName()) ) {
-                btn.putClientProperty(Action.class.getName(), action);
-            }
-            
+            XButton btn = createButton(action);
             buttons.add(btn);
         }
+        
+        //set dirty flag to true
+        dirty = true;
+    }
+    
+    private XButton createButton(Action action) {
+        XButton btn = new XButton();
+        btn.setName(action.getName());
+        btn.setText(action.getCaption());
+        btn.setIndex(action.getIndex());
+        btn.setUpdate(action.isUpdate());
+        btn.setImmediate(action.isImmediate());
+        btn.setMnemonic(action.getMnemonic());
+        btn.setToolTipText(action.getTooltip());
+        btn.setIcon(ControlSupport.getImageIcon(action.getIcon()));
+        btn.putClientProperty("visibleWhen", action.getVisibleWhen());
+        btn.setBinding(binding);
+        
+        Map props = new HashMap(action.getProperties());
+        try {
+            btn.setAccelerator(props.remove("shortcut")+"");
+        } catch(Exception ign){;}
+        
+        if ( props.get("target") != null ) {
+            btn.setTarget(props.remove("target")+"");
+        }
+        
+        if ( props.get("default") != null ) {
+            String dfb = props.remove("default")+"";
+            if ( dfb.equals("true")) {
+                btn.putClientProperty("default.button", true);
+            }
+        }
+        
+        //map out other properties
+        if ( !props.isEmpty() ) {
+            PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+            for(Object entry : props.entrySet()) {
+                Map.Entry me = (Map.Entry) entry;
+                try {
+                    res.setProperty( btn, (String) me.getKey(), me.getValue());
+                }catch(Exception e){;}
+            }
+        }
+        
+        Map params = action.getParams();
+        if (params != null && params.size() > 0) {
+            btn.getParams().putAll(params);
+        }
+        
+        if ( !action.getClass().getName().equals(Action.class.getName()) ) {
+            btn.putClientProperty(Action.class.getName(), action);
+        }
+        
+        return btn;
     }
     
     private void buildToolbar() {
-        toolbarComponent.removeAll();
+        if ( dirty ) {
+            toolbarComponent.removeAll();
+        }
         
         ExpressionResolver expResolver = ClientContext.getCurrentContext().getExpressionResolver();
         for (XButton btn: buttons) {
             String expression = (String) btn.getClientProperty("visibleWhen");
             if (!ValueUtil.isEmpty(expression)) {
                 Object visible = expResolver.evaluate(binding.getBean(), expression);
-                if (!"true".equals(visible+"")) continue;
+                btn.setVisible( !"false".equals(visible+"") );
             }
             
-            if (!btn.isVisible()) continue;
-            
-            toolbarComponent.add(btn);
-            
-//            Object df = btn.getClientProperty("default.button");
-//            if (df!=null && df.toString().equals("true") && binding.getDefaultButton() == null) {
-//                binding.setDefaultButton(btn);
-//            }
+            if ( dirty ) toolbarComponent.add(btn);
         }
         
         SwingUtilities.updateComponentTreeUI(this);
+        dirty = false;
     }
     //</editor-fold>
     
@@ -340,10 +349,17 @@ public class XActionBar extends JPanel implements UIComposite {
     //<editor-fold defaultstate="collapsed" desc=" InnerLayout (Class) ">
     private class InnerLayout implements LayoutManager {
         
+        private FlowLayout flowLayout;
+        
         public void addLayoutComponent(String name, Component comp) {;}
         public void removeLayoutComponent(Component comp) {;}
         
         public Dimension getLayoutSize(Container parent) {
+            if ( ValueUtil.isEqual(orientation, UIConstants.FLOW) ) {
+                initFlowLayout();
+                return flowLayout.preferredLayoutSize(parent);
+            }
+            
             synchronized (parent.getTreeLock()) {
                 int w=0, h=0;
                 
@@ -373,6 +389,30 @@ public class XActionBar extends JPanel implements UIComposite {
         }
         
         public void layoutContainer(Container parent) {
+            if ( ValueUtil.isEqual(orientation, UIConstants.FLOW) ) {
+                initFlowLayout();
+                flowLayout.layoutContainer(parent);
+            } else {
+                doCustomLayout(parent);
+            }
+        }
+        
+        private void initFlowLayout() {
+            if ( flowLayout == null ) flowLayout = new FlowLayout();
+            
+            flowLayout.setHgap(getSpacing());
+            flowLayout.setVgap(getSpacing());
+            
+            String halign = getOrientationHAlignment();
+            if ( ValueUtil.isEqual(halign, UIConstants.CENTER) )
+                flowLayout.setAlignment(FlowLayout.CENTER);
+            else if ( ValueUtil.isEqual(halign, UIConstants.RIGHT) )
+                flowLayout.setAlignment(FlowLayout.RIGHT);
+            else
+                flowLayout.setAlignment(FlowLayout.LEFT);
+        }
+        
+        private void doCustomLayout(Container parent) {
             synchronized (parent.getTreeLock()) {
                 Insets margin = parent.getInsets();
                 String halign = getOrientationHAlignment();
