@@ -10,7 +10,9 @@
 package com.rameses.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -97,7 +99,21 @@ public abstract class MachineInfo {
         public String getMacAddress() throws Exception 
         {
             if(macAddress !=null) return macAddress;
-            
+            Process p = Runtime.getRuntime().exec( "getmac /fo table /nh" );
+            BufferedReader br = new BufferedReader((new InputStreamReader(p.getInputStream())));
+            String line;
+            //it returns the first macaddress found
+            while((line=br.readLine())!=null) {
+                if(line.trim().length()>0) {
+                    macAddress = line.split("\\s")[0].trim();
+                    return macAddress;
+                }
+            }
+            //String[] result = br.readLine().split("\\s");
+            //macAddress = result[0].trim();
+            //macAddress = br.readLine();
+            //return macAddress;
+            /*
             String response = getProcessResponse("getmac");
             StringTokenizer tokenizer = new StringTokenizer(response, "\n");
   
@@ -108,8 +124,8 @@ public abstract class MachineInfo {
                 if (counter > 3)
                 {
                    
-                    if (line.toLowerCase().indexOf("disconnected") < 0)
-                    {
+                    //if (line.toLowerCase().indexOf("disconnected") < 0)
+                    //{
                         int idx = line.indexOf(' ');
                         String macAddressCandidate = line.substring(0, idx).trim();
                         
@@ -118,12 +134,12 @@ public abstract class MachineInfo {
                             macAddress = macAddressCandidate;
                             return macAddress;
                         }    
-                    }
+                    //}
                 }
                 counter++;
             }
-            
-            throw new ParseException("cannot read MAC address from [" + response + "]", 0);
+            */
+           throw new ParseException("cannot read MAC address ", 0);
         }        
     }
     
@@ -131,6 +147,11 @@ public abstract class MachineInfo {
     public static class LinuxMachineInfo extends MachineInfo {
         private String macAddress;
         public String getMacAddress() throws Exception {
+            //better suggested information.
+            //ifconfig -a | grep HWAddr | awk '{print $1 "\t"$5}'
+            //ifconfig -a eth0 | grep HWAddr | sed '/^.*HWAddr */!d; s///;q'
+            
+            
             if(macAddress!=null) return macAddress;
             String localHost = getLocalHost();
             String ipConfigResponse = getProcessResponse("ifconfig");
@@ -160,6 +181,9 @@ public abstract class MachineInfo {
         private String macAddress;
         
         public String getMacAddress() throws Exception {
+            //use this much better
+            //ifconfig -a | grep ether | awk '(print $2}'
+            
             if(macAddress!=null) return macAddress;
             
             String localHost = getLocalHost();
