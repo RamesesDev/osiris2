@@ -8,9 +8,9 @@
 package com.rameses.rcp.control;
 
 import com.rameses.beaninfo.AbstractBeanInfo;
-import com.rameses.beaninfo.editor.ComponentsOrientationPropertyEditor;
-import com.rameses.beaninfo.editor.HorizontalAlignmentPropertyEditor;
-import com.rameses.beaninfo.editor.VerticalAlignmentPropertyEditor;
+import com.rameses.beaninfo.editor.OrientationPropertyEditor;
+import com.rameses.beaninfo.editor.HAlignmentPropertyEditor;
+import com.rameses.beaninfo.editor.VAlignmentPropertyEditor;
 import java.beans.BeanDescriptor;
 import java.beans.PropertyDescriptor;
 
@@ -29,11 +29,11 @@ public class XSeparatorBeanInfo extends AbstractBeanInfo {
     
     public void property(String propertyName, PropertyDescriptor desc) {
         if ( "orientation".equals(propertyName) )
-            desc.setPropertyEditorClass(ComponentsOrientationPropertyEditor.class);
+            desc.setPropertyEditorClass(OrientationPropertyEditor.class);
         else if ( "orientationHPosition".equals(propertyName) )
-            desc.setPropertyEditorClass(VerticalAlignmentPropertyEditor.class);
+            desc.setPropertyEditorClass(VAlignmentPropertyEditor.class);
         else if ( "orientationVPosition".equals(propertyName) )
-            desc.setPropertyEditorClass(HorizontalAlignmentPropertyEditor.class);
+            desc.setPropertyEditorClass(HAlignmentPropertyEditor.class);
     }
     
 }

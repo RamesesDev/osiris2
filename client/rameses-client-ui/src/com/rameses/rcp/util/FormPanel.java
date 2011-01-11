@@ -163,6 +163,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     public void load() {
         _loaded = true;
         binding.addBindingListener(new FormPanelBindingListener());
+        build();
     }
     
     public void reload() {

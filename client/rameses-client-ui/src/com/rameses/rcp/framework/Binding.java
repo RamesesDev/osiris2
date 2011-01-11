@@ -18,6 +18,7 @@ import com.rameses.rcp.annotations.Close;
 import com.rameses.rcp.common.Validator;
 import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.ui.UICompositeFocusable;
+import com.rameses.util.BusinessException;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.event.ComponentEvent;
@@ -240,7 +241,14 @@ public class Binding {
         if( refreshed.add(u) ) {
             if ( u instanceof UIComposite ) {
                 UIComposite comp = (UIComposite)u;
-                if ( comp.isDynamic() ) comp.reload();
+                if ( comp.isDynamic() ) {
+                    //do not reload on first refresh since load is first called
+                    //this should only be called on the next refresh
+                    if( properties.get(comp.hashCode()) != null )
+                        comp.reload();
+                    else
+                        properties.put(comp.hashCode(), comp);
+                }
                 
                 for (UIControl uic: comp.getControls()) {
                     applyStyle(uic);
@@ -289,6 +297,22 @@ public class Binding {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  utility methods  ">
+    public void validate() {
+        ActionMessage am = new ActionMessage();
+        validate(am);
+        if ( am.hasMessages() ) {
+            if ( am.getSource() != null ) am.getSource().requestFocus();
+            throw new BusinessException(am.toString());
+        }
+        
+        ValidatorEvent evt = new ValidatorEvent(this);
+        validateBean(evt);
+        if ( evt.hasMessages() ) {
+            if ( evt.getSource() != null ) evt.getSource().requestFocus();
+            throw new BusinessException(evt.toString());
+        }
+    }
+    
     public void validate(ActionMessage actionMessage) {
         for ( Validatable vc: validatables ) {
             Component comp = (Component) vc;
@@ -647,7 +671,7 @@ public class Binding {
         }
     }
     //</editor-fold>
-        
+    
     
     //<editor-fold defaultstate="collapsed" desc="  ChangeLogKeySupport (class)  ">
     private class ChangeLogKeySupport implements KeyListener {

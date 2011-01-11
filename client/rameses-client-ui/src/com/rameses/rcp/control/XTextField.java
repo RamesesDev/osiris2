@@ -93,8 +93,10 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
             }
         } else if ( !ValueUtil.isEmpty(inputFormat) && !getText().matches(inputFormat) ) {
             String msg = null;
-            if ( inputFormatErrorMsg != null ) msg = inputFormatErrorMsg;
-            else msg = "Invalid input format for {0}";
+            if ( inputFormatErrorMsg != null ) 
+                msg = inputFormatErrorMsg;
+            else 
+                msg = "Invalid input format for {0}";
             
             actionMessage.addMessage(null, msg, new Object[]{ getCaption() });
         }

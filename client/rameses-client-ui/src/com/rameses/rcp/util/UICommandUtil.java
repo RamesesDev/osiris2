@@ -1,6 +1,5 @@
 package com.rameses.rcp.util;
 
-import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.control.XButton;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.ui.UICommand;
@@ -25,7 +24,7 @@ public class UICommandUtil {
             ClientContext ctx = ClientContext.getCurrentContext();
             MethodResolver resolver = ctx.getMethodResolver();
             Binding binding = command.getBinding();
-
+            
             binding.formCommit();
             validate(command, binding);
             
@@ -75,18 +74,6 @@ public class UICommandUtil {
         if ( binding == null ) return;
         if ( !command.isUpdate() && command.isImmediate() ) return;
         
-        ActionMessage am = new ActionMessage();
-        binding.validate(am);
-        if ( am.hasMessages() ) {
-            if ( am.getSource() != null ) am.getSource().requestFocus();
-            throw new BusinessException(am.toString());
-        }
-        
-        ValidatorEvent evt = new ValidatorEvent(binding);
-        binding.validateBean(evt);
-        if ( evt.hasMessages() ) {
-            if ( evt.getSource() != null ) evt.getSource().requestFocus();
-            throw new BusinessException(evt.toString());
-        }
+        binding.validate();
     }
 }

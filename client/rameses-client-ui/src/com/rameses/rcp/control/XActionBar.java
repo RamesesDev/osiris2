@@ -20,10 +20,12 @@ import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.util.ValueUtil;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.beans.Beans;
@@ -33,10 +35,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 public class XActionBar extends JPanel implements UIComposite {
@@ -62,14 +64,19 @@ public class XActionBar extends JPanel implements UIComposite {
     //flag
     private boolean dirty;
     
-    private XButton buttonTemplate;
+    //button template
+    private XButton buttonTpl = new XButton();
+    private int buttonCaptionOrientation = SwingConstants.CENTER;
+    private boolean buttonTextInHtml;
     
     
     public XActionBar() {
         super.setLayout(new OuterLayout());
         setUseToolBar(true);
         
-        buttonTemplate = new XButton();
+        if(Beans.isDesignTime()) {
+            buttonTpl.setText(getClass().getSimpleName());
+        }
     }
     
     public void setLayout(LayoutManager mgr) {;}
@@ -90,13 +97,6 @@ public class XActionBar extends JPanel implements UIComposite {
         return UIControlUtil.compare(this, o);
     }
     
-    public XButton getButtonTemplate() {
-        return buttonTemplate;
-    }
-    
-    public void setButtonTemplate(XButton buttonTemplate) {
-        this.buttonTemplate = buttonTemplate;
-    }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void buildButtons() {
@@ -149,8 +149,28 @@ public class XActionBar extends JPanel implements UIComposite {
     
     private XButton createButton(Action action) {
         XButton btn = new XButton();
+        
+        //map properties from the button template
+        btn.setFont(buttonTpl.getFont());
+        btn.setBorderPainted(buttonTpl.isBorderPainted());
+        btn.setContentAreaFilled(buttonTpl.isContentAreaFilled());
+        btn.setVerticalTextPosition(buttonTpl.getVerticalTextPosition());
+        btn.setHorizontalTextPosition(buttonTpl.getHorizontalTextPosition());
+        btn.setForeground(buttonTpl.getForeground());
+        if ( buttonTpl.isPreferredSizeSet() )
+            btn.setPreferredSize(buttonTpl.getPreferredSize());
+        
         btn.setName(action.getName());
-        btn.setText(action.getCaption());
+        if( !ValueUtil.isEmpty(action.getCaption())) {
+            if ( buttonTextInHtml ) {
+                if ( buttonCaptionOrientation == SwingConstants.TOP || buttonCaptionOrientation == SwingConstants.BOTTOM )
+                    btn.setText("<html><center>" + action.getCaption() + "</center></html>");
+                else
+                    btn.setText("<html>" + action.getCaption() + "</html>");
+            } else
+                btn.setText(action.getCaption());
+        }
+        
         btn.setIndex(action.getIndex());
         btn.setUpdate(action.isUpdate());
         btn.setImmediate(action.isImmediate());
@@ -258,7 +278,7 @@ public class XActionBar extends JPanel implements UIComposite {
         add(toolbarComponent);
         
         if (Beans.isDesignTime())
-            toolbarComponent.add(new JButton(XActionBar.class.getSimpleName()));
+            toolbarComponent.add(buttonTpl);
     }
     
     public boolean isDynamic() { return dynamic; }
@@ -299,6 +319,42 @@ public class XActionBar extends JPanel implements UIComposite {
     public boolean focusFirstInput() {
         return false;
     }
+    
+    //button template support
+    public Font getButtonFont()       { return buttonTpl.getFont(); }
+    public void setButtonFont(Font f) { buttonTpl.setFont(f); }
+    
+    public boolean getButtonBorderPainted()       { return buttonTpl.isBorderPainted(); }
+    public void setButtonBorderPainted(boolean b) { buttonTpl.setBorderPainted(b); }
+    
+    public boolean getButtonContentAreaFilled()       { return buttonTpl.isContentAreaFilled(); }
+    public void setButtonContentAreaFilled(boolean b) { buttonTpl.setContentAreaFilled(b); }
+    
+    public Dimension getButtonPreferredSize()       { return buttonTpl.getPreferredSize(); }
+    public void setButtonPreferredSize(Dimension d) { buttonTpl.setPreferredSize(d); }
+    
+    public int getButtonCaptionOrientation() { return this.buttonCaptionOrientation; }
+    public void setButtonCaptionOrientation(int orientation) {
+        if( orientation == SwingConstants.TOP || orientation == SwingConstants.BOTTOM ) {
+            buttonTpl.setVerticalTextPosition(orientation);
+            buttonTpl.setHorizontalTextPosition(SwingConstants.CENTER);
+        } else {
+            buttonTpl.setVerticalTextPosition(SwingConstants.CENTER);
+            buttonTpl.setHorizontalTextPosition(orientation);
+        }
+        this.buttonCaptionOrientation = orientation;
+    }
+    
+    public boolean isButtonTextInHtml() {
+        return buttonTextInHtml;
+    }
+    
+    public void setButtonTextInHtml(boolean buttonTextInHtml) {
+        this.buttonTextInHtml = buttonTextInHtml;
+    }
+    
+    public Color getButtonForeground()       { return buttonTpl.getForeground(); }
+    public void setButtonForeground(Color f) { buttonTpl.setForeground(f); }
     
     //</editor-fold>
     
