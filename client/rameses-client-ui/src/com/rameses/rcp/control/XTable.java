@@ -382,6 +382,10 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public Color getGridColor() { return table.getGridColor(); }
     public void setGridColor(Color color) { table.setGridColor(color); }
+    
+    public boolean isEnabled()        { return table.isEnabled(); }    
+    public void setEnabled(boolean e) { table.setEnabled(e); }
+    
     //</editor-fold>
     
     

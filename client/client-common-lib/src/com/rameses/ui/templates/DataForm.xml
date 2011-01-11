@@ -1,7 +1,7 @@
 <workunit>
     <invokers>
         <invoker type="formActions" caption="Close" action="_close"  immediate="true"/>
-        <invoker type="formActions" caption="Edit" action="edit" immediate="true" permission="edit" icon="com/rameses/images/edit.gif" visibleWhen="#{editmode == 'read'}" mnemonic="e" shortcut="ctrl E"/>
+        <invoker type="formActions" caption="Edit" action="edit" immediate="true" permission="edit" icon="com/rameses/images/edit.gif" mnemonic="e" shortcut="ctrl E"/>
         <invoker type="formActions" caption="Save" action="save" icon="com/rameses/images/save.gif" visibleWhen="#{_save and editmode != 'read'}" mnemonic="s" shortcut="ctrl S"/>
         <invoker type="formActions" caption="Save and Close" action="saveAndClose" visibleWhen="#{_saveAndClose and editmode != 'read' and editmode!= 'create'}"/>
         <invoker type="formActions" caption="Save and Continue" action="saveAndContinue" visibleWhen="#{_saveAndContinue and editmode != 'read' and editmode!= 'create'}"/>
