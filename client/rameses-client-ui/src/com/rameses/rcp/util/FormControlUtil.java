@@ -9,6 +9,8 @@ package com.rameses.rcp.util;
 
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.FormControl;
+import com.rameses.rcp.constant.TextCase;
+import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIControl;
 import java.awt.Color;
@@ -181,6 +183,16 @@ public class FormControlUtil {
                         }
                     }
                     return new Font(null);
+                }
+                
+                //for textCase
+                if( name.equals("textCase") ) {
+                    return TextCase.valueOf( strValue );
+                }
+                
+                //for trimSpaceOption
+                if( name.equals("trimSpaceOption") ) {
+                    return TrimSpaceOption.valueOf( strValue );
                 }
             }
             
