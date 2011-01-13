@@ -9,6 +9,7 @@
 
 package com.rameses.rcp.util;
 
+import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -40,11 +41,13 @@ public class ActionMessage {
     }
     
     public void addMessage(ActionMessage message, String parentCaption) {
-        messages.add(parentCaption + " (");
+        boolean hasParentCaption = !ValueUtil.isEmpty(parentCaption);
+        
+        if( hasParentCaption ) messages.add(parentCaption + " (");        
         for (String msg : message.messages) {
             messages.add(msg);
-        }
-        messages.add(")");
+        }        
+        if( hasParentCaption ) messages.add(")");
         
         if ( source == null && message.source != null)
             source = message.source;
