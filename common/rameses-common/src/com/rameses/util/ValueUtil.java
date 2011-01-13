@@ -27,7 +27,18 @@ public class ValueUtil {
     private static final Pattern ESC_STRING = Pattern.compile("[\\\\$\"\n\t\r]");
     private static final SimpleDateFormat DT_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat TS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-    
+
+    public static final boolean isStringValueEqual(Object obj1, Object obj2) {
+        if ( obj1 == null && obj2 == null)
+            return true;
+        if ( obj1 == null && obj2 != null )
+            return false;
+        if ( obj1 != null && obj2 == null )
+            return false;
+        
+        return (obj1.toString()).equals(obj2.toString());
+    }
+
     
     public static final boolean isEqual(Object obj1, Object obj2) {
         if ( obj1 == null && obj2 == null)

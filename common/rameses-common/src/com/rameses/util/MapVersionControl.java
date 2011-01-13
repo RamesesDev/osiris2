@@ -31,7 +31,7 @@ public final class MapVersionControl {
             String fieldName = prefix + name;
             
             //check first if there is a diff
-            if(!ValueUtil.isEqual(value, x )) {
+            if(!ValueUtil.isStringValueEqual(value, x )) {
                 if(value!=null &&  (value instanceof Map) && (x instanceof Map)  ) {
                     processDiff( (Map)value, (Map)x, fieldName + "." , handler );
                 } else if( value!=null &&  (value instanceof List) && (x instanceof List)) {
@@ -252,7 +252,7 @@ public final class MapVersionControl {
             String k = (String)me.getKey();
             Object v = me.getValue();
             Object obj = diff2.get(k);
-            if(obj!=null && !ValueUtil.isEqual(v, obj)) {
+            if(obj!=null && !ValueUtil.isStringValueEqual(v, obj)) {
                 Map entry = new HashMap();
                 entry.put("diff1", v );
                 entry.put("diff2", obj );
