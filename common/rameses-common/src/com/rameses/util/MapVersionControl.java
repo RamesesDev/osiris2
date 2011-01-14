@@ -21,6 +21,14 @@ import java.util.TreeMap;
  */
 public final class MapVersionControl {
     
+    private static MapVersionControl instance;
+    
+    public static final synchronized MapVersionControl getInstance() {
+        if ( instance == null ) instance = new MapVersionControl();
+        return instance;
+    }
+    
+    
     private void processDiff( Map map1,  Map map2, String prefix, DiffHandler handler ) {
         for( Object o : map1.entrySet() ) {
             Map.Entry me = (Map.Entry)o;
@@ -119,6 +127,8 @@ public final class MapVersionControl {
      * This method returns a diff map. A diff is a Map of change maps
      * using the field name and position as the key
      * A change map includes the type of action: add,update,remove
+     * @param comp1 is the old value
+     * @param comp2 is the new value
      */
     public Map diff( Map comp1, Map comp2 ) {
         Map diff = new HashMap();

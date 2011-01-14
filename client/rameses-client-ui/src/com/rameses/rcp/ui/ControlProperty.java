@@ -21,6 +21,7 @@ public class ControlProperty {
     private PropertyChangeSupport support = new PropertyChangeSupport(this);
     
     private String caption = "Caption";
+    private boolean captionSet;
     private char captionMnemonic;
     private int index;
     private boolean required;
@@ -40,7 +41,10 @@ public class ControlProperty {
     public void setCaption(String caption) {
         support.firePropertyChange("caption", this.caption, caption);
         this.caption = caption;
+        this.captionSet = true;
     }
+    
+    public boolean isCaptionSet() { return captionSet; }
     
     public char getCaptionMnemonic() { return captionMnemonic; }
     

@@ -28,6 +28,7 @@ public class Column implements Serializable {
     private boolean required;
     private Class fieldType;
     private String alignment;
+    private String vAlignment;
     
     
     private Map properties = new HashMap();
@@ -240,21 +241,39 @@ public class Column implements Serializable {
         this.fieldType = fieldType;
     }
     //</editor-fold>
-
+    
     public String getEditableWhen() {
         return editableWhen;
     }
-
+    
     public void setEditableWhen(String editableWhen) {
         this.editableWhen = editableWhen;
     }
-
+    
+    //alias for getHAlignment (old method)
     public String getAlignment() {
         return alignment;
     }
-
+    
+    //alias for setHAlignment (old method)
     public void setAlignment(String alignment) {
         this.alignment = alignment;
+    }
+    
+    public String getHAlignment() {
+        return alignment;
+    }
+    
+    public void setHAlignment(String alignment) {
+        this.alignment = alignment;
+    }
+    
+    public String getVAlignment() {
+        return vAlignment;
+    }
+    
+    public void setVAlignment(String vAlignment) {
+        this.vAlignment = vAlignment;
     }
     
 }

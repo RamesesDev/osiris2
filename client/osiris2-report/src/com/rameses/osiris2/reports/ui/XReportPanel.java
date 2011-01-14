@@ -16,6 +16,8 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.beans.Beans;
 import java.util.Map;
 import javax.swing.JPanel;
@@ -37,10 +39,13 @@ public class XReportPanel extends JPanel implements UIControl {
     public XReportPanel() {
         super.setLayout(new BorderLayout());
         if(Beans.isDesignTime()) {
+            super.setPreferredSize(new Dimension(40, 40));
             super.setOpaque(true);
             super.setBackground(Color.LIGHT_GRAY);
         }
     }
+
+    public void setLayout(LayoutManager mgr) {;}
     
     private void render() {
         if( ValueUtil.isEmpty(getName()) )

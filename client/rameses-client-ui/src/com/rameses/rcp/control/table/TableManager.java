@@ -382,6 +382,16 @@ public final class TableManager {
                 else if ( "left".equals(c.getAlignment().toLowerCase()) )
                     label.setHorizontalAlignment(SwingConstants.LEFT);
             }
+            
+            //set vertical alignment if it is specified in the Column model
+            if ( c.getVAlignment() != null ) {
+                if ( "top".equals(c.getVAlignment().toLowerCase()) )
+                    label.setVerticalAlignment(SwingConstants.TOP);
+                else if ( "center".equals(c.getVAlignment().toLowerCase()) )
+                    label.setVerticalAlignment(SwingConstants.CENTER);
+                else if ( "bottom".equals(c.getVAlignment().toLowerCase()) )
+                    label.setVerticalAlignment(SwingConstants.BOTTOM);
+            }
         }
         
         private String format(Object value, String format, String defaultFormat) {

@@ -414,7 +414,7 @@ public class TableComponent extends JTable implements ListModelListener {
         editingMode = false;
         currentEditor = null;
         
-        if ( commit ) listModel.updateSelectedItem();        
+        if ( commit ) listModel.updateSelectedItem();
         tableModel.fireTableRowsUpdated(rowIndex, rowIndex);
         if ( grabFocus ) grabFocus();
     }
@@ -535,6 +535,13 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     public void refreshSelectedItem() {
+        if ( listModel != null && listModel.getSelectedItem() != null ) {
+            int row = listModel.getSelectedItem().getIndex();
+            if( getSelectedRow() != row ) {
+                this.changeSelection(row, 0, false, false);
+            }
+        }
+        
         tableListener.rowChanged();
     }
     
