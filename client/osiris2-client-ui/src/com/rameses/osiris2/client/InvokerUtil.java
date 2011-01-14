@@ -189,7 +189,18 @@ public final class InvokerUtil {
     }
     
     public static List lookupActions(String type) {
-        return lookupActions(type, null);
+        return lookupActions(type, (InvokerParameter) null);
+    }
+
+    public static List lookupActions(String type, Map params) {
+        final Map p = params;
+        InvokerParameter inv = new InvokerParameter() {
+            public Map getParams(Invoker inv) {
+                return p;
+            }
+        };
+        
+        return lookupActions(type, inv);
     }
     
     public static List lookupActions(String type, InvokerParameter param) {
@@ -226,8 +237,10 @@ public final class InvokerUtil {
         if ( !ValueUtil.isEmpty(tooltip) ) {
             a.setTooltip(tooltip+"");
         }
-        
-        if ( !invProps.isEmpty() ) a.getProperties().putAll( invProps );
+
+        if ( !invProps.isEmpty() ) {
+            a.getProperties().putAll( invProps );
+        }
         
         return a;
     }
@@ -338,28 +351,28 @@ public final class InvokerUtil {
     public static Opener createOpener(Invoker inv) {
         return createOpener(inv, null);
     }
-
+    
     public static Opener createOpener(Invoker inv, Map params) {
         return createOpener(inv, params, null);
     }
-
+    
     public static Opener createOpener(Invoker inv, Map params, String caption ) {
-         String target = (String)inv.getProperties().get("target");
-         Opener opener = new Opener(inv.getWorkunitid());
-         if(caption==null) caption = inv.getCaption();
-         if(caption==null) caption = inv.getWorkunitid();
-         opener.setId(inv.getWorkunitid() + "_" + caption );
-         opener.setCaption(caption);
-         opener.setAction(inv.getAction());
-         
-         if ( target !=null ) target = target.replaceAll("^([^_])", "_$1");
-         opener.setTarget( target );
-         if(params!=null) opener.setParams( params );
-         
-         if( inv.getProperties().size() > 0 ) 
-             opener.getProperties().putAll( inv.getProperties() );
-         
-         return opener;
+        String target = (String)inv.getProperties().get("target");
+        Opener opener = new Opener(inv.getWorkunitid());
+        if(caption==null) caption = inv.getCaption();
+        if(caption==null) caption = inv.getWorkunitid();
+        opener.setId(inv.getWorkunitid() + "_" + caption );
+        opener.setCaption(caption);
+        opener.setAction(inv.getAction());
+        
+        if ( target !=null ) target = target.replaceAll("^([^_])", "_$1");
+        opener.setTarget( target );
+        if(params!=null) opener.setParams( params );
+        
+        if( inv.getProperties().size() > 0 )
+            opener.getProperties().putAll( inv.getProperties() );
+        
+        return opener;
     }
     
 }

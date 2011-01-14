@@ -50,6 +50,9 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     private ControlProperty property = new ControlProperty();
     
     
+    private List<Opener> currentOpeners = new ArrayList();
+    
+    
     public XSubFormPanel() {
         super.setLayout(new BorderLayout());
         setOpaque(false);
@@ -112,12 +115,6 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void buildForm() {
-        List<Binding> connectorBindings = bindingConnector.getSubBindings();
-        connectorBindings.clear();
-        subFormItems.clear();
-        removeAll();
-        SwingUtilities.updateComponentTreeUI(this);
-        
         Object obj = null;
         
         //this is usually set by XTabbedPane or
@@ -150,22 +147,45 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             throw new IllegalStateException("XSubFormPanel handler must be an instance of Opener, Opener[], or List<Opener>");
         }
         
-        if ( openers.size() == 0 ) return;
-        
-        //check if is a multi form
-        if ( multiForm ) {
-            multiPanel = new JPanel();
-            multiPanel.setOpaque(false);
-            multiPanel.setLayout( new BoxLayout(multiPanel, BoxLayout.Y_AXIS) );
-            super.add(multiPanel, BorderLayout.NORTH);
+        //-- display support
+        List<Binding> connectorBindings = bindingConnector.getSubBindings();
+        connectorBindings.clear();
+        if ( openers.size() == 0 ) {
+            subFormItems.clear();
+            removeAll();
+            SwingUtilities.updateComponentTreeUI(this);
+            return;
         }
         
-        for (Opener opener : openers) {
-            addOpener(opener);
+        if ( !multiForm && currentOpeners.size() > 0 && openers.get(0) == currentOpeners.get(0) ) {
+            SubFormContext sfc = subFormItems.get(0);
+            sfc.renderView();
+            
+            //register new subBindings
+            connectorBindings.addAll(getSubBindings());
+        } else {
+            subFormItems.clear();
+            currentOpeners.clear();
+            currentOpeners.addAll( openers );
+            
+            removeAll();
+            SwingUtilities.updateComponentTreeUI(this);
+            
+            //check if is a multi form
+            if ( multiForm ) {
+                multiPanel = new JPanel();
+                multiPanel.setOpaque(false);
+                multiPanel.setLayout( new BoxLayout(multiPanel, BoxLayout.Y_AXIS) );
+                super.add(multiPanel, BorderLayout.NORTH);
+            }
+            
+            for (Opener opener : openers) {
+                addOpener(opener);
+            }
+            
+            //register new subBindings
+            connectorBindings.addAll(getSubBindings());
         }
-        
-        //register new subBindings
-        connectorBindings.addAll(getSubBindings());
     }
     
     private void addOpener(Opener opener) {

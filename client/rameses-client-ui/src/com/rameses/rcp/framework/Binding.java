@@ -43,6 +43,8 @@ import java.util.Set;
  */
 public class Binding {
     
+    private static final String CHANGE_LOG_PREFIX_KEY = "CHANGE_LOG_PREFIX_KEY";
+    
     private Object bean;
     
     //reference to the owner panel(UIViewPanel)
@@ -589,7 +591,13 @@ public class Binding {
                 accessible = changeLogField.isAccessible();
                 changeLogField.setAccessible(true);
                 try {
-                    changeLogField.set(o, Binding.this );
+                    ChangeLog cl = Binding.this.getChangeLog();
+                    String[] prefixes = (String[]) getProperties().get(CHANGE_LOG_PREFIX_KEY);
+                    if( prefixes!=null) {
+                        for(String s: prefixes) {
+                            cl.getPrefix().add(s);
+                        }
+                    }
                 } catch(Exception ex) {
                     System.out.println("ERROR injecting @Binding "  + ex.getMessage() );
                 }
@@ -634,6 +642,7 @@ public class Binding {
                 try {
                     com.rameses.rcp.annotations.ChangeLog annot = (com.rameses.rcp.annotations.ChangeLog)f.getAnnotation(com.rameses.rcp.annotations.ChangeLog.class);
                     String[] prefixes = annot.prefix();
+                    getProperties().put(CHANGE_LOG_PREFIX_KEY, prefixes);
                     ChangeLog cl = Binding.this.getChangeLog();
                     if( prefixes!=null) {
                         for(String s: prefixes) {
