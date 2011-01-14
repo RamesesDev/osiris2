@@ -55,6 +55,16 @@ public class ObjectSerializer {
         scanner.scan(data);
     }
     
+    
+    private String correctKeyName(String n) {
+        if(n.contains(".") || n.contains("[") || n.contains("]")) {
+            return "\"" + n + "\"";
+        }
+        else {
+            return n;
+        }
+    }
+    
     private class ScanHandler implements ObjectScannerHandler {
         
         public void startDocument() {}
@@ -62,7 +72,7 @@ public class ObjectSerializer {
         public void startElement(String name, int pos) {
             try {
                 if(pos>0) writer.write(",");
-                if( name!=null ) writer.write(name+":");
+                if( name!=null ) writer.write(correctKeyName(name)+":");
                 writer.write("[");
                 
             } catch(Exception e) {
@@ -73,7 +83,7 @@ public class ObjectSerializer {
         public void property(String name, Object value, int pos) {
             try {
                 if(pos>0) writer.write(",");
-                if(name!=null) writer.write(name+":");
+                if(name!=null) writer.write(correctKeyName(name)+":");
                 
                 if ( value == null ) {
                     writer.write("null");
