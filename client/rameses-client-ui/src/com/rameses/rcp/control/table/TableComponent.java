@@ -535,6 +535,11 @@ public class TableComponent extends JTable implements ListModelListener {
     }
     
     public void refreshSelectedItem() {
+        int row = listModel.getSelectedItem().getIndex();
+        if( getSelectedRow() != row ) {
+            this.changeSelection(row, 0, false, false);
+        }
+            
         tableListener.rowChanged();
     }
     
