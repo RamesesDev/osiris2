@@ -7,6 +7,7 @@
 
 package com.rameses.rcp.control;
 
+import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
@@ -17,7 +18,6 @@ import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
-import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -40,6 +40,7 @@ import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.TableComponent;
 import com.rameses.rcp.control.table.TableHeaderBorder;
+import com.rameses.rcp.framework.ClientContext;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
@@ -90,7 +91,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public void removeKeyListener(KeyListener l) {
         table.removeKeyListener(l);
     }
-
+    
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
     private void init() {
         table = new TableComponent();
@@ -252,9 +253,15 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     
     public void rowChanged() {
-        if ( !ValueUtil.isEmpty(getName()) ) {
-            //we don't need to add entry to change log and refresh the table
-            UIInputUtil.updateBeanValue(this, false, false);
+        String name = getName();
+        if ( !ValueUtil.isEmpty(name) ) {
+            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
+            ListItem oldValue = (ListItem) resolver.getProperty(binding.getBean(), name);
+            ListItem newValue = listModel.getSelectedItem();
+            if( !ValueUtil.isEqual(oldValue, newValue) ) {
+                resolver.setProperty(binding.getBean(), name, newValue.clone());
+                binding.notifyDepends(this);
+            }
         }
         
         if ( rowHeaderView != null )
@@ -383,7 +390,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public Color getGridColor() { return table.getGridColor(); }
     public void setGridColor(Color color) { table.setGridColor(color); }
     
-    public boolean isEnabled()        { return table.isEnabled(); }    
+    public boolean isEnabled()        { return table.isEnabled(); }
     public void setEnabled(boolean e) { table.setEnabled(e); }
     
     public int getRowHeight()       { return table.getRowHeight(); }

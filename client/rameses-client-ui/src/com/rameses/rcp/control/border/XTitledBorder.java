@@ -27,9 +27,12 @@ public class XTitledBorder extends AbstractBorder {
     private Color titleBackground;
     private Color titleForeground;
     private Insets titlePadding = new Insets(2,4,2,4);
+    private Insets padding;
     private Font font;
     private Color outline;
     private Color outlineShadow;
+    
+    private Component comp;
     
     
     public XTitledBorder() {
@@ -42,6 +45,8 @@ public class XTitledBorder extends AbstractBorder {
     }
     
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+        this.comp = c;
+        
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
@@ -107,7 +112,10 @@ public class XTitledBorder extends AbstractBorder {
         Insets p = titlePadding;
         
         //add the title drop shadow to the insets
-        return new Insets(fm.getHeight()+p.top+p.bottom+3, 1,3,3);
+        if ( padding == null )
+            return new Insets(fm.getHeight()+p.top+p.bottom+3, 1,3,3);
+        
+        return padding;
     }
     
     public String getTitle() {
@@ -174,4 +182,20 @@ public class XTitledBorder extends AbstractBorder {
         this.background = background;
     }
     //</editor-fold>
+    
+    public Insets getPadding() {
+        if ( padding == null && comp != null ) {
+            FontMetrics fm = comp.getFontMetrics(font);
+            Insets p = titlePadding;
+            
+            //add the title drop shadow to the insets
+            if ( padding == null )
+                return new Insets(fm.getHeight()+p.top+p.bottom+3, 1,3,3);
+        }
+        return padding;
+    }
+    
+    public void setPadding(Insets padding) {
+        this.padding = padding;
+    }
 }

@@ -7,7 +7,7 @@
 package com.rameses.rcp.common;
 
 
-public class ListItem {
+public class ListItem implements Cloneable {
     
     private Object item;
     private int state;
@@ -22,6 +22,31 @@ public class ListItem {
     public ListItem() {
     }
     
+    public ListItem clone() {
+        ListItem item = new ListItem();
+        item.item = this.item;
+        item.state = this.state;
+        item.parent = this.parent;
+        item.index = this.index;
+        item.rownum = this.rownum;
+        item.selected = this.selected;
+        item.root = this.root;
+        return item;
+    }
+
+    public boolean equals(Object obj) {
+        if( obj == null || !(obj instanceof ListItem) ) return false;
+        
+        ListItem target = (ListItem) obj;
+        if( rownum != target.rownum ) return false;
+        if( item == null && target.item == null ) return rownum == rownum;
+        if( item == null && target.item != null ) return false;
+        if( item != null && target.item == null ) return false;
+        
+        return item.equals(target.item);
+    }
+    
+
     public final void setItem(Object newitem) {
         if(item==null && newitem==null) return;
         if(item!=null && item.equals(newitem)) return;
@@ -98,7 +123,5 @@ public class ListItem {
     public final void setRoot(Object root) {
         this.root = root;
     }
-    
-    
-    
+
 }

@@ -68,6 +68,7 @@ public class XActionBar extends JPanel implements UIComposite {
     private XButton buttonTpl = new XButton();
     private int buttonCaptionOrientation = SwingConstants.CENTER;
     private boolean buttonTextInHtml;
+    private boolean buttonAsHyperlink;
     
     
     public XActionBar() {
@@ -162,13 +163,19 @@ public class XActionBar extends JPanel implements UIComposite {
         
         btn.setName(action.getName());
         if( !ValueUtil.isEmpty(action.getCaption())) {
-            if ( buttonTextInHtml ) {
+            if ( buttonAsHyperlink ) {
+                btn.setContentAreaFilled(false);
+                btn.setBorderPainted(false);
+                btn.setText("<html><a href='#'>" + action.getCaption() + "</a></html>");
+            } else if ( buttonTextInHtml ) {
                 if ( buttonCaptionOrientation == SwingConstants.TOP || buttonCaptionOrientation == SwingConstants.BOTTOM )
                     btn.setText("<html><center>" + action.getCaption() + "</center></html>");
                 else
                     btn.setText("<html>" + action.getCaption() + "</html>");
-            } else
+            } else {
                 btn.setText(action.getCaption());
+            }
+            
         }
         
         btn.setIndex(action.getIndex());
@@ -355,6 +362,9 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public Color getButtonForeground()       { return buttonTpl.getForeground(); }
     public void setButtonForeground(Color f) { buttonTpl.setForeground(f); }
+    
+    public boolean isButtonAsHyperlink()                        { return buttonAsHyperlink; }
+    public void setButtonAsHyperlink(boolean buttonAsHyperlink) { this.buttonAsHyperlink = buttonAsHyperlink; }
     
     //</editor-fold>
     
