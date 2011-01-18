@@ -102,6 +102,12 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setName(String name) {
+        super.setName(name);
+        if( !ValueUtil.isEmpty(expression) )
+            super.setText(name);
+    }
+    
     public String getText() {
         if ( Beans.isDesignTime() ) {
             if ( !ValueUtil.isEmpty(expression) )
@@ -202,6 +208,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     public void setExpression(String expression) {
         this.expression = expression;
+        super.setText(expression);
     }
     
     public String getFor() {
