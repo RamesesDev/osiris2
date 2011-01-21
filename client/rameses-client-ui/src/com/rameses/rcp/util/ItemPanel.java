@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -61,6 +62,25 @@ class ItemPanel extends JPanel {
         this.formPanel = parent;
         this.editor = editor;
         this.editorWrapper = container;
+        
+        if( container instanceof JScrollPane && !container.isPreferredSizeSet() ) {
+            JScrollPane jsp = (JScrollPane) container;
+            JViewport view = jsp.getViewport();
+            Dimension d = view.getViewSize();
+            Border b = view.getBorder();
+            if( b != null ) {
+                Insets i = b.getBorderInsets(view);
+                d.width += i.left + i.right;
+                d.height += i.top + i.bottom;
+            }
+            b = jsp.getBorder();
+            if( b != null ) {
+                Insets i = b.getBorderInsets(jsp);
+                d.width += i.left + i.right;
+                d.height += i.top + i.bottom;
+            }
+            container.setPreferredSize(d);
+        }
         
         ActiveControl con = (ActiveControl) editor;
         property = con.getControlProperty();

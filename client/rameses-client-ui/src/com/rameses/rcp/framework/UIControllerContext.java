@@ -35,7 +35,7 @@ public class UIControllerContext {
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-            
+    
     public String getTitle() { return controller.getTitle(); }
     public void setTitle(String title) { this.title = title; }
     
@@ -129,22 +129,31 @@ public class UIControllerContext {
         
         List<String> sources = new ArrayList();
         StyleSheet ss = (StyleSheet) pageClass.getAnnotation(StyleSheet.class);
-        String source = ss.value();
-        
-        if ( source.indexOf(",") > -1 ) {
-            for (String s: source.split("\\s*,\\s*")) {
-                sources.add( s );
+        for(String sheet : ss.value()) {
+            String source = sheet;
+            if ( source.indexOf(",") > -1 ) {
+                for (String s: source.split("\\s*,\\s*")) {
+                    sources.add( s );
+                }
+            } else {
+                sources.add( source );
             }
-        } else {
-            sources.add( source );
         }
         
         List<StyleRule> newRules = new ArrayList();
         ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
         
         InputStream is = null;
-        for ( String s : sources ) {
-            is = loader.getResourceAsStream(s);
+        if( sources.size() > 0 ) {
+            for ( String s : sources ) {
+                is = loader.getResourceAsStream(s);
+                List<StyleRule> sr = getStyles(is);
+                if ( sr.size() > 0 ) {
+                    newRules.addAll( sr );
+                }
+            }
+        } else {
+            is = pageClass.getResourceAsStream(pageClass.getSimpleName()+".style");
             List<StyleRule> sr = getStyles(is);
             if ( sr.size() > 0 ) {
                 newRules.addAll( sr );
@@ -170,16 +179,18 @@ public class UIControllerContext {
     }
     
     private List<StyleRule> getStyles(InputStream is) {
-        try {
-            StyleRuleParser parser = new StyleRuleParser();
-            DefaultParseHandler handler = new DefaultParseHandler();
-            parser.parse(is, handler);
-            
-            return handler.getList();
-            
-        } catch (Exception ign) {
-        } finally {
-            try { is.close(); } catch(Exception ign){;}
+        if( is != null ) {
+            try {
+                StyleRuleParser parser = new StyleRuleParser();
+                DefaultParseHandler handler = new DefaultParseHandler();
+                parser.parse(is, handler);
+                
+                return handler.getList();
+                
+            } catch (Exception ign) {
+            } finally {
+                try { is.close(); } catch(Exception ign){;}
+            }
         }
         
         return new ArrayList();

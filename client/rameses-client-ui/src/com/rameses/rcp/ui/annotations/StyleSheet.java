@@ -15,5 +15,5 @@ import java.lang.annotation.Target;
 @Retention(value=RetentionPolicy.RUNTIME)
 @Target(value=ElementType.TYPE)
 public @interface StyleSheet {
-    String value() default "";
+    String[] value() default {};
 }
