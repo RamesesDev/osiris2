@@ -10,7 +10,6 @@
 package com.rameses.eserver.async;
 
 import com.rameses.eserver.scheduler.AbstractTaskSchedulerMDB;
-import javax.jms.Message;
 import javax.jms.MessageListener;
 
 /**

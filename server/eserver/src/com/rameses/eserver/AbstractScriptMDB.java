@@ -11,6 +11,8 @@ import javax.jms.ObjectMessage;
 
 public abstract class AbstractScriptMDB implements MessageListener {
     
+    public abstract boolean isRemote();
+    
     public void onMessage(Message message) {
         String requestId = null;
         try {
@@ -28,10 +30,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
             String originAppContext = (String)map.get("app.context");
             String originPort = (String)map.get("originPort");
             
-            boolean sameServer = true;
-            
             String host = System.getProperty("jboss.bind.address");
-            if(host!=null) sameServer = host.equals(origin);
             
             String responseHandler = (String)map.get("responseHandler");
             requestId = (String)map.get("requestId");
@@ -45,14 +44,14 @@ public abstract class AbstractScriptMDB implements MessageListener {
             //execute the result;
             if(!loop) {
                 Object result = ScriptServiceDelegate.getScriptService().invoke( "~" +script,method,params,env );
-                if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId, originAppContext, originPort);
+                if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, requestId, originAppContext, originPort);
             } else {
                 while( true ) {
                     int i = Integer.parseInt(ae.get("loop")+"");
                     ae.put("loop", i + 1);
                     Object result = ScriptServiceDelegate.getScriptService().invoke("~" +script,method,params,env);
                     if(result!=null) {
-                        if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, sameServer, requestId, originAppContext, originPort);
+                        if(hasReturnType) executeResponse( responseHandler, script, result, env, origin, requestId, originAppContext, originPort);
                         if( result instanceof Exception ) break;
                     } else {
                         break;
@@ -64,7 +63,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
         }
     }
     
-    private void executeResponse( String responseHandler, String script,Object result, Map env, String origin, boolean sameServer, String requestId, String originAppContext, String originPort ) throws Exception {
+    private void executeResponse( String responseHandler, String script,Object result, Map env, String origin, String requestId, String originAppContext, String originPort ) throws Exception {
         if(responseHandler!=null) {
             String method = null;
             if( responseHandler.contains(".") ) {
@@ -74,7 +73,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
             } else {
                 method = responseHandler;
             }
-            if(sameServer) {
+            if(!isRemote()) {
                 ScriptServiceDelegate.getScriptService().invoke(script,method,new Object[]{result},env);
             } else {
                 Map m = new HashMap();
@@ -85,7 +84,7 @@ public abstract class AbstractScriptMDB implements MessageListener {
             }
         } else {
             //send response back to original requester which is the machine key of the client.
-            if(sameServer && result!=null) {
+            if(!isRemote() && result!=null) {
                 ScriptServiceDelegate.getScriptService().pushResponse( requestId, result );
             } else {
                 Map m = new HashMap();

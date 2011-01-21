@@ -10,10 +10,13 @@
 package com.rameses.eserver.async;
 
 import com.rameses.eserver.AbstractScriptMDB;
-import javax.jms.Message;
 import javax.jms.MessageListener;
 
 
-public class ScriptMDB extends AbstractScriptMDB implements MessageListener {
+public class LocalScriptMDB extends AbstractScriptMDB implements MessageListener {
+    
+    public boolean isRemote() {
+        return false;
+    }
     
 }
