@@ -129,8 +129,8 @@ public class UIControllerContext {
         
         List<String> sources = new ArrayList();
         StyleSheet ss = (StyleSheet) pageClass.getAnnotation(StyleSheet.class);
-        for(String sheet : ss.value()) {
-            String source = sheet;
+        String source = ss.value();
+        if(source.trim().length()>0) {
             if ( source.indexOf(",") > -1 ) {
                 for (String s: source.split("\\s*,\\s*")) {
                     sources.add( s );
