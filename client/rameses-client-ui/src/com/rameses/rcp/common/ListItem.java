@@ -46,6 +46,9 @@ public class ListItem implements Cloneable {
         return item.equals(target.item);
     }
     
+    public int hashCode() {
+        return parent.hashCode() + rownum;
+    }
 
     public final void setItem(Object newitem) {
         if(item==null && newitem==null) return;
