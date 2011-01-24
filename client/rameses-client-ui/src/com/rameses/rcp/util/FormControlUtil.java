@@ -9,10 +9,15 @@ package com.rameses.rcp.util;
 
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.FormControl;
+import com.rameses.rcp.common.Opener;
+import com.rameses.rcp.common.SubControlModel;
 import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.ui.ActiveControl;
+import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.ui.UISubControl;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -24,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JPanel;
 
 
 public class FormControlUtil {
@@ -85,6 +91,48 @@ public class FormControlUtil {
     
     public boolean removeValueResolver(ValueResolver res) {
         return resolvers.remove(res);
+    }
+    
+    public String renderHtml(List<UIControl> controls, JPanel panel) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<html>")
+        .append("<head>")
+        .append("<style> body, td, div, span { ")
+        .append("  font-family: \"" + panel.getFont().getFamily() + "\"; ")
+        .append("  font-size: " + panel.getFont().getSize())
+        .append("}</style>")
+        .append("</head>")
+        .append("<body>")
+        .append("<table>");
+        for(UIControl c : controls) {
+            if( !(c instanceof ActiveControl) ) continue;
+            
+            ControlProperty cp = ((ActiveControl) c).getControlProperty();
+            sb.append("<tr>");
+            sb.append("<td valign='top'><b>" + cp.getCaption() + ":</b></td>");
+            
+            Object value = null;
+            if( c instanceof UISubControl ) {
+                UISubControl sc = (UISubControl) c;
+                Object handler = sc.getHandlerObject();
+                if( handler instanceof Opener ) {
+                    Opener opener = (Opener) handler;
+                    if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
+                        value = ((SubControlModel) opener.getHandle()).getHtmlFormat();
+                    }
+                }
+            } else {
+                value = UIControlUtil.getBeanValue(c);
+            }
+            
+            sb.append("<td valign='top'>" + (value==null? "" : value) + "</td>");
+            sb.append("</tr>");
+        }
+        sb.append("</table")
+        .append("</body>")
+        .append("</html>");
+        
+        return sb.toString();
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">

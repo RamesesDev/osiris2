@@ -25,4 +25,7 @@ public interface UIConstants {
     static final String CONTROL_POSITION = "CONTROL_POSITION";
     static final String CURSOR_POSITION = "CURSOR_POSITION";
     
+    static final String HTML_VIEW = "html";
+    static final String INPUT_VIEW = "input";
+    
 }

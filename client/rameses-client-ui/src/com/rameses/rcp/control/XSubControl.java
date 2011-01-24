@@ -32,6 +32,7 @@ public class XSubControl extends XSubFormPanel implements Validatable {
     private boolean readonly;
     private boolean editable;
     private Map properties = new HashMap();
+    private Object handlerObj;
     
     
     public XSubControl() {
@@ -54,19 +55,19 @@ public class XSubControl extends XSubFormPanel implements Validatable {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     protected void buildForm() {
-        Object obj = null;
+        handlerObj = null;
         if( handlerAutoLookup ) {
             OpenerProvider provider = ClientContext.getCurrentContext().getOpenerProvider();
             List list = provider.getOpeners(getHandler(), null);
             if( list != null && list.size() > 0 )
-                obj = list.get(0);
+                handlerObj = list.get(0);
         } else {
-            obj = UIControlUtil.getBeanValue(this, getHandler());
+            handlerObj = UIControlUtil.getBeanValue(this, getHandler());
         }
         
         Opener opener = null;
-        if ( obj instanceof Opener ) {
-            opener = (Opener)obj;
+        if ( handlerObj instanceof Opener ) {
+            opener = (Opener)handlerObj;
         }
         
         //-- display support
@@ -171,6 +172,10 @@ public class XSubControl extends XSubFormPanel implements Validatable {
     
     public void setEditable(boolean editable) {
         this.editable = editable;
+    }
+    
+    public Object getHandlerObject() {
+        return handlerObj;
     }
     
 }
