@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class AbstractSubControlModel {
+public abstract class AbstractSubControlModel {
     
     private static final long serialVersionUID = 1L;
     
@@ -39,7 +39,7 @@ public class AbstractSubControlModel {
      */
     public Object createContext() { return null; }
     
-    //package level mutators
+    //package level
     final void init(Binding controlBinding, String name) {
         this.controlBinding = controlBinding;
         
@@ -95,7 +95,7 @@ public class AbstractSubControlModel {
         
     }
     
-    public Map getProperties() {
+    public final Map getProperties() {
         return properties;
     }
     
