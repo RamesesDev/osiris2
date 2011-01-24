@@ -24,6 +24,7 @@ public class HttpInvokerTest extends TestCase {
     }
 
     protected void tearDown() throws Exception {
+        
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
