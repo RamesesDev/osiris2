@@ -36,21 +36,22 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     private String handler;
     private String[] depends;
     private int index;
-    private Binding binding;
-    private BindingConnector bindingConnector = new  BindingConnector(this);
     private boolean dynamic;
     
     private boolean multiForm;
     private JPanel multiPanel;
-    private List<Binding> subBindings = new ArrayList();
-    private List<SubFormContext> subFormItems = new ArrayList();
     
+    /** this can be set when you want to add openers
+     *  directly to this component
+     */
     private List<Opener> openers;
+    private List<Binding> subBindings = new ArrayList();
     
-    private ControlProperty property = new ControlProperty();
-    
-    
-    private List<Opener> currentOpeners = new ArrayList();
+    protected Binding binding;
+    protected BindingConnector bindingConnector = new  BindingConnector(this);
+    protected List<SubFormContext> subFormItems = new ArrayList();
+    protected List<Opener> currentOpeners = new ArrayList();
+    protected ControlProperty property = new ControlProperty();
     
     
     public XSubFormPanel() {
@@ -114,7 +115,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
-    private void buildForm() {
+    protected void buildForm() {
         Object obj = null;
         
         //this is usually set by XTabbedPane or
@@ -323,7 +324,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     
     //<editor-fold defaultstate="collapsed" desc="  SubFormContext (class)  ">
-    private class SubFormContext extends UIControllerPanel {
+    protected class SubFormContext extends UIControllerPanel {
         
         SubFormContext(UIControllerContext controller) {
             super(controller);

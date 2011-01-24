@@ -330,7 +330,7 @@ public class Binding {
             
             vc.validateInput();
             ActionMessage ac = vc.getActionMessage();
-            if ( ac.hasMessages() ) {
+            if ( ac != null && ac.hasMessages() ) {
                 if ( ValueUtil.isEmpty(actionMessage.getSource()) )
                     actionMessage.setSource( comp );
                 
