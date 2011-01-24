@@ -116,10 +116,9 @@ public class XSubControl extends XSubFormPanel implements Validatable {
         
         model = (AbstractSubControlModel) codeBean;
         model.init(binding, getName());
-        model.getProperties().clear();
         model.getProperties().putAll( properties );
         model.onInit();
-        
+                
         UIControllerContext uic = new UIControllerContext( controller );
         if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
             uic.setCurrentView(opener.getOutcome());
