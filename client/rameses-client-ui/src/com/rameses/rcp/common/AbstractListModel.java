@@ -8,8 +8,6 @@
  */
 package com.rameses.rcp.common;
 
-import com.rameses.common.PropertyResolver;
-import com.rameses.rcp.framework.ClientContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +34,7 @@ public abstract class AbstractListModel {
     
     private Column primaryColumn;
     //used by XTable to register error messages
-    private Map<Object, String> errorMessages = new HashMap();
+    private Map<ListItem, String> errorMessages = new HashMap();
     
     /**
      * this contains items that have been selected
@@ -402,21 +400,21 @@ public abstract class AbstractListModel {
         ListItem li = getItemList().get(liIndex);
         if ( li.getItem() == null ) return;
         
-        errorMessages.put(getRowId(li), message);
+        errorMessages.put(li.clone(), message);
     }
     
     public String getErrorMessage(int liIndex) {
         ListItem li = getItemList().get(liIndex);
         if ( li.getItem() == null ) return null;
         
-        return errorMessages.get( getRowId(li) );
+        return errorMessages.get( li );
     }
     
     public void removeErrorMessage(int liIndex) {
         ListItem li = getItemList().get(liIndex);
         if ( li.getItem() == null ) return;
         
-        errorMessages.remove( getRowId(li) );
+        errorMessages.remove( li );
     }
     
     public String getErrorMessages() {
@@ -424,32 +422,20 @@ public abstract class AbstractListModel {
         
         StringBuffer sb = new StringBuffer();
         boolean first = true;
-        for (Map.Entry me: errorMessages.entrySet()) {
+        for (Map.Entry<ListItem, String> me: errorMessages.entrySet()) {
             if ( !first ) sb.append("\n");
             else first = false;
-            sb.append("row " + me.getKey() + ": " + me.getValue());
+            sb.append("row " + me.getKey().getRownum() + ": " + me.getValue());
         }
         
         return sb.toString();
     }
-    
-    private Object getRowId(ListItem li) {
-        Column pc = getPrimaryColumn();
-        if ( pc != null ) {
-            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-            String name = pc.getName();
-            Object value = resolver.getProperty(li, name);
-            if ( value != null ) return value;
-        }
-        
-        return li.getItem();
-    }
-    
+
     public Column getPrimaryColumn() {
         if ( primaryColumn == null ) {
             Column[] cols = getColumns();
             if ( cols != null && cols.length > 0 ) {
-                primaryColumn = cols[0];
+                //primaryColumn = cols[0];
                 for ( Column c : cols ) {
                     if ( c.isPrimary() ) {
                         primaryColumn = c;
