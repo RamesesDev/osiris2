@@ -10,6 +10,8 @@ package com.rameses.rcp.control;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class AbstractSubControlModel {
@@ -20,27 +22,36 @@ public class AbstractSubControlModel {
     private String beanName;
     private String fieldName;
     
+    private Map properties = new HashMap();
+    
     
     public AbstractSubControlModel() {
     }
     
     
-    //overridable
+    //overridable methods
     public void onInit() {}
     public void onRefresh() {}
     
+    /**
+     * this is called to initialize/create the context object
+     * when it is null especially if the context is a complex object
+     */
+    public Object createContext() { return null; }
+    
     //package level mutators
-    void setControlBinding(Binding controlBinding) {
+    final void init(Binding controlBinding, String name) {
         this.controlBinding = controlBinding;
+        
+        if( name == null) return;
+        if( name.contains(".") ) {
+            beanName = name.substring(0, name.lastIndexOf("."));
+            fieldName = name.substring(name.lastIndexOf(".")+1);
+        } else {
+            beanName = name;
+        }
     }
     
-    void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-    
-    void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
     
     //final accessors
     public final Binding getControlBinding() {
@@ -56,9 +67,36 @@ public class AbstractSubControlModel {
     }
     
     public final Object getContext() {
+        if( beanName == null ) return null;
+        
         PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
-        Object bean = res.getProperty(controlBinding.getBean(), beanName);
-        return res.getProperty(bean, fieldName);
+        Object context = res.getProperty(controlBinding.getBean(), beanName);
+        if( fieldName != null )
+            context = res.getProperty(context, fieldName);
+        
+        if( context == null ) {
+            context = createContext();
+            if( context != null ) setContext(context);
+        }
+        
+        return context;
+    }
+    
+    public final void setContext(Object value) {
+        if( beanName == null ) return;
+        
+        PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+        if( fieldName != null ) {
+            Object bean = res.getProperty(controlBinding.getBean(), beanName);
+            res.setProperty(bean, fieldName, value);
+        } else {
+            res.setProperty(controlBinding.getBean(), beanName, value);
+        }
+        
+    }
+    
+    public Map getProperties() {
+        return properties;
     }
     
 }
