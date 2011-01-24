@@ -46,6 +46,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
      */
     private List<Opener> openers;
     private List<Binding> subBindings = new ArrayList();
+    private Object handlerObj;
     
     protected Binding binding;
     protected BindingConnector bindingConnector = new  BindingConnector(this);
@@ -116,32 +117,32 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     protected void buildForm() {
-        Object obj = null;
+        handlerObj = null;
         
         //this is usually set by XTabbedPane or
         //other controls that used XSubForm internally
         if ( getOpeners().size() > 0 ) {
-            obj = getOpeners();
+            handlerObj = getOpeners();
         } else {
-            obj = UIControlUtil.getBeanValue(this, getHandler());
+            handlerObj = UIControlUtil.getBeanValue(this, getHandler());
             multiForm = true; //reset, check based on passed value
         }
-        if ( obj == null ) return;
+        if ( handlerObj == null ) return;
         
         List<Opener> openers = new ArrayList();
         
-        if ( obj instanceof Collection ) {
-            for(Object o: (Collection) obj) {
+        if ( handlerObj instanceof Collection ) {
+            for(Object o: (Collection) handlerObj) {
                 openers.add( (Opener)o );
             }
             
-        } else if ( obj.getClass().isArray() ) {
-            for(Object o: (Object[]) obj) {
+        } else if ( handlerObj.getClass().isArray() ) {
+            for(Object o: (Object[]) handlerObj) {
                 openers.add( (Opener)o );
             }
             
-        } else if ( obj instanceof Opener ) {
-            openers.add( (Opener)obj );
+        } else if ( handlerObj instanceof Opener ) {
+            openers.add( (Opener)handlerObj );
             multiForm = false;
             
         } else {
@@ -217,6 +218,10 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             if ( b.focusFirstInput() ) return true;
         }
         return false;
+    }
+    
+    public Object getHandlerObject() {
+        return handlerObj;
     }
     
     

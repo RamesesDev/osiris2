@@ -252,8 +252,11 @@ public class Binding {
                         properties.put(comp.hashCode(), comp);
                 }
                 
-                for (UIControl uic: comp.getControls()) {
-                    applyStyle(uic);
+                if( comp.isChildrenAcceptStyles() ) {
+                    for (UIControl uic: comp.getControls()) applyStyle(uic);
+                }
+                else {
+                    applyStyle(u);
                 }
             } else {
                 applyStyle(u);
