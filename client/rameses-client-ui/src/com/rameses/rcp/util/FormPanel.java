@@ -608,6 +608,14 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         return allControls;
     }
     
+    public String getEmptyWhen() {
+        return emptyWhen;
+    }
+    
+    public void setEmptyWhen(String emptyWhen) {
+        this.emptyWhen = emptyWhen;
+    }
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" Layout (Class) ">
@@ -765,9 +773,9 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
             } catch(Exception e){;}
         }
         
-        public String getHtmlFormat() {
+        public String getHtmlFormat(boolean partial) {
             FormControlUtil fcUtil = FormControlUtil.getInstance();
-            return fcUtil.renderHtml(getAllControls(), FormPanel.this);
+            return fcUtil.renderHtml(getAllControls(), FormPanel.this, partial);
         }
         
         public void onReload() {

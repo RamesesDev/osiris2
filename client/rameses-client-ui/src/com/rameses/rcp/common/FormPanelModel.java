@@ -38,7 +38,15 @@ public class FormPanelModel {
     
     public String getHtmlFormat() {
         if( listener != null ) {
-            return listener.getHtmlFormat();
+            return listener.getHtmlFormat(false);
+        }
+        
+        return "";
+    }
+    
+    public String getPartialHtmlFormat() {
+        if( listener != null ) {
+            return listener.getHtmlFormat(true);
         }
         
         return "";
@@ -57,7 +65,7 @@ public class FormPanelModel {
     public static interface Listener {
         
         void onPropertyUpdated(String name, Object value);
-        String getHtmlFormat();
+        String getHtmlFormat(boolean partial);
         void onReload();
         
     }
