@@ -10,6 +10,7 @@
 import com.rameses.rcp.framework.AbstractUIInput;
 
 import com.rameses.rcp.framework.ControlSupport;
+import com.rameses.rcp.util.ControlSupport;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.List;

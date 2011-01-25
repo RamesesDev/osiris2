@@ -15,6 +15,5 @@ public interface UIComposite extends UICompositeFocusable {
     List<? extends UIControl> getControls();
     boolean isDynamic();
     void reload();
-    boolean isChildrenAcceptStyles();
     
 }

@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JPanel;
-
 
 public class FormControlUtil {
     
@@ -93,23 +91,34 @@ public class FormControlUtil {
         return resolvers.remove(res);
     }
     
-    public String renderHtml(List<UIControl> controls, JPanel panel) {
+    public String renderHtml(List<UIControl> controls, FormPanel panel) {
+        return renderHtml(controls, panel, false);
+    }
+    
+    public String renderHtml(List<UIControl> controls, FormPanel panel, boolean partial) {
         StringBuffer sb = new StringBuffer();
-        sb.append("<html>")
-        .append("<head>")
-        .append("<style> body, td, div, span { ")
-        .append("  font-family: \"" + panel.getFont().getFamily() + "\"; ")
-        .append("  font-size: " + panel.getFont().getSize())
-        .append("}</style>")
-        .append("</head>")
-        .append("<body>")
-        .append("<table>");
+        if( !partial ) {
+            sb.append("<html>")
+            .append("<head>")
+            .append("<style> body, td, div, span { ")
+            .append("  font-family: \"" + panel.getFont().getFamily() + "\"; ")
+            .append("  font-size: " + panel.getFont().getSize())
+            .append("}</style>")
+            .append("</head>")
+            .append("<body>");
+        }
+        sb.append("<table>");
         for(UIControl c : controls) {
             if( !(c instanceof ActiveControl) ) continue;
             
             ControlProperty cp = ((ActiveControl) c).getControlProperty();
             sb.append("<tr>");
-            sb.append("<td valign='top'><b>" + cp.getCaption() + ":</b></td>");
+            if( cp.isShowCaption() ) {
+                sb.append("<td valign='top'><b>" + cp.getCaption() + ":</b></td>")
+                .append("<td valign='top'>");
+            } else {
+                sb.append("<td valign='top' colspan='2'>");
+            }
             
             Object value = null;
             if( c instanceof UISubControl ) {
@@ -121,16 +130,22 @@ public class FormControlUtil {
                         value = ((SubControlModel) opener.getHandle()).getHtmlFormat();
                     }
                 }
+            } else if ( c instanceof FormPanel ) {
+                FormPanel fp = (FormPanel) c;
+                value = renderHtml( fp.getAllControls(), fp, true );
             } else {
                 value = UIControlUtil.getBeanValue(c);
             }
             
-            sb.append("<td valign='top'>" + (value==null? "" : value) + "</td>");
-            sb.append("</tr>");
+            sb.append((value==null? "" : value))
+            .append("</td>")
+            .append("</tr>");
         }
-        sb.append("</table")
-        .append("</body>")
-        .append("</html>");
+        sb.append("</table");
+        if( !partial ) {
+            sb.append("</body>")
+            .append("</html>");
+        }
         
         return sb.toString();
     }

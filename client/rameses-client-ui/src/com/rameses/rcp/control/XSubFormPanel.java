@@ -21,6 +21,7 @@ import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -40,6 +41,9 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     private boolean multiForm;
     private JPanel multiPanel;
+    
+    //flag
+    private boolean _loaded;
     
     /** this can be set when you want to add openers
      *  directly to this component
@@ -109,10 +113,12 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     }
     
     public void load() {
+        if( _loaded ) return;
         if ( !dynamic ) {
             buildForm();
         }
         bindingConnector.setParentBinding(binding);
+        _loaded = true;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
@@ -150,7 +156,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
         }
         
         //-- display support
-        List<Binding> connectorBindings = bindingConnector.getSubBindings();
+        Set<Binding> connectorBindings = bindingConnector.getSubBindings();
         connectorBindings.clear();
         if ( openers.size() == 0 ) {
             subFormItems.clear();
@@ -340,7 +346,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
         public void renderView() {
             super.renderView();
             
-            List<Binding> connectorBindings = bindingConnector.getSubBindings();
+            Set<Binding> connectorBindings = bindingConnector.getSubBindings();
             connectorBindings.clear();
             connectorBindings.addAll(getSubBindings());
         }

@@ -39,7 +39,9 @@ public class UIInputUtil {
                 throw new IllegalStateException("UIInputVerifier should be used for UIInput controls only.");
             
             UIInput control = (UIInput) input;
-            if ( control.isReadonly() ) return true;
+            if ( control.isReadonly() || !input.isEnabled() ) return true;
+            if ( input instanceof JTextComponent && !((JTextComponent) input).isEditable() ) return true;
+            if ( input.getParent() == null ) return true;
             
             if ( control instanceof Validatable ) {
                 ((Validatable) control).validateInput();

@@ -14,18 +14,17 @@ import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.framework.OpenerProvider;
 import com.rameses.rcp.framework.UIController;
 import com.rameses.rcp.framework.UIControllerContext;
-import com.rameses.rcp.ui.Validatable;
-import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.SwingUtilities;
 
 
-public class XSubControl extends XSubFormPanel implements Validatable {
+public class XSubControl extends XSubFormPanel {
     
     private AbstractSubControlModel model;
     private boolean handlerAutoLookup = true;
@@ -71,7 +70,7 @@ public class XSubControl extends XSubFormPanel implements Validatable {
         }
         
         //-- display support
-        List<Binding> connectorBindings = bindingConnector.getSubBindings();
+        Set<Binding> connectorBindings = bindingConnector.getSubBindings();
         connectorBindings.clear();
         if ( opener == null ) {
             subFormItems.clear();
@@ -146,9 +145,6 @@ public class XSubControl extends XSubFormPanel implements Validatable {
     public void setRequired(boolean required) {
         property.setRequired(required);
     }
-    
-    public void validateInput() {}
-    public ActionMessage getActionMessage() { return null; }
     
     public Map getProperties() {
         return properties;

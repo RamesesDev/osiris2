@@ -252,12 +252,11 @@ public class Binding {
                         properties.put(comp.hashCode(), comp);
                 }
                 
-                if( comp.isChildrenAcceptStyles() ) {
-                    for (UIControl uic: comp.getControls()) applyStyle(uic);
-                }
-                else {
-                    applyStyle(u);
-                }
+                //apply style rules to children
+                for (UIControl uic: comp.getControls()) applyStyle(uic);
+                //apply style rules to parent
+                applyStyle(u);
+                
             } else {
                 applyStyle(u);
             }
@@ -381,6 +380,10 @@ public class Binding {
         
         Component c = (Component) ui;
         if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) return;
+        
+        //do not validate components which are hidden
+        //and not yet attached to a panel
+        if ( c.getParent() == null ) return;
         
         Object compValue = ui.getValue();
         Object beanValue = UIControlUtil.getBeanValue(ui);
