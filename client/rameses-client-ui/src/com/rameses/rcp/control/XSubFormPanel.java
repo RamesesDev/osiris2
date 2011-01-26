@@ -42,9 +42,6 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     private boolean multiForm;
     private JPanel multiPanel;
     
-    //flag
-    private boolean _loaded;
-    
     /** this can be set when you want to add openers
      *  directly to this component
      */
@@ -113,12 +110,10 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     }
     
     public void load() {
-        if( _loaded ) return;
         if ( !dynamic ) {
             buildForm();
         }
         bindingConnector.setParentBinding(binding);
-        _loaded = true;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
@@ -133,11 +128,13 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             handlerObj = UIControlUtil.getBeanValue(this, getHandler());
             multiForm = true; //reset, check based on passed value
         }
-        if ( handlerObj == null ) return;
-        
+
         List<Opener> openers = new ArrayList();
         
-        if ( handlerObj instanceof Collection ) {
+        if ( handlerObj == null ) {
+            //do nothing
+        }
+        else if ( handlerObj instanceof Collection ) {
             for(Object o: (Collection) handlerObj) {
                 openers.add( (Opener)o );
             }
@@ -151,8 +148,6 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             openers.add( (Opener)handlerObj );
             multiForm = false;
             
-        } else {
-            throw new IllegalStateException("XSubFormPanel handler must be an instance of Opener, Opener[], or List<Opener>");
         }
         
         //-- display support

@@ -141,7 +141,7 @@ public class FormControlUtil {
             .append("</td>")
             .append("</tr>");
         }
-        sb.append("</table");
+        sb.append("</table>");
         if( !partial ) {
             sb.append("</body>")
             .append("</html>");
@@ -165,9 +165,7 @@ public class FormControlUtil {
                 Object value = resolveValue(key, me.getValue());
                 resolver.setProperty(control, key, value );
                 
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
+            } catch(Exception e) {;}
         }
     }
     

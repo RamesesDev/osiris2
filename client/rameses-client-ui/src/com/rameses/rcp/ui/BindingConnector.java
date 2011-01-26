@@ -14,7 +14,6 @@ import com.rameses.rcp.framework.*;
 import com.rameses.rcp.util.ActionMessage;
 import java.awt.Component;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class BindingConnector implements BindingListener {
@@ -63,6 +62,10 @@ public class BindingConnector implements BindingListener {
     }
     
     public void validateBean(ValidatorEvent evt) {
+        //do not participate in validation
+        //when the subform is not attched to a Component
+        if( ((Component) parent).getParent() == null ) return;
+        
         for(Binding sb: subBindings) {
             ValidatorEvent subEvt = new ValidatorEvent(sb);
             sb.validateBean(subEvt);

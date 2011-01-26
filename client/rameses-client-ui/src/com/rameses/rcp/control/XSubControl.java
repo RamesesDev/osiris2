@@ -40,13 +40,13 @@ public class XSubControl extends XSubFormPanel {
     
     public void refresh() {
         if( model != null ) {
-            model.onRefresh();
-            
             Map props = model.getProperties();
             props.put("required", isRequired());
             props.put("readonly", readonly);
             props.put("editable", editable);
             props.put("enabled", isEnabled());
+            
+            model.onRefresh();
         }
         
         super.refresh();
@@ -118,7 +118,7 @@ public class XSubControl extends XSubFormPanel {
         model.init(binding, getName());
         model.getProperties().putAll( properties );
         model.onInit();
-                
+        
         UIControllerContext uic = new UIControllerContext( controller );
         if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
             uic.setCurrentView(opener.getOutcome());
