@@ -13,6 +13,7 @@ import com.rameses.rcp.common.Opener;
 import com.rameses.rcp.common.SubControlModel;
 import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.constant.TrimSpaceOption;
+import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
@@ -133,6 +134,8 @@ public class FormControlUtil {
             } else if ( c instanceof FormPanel ) {
                 FormPanel fp = (FormPanel) c;
                 value = renderHtml( fp.getAllControls(), fp, true );
+            } else if ( c instanceof XLabel ) {
+                value = ((XLabel) c).getValue();
             } else {
                 value = UIControlUtil.getBeanValue(c);
             }

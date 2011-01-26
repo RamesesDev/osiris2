@@ -36,11 +36,15 @@ public final class FormSupport {
             Map nm = new HashMap();
             nm.putAll( m );
             String mode = (String)nm.remove("mode");
-            if(mode!=null && mode.equals("hidden")) continue;
+            if( mode!=null && mode.equals("hidden") ) continue;
+            
             String name = (String)nm.remove("name");
             String type = (String)nm.remove("type");
-            if(type==null) type="text";
-            if(entityVarName!=null && entityVarName.trim().length()>0) name = entityVarName + "." + name;
+            if( type==null ) type="text";
+            if( entityVarName!=null && entityVarName.trim().length()>0 ) {
+                name = entityVarName + "." + name;
+            }
+            
             nm.put("name", name);
             FormControl fc = new FormControl();
             fc.setType(type);
@@ -53,6 +57,11 @@ public final class FormSupport {
     public static List<FormControl> buildFormControls(List<Map> infos, String entityVarName, Map entityMap) {
         List<FormControl> controls = buildFormControls(infos, entityVarName);
         return filterFormControls(controls, entityMap, entityVarName);
+    }
+    
+    public static List<FormControl> buildFormControls(List<Map> infos, String entityVarName, Map entityMap, Map extProps) {
+        List<FormControl> controls = buildFormControls(infos, entityVarName);
+        return filterFormControls(controls, entityMap, entityVarName, extProps);
     }
     
     public static List<FormControl> filterFormControls(List<FormControl> controls, Map entityMap) {
@@ -85,11 +94,24 @@ public final class FormSupport {
         }
         return list;
     }
-    
-    public static Map buildMap( ) {
-        Map map = new HashMap();
-        
-        return map;
+
+    public static Map buildModel(Map entity, List<Map> fields, List<String> includeFields ) {
+        for(Map field : fields) {
+            if( includeFields.contains(field.get("name")) ) {                
+                if(!entity.containsKey(field.get("name")) ) {
+                    if("subform".equals(field.get("type"))) {
+                        entity.put( field.get("name"), new HashMap() );
+                    } else {
+                        entity.put( field.get("name"), null );
+                    }
+                }
+            } else {
+                if( !"fixed".equals(field.get("mode")) ) {
+                    entity.remove( field.get("name") );
+                }
+            }
+        }
+        return entity;
     }
     
     public static Map filterMap(Map entity, List fields) {
@@ -121,6 +143,7 @@ public final class FormSupport {
         }
     }
     
+    //List finder method
     private static Object find(List items, Filter filter) {
         for(Object o : items) {
             if( filter.accept(o) ) return o;

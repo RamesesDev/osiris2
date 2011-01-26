@@ -1,10 +1,13 @@
 package com.rameses.rcp.control;
 
+import com.rameses.common.ExpressionResolver;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.ui.UIOutput;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
@@ -23,7 +26,7 @@ import javax.swing.border.Border;
  *
  * @author jaycverg
  */
-public class XLabel extends JLabel implements UIControl, ActiveControl {
+public class XLabel extends JLabel implements UIOutput, ActiveControl {
     
     private int index;
     private String[] depends;
@@ -157,7 +160,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setShowCaption(boolean show) {
         property.setShowCaption(show);
     }
-
+    
     public char getCaptionMnemonic() {
         return property.getCaptionMnemonic();
     }
@@ -173,7 +176,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setCaptionWidth(int width) {
         property.setCaptionWidth(width);
     }
-   
+    
     public String[] getDepends() {
         return depends;
     }
@@ -254,6 +257,17 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setAddCaptionColon(boolean addCaptionColon) {
         this.addCaptionColon = addCaptionColon;
         formatText( activeProperty.getCaption(), activeProperty.isRequired() );
+    }
+    
+    public Object getValue() {
+        if ( !ValueUtil.isEmpty(expression) ) {
+            ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+            return er.evaluate(binding.getBean(), expression);
+        } else if ( !ValueUtil.isEmpty(getName()) )
+            return UIControlUtil.getBeanValue(this);
+        else
+            return super.getText();
+        
     }
     //</editor-fold>
     

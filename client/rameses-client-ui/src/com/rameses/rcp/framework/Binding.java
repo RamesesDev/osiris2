@@ -36,6 +36,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.swing.JComponent;
 
 /**
  *
@@ -244,12 +245,13 @@ public class Binding {
             if ( u instanceof UIComposite ) {
                 UIComposite comp = (UIComposite)u;
                 if ( comp.isDynamic() ) {
+                    JComponent jc = (JComponent) comp;
                     //do not reload on first refresh since load is first called
                     //this should only be called on the next refresh
-                    if( properties.get(comp.hashCode()) != null )
+                    if( jc.getClientProperty(getClass() + "REFRESHED") != null )
                         comp.reload();
                     else
-                        properties.put(comp.hashCode(), comp);
+                        jc.putClientProperty(getClass() + "REFRESHED", true);
                 }
                 
                 //apply style rules to children
