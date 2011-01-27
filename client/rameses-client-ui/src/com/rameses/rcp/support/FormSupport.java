@@ -10,6 +10,7 @@
 package com.rameses.rcp.support;
 
 import com.rameses.rcp.common.FormControl;
+import com.rameses.rcp.util.FormControlUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -94,10 +95,10 @@ public final class FormSupport {
         }
         return list;
     }
-
+    
     public static Map buildModel(Map entity, List<Map> fields, List<String> includeFields ) {
         for(Map field : fields) {
-            if( includeFields.contains(field.get("name")) ) {                
+            if( includeFields.indexOf(field.get("name")) >= 0 ) {
                 if(!entity.containsKey(field.get("name")) ) {
                     if("subform".equals(field.get("type"))) {
                         entity.put( field.get("name"), new HashMap() );
@@ -106,7 +107,7 @@ public final class FormSupport {
                     }
                 }
             } else {
-                if( !"fixed".equals(field.get("mode")) ) {
+                if( !"hidden".equals(field.get("mode")) && !"fixed".equals(field.get("mode")) ) {
                     entity.remove( field.get("name") );
                 }
             }
@@ -114,6 +115,25 @@ public final class FormSupport {
         return entity;
     }
     
+    /**
+     * returns a Map of key value pair entity values
+     * wherein the values are in html format
+     */
+    public static Map getHtmlValueFormat(List<FormControl> controls, Object entity) {
+        return FormControlUtil.getInstance().buildHtmlValueFormat(controls, entity);
+    }
+    
+    /**
+     * returns a Map of key value pair of entity values
+     * wherein the values are in (text)printable format
+     */
+    public static Map getPrintValueFormat(List<FormControl> controls, Object entity) {
+        return FormControlUtil.getInstance().buildPrintValueFormat(controls, entity);
+    }
+    
+    /**
+     * returns a new Map filtered based on the list of fields passed
+     */
     public static Map filterMap(Map entity, List fields) {
         Map newMap = new LinkedHashMap();
         if( fields != null ) {
@@ -124,6 +144,10 @@ public final class FormSupport {
         return newMap;
     }
     
+    /**
+     * throws RuntimeException if the entity map does not contain
+     * the required fields specified by the metaFields
+     */
     public static void checkRequired(Map entity, List<Map> metaFields ) {
         StringBuffer errs = new StringBuffer();
         for(Map.Entry<String, Object> me : (Set<Map.Entry>)entity.entrySet()) {

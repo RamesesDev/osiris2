@@ -152,13 +152,10 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
         
         //-- display support
         Set<Binding> connectorBindings = bindingConnector.getSubBindings();
-        
-        for(Binding b : connectorBindings) b = null;
         connectorBindings.clear();
         
         if ( openers.size() == 0 ) {
             removeAll();
-            for(SubFormContext ctx : subFormItems) ctx = null;
             subFormItems.clear();
             SwingUtilities.updateComponentTreeUI(this);
             return;
@@ -172,11 +169,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             connectorBindings.addAll(getSubBindings());
         } else {
             removeAll();
-            
-            for(SubFormContext ctx : subFormItems) ctx = null;
             subFormItems.clear();
-            
-            for(Opener o : currentOpeners) o = null;
             currentOpeners.clear();
             currentOpeners.addAll( openers );
             

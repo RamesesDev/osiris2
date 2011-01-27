@@ -48,9 +48,10 @@ public class BindingConnector implements BindingListener {
     }
     
     public void validate(ActionMessage actionMessage, Binding pbinding) {
+        Component comp = ((Component) parent);
         //do not participate in validation
-        //when the subform is not attched to a Component
-        if( ((Component) parent).getParent() == null ) return;
+        //when the subform is hidden or not attched to a Component
+        if( !comp.isShowing() || comp.getParent() == null ) return;
         
         ActionMessage subMessages = new ActionMessage();
         for (Binding sb : subBindings ) {
@@ -62,9 +63,10 @@ public class BindingConnector implements BindingListener {
     }
     
     public void validateBean(ValidatorEvent evt) {
+        Component comp = ((Component) parent);
         //do not participate in validation
-        //when the subform is not attched to a Component
-        if( ((Component) parent).getParent() == null ) return;
+        //when the subform is hidden or not attched to a Component
+        if( !comp.isShowing() || comp.getParent() == null ) return;
         
         for(Binding sb: subBindings) {
             ValidatorEvent subEvt = new ValidatorEvent(sb);

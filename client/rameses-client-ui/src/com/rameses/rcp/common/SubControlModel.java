@@ -14,7 +14,15 @@ public class SubControlModel extends AbstractSubControlModel {
     
     private static final long serialVersionUID = 1L;
     
-    public String getHtmlFormat() { 
+    public String getHtmlFormat() {
+        Object ctx = getContext();
+        if( ctx == null )
+            return "";
+        
+        return ctx.toString();
+    }
+    
+    public String getPrintFormat() {
         Object ctx = getContext();
         if( ctx == null )
             return "";

@@ -90,7 +90,6 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     }
     
     private void loadOpeners() {
-        for(Opener o : openers) o = null;
         openers.clear();
         
         if( nameAutoLookupAsOpener ) {

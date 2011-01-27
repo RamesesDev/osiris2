@@ -237,7 +237,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                 } else if ( c instanceof UIInput ) {
                     UIInput u = (UIInput) c;
                     JComponent jc = (JComponent) c;
-                    if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isVisible())
+                    if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isShowing() )
                         continue;
                     
                     jc.requestFocus();

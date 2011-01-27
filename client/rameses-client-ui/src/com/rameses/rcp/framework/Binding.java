@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JComponent;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -322,7 +323,7 @@ public class Binding {
     public void validate(ActionMessage actionMessage) {
         for ( Validatable vc: validatables ) {
             Component comp = (Component) vc;
-            if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isVisible() ) {
+            if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isShowing() || comp.getParent() == null ) {
                 //do not validate non-focusable, disabled, or hidden fields.
                 continue;
             }
@@ -359,6 +360,11 @@ public class Binding {
     
     public void formCommit() {
         for ( UIControl u: focusableControls ) {
+            Component comp = (Component) u;
+            if( !comp.isEnabled() || !comp.isShowing() ) continue;            
+            if( u instanceof UIInput && ((UIInput) u).isReadonly() ) continue;
+            if( u instanceof JTextComponent && !((JTextComponent) u).isEditable() ) continue;
+            
             if ( u instanceof UIComposite ) {
                 UIComposite uc = (UIComposite) u;
                 for( UIControl uu: uc.getControls() )
@@ -381,7 +387,7 @@ public class Binding {
         if ( ui.isImmediate() || ui.isReadonly() ) return;
         
         Component c = (Component) ui;
-        if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) return;
+        if ( !c.isEnabled() || !c.isFocusable() || !c.isShowing() ) return;
         
         //do not validate components which are hidden
         //and not yet attached to a panel

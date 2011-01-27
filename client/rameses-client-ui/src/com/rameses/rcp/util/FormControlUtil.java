@@ -14,6 +14,7 @@ import com.rameses.rcp.common.SubControlModel;
 import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.control.XLabel;
+import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
@@ -25,6 +26,7 @@ import java.awt.Font;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -151,6 +153,94 @@ public class FormControlUtil {
         }
         
         return sb.toString();
+    }
+    
+    public Map buildHtmlValueFormat(List<FormControl> controls, Object entity) {
+        Map valueIndex = new HashMap();
+        
+        Binding b = new Binding();
+        b.setBean(entity);
+        
+        for(FormControl fc : controls) {
+            UIControl c = getControl(fc);
+            c.setBinding(b);
+            c.load();
+            c.refresh();
+            if( !(c instanceof ActiveControl) ) continue;
+            
+            Object value = null;
+            if( c instanceof UISubControl ) {
+                UISubControl sc = (UISubControl) c;
+                Object handler = sc.getHandlerObject();
+                if( handler instanceof Opener ) {
+                    Opener opener = (Opener) handler;
+                    if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
+                        value = ((SubControlModel) opener.getHandle()).getHtmlFormat();
+                    }
+                }
+            } else if ( c instanceof FormPanel ) {
+                FormPanel fp = (FormPanel) c;
+                value = renderHtml( fp.getAllControls(), fp, true );
+            } else if ( c instanceof XLabel ) {
+                value = ((XLabel) c).getValue();
+            } else {
+                value = UIControlUtil.getBeanValue(c);
+            }
+            
+            String name = (String) fc.getProperties().get("name");
+            if( name != null )
+                valueIndex.put(name, value==null? "" : value );
+            
+            //set control to null
+            c = null;
+        }
+        b = null;
+        
+        return valueIndex;
+    }
+    
+    public Map buildPrintValueFormat(List<FormControl> controls, Object entity) {
+        Map valueIndex = new HashMap();
+        
+        Binding b = new Binding();
+        b.setBean(entity);
+        
+        for(FormControl fc : controls) {
+            UIControl c = getControl(fc);
+            c.setBinding(b);
+            c.load();
+            c.refresh();
+            if( !(c instanceof ActiveControl) ) continue;
+            
+            Object value = null;
+            if( c instanceof UISubControl ) {
+                UISubControl sc = (UISubControl) c;
+                Object handler = sc.getHandlerObject();
+                if( handler instanceof Opener ) {
+                    Opener opener = (Opener) handler;
+                    if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
+                        value = ((SubControlModel) opener.getHandle()).getPrintFormat();
+                    }
+                }
+            } else if ( c instanceof FormPanel ) {
+                FormPanel fp = (FormPanel) c;
+                value = renderHtml( fp.getAllControls(), fp, true );
+            } else if ( c instanceof XLabel ) {
+                value = ((XLabel) c).getValue();
+            } else {
+                value = UIControlUtil.getBeanValue(c);
+            }
+            
+            String name = (String) fc.getProperties().get("name");
+            if( name != null )
+                valueIndex.put(name, value==null? "" : value );
+            
+            //set control to null
+            c = null;
+        }
+        b = null;
+        
+        return valueIndex;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
