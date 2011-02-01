@@ -38,12 +38,7 @@ public class ListItem implements Cloneable {
         if( obj == null || !(obj instanceof ListItem) ) return false;
         
         ListItem target = (ListItem) obj;
-        if( rownum != target.rownum ) return false;
-        if( item == null && target.item == null ) return rownum == rownum;
-        if( item == null && target.item != null ) return false;
-        if( item != null && target.item == null ) return false;
-        
-        return item.equals(target.item);
+        return rownum == target.rownum;
     }
     
     public int hashCode() {

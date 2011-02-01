@@ -33,6 +33,7 @@ public abstract class AbstractListModel {
     protected List dataList;
     
     private Column primaryColumn;
+    
     //used by XTable to register error messages
     private Map<ListItem, String> errorMessages = new HashMap();
     
@@ -197,7 +198,7 @@ public abstract class AbstractListModel {
             }
         }
     }
-    
+
     
     /**
      * default columns will display item's toString() with a blank header
@@ -220,7 +221,8 @@ public abstract class AbstractListModel {
             Object item = selectedItem.getItem();
             if(item==null)
                 throw new IllegalStateException("addCreateItem error. Selected new object is null. createItem must be implemented");
-            if(item!=null) addItem( item );
+            
+            addItem( item );
         }
         return null;
     }
@@ -259,16 +261,18 @@ public abstract class AbstractListModel {
      * which means it already exists. If the method is successfully called
      * it triggers the onRemoveItem method which must be implemented by the developer.
      */
-    public final Object removeSelectedItem() {
+    public final void removeSelectedItem() {
         ListItem item = getSelectedItem();
-        if(item==null) return null;
-        if( item.getState() != 1 ) return null;
-        if(item.getItem()==null)
-            throw new IllegalStateException("remove item error. Cannot remove a null item");
-        if(item.getState()==1) {
+        if( item==null || item.getItem()==null ) {
+            //do nothing
+        } else if( item.getState() != 1 ) {
+            item.setItem( createItem() );
+            errorMessages.remove(item);
+            refreshSelectedItem();
+        } else if( item.getState()==1 ) {
+            errorMessages.remove(item);
             removeItem( item.getItem() );
         }
-        return null;
     }
     /**
      * this is called to get the list items
@@ -392,7 +396,7 @@ public abstract class AbstractListModel {
         primaryColumn = null;
         if ( listener != null ) listener.rebuildColumns();
     }
-
+    
     /**
      * these methods below are used by the XTable to register/retrieve/remove error messages
      */
@@ -425,12 +429,16 @@ public abstract class AbstractListModel {
         for (Map.Entry<ListItem, String> me: errorMessages.entrySet()) {
             if ( !first ) sb.append("\n");
             else first = false;
-            sb.append("row " + me.getKey().getRownum() + ": " + me.getValue());
+            sb.append("Row " + (me.getKey().getRownum()+1) + ": " + me.getValue());
         }
         
         return sb.toString();
     }
-
+    
+    public boolean hasErrorMessages() {
+        return !errorMessages.isEmpty();
+    }
+    
     public Column getPrimaryColumn() {
         if ( primaryColumn == null ) {
             Column[] cols = getColumns();

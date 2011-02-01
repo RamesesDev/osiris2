@@ -211,8 +211,8 @@ public final class TableManager {
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             if ( !Beans.isDesignTime() ) {
-                TableComponent xtable = (TableComponent) table;
-                Column c = ((DefaultTableModel)xtable.getModel()).getColumn(column);
+                TableControl xtable = (TableControl) table;
+                Column c = ((TableControlModel)xtable.getModel()).getColumn(column);
                 if ( isRightAligned(c, value) ) {
                     label.setHorizontalAlignment( SwingConstants.RIGHT );
                     
@@ -254,7 +254,7 @@ public final class TableManager {
         public abstract void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column);
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            TableComponent xtable = (TableComponent) table;
+            TableControl xtable = (TableControl) table;
             JComponent comp = getComponent(table, row, column);
             comp.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
             comp.setFont(table.getFont());
@@ -294,8 +294,7 @@ public final class TableManager {
                 }
             }
             
-            TableComponent tc = (TableComponent) table;
-            AbstractListModel lm = tc.getListModel();
+            AbstractListModel lm = xtable.getListModel();
             String errmsg = lm.getErrorMessage(row);
             
             if (errmsg != null) {
@@ -341,8 +340,8 @@ public final class TableManager {
         }
         
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
-            TableComponent tc = (TableComponent) table;
-            Column c = ((DefaultTableModel) tc.getModel()).getColumn(column);
+            TableControl tc = (TableControl) table;
+            Column c = ((TableControlModel) tc.getModel()).getColumn(column);
             String format = c.getFormat();
             String type = c.getType();
             if ( "decimal".equals(type) || "double".equals(type) || value instanceof BigDecimal || value instanceof Double ) {
@@ -422,7 +421,7 @@ public final class TableManager {
         }
         
         public JComponent getComponent(JTable table, int row, int column) {
-            AbstractListModel alm = ((TableComponent) table).getListModel();
+            AbstractListModel alm = ((TableControl) table).getListModel();
             if ( alm.getItemList().get(row).getItem() == null )
                 return empty;
             
@@ -430,7 +429,7 @@ public final class TableManager {
         }
         
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
-            AbstractListModel alm = ((TableComponent) table).getListModel();
+            AbstractListModel alm = ((TableControl) table).getListModel();
             if ( alm.getItemList().get(row).getItem() == null ) return;
             
             component.setSelected("true".equals(value+""));

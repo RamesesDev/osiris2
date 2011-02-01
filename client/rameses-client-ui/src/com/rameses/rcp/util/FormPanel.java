@@ -44,6 +44,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+
+/**
+ * @author jaycverg
+ */
 public class FormPanel extends JPanel implements UIComposite, ControlContainer, Validatable, ActiveControl, UIConstants {
     
     private int cellspacing = 2;
@@ -76,9 +80,11 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     
     //-- internal flags
     //used to determine dynamically and non-dynamically added controls
-    private boolean _loaded;
+    private boolean loaded;
     //used to determine if the dynamically controls were reloaded
-    private boolean _reloaded;
+    private boolean reloaded;
+    //used to determine if non-dynamic controls were removed temporarily
+    private boolean dynamicControlsRemoved;
     
     private String viewType;
     private String oldViewType;
@@ -122,7 +128,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         }
         
         if ( p != null ) {
-            if ( !_loaded && control instanceof UIControl )
+            if ( !loaded && control instanceof UIControl )
                 nonDynamicControls.add( (UIControl) control );
             
             super.addImpl(p, constraints, index);
@@ -258,10 +264,10 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     
     //<editor-fold defaultstate="collapsed" desc="  refresh/load  ">
     public void refresh() {
-        if( _reloaded || (viewTypeSet && !ValueUtil.isEqual(oldViewType, viewType))) {
+        if( reloaded || (viewTypeSet && !ValueUtil.isEqual(oldViewType, viewType))) {
             refreshForm();
             oldViewType = viewType;
-            _reloaded = false;
+            reloaded = false;
         } else if ( ValueUtil.isEqual(viewType, HTML_VIEW)) {
             refreshHtml();
         }
@@ -270,13 +276,13 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     public void load() {
         binding.addBindingListener(new FormPanelBindingListener());
         build();
-        _loaded = true;
-        _reloaded = true;
+        loaded = true;
+        reloaded = true;
     }
     
     public void reload() {
         build();
-        _reloaded = true;
+        reloaded = true;
     }
     //</editor-fold>
     
@@ -326,6 +332,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                 u.refresh();
                 remove((Component)u);
             }
+            dynamicControlsRemoved = true;
             
             for(UIControl u: controls) {
                 u.refresh();
@@ -362,13 +369,14 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                 FormControlUtil fcUtil = FormControlUtil.getInstance();
                 htmlPane.setText( fcUtil.renderHtml(getAllControls(), this) );
             } else {
-                //if previous view is htmlView
-                //add again the nonDynamicControls
-                if( !ValueUtil.isEqual(oldViewType, viewType) ) {
+                //attach again the nonDynamicControls
+                //if they were removed temporarily
+                if( dynamicControlsRemoved ) {
                     for(UIControl u : nonDynamicControls) {
                         add((Component)u);
                         u.refresh();
                     }
+                    dynamicControlsRemoved = false;
                 }
                 
                 for(UIControl u : controls) {
@@ -378,7 +386,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                         
                         //add component if form panel is reloaded
                         //this happends if the form panel is dynamic
-                        if( _reloaded ) add( (Component)u );
+                        if( reloaded ) add( (Component)u );
                         u.refresh();
                     }
                 }
