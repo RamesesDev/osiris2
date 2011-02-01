@@ -185,7 +185,7 @@ public abstract class AbstractListModel {
                 Object item = list.get(i);
                 li.loadItem( item );
                 li.setState(1);
-                li.initSelected(checkSelected(item) );
+                li.setSelected(checkSelected(item) );
             } else {
                 li.loadItem(null);
                 li.setState(0);
@@ -194,7 +194,7 @@ public abstract class AbstractListModel {
                     newRowadded = true;
                     li.loadItem(newItem);
                 }
-                li.initSelected(false);
+                li.setSelected(false);
             }
         }
     }

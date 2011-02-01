@@ -109,11 +109,7 @@ public class ListItem implements Cloneable {
             parent.checkItem(this.item, selected);
         }
     }
-    
-    public void initSelected(boolean selected) {
-        this.selected = selected;
-    }
-    
+        
     public final Object getRoot() {
         return root;
     }
