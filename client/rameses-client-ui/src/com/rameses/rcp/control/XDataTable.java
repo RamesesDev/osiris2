@@ -1,7 +1,7 @@
 /*
- * XTable.java
+ * XDataTable.java
  *
- * Created on July 1, 2010, 4:50 PM
+ * Created on January 31, 2011, 10:51 AM
  * @author jaycverg
  */
 
@@ -11,54 +11,28 @@ import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
+import com.rameses.rcp.control.table.DataTableComponent;
+import com.rameses.rcp.control.table.ListScrollBar;
+import com.rameses.rcp.control.table.TableHeaderBorder;
+import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.TableManager;
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.UIInput;
-import com.rameses.rcp.ui.Validatable;
-import com.rameses.rcp.util.ActionMessage;
-import com.rameses.rcp.util.ControlSupport;
-import com.rameses.rcp.util.UIControlUtil;
+import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.ui.*;
+import com.rameses.rcp.util.*;
 import com.rameses.util.ValueUtil;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.beans.Beans;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.*;
+import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import com.rameses.rcp.control.table.TableListener;
-import com.rameses.rcp.control.table.ListScrollBar;
-import com.rameses.rcp.control.table.TableComponent;
-import com.rameses.rcp.control.table.TableHeaderBorder;
-import com.rameses.rcp.framework.ClientContext;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 
-@Deprecated
-public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
+
+public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
-    private TableComponent table;
+    private DataTableComponent table;
     private ListScrollBar scrollBar;
     private RowHeaderView rowHeaderView;
     private JScrollPane scrollPane;
@@ -71,9 +45,10 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     private ActionMessage actionMessage = new ActionMessage();
     private boolean dynamic;
     private boolean showRowHeader;
+    private String caption;
     
     
-    public XTable() {
+    public XDataTable() {
         init();
     }
     
@@ -96,7 +71,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
     private void init() {
-        table = new TableComponent();
+        table = new DataTableComponent();
         scrollBar = new ListScrollBar();
         
         //--create and decorate scrollpane for the JTable
@@ -258,12 +233,12 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         String name = getName();
         if ( !ValueUtil.isEmpty(name) ) {
             PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-            ListItem oldValue = (ListItem) resolver.getProperty(binding.getBean(), name);
-            ListItem newValue = listModel.getSelectedItem();
-            if( !ValueUtil.isEqual(oldValue, newValue) ) {
-                resolver.setProperty(binding.getBean(), name, newValue.clone());
-                binding.notifyDepends(this);
-            }
+            ListItem item = listModel.getSelectedItem();
+            Object value = null;
+            if( item != null ) value = item.getItem();
+            
+            resolver.setProperty(binding.getBean(), name, value);
+            binding.notifyDepends(this);
         }
         
         if ( rowHeaderView != null )
@@ -281,14 +256,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  validatable properties  ">
-    public String getCaption() {
-        return getName();
-    }
-    
-    public void setCaption(String caption) {
-    }
-    
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public boolean isRequired() {
         return table.isRequired();
     }
@@ -300,7 +268,12 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         String errmsg = listModel.getErrorMessages();
         actionMessage.clearMessages();
         if ( errmsg != null ) {
-            actionMessage.addMessage(null, errmsg, null);
+            StringBuffer buffer = new StringBuffer(errmsg);
+            if( !ValueUtil.isEmpty(caption) ) {
+                buffer.insert(0, caption + " (\n")
+                .append("\n)");
+            }
+            actionMessage.addMessage(null, buffer.toString(), null);
         }
     }
     
@@ -315,9 +288,15 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public boolean isReadonly() {
         return table.isReadonly();
     }
-    //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public String getCaption() {
+        return this.caption;
+    }
+    
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+    
     public void setName(String name) {
         super.setName(name);
         if ( table != null ) table.setName(name);
@@ -401,9 +380,10 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     //</editor-fold>
     
     
+    //--- inner classess
     
     //<editor-fold defaultstate="collapsed" desc="  TableBorder (class)  ">
-    public static class TableBorder extends AbstractBorder {
+    private static class TableBorder extends AbstractBorder {
         
         private static final Insets insets = new Insets(1, 1, 2, 2);
         
@@ -525,7 +505,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                 for (int i=0; i<comps.length; i++) {
                     if (!(comps[i] instanceof RowHeader)) continue;
                     
-                    int rh = XTable.this.table.getRowHeight(i);
+                    int rh = XDataTable.this.table.getRowHeight(i);
                     comps[i].setBounds(x, y, w, rh);
                     y += rh;
                 }
@@ -542,7 +522,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                     
                     Dimension dim = comps[i].getPreferredSize();
                     w = Math.max(w, dim.width);
-                    h += XTable.this.table.getRowHeight(i);
+                    h += XDataTable.this.table.getRowHeight(i);
                 }
                 
                 Insets margin = parent.getInsets();

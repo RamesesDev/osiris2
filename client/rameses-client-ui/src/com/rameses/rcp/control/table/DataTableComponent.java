@@ -1,3 +1,10 @@
+/*
+ * DataTableComponent.java
+ *
+ * Created on January 31, 2011
+ * @author jaycverg
+ */
+
 package com.rameses.rcp.control.table;
 
 import com.rameses.common.ExpressionResolver;
@@ -26,20 +33,18 @@ import javax.swing.text.JTextComponent;
 import javax.swing.JButton;
 import javax.swing.JRootPane;
 
-/**
- *
- * @author jaycverg
- */
-public class TableComponent extends JTable implements ListModelListener, TableControl {
+
+public class DataTableComponent extends JTable implements ListModelListener, TableControl {
     
     private static final String COLUMN_POINT = "COLUMN_POINT";
     
-    private TableComponentModel tableModel;
+    private DataTableModel tableModel;
     private Map<Integer, JComponent> editors = new HashMap();
     private Binding itemBinding = new Binding();
     private TableListener tableListener;
     private AbstractListModel listModel;
     
+    //internal flags
     private boolean readonly;
     private boolean required;
     private boolean editingMode;
@@ -47,6 +52,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
     private boolean rowCommited = true;
     private JComponent currentEditor;
     private KeyEvent currentKeyEvent;
+    private ListItem previousItem;
     
     //row background color options
     private Color evenBackground;
@@ -61,13 +67,13 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
     private Binding binding;
     
     
-    public TableComponent() {
+    public DataTableComponent() {
         initComponents();
     }
     
     //<editor-fold defaultstate="collapsed" desc="  initComponents  ">
     private void initComponents() {
-        tableModel = new TableComponentModel();
+        tableModel = new DataTableModel();
         getTableHeader().setReorderingAllowed(false);
         getTableHeader().setDefaultRenderer(TableManager.getHeaderRenderer());
         addKeyListener(new TableKeyAdapter());
@@ -369,7 +375,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
             
         } else {
             ListItem item = listModel.getSelectedItem();
-            boolean lastRow = getRowCount() == item.getIndex()+1;
+            boolean lastRow = !(rowIndex + listModel.getTopRow() < listModel.getMaxRows());
             
             if ( item.getState() == 0 ) lastRow = false;
             
@@ -464,7 +470,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
         boolean refreshed = false;
         if ( !editorBeanLoaded ) {
             itemBinding.update(); //clear change log
-            Object bean = listModel.getSelectedItem();
+            Object bean = listModel.getSelectedItem().getItem();
             itemBinding.setBean(bean);
             itemBinding.refresh();
             refreshed = true;
@@ -483,6 +489,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
         }
         
         tableListener.editCellAt(rowIndex, colIndex);
+        previousItem = listModel.getSelectedItem();
         
         InputVerifier verifier = (InputVerifier) editor.getClientProperty(InputVerifier.class);
         if ( verifier == null ) {
@@ -570,10 +577,9 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
     }
     
     public void rowChanged() {
-        if ( !rowCommited ) {
-            ListItem item = (ListItem) itemBinding.getBean();
-            int oldRowIndex = item.getIndex();
-            if ( validateRow(oldRowIndex) && item.getState() == 0 ) {
+        if ( !rowCommited && previousItem != null ) {
+            int oldRowIndex = previousItem.getIndex();
+            if ( validateRow(oldRowIndex) && previousItem.getState() == 0 ) {
                 listModel.addCreatedItem();
             }
         }

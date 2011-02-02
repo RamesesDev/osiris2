@@ -1,5 +1,5 @@
 /*
- * DefaultTableModel.java
+ * TableComponentModel.java
  *
  * Created on June 30, 2010, 10:54 AM
  * @author jaycverg
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
-public class DefaultTableModel extends AbstractTableModel {
+public class TableComponentModel extends AbstractTableModel implements TableControlModel {
     
     private AbstractListModel listModel;
     private List<Column> columnList = new ArrayList();

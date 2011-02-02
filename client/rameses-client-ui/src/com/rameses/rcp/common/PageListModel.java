@@ -19,7 +19,7 @@ public abstract class PageListModel extends AbstractListModel {
     protected int maxlimit = 0;
     protected String search;
     
-
+    
     /**
      * forceLoad is used to force the loading without emptying the dataList
      */
@@ -65,8 +65,8 @@ public abstract class PageListModel extends AbstractListModel {
             m.put("_limit", fetchRows );
             dataList = fetchList(m);
             
-            boolean lastPage = true;            
-
+            boolean lastPage = true;
+            
             if( dataList.size() >= fetchRows ) {
                 lastPage = false;
                 dataList.remove(dataList.size()-1);
@@ -95,7 +95,7 @@ public abstract class PageListModel extends AbstractListModel {
         } else {
             pageIndex = 1;
             setSelectedItem(0);
-        }        
+        }
         
         
         //reset the force load.
@@ -109,7 +109,7 @@ public abstract class PageListModel extends AbstractListModel {
             subList = new ArrayList();
         }
         fillListItems(subList,toprow);
-       
+        
         forceLoad = false;
     }
     
@@ -143,6 +143,9 @@ public abstract class PageListModel extends AbstractListModel {
      * if maxRows < 0 meaning the maxRows was not determined.
      */
     public void moveNextRecord() {
+        //do not scroll when there are error in validation
+        if( super.hasErrorMessages() ) return;
+        
         //do not do anything if list size is the same and there is no createItem.
         if( dataList!=null && dataList.size()==getRows() && !isAllocNewRow() ) {
             return;
@@ -156,6 +159,9 @@ public abstract class PageListModel extends AbstractListModel {
     }
     
     public void moveBackRecord() {
+        //do not scroll when there are error in validation
+        if( super.hasErrorMessages() ) return;
+        
         if(toprow-1>=0) {
             toprow--;
             refresh();
@@ -164,24 +170,33 @@ public abstract class PageListModel extends AbstractListModel {
     }
     
     public void moveNextPage() {
+        //do not scroll when there are error in validation
+        if( super.hasErrorMessages() ) return;
+        
         if(!isLastPage()) {
             toprow = toprow+getRows();
             forceLoad = true;
             refresh();
-            refreshSelectedItem();            
+            refreshSelectedItem();
         }
     }
     
     public void moveBackPage() {
+        //do not scroll when there are error in validation
+        if( super.hasErrorMessages() ) return;
+        
         if(toprow-getRows() >= 0 ) {
             toprow = toprow-getRows();
             forceLoad = true;
             refresh();
-            refreshSelectedItem();            
+            refreshSelectedItem();
         }
     }
     
     public void moveFirstPage() {
+        //do not scroll when there are error in validation
+        if( super.hasErrorMessages() ) return;
+        
         toprow = 0;
         selectedItem = null;
         forceLoad = true;
@@ -197,6 +212,9 @@ public abstract class PageListModel extends AbstractListModel {
      * it it does not exceed getRowCount() - getRows()
      */
     public void setTopRow( int t ) {
+        //do not scroll when there are error in validation
+        if( super.hasErrorMessages() ) return;
+        
         //if the toprow is current do not proceed.
         if( t == toprow)
             return;
@@ -246,11 +264,11 @@ public abstract class PageListModel extends AbstractListModel {
         }
         return allocNewRow.booleanValue();
     }
-
+    
     public int getMaxRows() {
         return maxRows;
     }
-
+    
     public int getPageCount() {
         return pageCount;
     }
