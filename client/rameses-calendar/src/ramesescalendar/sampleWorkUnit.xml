@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workunit>
+    <invokers>
+        <invoker folderid="/menu/file" caption="DEL"/>
+    </invokers>
+    
+    <code>
+        <![CDATA[
+        
+        import com.rameses.rcp.annotations.*;
+        import com.rameses.rcp.common.*;
+        import com.rameses.calendar.common.*;
+                
+        public class TestWindhelController  {
+            
+            def scheds = { };
+        
+            def daySched = [
+                fetchSchedules : { 
+                    List<ScheduleModel> model = new ArrayList();
+                    model.add( new ScheduleModel("2011-01-02 00:00:00 AM", "2011-01-02 01:30:00 AM", "Task 1" , "clean the kitchen") );
+                    model.add( new ScheduleModel("2011-01-02 01:00:00 AM", "2011-01-02 02:30:00 AM", "Task 2" , "wash the clothes") );
+                    model.add( new ScheduleModel("2011-01-02 02:00:00 AM", "2011-01-02 03:30:00 AM", "Task 3" , "cook lunch") );
+                    model.add( new ScheduleModel("2011-01-02 03:00:00 AM", "2011-01-02 04:30:00 AM", "Task 4" , "task 4") );
+                    model.add( new ScheduleModel("2011-01-02 02:00:00 AM", "2011-01-02 05:30:00 AM", "Task 5" , "task 5") );
+                    model.add( new ScheduleModel("2011-01-02 03:00:00 AM", "2011-01-02 05:30:00 AM", "Task 6" , "task 6") );
+                    model.add( new ScheduleModel("2011-01-02 04:00:00 AM", "2011-01-02 06:30:00 AM", "Task 7" , "task 7") );
+                    model.add( new ScheduleModel("2011-01-02 11:00:00 PM", "2011-01-02 11:45:00 PM", "Task 8" , "task 8") );
+
+                    return model;
+                },
+                
+                fetchDate : {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(2011,01,02);
+                    return cal;
+                }
+                
+            ] as DayModel;
+        
+            def selectedItem;
+        
+            def calendarModel = [
+            
+                fetchDay : { dm ->
+                    if(dm.day == 13)
+                        dm.setText(" Birthday - Cathy  ");
+                    else if( dm.month == 0 && dm.day == 1) 
+                        dm.text = "Birthday - Windhel";
+                }
+            
+            ] as CalendarModel;
+            
+            
+            
+             def handler = [
+                fetchList: { data },
+                
+                getColumns: {
+                    return [
+                        new Column(name: "rownum", primary: true, width: 30),
+                        new Column(name: "item.name", caption: "Name", editableWhen: "#{item.name == null}", required: true),
+                        new Column(name: "item.balance", caption: "Balance", type: "decimal", editable: true),
+                        new Column(name: "item.address", caption: "Address", editable: true, required: true, type: "lookup", handler: "test-client:addressLookup"),
+                        new Column(name: "item.date", caption: "Date", format: "MM-dd-yyyy", type: "date"),
+                        new Column(name: "item.empType", caption: "Employee Type", type: "combo", editable: true, items: "root.empTypes"),
+                        new Column(name: "item.single", caption: "Single", type: "checkbox", editable: true)
+                    ];
+                }
+
+            ] as SubListModel;
+            
+            def data = [
+                [name:"11", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50], 
+                [name:"12", address:"CEBU CITY", single: null, date: new Date(), balance: 1000], 
+                [name:"13", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"14", address:"CEBU CITY", single: null, date: new Date(), balance: 1520],
+                [name:"21", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"22", address:"CEBU CITY", single: null, date: new Date(), balance: 2500], 
+                [name:"23", address:"CEBU CITY", single: null, date: new Date(), balance: 500.50],
+                [name:"24", address:"CEBU CITY", single: null, date: new Date(), balance: 700]
+
+            ];
+            
+            def image = "/home/rameses/Desktop/Screenshot.png";
+        }
+        
+        ]]>
+    </code>
+    
+    <pages>
+        <page template="testWindhel.Page2"/>
+    </pages>
+</workunit>
