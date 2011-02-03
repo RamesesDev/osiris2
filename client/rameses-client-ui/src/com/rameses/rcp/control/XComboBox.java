@@ -89,7 +89,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             setValue(value);
         } catch(Exception e) {
             setValue(null);
-            setEditable(false);
+            setEnabled(false);
             setFocusable(false);
         }
     }

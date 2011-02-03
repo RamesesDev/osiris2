@@ -51,7 +51,10 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     public void load() {
         addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                UIInputUtil.updateBeanValue(XCheckBox.this);
+                try {
+                    UIControlUtil.getBeanValue(XCheckBox.this); //check if name is not null
+                    UIInputUtil.updateBeanValue(XCheckBox.this);
+                } catch(Exception ex){;}
             }
         });
     }
