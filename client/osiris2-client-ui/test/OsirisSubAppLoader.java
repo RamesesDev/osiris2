@@ -7,9 +7,8 @@
  * and open the template in the editor.
  */
 
-package com.rameses.osiris2.client;
-
 import com.rameses.osiris2.AppContext;
+import com.rameses.osiris2.client.*;
 import com.rameses.platform.interfaces.AppLoader;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.framework.ClientContext;

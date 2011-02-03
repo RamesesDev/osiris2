@@ -1,5 +1,5 @@
 /*
- * SubPlatformWindow.java
+ * WorkspaceWindow.java
  *
  * Created on October 27, 2009, 4:29 PM
  *
@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.rcp.subplatform;
+package com.rameses.rcp.workspace;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
  *
  * @author elmo
  */
-public class SubPlatformWindow extends JPanel implements MainWindow {
+public class WorkspaceWindow extends JPanel implements MainWindow {
     
     private MainWindowListener listener;
     private JPanel headerPanel;
@@ -35,8 +35,11 @@ public class SubPlatformWindow extends JPanel implements MainWindow {
     private String title;
     private String id;
     
+    private Component menubar;
+    private Component toolbar;
     
-    public SubPlatformWindow() {
+    
+    public WorkspaceWindow() {
         setLayout( new BorderLayout() );
         
         headerPanel = new JPanel();
@@ -71,7 +74,7 @@ public class SubPlatformWindow extends JPanel implements MainWindow {
     public void close() {}
     
     public void setTitle(String title) { this.title = title; }
-    public String getTitle() { return title; }
+    public String getTitle()           { return title; }
     
     public void setId(String id) { this.id = id; }
     public String getId() { return id; }
@@ -84,10 +87,12 @@ public class SubPlatformWindow extends JPanel implements MainWindow {
         if ( constraint == null ) return;
         
         if ( constraint.equals(MainWindow.MENUBAR)) {
+            menubar = comp;
             headerPanel.add(comp, BorderLayout.NORTH);
             
         } else if ( constraint.equals(MainWindow.TOOLBAR) ) {
             if ( comp instanceof JToolBar ) ((JToolBar) comp).setFloatable(false);
+            toolbar = comp;
             headerPanel.add(comp, BorderLayout.CENTER);
             
         } else if ( constraint.equals(MainWindow.CONTENT) ) {
@@ -98,6 +103,14 @@ public class SubPlatformWindow extends JPanel implements MainWindow {
     }
     
     public void display() {
+    }
+    
+    public void setMenubarVisible(boolean visible) {
+        if( menubar != null ) menubar.setVisible(visible);
+    }
+    
+    public void setToolbarVisible(boolean visible) {
+        if( toolbar != null ) toolbar.setVisible(visible);
     }
     
     //<editor-fold defaultstate="collapsed" desc="  ViewPanel (class)  ">

@@ -1,4 +1,4 @@
-package com.rameses.rcp.subplatform;
+package test.subplatform.orig;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
