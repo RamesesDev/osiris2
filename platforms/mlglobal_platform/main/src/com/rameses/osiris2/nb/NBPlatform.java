@@ -49,20 +49,21 @@ public class NBPlatform implements Platform {
     
     //<editor-fold defaultstate="collapsed" desc="  show top component  ">
     public void showStartupWindow(JComponent actionSource, JComponent comp, Map properties) {
-        String title = (String) properties.get("title");
-        
-        if ( title != null ) {
-            final String _title = title;
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    startupWindow.setDisplayName(_title);
+        final Map props = properties;
+        final JComponent content = comp;
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                String title = (String) props.get("title");
+                
+                if ( title != null ) {
+                    startupWindow.setDisplayName(title);
                 }
-            });
-        }
-        
-        startupWindow.removeAll();
-        SwingUtilities.updateComponentTreeUI( startupWindow );
-        startupWindow.add(comp);
+                
+                startupWindow.removeAll();
+                SwingUtilities.updateComponentTreeUI( startupWindow );
+                startupWindow.add(content);
+            }
+        });
     }
     
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
@@ -238,7 +239,10 @@ public class NBPlatform implements Platform {
     }
     
     private Window getFocusedWindow() {
-        return KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+        Window w = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+        if( w.isShowing() ) return w;
+        
+        return (Window) mainWindow.getComponent();
     }
     //</editor-fold>
     
@@ -320,14 +324,16 @@ public class NBPlatform implements Platform {
                     NBSubWindow nbs = (NBSubWindow) win;
                     if ( !nbs.canClose() ) return false;
                     nbs.setCloseable(true);
+                    nbs.forceClose();
+                } else {
+                    win.closeWindow();
                 }
-                win.closeWindow();
             }
         }
         return true;
     }
-
+    
     public void lock() {}
-
+    
     public void unlock() {}
 }
