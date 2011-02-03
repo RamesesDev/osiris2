@@ -29,15 +29,23 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     private boolean readonly;
     
     
-    public XCheckBox() {}
-    
-    public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
-        
+    public XCheckBox() {
         //default font
         Font f = ThemeUI.getFont("XCheckBox.font");
         if ( f != null ) setFont( f );
+    }
+    
+    public void refresh() {
+        try {
+            if( !isReadonly() && !isFocusable() ) setReadonly(false);
+            
+            Object value = UIControlUtil.getBeanValue(this);
+            setValue(value);
+        } catch(Exception e) {
+            setSelected(false);
+            setFocusable(false);
+            setEnabled(false);
+        }
     }
     
     public void load() {

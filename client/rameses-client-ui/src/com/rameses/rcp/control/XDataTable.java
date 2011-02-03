@@ -46,6 +46,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     private boolean dynamic;
     private boolean showRowHeader;
     private String caption;
+    private String varStatus;
     
     
     public XDataTable() {
@@ -186,6 +187,9 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 
                 if ( rowHeaderView != null )
                     rowHeaderView.setRowCount( listModel.getRows() );
+                
+                if( !dynamic )
+                    listModel.load();
             }
             
         }
@@ -231,14 +235,19 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     
     public void rowChanged() {
         String name = getName();
+        PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
+        ListItem item = listModel.getSelectedItem();
+        
         if ( !ValueUtil.isEmpty(name) ) {
-            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-            ListItem item = listModel.getSelectedItem();
             Object value = null;
             if( item != null ) value = item.getItem();
             
             resolver.setProperty(binding.getBean(), name, value);
             binding.notifyDepends(this);
+        }
+        
+        if ( !ValueUtil.isEmpty(varStatus) ) {
+            resolver.setProperty(binding.getBean(), varStatus, item);
         }
         
         if ( rowHeaderView != null )
@@ -304,20 +313,20 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     
     public void setLayout(LayoutManager mgr) {;}
     
-    public String getHandler() { return handler; }
+    public String getHandler()             { return handler; }
     public void setHandler(String handler) { this.handler = handler; }
     
-    public boolean isDynamic() { return dynamic; }
+    public boolean isDynamic()              { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
     
     public void setShowHorizontalLines(boolean show) { table.setShowHorizontalLines(show); }
-    public boolean isShowHorizontalLines() { return table.getShowHorizontalLines(); }
+    public boolean isShowHorizontalLines()           { return table.getShowHorizontalLines(); }
     
     public void setShowVerticalLines(boolean show) { table.setShowVerticalLines(show); }
-    public boolean isShowVerticalLines() { return table.getShowVerticalLines(); }
+    public boolean isShowVerticalLines()           { return table.getShowVerticalLines(); }
     
     public void setAutoResize(boolean autoResize) { table.setAutoResize(autoResize); }
-    public boolean isAutoResize() { return table.isAutoResize(); }
+    public boolean isAutoResize()                 { return table.isAutoResize(); }
     
     public void setRequestFocus(boolean focus) {
         if ( focus ) table.requestFocus();
@@ -326,24 +335,24 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public void requestFocus() { table.requestFocus(); }
     
     public void focusGained(FocusEvent e) { table.grabFocus(); }
-    public void focusLost(FocusEvent e) {}
+    public void focusLost(FocusEvent e)   {}
     
-    public Color getEvenBackground() { return table.getEvenBackground(); }
+    public Color getEvenBackground()                    { return table.getEvenBackground(); }
     public void setEvenBackground(Color evenBackground) { table.setEvenBackground( evenBackground ); }
     
-    public Color getOddBackground() { return table.getOddBackground(); }
+    public Color getOddBackground()                   { return table.getOddBackground(); }
     public void setOddBackground(Color oddBackground) { table.setOddBackground( oddBackground ); }
     
-    public Color getErrorBackground() { return table.getErrorBackground(); }
+    public Color getErrorBackground()                     { return table.getErrorBackground(); }
     public void setErrorBackground(Color errorBackground) { table.setErrorBackground( errorBackground ); }
     
-    public Color getEvenForeground() { return table.getEvenForeground(); }
+    public Color getEvenForeground()                    { return table.getEvenForeground(); }
     public void setEvenForeground(Color evenForeground) { table.setEvenForeground( evenForeground ); }
     
-    public Color getOddForeground() { return table.getOddForeground(); }
+    public Color getOddForeground()                   { return table.getOddForeground(); }
     public void setOddForeground(Color oddForeground) { table.setOddForeground( oddForeground ); }
     
-    public Color getErrorForeground() { return table.getErrorForeground(); }
+    public Color getErrorForeground()                     { return table.getErrorForeground(); }
     public void setErrorForeground(Color errorForeground) { table.setErrorForeground( errorForeground ); }
     
     public boolean isImmediate() { return true; }
@@ -362,13 +371,13 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         }
     }
     
-    public int getColumnMargin() { return table.getColumnModel().getColumnMargin(); }
+    public int getColumnMargin()            { return table.getColumnModel().getColumnMargin(); }
     public void setColumnMargin(int margin) { table.getColumnModel().setColumnMargin(margin); }
     
-    public int getRowMargin() { return table.getRowMargin(); }
+    public int getRowMargin()            { return table.getRowMargin(); }
     public void setRowMargin(int margin) { table.setRowMargin(margin); }
     
-    public Color getGridColor() { return table.getGridColor(); }
+    public Color getGridColor()           { return table.getGridColor(); }
     public void setGridColor(Color color) { table.setGridColor(color); }
     
     public boolean isEnabled()        { return table.isEnabled(); }
@@ -376,6 +385,9 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     
     public int getRowHeight()       { return table.getRowHeight(); }
     public void setRowHeight(int h) { table.setRowHeight(h); }
+    
+    public String getVarStatus()               { return varStatus; }
+    public void setVarStatus(String varStatus) { this.varStatus = varStatus; }
     
     //</editor-fold>
     

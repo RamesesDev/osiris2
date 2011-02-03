@@ -109,6 +109,9 @@ public class Binding {
      */
     private ViewContext viewContext;
     
+    //focus flag
+    private String focusComponentName;
+    
     
     public Binding() {}
     
@@ -204,6 +207,16 @@ public class Binding {
         for (BindingListener bl : listeners) {
             bl.notifyDepends(u, this);
         }
+        
+        //focus component specified
+        if( focusComponentName != null ) {
+            UIControl c = controlsIndex.get(focusComponentName);
+            if ( c != null ) {
+                Component comp = (Component) c;
+                comp.requestFocus();
+            }
+            focusComponentName = null;
+        }
     }
     
     /**
@@ -238,6 +251,16 @@ public class Binding {
         
         if ( viewContext instanceof UIControllerPanel ) {
             ((UIControllerPanel) viewContext).attachDefaultButton();
+        }
+        
+        //focus component specified
+        if( focusComponentName != null ) {
+            UIControl c = controlsIndex.get(focusComponentName);
+            if ( c != null ) {
+                Component comp = (Component) c;
+                comp.requestFocus();
+            }
+            focusComponentName = null;
         }
     }
     
@@ -361,7 +384,7 @@ public class Binding {
     public void formCommit() {
         for ( UIControl u: focusableControls ) {
             Component comp = (Component) u;
-            if( !comp.isEnabled() || !comp.isShowing() ) continue;            
+            if( !comp.isEnabled() || !comp.isShowing() ) continue;
             if( u instanceof UIInput && ((UIInput) u).isReadonly() ) continue;
             if( u instanceof JTextComponent && !((JTextComponent) u).isEditable() ) continue;
             
@@ -477,16 +500,13 @@ public class Binding {
     
     /**
      * focuses a UIControl from a code bean
-     * this is helpful when you do the validation from the code and
-     * you want to focus a control after displaying an error message
+     * This is helpful when you do the validation from the code and
+     * you want to focus a control after displaying an error message.
+     * This mehod just keep the control's name to be focused which is
+     * fired after all the controls had been refreshed
      */
     public void focus(String name) {
-        if ( name == null ) return;
-        UIControl c = controlsIndex.get(name);
-        if ( c != null ) {
-            Component comp = (Component) c;
-            comp.requestFocus();
-        }
+        focusComponentName = name;
     }
     
     /**

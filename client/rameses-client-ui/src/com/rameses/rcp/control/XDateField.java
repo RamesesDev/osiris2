@@ -148,8 +148,16 @@ public class XDateField extends AbstractIconedTextField {
     //</editor-fold>
     
     public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
+        try {
+            if( !isReadonly() && !isFocusable() ) setReadonly(false);
+            
+            Object value = UIControlUtil.getBeanValue(this);
+            setValue(value);
+        } catch(Exception e) {
+            setText("");
+            setEditable(false);
+            setFocusable(false);
+        }
         
     }
     

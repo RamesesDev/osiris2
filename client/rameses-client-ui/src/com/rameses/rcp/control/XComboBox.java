@@ -79,11 +79,19 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     //</editor-fold>
     
     public void refresh() {
-        if ( dynamic ) {
-            buildList();
+        try {
+            if( !isReadonly() && !isFocusable() ) setReadonly(false);
+            
+            if ( dynamic ) {
+                buildList();
+            }
+            Object value = UIControlUtil.getBeanValue(this);
+            setValue(value);
+        } catch(Exception e) {
+            setValue(null);
+            setEditable(false);
+            setFocusable(false);
         }
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
     }
     
     public void load() {
@@ -313,7 +321,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public void setRequired(boolean required) {
         property.setRequired(required);
     }
-
+    
     public int getCaptionWidth() {
         return property.getCaptionWidth();
     }
@@ -329,7 +337,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
     }
-        
+    
     public void validateInput() {
         actionMessage.clearMessages();
         property.setErrorMessage(null);

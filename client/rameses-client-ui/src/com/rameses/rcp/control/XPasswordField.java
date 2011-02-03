@@ -3,6 +3,7 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.support.TextEditorSupport;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
@@ -10,6 +11,8 @@ import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
+import com.rameses.util.ValueUtil;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -51,10 +54,16 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     private ActionMessage actionMessage = new ActionMessage();
     private ControlProperty controlProperty = new ControlProperty();
     private boolean readonly;
+    private String hint;
+    private boolean showHint;
     
     
     public XPasswordField() {
         TextEditorSupport.install(this);
+        
+        //set default font
+        Font f = ThemeUI.getFont("XPasswordField.font");
+        if ( f != null ) setFont(f);
         
         Insets margin = UIManager.getInsets("TextField.margin");
         if (margin != null) {
@@ -64,6 +73,19 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
         }
     }
     
+    
+    public void paint(Graphics g) {
+        super.paint(g);
+        
+        if( showHint && getDocument().getLength() == 0 ) {
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(getFont());
+            Insets margin = getInsets();
+            int x = margin.left;
+            int y = (int)(getHeight() /2) + (margin.top + (int)(margin.bottom / 2));
+            g.drawString(" " + getHint(), x, y);
+        }
+    }
     
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
@@ -214,7 +236,7 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public void setRequired(boolean required) {
         controlProperty.setRequired(required);
     }
-
+    
     public int getCaptionWidth() {
         return controlProperty.getCaptionWidth();
     }
@@ -230,7 +252,7 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     public void setShowCaption(boolean showCaption) {
         controlProperty.setShowCaption(showCaption);
     }
-        
+    
     public void validateInput() {
         actionMessage.clearMessages();
         controlProperty.setErrorMessage(null);
@@ -264,6 +286,15 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     
     public boolean isImmediate() {
         return false;
+    }
+    
+    public String getHint() {
+        return hint;
+    }
+    
+    public void setHint(String hint) {
+        this.hint = hint;
+        showHint = !ValueUtil.isEmpty(hint);
     }
     //</editor-fold>
     

@@ -64,16 +64,21 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
     }
     
     public void refresh() {
-        Object value = null;
-        if ( !ValueUtil.isEmpty(expression) ) {
-            value = UIControlUtil.evaluateExpr(binding.getBean(), expression);
-        } else if ( !ValueUtil.isEmpty(getName()) ) {
-            value = UIControlUtil.getBeanValue(this);
-        } else {
-            value = super.getText();
+        try {
+            Object value = null;
+            if ( !ValueUtil.isEmpty(expression) ) {
+                value = UIControlUtil.evaluateExpr(binding.getBean(), expression);
+            } else if ( !ValueUtil.isEmpty(getName()) ) {
+                value = UIControlUtil.getBeanValue(this);
+            } else {
+                value = super.getText();
+            }
+            
+            super.setText(( value != null? value+"" : ""));
+            
+        } catch(Exception e) {
+            super.setText("");
         }
-        
-        super.setText(( value != null? value+"" : ""));
     }
     
     public void load() {
@@ -107,8 +112,7 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setName(String name) {
         super.setName(name);
-        if( !ValueUtil.isEmpty(expression) )
-            super.setText(name);
+        super.setText(name);
     }
     
     public String getText() {
@@ -127,6 +131,15 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
     
     public void setText(String text) {
         setExpression(text);
+    }
+    
+    public String getExpression() {
+        return expression;
+    }
+    
+    public void setExpression(String expression) {
+        this.expression = expression;
+        super.setText(expression);
     }
     
     public void setBorder(Border border) {
@@ -203,15 +216,6 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
     
     public ControlProperty getControlProperty() {
         return property;
-    }
-    
-    public String getExpression() {
-        return expression;
-    }
-    
-    public void setExpression(String expression) {
-        this.expression = expression;
-        super.setText(expression);
     }
     
     public String getFor() {

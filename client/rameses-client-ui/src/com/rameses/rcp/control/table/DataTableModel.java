@@ -14,7 +14,9 @@ import com.rameses.rcp.framework.ClientContext;
 import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 public class DataTableModel extends AbstractTableModel implements TableControlModel {
@@ -66,12 +68,19 @@ public class DataTableModel extends AbstractTableModel implements TableControlMo
     public Object getValueAt(int rowIndex, int columnIndex) {
         PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
         ListItem item = listModel.getItemList().get(rowIndex);
-        if ( item.getItem() != null ) {
+        if ( item != null ) {
             String name = columnList.get(columnIndex).getName();
-            if( !ValueUtil.isEmpty(name) )
-                return resolver.getProperty(item.getItem(), name);
-            else
-                return item.getItem();
+            if( !ValueUtil.isEmpty(name) ) {
+                if( name.startsWith("_status") ) {
+                    Map bean = new HashMap();
+                    bean.put("_status", item);
+                    return resolver.getProperty(bean, name);
+                } else if( item.getItem() != null ) {
+                    return resolver.getProperty(item.getItem(), name);
+                }
+            }
+            
+            return item.getItem();
         }
         return null;
     }

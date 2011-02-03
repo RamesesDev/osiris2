@@ -14,12 +14,12 @@ import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.common.PropertyResolver;
-import com.rameses.rcp.control.XTable;
 import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.beans.Beans;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import javax.swing.text.JTextComponent;
 
 /**
@@ -74,7 +74,8 @@ public class UIInputUtil {
             Object beanValue = resolver.getProperty(bean, name);
             boolean forceUpdate = false;
             if ( control instanceof JComponent ) {
-                Object value = ((JComponent) control).getClientProperty(XTable.class);
+                //if the input is the a JTable check for the flag
+                Object value = ((JComponent) control).getClientProperty(JTable.class);
                 forceUpdate = (value != null);
             }
             

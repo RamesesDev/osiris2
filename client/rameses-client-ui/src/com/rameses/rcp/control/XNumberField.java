@@ -33,7 +33,16 @@ public class XNumberField extends XTextField {
     }
     
     public void refresh() {
-        showFormattedValue(true);
+        try {
+            if( !isReadonly() && !isFocusable() ) setReadonly(false);
+            
+            showFormattedValue(true);
+        } catch(Exception e) {
+            //block input is name is null
+            setText("");
+            setEditable(false);
+            setFocusable(false);
+        }
     }
     
     public void load() {
@@ -54,8 +63,7 @@ public class XNumberField extends XTextField {
         if( fieldText.trim().length() == 0 ) {
             if ( fType.isPrimitive() ) {
                 return 0;
-            }
-            else {
+            } else {
                 return null;
             }
         }

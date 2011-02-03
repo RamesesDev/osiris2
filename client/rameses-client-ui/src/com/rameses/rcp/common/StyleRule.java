@@ -63,7 +63,7 @@ public class StyleRule implements Serializable {
     public String toString() {
         return "{pattern: \"" + pattern + "\", " +
                 "expression: \"" + expression + "\", " +
-                "properties: " + properties + "}";
+                "properties: " + properties;
     }
     
 }
