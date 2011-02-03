@@ -1,6 +1,5 @@
 package com.rameses.rcp.framework;
 
-import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.ui.ControlContainer;
 import com.rameses.rcp.ui.UIControl;
 import java.awt.BorderLayout;
@@ -26,15 +25,16 @@ public class UIViewPanel extends JPanel implements ContainerListener {
         super.setOpaque(false);
         super.setLayout(new BorderLayout());
         this.binding = new Binding(this);
-        initComponents();
+        
+        if( !Beans.isDesignTime()) {
+            initComponents();
+        }
     }
     
     public void setLayout(LayoutManager mgr) {;}
     
     private void initComponents() {
-        if( !Beans.isDesignTime()) {
-            addContainerListener(this);
-        }
+        addContainerListener(this);
     }
     
     

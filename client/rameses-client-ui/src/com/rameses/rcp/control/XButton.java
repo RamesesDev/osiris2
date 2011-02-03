@@ -126,7 +126,10 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     }
     
     public String getExpression() { return expression; }
-    public void setExpression(String expression) { this.expression = expression; }
+    public void setExpression(String expression) { 
+        this.expression = expression;
+        setText(expression);
+    }
     
     public Map getParams() { return params; }
     public void setParams(Map params) { this.params = params; }

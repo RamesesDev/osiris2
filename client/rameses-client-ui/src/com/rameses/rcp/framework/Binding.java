@@ -213,7 +213,7 @@ public class Binding {
             UIControl c = controlsIndex.get(focusComponentName);
             if ( c != null ) {
                 Component comp = (Component) c;
-                comp.requestFocus();
+                comp.requestFocusInWindow();
             }
             focusComponentName = null;
         }
@@ -258,7 +258,7 @@ public class Binding {
             UIControl c = controlsIndex.get(focusComponentName);
             if ( c != null ) {
                 Component comp = (Component) c;
-                comp.requestFocus();
+                comp.requestFocusInWindow();
             }
             focusComponentName = null;
         }
@@ -331,14 +331,14 @@ public class Binding {
         ActionMessage am = new ActionMessage();
         validate(am);
         if ( am.hasMessages() ) {
-            if ( am.getSource() != null ) am.getSource().requestFocus();
+            if ( am.getSource() != null ) am.getSource().requestFocusInWindow();
             throw new BusinessException(am.toString());
         }
         
         ValidatorEvent evt = new ValidatorEvent(this);
         validateBean(evt);
         if ( evt.hasMessages() ) {
-            if ( evt.getSource() != null ) evt.getSource().requestFocus();
+            if ( evt.getSource() != null ) evt.getSource().requestFocusInWindow();
             throw new BusinessException(evt.toString());
         }
     }
@@ -468,7 +468,7 @@ public class Binding {
                 UIInput ui = (UIInput) u;
                 Component comp = (Component) ui;
                 if ( !ui.isReadonly() && comp.isEnabled() && comp.isFocusable() ) {
-                    comp.requestFocus();
+                    comp.requestFocusInWindow();
                     return true;
                 }
             }
@@ -547,6 +547,7 @@ public class Binding {
         return bean;
     }
     
+    //-- this is called the first time the bean is injected
     public void setBean(Object bean) {
         this.bean = bean;
         initAnnotatedFields( bean, bean.getClass() );
@@ -554,6 +555,8 @@ public class Binding {
         _load();
     }
     
+    //-- this is called when the controller changes page
+    //-- (after a Navigation handler fires navigation)
     public void reinjectAnnotations() {
         initAnnotatedFields( bean, bean.getClass() );
     }
