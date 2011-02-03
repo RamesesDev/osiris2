@@ -14,7 +14,6 @@ import com.rameses.rcp.control.XComboBox;
 import com.rameses.rcp.control.XDateField;
 import com.rameses.rcp.control.XLookupField;
 import com.rameses.rcp.control.XNumberField;
-import com.rameses.rcp.control.XTable;
 import com.rameses.rcp.control.XTextField;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
@@ -128,8 +127,8 @@ public final class TableManager {
     
     //<editor-fold defaultstate="collapsed" desc="  editor customizer method  ">
     private static void customize(JComponent editor, Column col) {
-        //add XTable flag to notify that editor is in XTable component
-        editor.putClientProperty(XTable.class, true);
+        //add JTable flag to notify that editor is in a JTable component
+        editor.putClientProperty(JTable.class, true);
         
         //remove all focus listeners (we don't need it in the table)
         for (FocusListener l: editor.getFocusListeners() ) {
