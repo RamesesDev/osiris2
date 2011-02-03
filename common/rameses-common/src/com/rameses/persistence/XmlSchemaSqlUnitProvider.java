@@ -1,5 +1,5 @@
 /*
- * SchemaSqlCacheProvider.java
+ * SchemaSql.java
  *
  * Created on August 13, 2010, 8:13 AM
  *

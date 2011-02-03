@@ -8,6 +8,7 @@
 package httptest;
 
 import com.rameses.invoker.client.DynamicHttpInvoker;
+import com.rameses.sql.SqlContext;
 import junit.framework.*;
 
 /**
@@ -32,6 +33,7 @@ public class HttpInvokerTest extends TestCase {
         DynamicHttpInvoker h = new DynamicHttpInvoker("localhost:8080", "mlglobal");
         DynamicHttpInvoker.Action a = h.create("DateService");
         System.out.println( a.invoke( "getServerDate") );
+        
     
     }
 

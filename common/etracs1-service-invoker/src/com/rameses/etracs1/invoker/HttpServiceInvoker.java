@@ -6,21 +6,20 @@
  
  */
 
-package com.rameses.invoker.client;
+package com.rameses.etracs1.invoker;
 
-import java.util.HashMap;
+import com.rameses.invoker.client.*;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * Utility class for transiently accessing remote servers and destroying it after use.
  */
-public final class DynamicHttpInvoker {
+public final class HttpServiceInvoker {
     
-    private HttpScriptService service;
+    private HttpScriptService1 service;
 
-    public DynamicHttpInvoker(String host, String appContext, boolean secured ) {
+    public HttpServiceInvoker(String host, String appContext, boolean secured ) {
         HttpInvokerClient client = new HttpInvokerClient();   
         if(host==null) 
             throw new RuntimeException("Host is required");
@@ -28,14 +27,14 @@ public final class DynamicHttpInvoker {
         client.setHosts(new String[]{host});
         if(appContext!=null) client.setAppContext( appContext );
         client.setSecured( secured );
-        service = new HttpScriptService(client);
+        service = new HttpScriptService1(client);
     }
 
-    public DynamicHttpInvoker(String host, String appContext) {
-        this(host,appContext,true);
+    public HttpServiceInvoker(String host, String appContext) {
+        this(host,appContext,false);
     }
     
-    public DynamicHttpInvoker(Map m) {
+    public HttpServiceInvoker(Map m) {
         this((String) m.get("host"),(String)m.get("app.context"), true);
     }
     
@@ -43,36 +42,23 @@ public final class DynamicHttpInvoker {
         return new Action(serviceName, service);
     }
     
-    public Action create(String serviceName, Map env) {
-        return new Action(serviceName, service, env);
-    }
-
     public final static class Action {
         
-        private HttpScriptService svc;
+        private HttpScriptService1 svc;
         private String serviceName;
         private Map env;
                 
-        Action(String serviceName, HttpScriptService c, Map env) {
+        Action(String serviceName, HttpScriptService1 c) {
             this.svc = c ;
             this.serviceName = serviceName;
-            this.env = env;
         }
 
-        Action(String serviceName, HttpScriptService c) {
-            this(serviceName,c,new HashMap());
-        }
-
-        public Object invoke(String action) throws Exception {
-            return svc.invoke(serviceName,action,new Object[]{},env);
-        }
-        
         public Object invoke(String action, Object[] args) throws Exception {
-            return svc.invoke(serviceName,action,args,env);
+            return svc.invoke(serviceName,action,args);
         }
         
         public Object invoke(String action, List list ) throws Exception {
-            return svc.invoke(serviceName,action, list.toArray(new Object[]{}) ,env);
+            return svc.invoke(serviceName,action, list.toArray(new Object[]{}));
         }
     }
     

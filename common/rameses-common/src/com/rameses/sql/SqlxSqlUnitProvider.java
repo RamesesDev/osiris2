@@ -1,5 +1,5 @@
 /*
- * SqlxCacheProvider.java
+ * Sqlx.java
  *
  * Created on August 3, 2010, 2:53 PM
  *
