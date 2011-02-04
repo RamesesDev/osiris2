@@ -69,17 +69,22 @@ public abstract class AbstractSubControlModel {
     public final Object getContext() {
         if( beanName == null ) return null;
         
-        PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
-        Object context = res.getProperty(controlBinding.getBean(), beanName);
-        if( fieldName != null )
-            context = res.getProperty(context, fieldName);
-        
-        if( context == null ) {
-            context = createContext();
-            if( context != null ) setContext(context);
+        try {
+            PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+            Object context = res.getProperty(controlBinding.getBean(), beanName);
+            if( fieldName != null )
+                context = res.getProperty(context, fieldName);
+            
+            if( context == null ) {
+                context = createContext();
+                if( context != null ) setContext(context);
+            }
+            
+            return context;
+            
+        } catch(Exception e) {
+            return null;
         }
-        
-        return context;
     }
     
     public final void setContext(Object value) {

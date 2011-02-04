@@ -184,7 +184,10 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void itemStateChanged(ItemEvent e) {
         if ( e.getStateChange() == ItemEvent.SELECTED && !updating ) {
-            UIInputUtil.updateBeanValue(this);
+            try {
+                UIControlUtil.getBeanValue(this); //check if bean is not null
+                UIInputUtil.updateBeanValue(this);
+            } catch(Exception ex) {;}
         }
     }
     
