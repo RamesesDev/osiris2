@@ -39,14 +39,22 @@ public class XSubControl extends XSubFormPanel {
     }
     
     public void refresh() {
-        if( model != null ) {
-            Map props = model.getProperties();
-            props.put("required", isRequired());
-            props.put("readonly", readonly);
-            props.put("editable", editable);
-            props.put("enabled", isEnabled());
+        try {
+            if( subFormItems.size() > 0 && !subFormItems.get(0).isVisible() )
+                subFormItems.get(0).setVisible(true);
             
-            model.onRefresh();
+            if( model != null ) {
+                Map props = model.getProperties();
+                props.put("required", isRequired());
+                props.put("readonly", readonly);
+                props.put("editable", editable);
+                props.put("enabled", isEnabled());
+                
+                model.onRefresh();
+            }
+        } catch(Exception e) {
+            if( subFormItems.size() > 0 )
+                subFormItems.get(0).setVisible(false);
         }
         
         super.refresh();
