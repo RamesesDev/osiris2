@@ -270,8 +270,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         return table.isRequired();
     }
     
-    public void setRequired(boolean required) {
-    }
+    public void setRequired(boolean required) {}
     
     public void validateInput() {
         String errmsg = listModel.getErrorMessages();

@@ -1,23 +1,15 @@
 /*
  * WorkspaceWindow.java
  *
- * Created on October 27, 2009, 4:29 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package com.rameses.rcp.workspace;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
-import com.rameses.platform.interfaces.SubWindow;
 import com.rameses.platform.interfaces.ViewContext;
-import com.rameses.rcp.framework.ClientContext;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -25,15 +17,13 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author elmo
+ * @author jaycverg
  */
 public class WorkspaceWindow extends JPanel implements MainWindow {
     
     private MainWindowListener listener;
     private JPanel headerPanel;
     private JPanel contentPane;
-    private String title;
-    private String id;
     
     private Component menubar;
     private Component toolbar;
@@ -51,33 +41,8 @@ public class WorkspaceWindow extends JPanel implements MainWindow {
         add(contentPane, BorderLayout.CENTER);
     }
     
-    
-    public void show() {
-        Map props = new HashMap();
-        props.put("title", title);
-        props.put("id", id);
-        ClientContext.getCurrentContext().getPlatform().showWindow(null, new ViewPanel(this), props);
-    }
-    
-    public boolean closeCurrentDisplay() {
-        if ( contentPane.getComponentCount() > 0 ) {
-            Component c = contentPane.getComponent(0);
-            if ( c instanceof ViewContext ) {
-                if ( !((ViewContext) c).close() ) return false;
-            }
-        }
-        contentPane.removeAll();
-        SwingUtilities.updateComponentTreeUI(contentPane);
-        return true;
-    }
-    
     public void close() {}
-    
-    public void setTitle(String title) { this.title = title; }
-    public String getTitle()           { return title; }
-    
-    public void setId(String id) { this.id = id; }
-    public String getId() { return id; }
+    public void setTitle(String title) {}
     
     public void setListener(MainWindowListener listener) {
         this.listener = listener;
@@ -102,9 +67,6 @@ public class WorkspaceWindow extends JPanel implements MainWindow {
         SwingUtilities.updateComponentTreeUI(headerPanel);
     }
     
-    public void display() {
-    }
-    
     public void setMenubarVisible(boolean visible) {
         if( menubar != null ) menubar.setVisible(visible);
     }
@@ -113,41 +75,12 @@ public class WorkspaceWindow extends JPanel implements MainWindow {
         if( toolbar != null ) toolbar.setVisible(visible);
     }
     
-    //<editor-fold defaultstate="collapsed" desc="  ViewPanel (class)  ">
-    private class ViewPanel extends JPanel implements ViewContext {
-        
-        private SubWindow parent;
-        
-        ViewPanel(JComponent c) {
-            setLayout(new BorderLayout());
-            add(c);
+    public ViewContext getViewContext() {
+        Component comp = contentPane.getComponent(0);
+        if( comp != null && comp instanceof ViewContext ) {
+            return (ViewContext) comp;
         }
-        
-        public boolean close() {
-            if ( listener != null ) {
-                try {
-                    if ( !listener.onClose() ) return false;
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-            return true;
-        }
-        
-        public void display() {
-            if ( contentPane.getComponentCount() == 0) return;
-            Component c = contentPane.getComponent(0);
-            if ( c instanceof ViewContext ) ((ViewContext) c).display();
-        }
-
-        public void setSubWindow(SubWindow subWindow) {
-            parent = subWindow;
-        }
-
-        public SubWindow getSubWindow() {
-            return parent;
-        }
-        
+        return null;
     }
-    //</editor-fold>
+    
 }

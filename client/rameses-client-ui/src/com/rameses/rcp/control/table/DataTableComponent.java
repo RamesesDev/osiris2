@@ -688,7 +688,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
                     listModel.moveBackPage();
                     break;
                 case KeyEvent.VK_DELETE:
-                    listModel.removeSelectedItem();
+                    if( !isReadonly() ) listModel.removeSelectedItem();
                     break;
                 case KeyEvent.VK_ENTER:
                     if ( e.isControlDown() ) openItem();

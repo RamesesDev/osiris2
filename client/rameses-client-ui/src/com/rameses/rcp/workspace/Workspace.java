@@ -3,6 +3,7 @@ package com.rameses.rcp.workspace;
 import com.rameses.platform.interfaces.AppLoader;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.framework.ClientContext;
 import java.net.URLClassLoader;
 import java.rmi.server.UID;
@@ -32,6 +33,7 @@ public class Workspace implements Platform {
             Map newEnv = new HashMap(ctx.getAppEnv());
             
             if( conf != null ) {
+                ws.conf = conf;
                 if( conf.get("env") != null ) {
                     newEnv.put("CLIENT_ENV", conf.get("env"));
                 }
@@ -53,6 +55,9 @@ public class Workspace implements Platform {
                 if( conf.get("titlePrefix") != null ) {
                     ws.workspaceName = conf.get("titlePrefix").toString();
                 }
+                if( conf.get("pageTemplate") != null ) {
+                    ws.setTemplate( conf.get("pageTemplate") );
+                }
             }
             
             appLoader.load(subLoader, newEnv, ws);
@@ -68,8 +73,10 @@ public class Workspace implements Platform {
     private String workspaceName;
     private String workspaceId = "workspace-" + new UID() + ":";
     private Platform parent;
+    private Map conf = new HashMap();
     
     private WorkspaceWindow mainWindow;
+    private Class<? extends JComponent> pageTemplate;
     
     private boolean showMenubar;
     private boolean showToolbar;
@@ -88,9 +95,24 @@ public class Workspace implements Platform {
         Map props = new HashMap();
         props.put("title", title);
         props.put("id", workspaceId);
-        parent.showWindow(null, mainWindow, props);
+        parent.showWindow(null, new WorkspaceViewContext(conf, mainWindow, pageTemplate), props);
     }
     
+    public void setTemplate(Object tpl) {
+        try {
+            if( tpl == null ); //do nothing
+            else if( tpl instanceof String ) {
+                pageTemplate = (Class<? extends JComponent>) getClass().getClassLoader().loadClass( tpl.toString() );
+            } else if( tpl instanceof Class ) {
+                pageTemplate = (Class<? extends JComponent>) tpl;
+            }
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  Platform properties/methods  ">
     public void showStartupWindow(JComponent actionSource, JComponent comp, Map properties) {
         mainWindow.setComponent(comp, WorkspaceWindow.CONTENT);
     }
@@ -102,6 +124,9 @@ public class Workspace implements Platform {
         String title = (String) properties.get("title");
         properties.put("title", workspaceName + ":" + (title!=null? title : id));
         
+        if( comp instanceof ViewContext )
+            comp = new WorkspaceViewContext(conf, (ViewContext) comp, pageTemplate);
+        
         parent.showWindow(actionSource, comp, properties);
     }
     
@@ -112,6 +137,9 @@ public class Workspace implements Platform {
         String title = (String) properties.get("title");
         properties.put("title", workspaceName + ":" + (title!=null? title : id));
         
+        if( comp instanceof ViewContext )
+            comp = new WorkspaceViewContext(conf, (ViewContext) comp, pageTemplate);
+        
         parent.showPopup(actionSource, comp, properties);
     }
     
@@ -121,6 +149,9 @@ public class Workspace implements Platform {
         
         String title = (String) properties.get("title");
         properties.put("title", workspaceName + ":" + (title!=null? title : id));
+        
+        if( comp instanceof ViewContext )
+            comp = new WorkspaceViewContext(conf, (ViewContext) comp, pageTemplate);
         
         parent.showFloatingWindow(owner, comp, properties);
     }
@@ -164,5 +195,6 @@ public class Workspace implements Platform {
     public void logoff() {}
     public void lock() {}
     public void unlock() {}
+    //</editor-fold>
     
 }

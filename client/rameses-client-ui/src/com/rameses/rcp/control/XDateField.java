@@ -56,15 +56,20 @@ public class XDateField extends AbstractIconedTextField {
         
         try {
             if(!ValueUtil.isEmpty(getText())) {
-                if(hasFocus())
+                if(hasFocus()) {
                     date = inputFormatter.parse(getText());
-                else
+                    
+                    //validation
+                    String validation = inputFormatter.format(date);
+                    if( !ValueUtil.isEqual(validation, getText())) {
+                        actionMessage.addMessage("", "Invalid date entered for {0}.", new Object[] {getCaption()});
+                    }
+                    
+                } else {
                     date = outputFormatter.parse(getText());
+                }
                 
                 formattedString = valueFormatter.format(date);
-                if ( !formattedString.equals(getText()) ) {
-                    actionMessage.addMessage("", "Invalid date entered for {0}.", new Object[] {getCaption()});
-                }
             }
         } catch(Exception e) {
             actionMessage.addMessage("", "Expected format for {0} is " + inputFormat, new Object[] {getCaption()});

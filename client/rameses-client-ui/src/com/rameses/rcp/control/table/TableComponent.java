@@ -682,7 +682,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
                     listModel.moveBackPage();
                     break;
                 case KeyEvent.VK_DELETE:
-                    listModel.removeSelectedItem();
+                    if( !isReadonly() ) listModel.removeSelectedItem();
                     break;
                 case KeyEvent.VK_ENTER:
                     if ( e.isControlDown() ) openItem();
