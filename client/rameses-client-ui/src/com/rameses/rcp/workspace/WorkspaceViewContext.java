@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.LayoutManager;
+import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -24,28 +25,45 @@ import javax.swing.JPanel;
 public class WorkspaceViewContext extends JPanel implements ViewContext {
     
     private ViewContext viewCtx;
-    private Map conf;
+    private Workspace workspace;
+    private String title;
     
     
-    public WorkspaceViewContext(Map conf, WorkspaceWindow window, Class<? extends JComponent> template) {
-        this.viewCtx = window.getViewContext();
-        this.conf = conf;
-        init(window, template);
+    public WorkspaceViewContext(String title, Workspace workspace) {
+        this.workspace = workspace;
+        this.viewCtx = ((WorkspaceWindow)workspace.getMainWindow()).getViewContext();
+        this.title = title;
+        init((Component)workspace.getMainWindow());
     }
     
-    public WorkspaceViewContext(Map conf, ViewContext viewCtx, Class<? extends JComponent> template) {
+    public WorkspaceViewContext(String title, Workspace workspace, ViewContext viewCtx) {
+        this.workspace = workspace;
         this.viewCtx = viewCtx;
-        this.conf = conf;
-        init((Component) viewCtx, template);
+        this.title = title;
+        init((Component) viewCtx);
     }
     
-    private void init(Component comp, Class<? extends JComponent> template) {
+    private void init(Component comp) {
         super.setLayout(new BorderLayout());
         
+        Class<? extends JComponent> template = workspace.getTemplate();
+        String tplTitle = workspace.getTemplateTitle();
         if( template != null ) {
             try {
                 JComponent tpl = template.newInstance();
-                bind(tpl);
+                if( tplTitle != null && tpl instanceof WorkspaceDefaultTpl ) {
+                    ((WorkspaceDefaultTpl) tpl).setTitle(tplTitle);
+                }
+                
+                Binding b = new Binding();
+                bindRecursive(tpl, b);
+                
+                Map bean = new HashMap();
+                bean.put("conf", workspace.getConf());
+                bean.put("title", title);
+                b.setBean(bean);
+                b.refresh();
+                
                 tpl.add(comp);
                 comp = tpl;
             } catch(Exception e){
@@ -54,13 +72,6 @@ public class WorkspaceViewContext extends JPanel implements ViewContext {
         }
         
         super.add(comp);
-    }
-    
-    private void bind(JComponent comp) {
-        Binding b = new Binding();
-        bindRecursive(comp, b);
-        b.setBean(conf);
-        b.refresh();
     }
     
     private void bindRecursive(Container comp, Binding binding) {

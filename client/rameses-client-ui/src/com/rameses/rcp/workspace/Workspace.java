@@ -18,55 +18,44 @@ import javax.swing.JComponent;
 public class Workspace implements Platform {
     
     public static final Workspace create(Map conf) {
-        try {
-            ClientContext ctx = ClientContext.getCurrentContext();
-            Workspace ws = new Workspace();
-            ws.parent = ctx.getPlatform();
-            
-            URLClassLoader moduleCL = (URLClassLoader) ctx.getClassLoader();
-            ClassLoader platformCL = ws.parent.getClass().getClassLoader();
-            ClassLoader subLoader = new URLClassLoader(moduleCL.getURLs(), platformCL);
-            
-            String appLoaderClass = (String) ctx.getAppEnv().get("app.loader");
-            AppLoader appLoader = (AppLoader) subLoader.loadClass(appLoaderClass).newInstance();
-            
-            Map newEnv = new HashMap(ctx.getAppEnv());
-            
-            if( conf != null ) {
-                ws.conf = conf;
-                if( conf.get("env") != null ) {
-                    newEnv.put("CLIENT_ENV", conf.get("env"));
-                }
-                if( conf.get("permissions") != null ) {
-                    newEnv.put("CLIENT_PERMISSIONS", conf.get("permissions"));
-                }
-                if( conf.get("loaderType") != null ) {
-                    newEnv.put("LOADER_TYPE", conf.get("loaderType"));
-                }
-                if( conf.get("showStatusbar") != null ) {
-                    ws.showStatusbar = "true".equals(conf.get("showStatusbar")+"");
-                }
-                if( conf.get("showMenubar") != null ) {
-                    ws.showMenubar = "true".equals(conf.get("showMenubar")+"");
-                }
-                if( conf.get("showToolbar") != null ) {
-                    ws.showToolbar = "true".equals(conf.get("showToolbar")+"");
-                }
-                if( conf.get("titlePrefix") != null ) {
-                    ws.workspaceName = conf.get("titlePrefix").toString();
-                }
-                if( conf.get("pageTemplate") != null ) {
-                    ws.setTemplate( conf.get("pageTemplate") );
-                }
+        ClientContext ctx = ClientContext.getCurrentContext();
+        Workspace ws = new Workspace();
+        ws.parent = ctx.getPlatform();
+        
+        Map newEnv = new HashMap(ctx.getAppEnv());
+        if( conf != null ) {
+            ws.conf = conf;
+            if( conf.get("env") != null ) {
+                newEnv.put("CLIENT_ENV", conf.get("env"));
             }
-            
-            appLoader.load(subLoader, newEnv, ws);
-            
-            return ws;
-            
-        } catch(Exception e) {
-            throw new RuntimeException("Workspace.create: " + e.getMessage(), e);
+            if( conf.get("permissions") != null ) {
+                newEnv.put("CLIENT_PERMISSIONS", conf.get("permissions"));
+            }
+            if( conf.get("loaderType") != null ) {
+                newEnv.put("LOADER_TYPE", conf.get("loaderType"));
+            }
+            if( conf.get("showStatusbar") != null ) {
+                ws.showStatusbar = "true".equals(conf.get("showStatusbar")+"");
+            }
+            if( conf.get("showMenubar") != null ) {
+                ws.showMenubar = "true".equals(conf.get("showMenubar")+"");
+            }
+            if( conf.get("showToolbar") != null ) {
+                ws.showToolbar = "true".equals(conf.get("showToolbar")+"");
+            }
+            if( conf.get("titlePrefix") != null ) {
+                ws.workspaceName = conf.get("titlePrefix").toString();
+            }
+            if( conf.get("pageTemplate") != null ) {
+                ws.setTemplate( conf.get("pageTemplate") );
+            }
+            if( conf.get("templateTitle") != null ) {
+                ws.templateTitle = conf.get("templateTitle").toString();
+            }
         }
+        
+        ws.virtualEnv = newEnv;
+        return ws;
     }
     
     
@@ -76,11 +65,17 @@ public class Workspace implements Platform {
     private Map conf = new HashMap();
     
     private WorkspaceWindow mainWindow;
-    private Class<? extends JComponent> pageTemplate;
+    private Class<? extends JComponent> pageTemplate = WorkspaceDefaultTpl.class;
+    private String templateTitle;
     
     private boolean showMenubar;
     private boolean showToolbar;
     private boolean showStatusbar;
+    
+    private Map virtualEnv = new HashMap();
+    
+    //internal flag
+    private boolean loaded;
     
     
     public Workspace() {
@@ -88,6 +83,8 @@ public class Workspace implements Platform {
     }
     
     public void show(String title) {
+        load();
+        
         mainWindow.setMenubarVisible( showMenubar );
         mainWindow.setToolbarVisible( showToolbar );
         
@@ -95,10 +92,29 @@ public class Workspace implements Platform {
         Map props = new HashMap();
         props.put("title", title);
         props.put("id", workspaceId);
-        parent.showWindow(null, new WorkspaceViewContext(conf, mainWindow, pageTemplate), props);
+        parent.showWindow(null, new WorkspaceViewContext(title, this), props);
     }
     
-    public void setTemplate(Object tpl) {
+    private void load() {
+        if( loaded ) return;
+        
+        try {
+            ClientContext ctx = ClientContext.getCurrentContext();
+            URLClassLoader moduleCL = (URLClassLoader) ctx.getClassLoader();
+            ClassLoader platformCL = parent.getClass().getClassLoader();
+            ClassLoader subLoader = new URLClassLoader(moduleCL.getURLs(), platformCL);
+            
+            String appLoaderClass = (String) ctx.getAppEnv().get("app.loader");
+            AppLoader appLoader = (AppLoader) subLoader.loadClass(appLoaderClass).newInstance();
+            appLoader.load(subLoader, virtualEnv, this);
+            
+            loaded = true;
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    void setTemplate(Object tpl) {
         try {
             if( tpl == null ); //do nothing
             else if( tpl instanceof String ) {
@@ -110,6 +126,18 @@ public class Workspace implements Platform {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    Class<? extends JComponent> getTemplate() {
+        return pageTemplate;
+    }
+    
+    Map getConf() {
+        return conf;
+    }
+    
+    String getTemplateTitle() {
+        return templateTitle;
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Platform properties/methods  ">
@@ -125,7 +153,7 @@ public class Workspace implements Platform {
         properties.put("title", workspaceName + ":" + (title!=null? title : id));
         
         if( comp instanceof ViewContext )
-            comp = new WorkspaceViewContext(conf, (ViewContext) comp, pageTemplate);
+            comp = new WorkspaceViewContext(title, this, (ViewContext) comp);
         
         parent.showWindow(actionSource, comp, properties);
     }
@@ -138,7 +166,7 @@ public class Workspace implements Platform {
         properties.put("title", workspaceName + ":" + (title!=null? title : id));
         
         if( comp instanceof ViewContext )
-            comp = new WorkspaceViewContext(conf, (ViewContext) comp, pageTemplate);
+            comp = new WorkspaceViewContext(title, this, (ViewContext) comp);
         
         parent.showPopup(actionSource, comp, properties);
     }
@@ -151,7 +179,7 @@ public class Workspace implements Platform {
         properties.put("title", workspaceName + ":" + (title!=null? title : id));
         
         if( comp instanceof ViewContext )
-            comp = new WorkspaceViewContext(conf, (ViewContext) comp, pageTemplate);
+            comp = new WorkspaceViewContext(title, this, (ViewContext) comp);
         
         parent.showFloatingWindow(owner, comp, properties);
     }
