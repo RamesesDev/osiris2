@@ -124,23 +124,25 @@ public class FormControlUtil {
             }
             
             Object value = null;
-            if( c instanceof UISubControl ) {
-                UISubControl sc = (UISubControl) c;
-                Object handler = sc.getHandlerObject();
-                if( handler instanceof Opener ) {
-                    Opener opener = (Opener) handler;
-                    if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
-                        value = ((SubControlModel) opener.getHandle()).getHtmlFormat();
+            try {
+                if( c instanceof UISubControl ) {
+                    UISubControl sc = (UISubControl) c;
+                    Object handler = sc.getHandlerObject();
+                    if( handler instanceof Opener ) {
+                        Opener opener = (Opener) handler;
+                        if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
+                            value = ((SubControlModel) opener.getHandle()).getHtmlFormat();
+                        }
                     }
+                } else if ( c instanceof FormPanel ) {
+                    FormPanel fp = (FormPanel) c;
+                    value = renderHtml( fp.getAllControls(), fp, true );
+                } else if ( c instanceof XLabel ) {
+                    value = ((XLabel) c).getValue();
+                } else {
+                    value = UIControlUtil.getBeanValue(c);
                 }
-            } else if ( c instanceof FormPanel ) {
-                FormPanel fp = (FormPanel) c;
-                value = renderHtml( fp.getAllControls(), fp, true );
-            } else if ( c instanceof XLabel ) {
-                value = ((XLabel) c).getValue();
-            } else {
-                value = UIControlUtil.getBeanValue(c);
-            }
+            } catch(Exception e){;}
             
             sb.append((value==null? "" : value))
             .append("</td>")
