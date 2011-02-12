@@ -112,8 +112,7 @@ public final class DateUtil {
         Date specifiedTime;
         try {
             specifiedTime = sdf.parse(time);
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             throw new RuntimeException(e);
         }
         // switch timezone
@@ -124,6 +123,33 @@ public final class DateUtil {
         return sdf.format(specifiedTime);
     }
     
+    public static long diff(Date d1, Date d2) {
+        return diff(d1,d2,Calendar.DATE);
+    }
     
-   
+    public static  long diff(Date dfrom, Date dto, int type) {
+        Calendar calendar1 = Calendar.getInstance();
+        Calendar calendar2 = Calendar.getInstance();
+        calendar1.setTime(dfrom);
+        calendar2.setTime(dto);
+        long milliseconds1 = calendar1.getTimeInMillis();
+        long milliseconds2 = calendar2.getTimeInMillis();
+        long diff = milliseconds2 - milliseconds1;
+        if( type == Calendar.DATE ) {
+            return diff / (24 * 60 * 60 * 1000);
+        }
+        else if( type == Calendar.HOUR) {
+            return diff / (60 * 60 * 1000);
+        }
+        else if( type == Calendar.MINUTE) {
+            return diff / (60 * 1000);
+        }
+        else if( type == Calendar.SECOND ) {
+            return diff / 1000;
+        }
+        else {
+            return diff;
+        }
+    }
+    
 }

@@ -398,13 +398,20 @@
     </target>
     <target name="do-dist" depends="init,compile,compile-jsps,-pre-dist,-do-dist-with-manifest,-do-dist-without-manifest"/>
     <target name="library-inclusion-in-manifest" depends="init" if="dist.ear.dir">
+        <basename property="included.lib.file.reference.ezmorph-1.0.6.jar" file="${file.reference.ezmorph-1.0.6.jar}"/>
+        <copy-ear-war file="${file.reference.ezmorph-1.0.6.jar}" propname="included.lib.file.reference.ezmorph-1.0.6.jar.X"/>
+        <basename property="included.lib.file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar" file="${file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar}"/>
+        <copy-ear-war file="${file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar}" propname="included.lib.file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar.X"/>
         <mkdir dir="${build.web.dir.real}/META-INF"/>
         <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value=""/>
+            <attribute name="Class-Path" value="${included.lib.file.reference.ezmorph-1.0.6.jar} ${included.lib.file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
-    <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir"/>
+    <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir">
+        <copy file="${file.reference.ezmorph-1.0.6.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
+        <copy file="${file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
+    </target>
     <target name="do-ear-dist" depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest">
         <dirname property="dist.jar.dir" file="${dist.ear.war}"/>
         <mkdir dir="${dist.jar.dir}"/>

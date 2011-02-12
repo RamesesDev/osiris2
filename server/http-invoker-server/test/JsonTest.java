@@ -1,21 +1,19 @@
-import com.rameses.osiris2.client.OsirisAppContext;
-import com.rameses.osiris2.client.OsirisContext;
-import groovy.lang.GroovyShell;
+import com.rameses.invoker.server.JsonUtil;
 import junit.framework.*;
 /*
- * NewEmptyJUnitTest.java
+ * JsonTest.java
  * JUnit based test
  *
- * Created on January 22, 2011, 4:01 PM
+ * Created on February 9, 2011, 4:28 PM
  */
 
 /**
  *
  * @author ms
  */
-public class NewEmptyJUnitTest extends TestCase {
+public class JsonTest extends TestCase {
     
-    public NewEmptyJUnitTest(String testName) {
+    public JsonTest(String testName) {
         super(testName);
     }
 
@@ -27,7 +25,8 @@ public class NewEmptyJUnitTest extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testHello() {
-        
+        String a = "{name:'elmo', age:36}";
+        System.out.println(  JsonUtil.toMap( a ) );  
     }
 
 }

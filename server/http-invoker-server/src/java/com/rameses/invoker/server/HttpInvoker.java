@@ -1,12 +1,11 @@
 package com.rameses.invoker.server;
 
+import com.rameses.invoker.server.InvokerHelper.NameParser;
 import com.rameses.util.ExceptionManager;
 import java.io.*;
-import java.lang.reflect.Method;
-import javax.naming.InitialContext;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
-import org.apache.commons.beanutils.MethodUtils;
 
 public class HttpInvoker extends HttpServlet {
     
@@ -22,37 +21,10 @@ public class HttpInvoker extends HttpServlet {
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
         try {
+            NameParser np = InvokerHelper.createNameParser(req);
             in = new ObjectInputStream(req.getInputStream());
             Object[] values = filterInput( in.readObject() );
-            StringBuffer reqPath = new StringBuffer();
-            if ( req.getPathInfo() != null ) {
-                reqPath.append(req.getPathInfo());
-            } else if ( req.getServletPath() != null ) {
-                reqPath.append(req.getServletPath());
-            }
-            
-            String[] pathInfos = reqPath.toString().split("\\.");
-            InitialContext ctx = new InitialContext();
-            String appContext = "";
-            if( req.getContextPath() != null && req.getContextPath().trim().length()>0 && !req.getContextPath().equals("/") ) {
-                appContext = req.getContextPath().substring(1) + "/";
-            }
-            Object bean = ctx.lookup(appContext + pathInfos[0].substring(1) + "/local");
-            
-            Method[] methods = InvokerHelper.getMethodByName(bean, pathInfos[1], values.length);
-            boolean methodFound = false;
-            Object response = null;
-            
-            for (int i=0; i<methods.length; i++) {
-                try {
-                    response = MethodUtils.invokeMethod(bean, pathInfos[1], values, methods[i].getParameterTypes());
-                    methodFound = true;
-                    break; //break the loop
-                } catch(NoSuchMethodException nsme) {;}
-            }
-            if (!methodFound)
-                throw new Exception("No such method found '" + pathInfos[1] + "' for service '" + pathInfos[0]);
-            
+            Object response = InvokerHelper.invoke(np, values );
             if (response == null) {
                 response = "#NULL";
             }

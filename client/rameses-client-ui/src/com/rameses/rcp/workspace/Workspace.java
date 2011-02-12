@@ -52,6 +52,9 @@ public class Workspace implements Platform {
             if( conf.get("templateTitle") != null ) {
                 ws.templateTitle = conf.get("templateTitle").toString();
             }
+            if( conf.get("params") != null ) {
+                newEnv.put("PROPERTIES", conf.get("params"));
+            }
         }
         
         ws.virtualEnv = newEnv;
@@ -101,8 +104,7 @@ public class Workspace implements Platform {
         try {
             ClientContext ctx = ClientContext.getCurrentContext();
             URLClassLoader moduleCL = (URLClassLoader) ctx.getClassLoader();
-            ClassLoader platformCL = parent.getClass().getClassLoader();
-            ClassLoader subLoader = new URLClassLoader(moduleCL.getURLs(), platformCL);
+            ClassLoader subLoader = new URLClassLoader(moduleCL.getURLs(), moduleCL.getParent());
             
             String appLoaderClass = (String) ctx.getAppEnv().get("app.loader");
             AppLoader appLoader = (AppLoader) subLoader.loadClass(appLoaderClass).newInstance();
@@ -150,7 +152,7 @@ public class Workspace implements Platform {
         properties.put("id", workspaceId + id);
         
         String title = (String) properties.get("title");
-        properties.put("title", workspaceName + ":" + (title!=null? title : id));
+        properties.put("title", (workspaceName!=null? workspaceName + ":" : "") + (title!=null? title : id));
         
         if( comp instanceof ViewContext )
             comp = new WorkspaceViewContext(title, this, (ViewContext) comp);
@@ -163,7 +165,7 @@ public class Workspace implements Platform {
         properties.put("id", workspaceId + id);
         
         String title = (String) properties.get("title");
-        properties.put("title", workspaceName + ":" + (title!=null? title : id));
+        properties.put("title", (workspaceName!=null? workspaceName + ":" : "") + (title!=null? title : id));
         
         if( comp instanceof ViewContext )
             comp = new WorkspaceViewContext(title, this, (ViewContext) comp);
@@ -176,7 +178,7 @@ public class Workspace implements Platform {
         properties.put("id", workspaceId + id);
         
         String title = (String) properties.get("title");
-        properties.put("title", workspaceName + ":" + (title!=null? title : id));
+        properties.put("title", (workspaceName!=null? workspaceName + ":" : "") + (title!=null? title : id));
         
         if( comp instanceof ViewContext )
             comp = new WorkspaceViewContext(title, this, (ViewContext) comp);

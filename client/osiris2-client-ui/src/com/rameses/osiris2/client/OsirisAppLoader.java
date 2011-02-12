@@ -50,15 +50,19 @@ public class OsirisAppLoader implements AppLoader {
                 List permissions = (List) env.remove("CLIENT_PERMISSIONS");
                 OsirisSecurityProvider scp = (OsirisSecurityProvider) OsirisContext.getSession().getSecurityProvider();
                 scp.getPermissions().addAll(permissions);
-            }            
+            }
             if( env.get("CLIENT_ENV") != null ) {
                 Map clientEnv = (Map) env.remove("CLIENT_ENV");
                 OsirisContext.getEnv().putAll( clientEnv );
             }
+            if( env.get("PROPERTIES") != null ) {
+                Map properties = (Map) env.remove("PROPERTIES");
+                ctx.getProperties().putAll( properties );
+            }
             
             //load all loaders
             String loaderType = "loader";
-            if( env.get("LOADER_TYPE") != null ) 
+            if( env.get("LOADER_TYPE") != null )
                 loaderType = (String) env.remove("LOADER_TYPE");
             
             List loaders = startupApp.getInvokers(loaderType, false);
