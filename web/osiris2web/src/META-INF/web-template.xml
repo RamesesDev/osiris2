@@ -60,18 +60,6 @@
         <url-pattern>/reload</url-pattern>
     </servlet-mapping>
     
-    <!-- fileupload configuration  -->
-    <filter>
-        <filter-name>fileupload</filter-name>
-        <filter-class>
-            com.rameses.web.component.fileupload.MultiPartListener
-        </filter-class>
-    </filter>    
-    <filter-mapping>
-        <filter-name>fileupload</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>  
-    
     <!-- Osiris Filter  -->
     <filter>
         <filter-name>Osiris Filter</filter-name>
@@ -82,18 +70,17 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     
-    <!-- a4j configuration  -->
+    <!-- Common Web Configuration  -->
     <filter>
-        <display-name>Ajax4jsf Filter</display-name>
-        <filter-name>ajax4jsf</filter-name>
-        <filter-class>org.ajax4jsf.Filter</filter-class>
+        <filter-name>WebFilter</filter-name>
+        <filter-class>com.rameses.web.common.Filter</filter-class>
         <init-param>
             <param-name>forceparser</param-name>
             <param-value>false</param-value>
         </init-param>
     </filter>
     <filter-mapping>
-        <filter-name>ajax4jsf</filter-name>
+        <filter-name>WebFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>               
     
@@ -104,6 +91,10 @@
     </session-config>   
     <welcome-file-list>
         <welcome-file>
-            index.jsp
+            index.html
         </welcome-file>
-</welcome-file-list></web-app>
+    </welcome-file-list>
+</web-app>
+
+
+

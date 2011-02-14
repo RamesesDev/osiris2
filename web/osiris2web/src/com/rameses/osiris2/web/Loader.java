@@ -21,35 +21,37 @@ import javax.servlet.http.HttpSession;
 
 public class Loader implements Serializable {
     
-    public static final String SECURED_REQ_URL = "loader.secured.request.url";
-    public static final String LOADER_WI = "_loader.wi";
+    public static final String SECURED_REQ_URL_KEY = "loader.secured.request.url";
+    public static final String LOADER_WI_KEY = "_loader.wi";
     
     private List invokers;
     private Map properties = new HashMap();
     private boolean done = false;
     
     public Loader() {
-        SessionContext ctx = WebContext.getSessionContext();
+        SessionContext ctx = WebContext.getInstance().getSessionContext();
         invokers = ctx.getInvokers("loader");
     }
     
     public WorkUnitInstance getWorkUnitInstance() {
         if ( invokers.isEmpty() ) return null;
         
-        HttpSession sess = WebContext.getRequest().getSession();
-        SessionContext sessCtx = WebContext.getSessionContext();
-        WorkUnitInstance wi = (WorkUnitInstance) sess.getAttribute(LOADER_WI);
+        WebContext webCtx = WebContext.getInstance();
+        HttpSession sess = webCtx.getRequest().getSession();
+        SessionContext sessCtx = webCtx.getSessionContext();
+        WorkUnitInstance wi = (WorkUnitInstance) sess.getAttribute(LOADER_WI_KEY);
+        
         //check loader if applied for this context
         while( wi == null && !invokers.isEmpty() ) {
             boolean allowed = true;
             Invoker inv = (Invoker) invokers.get(0);
             allowed = sessCtx.checkPermission(inv.getWorkunitid(), inv.getPermission());
             if ( allowed ) {
-                WorkUnit wu = WebContext.getSessionContext().getWorkUnit(inv.getWorkunitid());
+                WorkUnit wu = webCtx.getSessionContext().getWorkUnit(inv.getWorkunitid());
                 wi = wu.newInstance(inv.getWorkunitid(), inv.getCaption());
                 String condExpr = (String) inv.getProperties().get("cond");
                 if ( condExpr != null ) {
-                    ExpressionProvider exp = WebContext.getExpressionProvider();
+                    ExpressionProvider exp = webCtx.getExpressionProvider();
                     Map m = new HashMap();
                     m.put("bean", wi.getController());
                     try {
@@ -78,8 +80,8 @@ public class Loader implements Serializable {
                 continue;
             }
             
-            wi.getWorkunit().getProperties().put(LOADER_WI, true);
-            sess.setAttribute(LOADER_WI, wi);
+            wi.getWorkunit().getProperties().put(LOADER_WI_KEY, true);
+            sess.setAttribute(LOADER_WI_KEY, wi);
         }
         
         return wi;
@@ -90,7 +92,7 @@ public class Loader implements Serializable {
             invokers.remove(0);
         }
         
-        WebContext.getRequest().getSession().removeAttribute(LOADER_WI);
+        WebContext.getInstance().getSession().removeAttribute(LOADER_WI_KEY);
     }
     
     public boolean hasInvokers() {
@@ -98,7 +100,7 @@ public class Loader implements Serializable {
     }
     
     public static boolean isLoaderWorkUnit(WorkUnitInstance wi) {
-        return wi.getWorkunit().getProperties().get(LOADER_WI) != null;
+        return wi.getWorkunit().getProperties().get(LOADER_WI_KEY) != null;
     }
 
     public Map getProperties() {

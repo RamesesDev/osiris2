@@ -38,7 +38,7 @@ public class OsirisWebSessionContext extends SessionContext {
     
     public List getInvokersMap(String type) {
         if ( !invokersMap.containsKey(type) ) {
-            String ctxPath = WebContext.getExternalContext().getRequestContextPath();
+            String ctxPath = WebContext.getInstance().getExternalContext().getRequestContextPath();
             List list = new ArrayList();
             for ( Object o: getInvokers(type)) {
                 Invoker inv = (Invoker) o;

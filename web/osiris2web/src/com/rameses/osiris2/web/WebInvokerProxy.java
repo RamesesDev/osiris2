@@ -9,75 +9,48 @@
 
 package com.rameses.osiris2.web;
 
-import com.rameses.invoker.client.HttpInvokerClient;
+import com.rameses.invoker.client.AbstractScriptServiceProxy;
+import com.rameses.invoker.client.ResponseHandler;
+import com.rameses.invoker.client.ScriptInterfaceProvider;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
-public class WebInvokerProxy {
+public class WebInvokerProxy extends AbstractScriptServiceProxy {
     
-    private final static String INVOKER = "ScriptService";
-    private Map<String, Class> map = new Hashtable<String, Class>();
-    private GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
+    private GroovyClassLoader classLoader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
+    private ScriptInterfaceProvider scriptProvider = new GroovyScriptInterfaceProvider();
+
     
-    private static WebInvokerProxy instance;
-    
-    public static WebInvokerProxy getInstance() {
-        if( instance == null ) {
-            instance = new WebInvokerProxy();
-        }
-        return instance;
+    public WebInvokerProxy() {
+        super(WebContext.getInstance().getSessionContext().getEnv());
     }
     
-    
-    public Object create( String name ) throws Exception {
-        return create(name, null);
+    public Map getEnv() {
+        return WebContext.getInstance().getEnv();
     }
     
-    public Object create( String name, String hostKey) throws Exception {
-        HttpInvokerClient client = WebContext.getHttpClientManager().getService(hostKey, WebContext.getSessionContext().getEnv());
-        Class clazz = null;
-        if(! map.containsKey(name)) {
-            byte[] b = (byte[])client.invoke(INVOKER+".getScriptInfo", new Object[]{name});
-            InputStream is = new ByteArrayInputStream(b);
-            clazz = loader.parseClass(is);
-            map.put(name, clazz);
-        }
-        clazz = map.get(name);
-        return Proxy.newProxyInstance(loader, new Class[]{clazz}, new MyHandler(name, client));
+    public synchronized void reset() {
+        classLoader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
     }
     
+    protected ScriptInterfaceProvider getScriptInterfaceProvider() {
+        return scriptProvider;
+    }
     
-    public class MyHandler implements InvocationHandler {
+    public void invokeLater(ResponseHandler handler) {
         
-        private HttpInvokerClient client;
-        private String serviceName;
+    }
+    
+    private class GroovyScriptInterfaceProvider extends ScriptInterfaceProvider {
         
-        public MyHandler(String serviceName, HttpInvokerClient client) {
-            this.serviceName = serviceName;
-            this.client = client;
+        protected Class parseClass(byte[] bytes) {
+            return classLoader.parseClass( new ByteArrayInputStream(bytes));
         }
         
-        public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-            if( method.getName().equals("toString")) return serviceName;
-            
-            Map env = new HashMap();
-            
-            return client.invoke( INVOKER+".invoke", new Object[]{ serviceName, method.getName(), args, env } );
+        public ClassLoader getProxyClassLoader() {
+            return classLoader;
         }
-    }
-    
-    public void reset() {
-        map.clear();
-        //loader.clearCache();
-        loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
-        instance = null;
     }
     
 }

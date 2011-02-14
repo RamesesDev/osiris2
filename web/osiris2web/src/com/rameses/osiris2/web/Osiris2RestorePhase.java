@@ -13,7 +13,9 @@ import com.rameses.osiris2.SecurityProvider;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.WorkUnit;
 import com.rameses.osiris2.WorkUnitInstance;
+import com.rameses.osiris2.web.util.PathParser;
 import com.rameses.osiris2.web.util.ResourceUtil;
+import com.rameses.osiris2.web.util.WebUtil;
 import java.io.IOException;
 import java.util.Map;
 import javax.faces.context.FacesContext;
@@ -42,26 +44,27 @@ public class Osiris2RestorePhase implements PhaseListener {
     //<editor-fold defaultstate="collapsed" desc="  BEFORE PHASE  ">
     public void beforePhase(PhaseEvent event) {
         FacesContext fContext = event.getFacesContext();
-        HttpServletRequest request = WebContext.getRequest();
+        WebContext webCtx = WebContext.getInstance();
+        HttpServletRequest request = webCtx.getRequest();
         String reqMethod = request.getMethod().toLowerCase();
         if ( request.getParameter(WebUtil.LOGOUT_OUTCOME) != null ) {
-            WebContext.getRequest().getSession().invalidate();
-            WebContext.redirect(request.getRequestURI());
+            webCtx.getRequest().getSession().invalidate();
+            webCtx.redirect(request.getRequestURI());
             fContext.responseComplete();
         }
         
         if ( fContext.getResponseComplete() ) return;
         
-        //check if session contains
-        if( WebContext.getSessionContext() == null ) {
-            AppContext ac = WebContext.getAppContext();
+        //check if session context exists
+        if( webCtx.getSessionContext() == null ) {
+            AppContext ac = webCtx.getAppContext();
             
             SessionContext sessCtx = ac.createSession();
             sessCtx.setSecurityProvider( new Osiris2WebSecurityProvider() );
-            WebContext.setSessionContext(sessCtx);
+            webCtx.setSessionContext(sessCtx);
             
-            WebContext.initWorkUnitInstanceMap();
-            WebContext.initLoader();
+            webCtx.initWorkUnitInstanceMap();
+            webCtx.initLoader();
         }
         
         //create the parser
@@ -70,9 +73,9 @@ public class Osiris2RestorePhase implements PhaseListener {
         // do nothing if parser.workunitId is null
         if(parser.getWorkunitId() == null) return;
         
-        OsirisWebSessionContext sessCtx = (OsirisWebSessionContext) WebContext.getSessionContext();
+        OsirisWebSessionContext sessCtx = (OsirisWebSessionContext) webCtx.getSessionContext();
         SecurityProvider secProvider = sessCtx.getSecurityProvider();
-        Map wInstances = WebContext.getWorkUnitInstanceMap();
+        Map wInstances = webCtx.getWorkUnitInstanceMap();
         WorkUnitInstance wi = (WorkUnitInstance) wInstances.get( parser.getWorkunitId() );
         
         //create workunit if null
@@ -94,11 +97,11 @@ public class Osiris2RestorePhase implements PhaseListener {
         String secured = (String) wi.getWorkunit().getProperties().get("secured");
         secured = (secured + "").trim().toLowerCase();
         if ( secured.equals("true") ) {
-            Loader loader = WebContext.getLoader();
+            Loader loader = webCtx.getLoader();
             if ( !loader.isDone() ) {
                 WorkUnitInstance loaderWi = loader.getWorkUnitInstance();
                 if ( loaderWi != null ) {
-                    WebContext.keepUri(request);
+                    webCtx.keepUri(request);
                     wi = loaderWi;
                 }
                 //reset session invokers after successfully login
@@ -115,7 +118,7 @@ public class Osiris2RestorePhase implements PhaseListener {
                     int accessDenied = HttpServletResponse.SC_UNAUTHORIZED;
                     String uri = request.getRequestURI();
                     try {
-                        WebContext.getResponse().sendError(accessDenied, uri);
+                        webCtx.getResponse().sendError(accessDenied, uri);
                     } catch(Exception e){;}
                     fContext.responseComplete();
                 }
@@ -123,7 +126,7 @@ public class Osiris2RestorePhase implements PhaseListener {
         }
         
         //add current workunit to the request
-        WebContext.setCurrentWorkUnitInstance(wi);
+        webCtx.setCurrentWorkUnitInstance(wi);
         request.setAttribute(PathParser.class.getName(), parser);
     }
     //</editor-fold>
@@ -133,10 +136,11 @@ public class Osiris2RestorePhase implements PhaseListener {
         FacesContext fContext = event.getFacesContext();
         if ( fContext.getResponseComplete() ) return;
         
-        WorkUnitInstance wi = WebContext.getCurrentWorkUnitInstance();
+        WebContext webCtx = WebContext.getInstance();
+        WorkUnitInstance wi = webCtx.getCurrentWorkUnitInstance();
         if ( wi == null ) return;
         
-        HttpServletRequest req = WebContext.getRequest();
+        HttpServletRequest req = webCtx.getRequest();
         String reqMethod = req.getMethod().toLowerCase();
         PathParser parser = (PathParser) req.getAttribute(PathParser.class.getName());
         
@@ -150,8 +154,8 @@ public class Osiris2RestorePhase implements PhaseListener {
         
         //add AppContext hashcode in the viewId so that the caching of templates
         //would happen for every instance of AppContext
-        SessionContext sessCtx = WebContext.getSessionContext();
-        String viewId = WebContext.getViewId(wi);
+        SessionContext sessCtx = webCtx.getSessionContext();
+        String viewId = webCtx.getViewId(wi);
         viewId = WebUtil.addHash(viewId, sessCtx.hashCode());
         String actualViewId = fContext.getViewRoot().getViewId();
         if ( !actualViewId.equals(viewId)) {
@@ -162,9 +166,10 @@ public class Osiris2RestorePhase implements PhaseListener {
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void processGetRequest(PathParser parser, WorkUnitInstance wi) {
-        HttpServletRequest req = WebContext.getRequest();
+        WebContext webCtx = WebContext.getInstance();
+        HttpServletRequest req = webCtx.getRequest();
         FacesContext ctx = FacesContext.getCurrentInstance();
-        HttpSession sess = WebContext.getRequest().getSession();
+        HttpSession sess = webCtx.getRequest().getSession();
         Opener opener = (Opener) sess.getAttribute(Opener.class.getName());
         if ( opener != null ) {
             sess.removeAttribute(Opener.class.getName());
@@ -192,7 +197,7 @@ public class Osiris2RestorePhase implements PhaseListener {
                 if ( outcome instanceof Opener ) {
                     Opener opr = (Opener) outcome;
                     opr.setModuleName(wi.getModule().getName());
-                    WebContext.redirect(opr);
+                    webCtx.redirect(opr);
                     ctx.responseComplete();
                     
                 } else if ( outcome instanceof String && !isEmpty(outcome+"") ) {
@@ -209,7 +214,8 @@ public class Osiris2RestorePhase implements PhaseListener {
                     wi.setCurrentPage(wi.getDefaultPage().getName());
                 }
             } catch(Exception ign) {
-                if ( isPageRequest(ign) ) {
+                //check if the excepton is caused by a page request
+                if ( ign.getCause() instanceof NoSuchMethodException || ign instanceof ReferenceSyntaxException ) {
                     Object p = wi.getWorkunit().getPages().get(action);
                     if ( p != null ) {
                         wi.setCurrentPage(action);
@@ -217,7 +223,7 @@ public class Osiris2RestorePhase implements PhaseListener {
                         String path = req.getRequestURI();
                         int errorCode = HttpServletResponse.SC_NOT_FOUND;
                         try {
-                            WebContext.getResponse().sendError(errorCode, path);
+                            webCtx.getResponse().sendError(errorCode, path);
                         } catch (IOException ex) {;}
                         ctx.responseComplete();
                     }
@@ -228,11 +234,6 @@ public class Osiris2RestorePhase implements PhaseListener {
         } else {
             wi.setCurrentPage(wi.getDefaultPage().getName());
         }
-    }
-    
-    private boolean isPageRequest(Throwable ex) {
-        return ex.getCause() instanceof NoSuchMethodException ||
-                ex instanceof ReferenceSyntaxException;
     }
     
     private boolean isEmpty(String value) {

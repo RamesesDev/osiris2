@@ -2,7 +2,7 @@
 <project name="deployer" default="deploy to server" basedir="..">
     <target name="deploy to server">
         <property name="server" 
-                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/test_web/apps" />
+                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/web_server/apps" />
         <property name="project-name" 
                   value="osiris2web-platform" />
         <property name="project-type"
@@ -14,7 +14,7 @@
     
     <target name="clean-server">
         <property name="server" 
-                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/test_web" />
+                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/web_server/apps" />
         
         <delete dir="${server}/log" />
         <delete dir="${server}/tmp" />
@@ -23,7 +23,7 @@
     
     <target name="touch-project">
         <property name="server" 
-                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/test_web/apps" />
+                  value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/web_server/apps" />
         <property name="project-name" 
                   value="osiris2web-platform" />
         <property name="project-type"

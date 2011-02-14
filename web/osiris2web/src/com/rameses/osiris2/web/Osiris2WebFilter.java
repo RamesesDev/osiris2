@@ -12,6 +12,7 @@ import com.rameses.osiris2.Module;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.WorkUnit;
 import com.rameses.osiris2.web.util.GZIPResponseWrapper;
+import com.rameses.osiris2.web.util.PathParser;
 import com.rameses.osiris2.web.util.ResourceUtil;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -35,6 +36,9 @@ import javax.servlet.http.HttpSession;
 public class Osiris2WebFilter implements Filter {
     
     public static final String SESSION_ID = Osiris2WebFilter.class.getName()+"_sessId";
+    
+    private static final Pattern CACHEABLE_PATTERN = Pattern.compile(".*\\.(?:js|css|jpg|jpeg|gif|png|bmp|swf)$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern WORKUNIT_PATTERN = Pattern.compile("^/[^/]*/(.*\\.[^/]+)$");
     
     private FilterConfig filterConfig;
     
@@ -64,8 +68,7 @@ public class Osiris2WebFilter implements Filter {
         }
         
         String path = request.getServletPath();
-        String regex = "^/[^/]*/(.*\\.[^/]+)$";
-        Matcher m = Pattern.compile(regex).matcher(path);
+        Matcher m = WORKUNIT_PATTERN.matcher(path);
         if ( !isJsfPage(path) && m.matches() ) {
             PathParser p = new PathParser(path);
             SessionContext ctx = getSessionContext(request);
@@ -140,12 +143,12 @@ public class Osiris2WebFilter implements Filter {
         if ( is != null ) {
             String mimeType = req.getSession().getServletContext().getMimeType(path);
             resp.setContentType(mimeType);
-            if ( isCacheable(path) ) {
+            if ( CACHEABLE_PATTERN.matcher(path).matches() ) {
                 resp.addHeader("Cache-Control", "max-age=86400");
                 resp.addHeader("Cache-Control", "public");
             }
             
-            try {                
+            try {
                 ResourceUtil.renderResource(is, resp.getOutputStream());
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -157,12 +160,6 @@ public class Osiris2WebFilter implements Filter {
                 ex.printStackTrace();
             }
         }
-    }
-    
-    private boolean isCacheable(String path) {
-        String exp = ".*\\.(?:js|css|jpg|jpeg|gif|png|bmp|swf)$";
-        Matcher m = Pattern.compile(exp, Pattern.CASE_INSENSITIVE).matcher(path);
-        return m.matches();
     }
     //</editor-fold>
     

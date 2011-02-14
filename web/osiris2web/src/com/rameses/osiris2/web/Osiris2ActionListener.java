@@ -9,6 +9,7 @@ package com.rameses.osiris2.web;
 
 import com.rameses.osiris2.WorkUnitInstance;
 import com.rameses.osiris2.web.util.ResourceUtil;
+import com.rameses.osiris2.web.util.WebUtil;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
@@ -54,13 +55,14 @@ public class Osiris2ActionListener implements ActionListener {
             fromAction = methodBinding.getExpressionString();
             try {
                 Object result = methodBinding.invoke(facesContext, null);
-                                
+                
                 if ( result instanceof Opener ) {
-                    WorkUnitInstance wi = WebContext.getCurrentWorkUnitInstance();
+                    WebContext webCtx = WebContext.getInstance();
+                    WorkUnitInstance wi = webCtx.getCurrentWorkUnitInstance();
                     Opener op = (Opener) result;
                     if ( op.getName() != null ) {
                         op.setModuleName(wi.getModule().getName());
-                        WebContext.getRequest().getSession().setAttribute(Opener.class.getName(), op);
+                        webCtx.getRequest().getSession().setAttribute(Opener.class.getName(), op);
                         outcome = WebUtil.OPENER_OUTCOME;
                     }
                     
