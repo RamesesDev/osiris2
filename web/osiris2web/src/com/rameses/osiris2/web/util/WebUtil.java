@@ -5,7 +5,9 @@
  * @author jaycverg
  */
 
-package com.rameses.osiris2.web;
+package com.rameses.osiris2.web.util;
+
+import com.rameses.osiris2.web.*;
 
 public class WebUtil {
     

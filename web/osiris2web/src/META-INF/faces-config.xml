@@ -14,7 +14,7 @@
         <phase-listener>com.rameses.osiris2.web.Osiris2RestorePhase</phase-listener>
         <phase-listener>com.rameses.osiris2.web.CachingPhaseListener</phase-listener>
         <!--
-        <phase-listener>com.rameses.osiris2.web.PhaseLogger</phase-listener>
+        <phase-listener>com.rameses.osiris2.web.util.PhaseLogger</phase-listener>
         -->
     </lifecycle>
     

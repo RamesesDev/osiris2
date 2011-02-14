@@ -12,7 +12,7 @@ import junit.framework.*;
 public class Test extends TestCase {
     
     public void testHello() throws Exception {
-        
+
     }
     
 }

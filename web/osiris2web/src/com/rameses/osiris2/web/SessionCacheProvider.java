@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 public class SessionCacheProvider extends CacheProvider {
     
     private CacheProvider.CacheContext getContext() {
-        HttpServletRequest req = WebContext.getRequest();
+        HttpServletRequest req = WebContext.getInstance().getRequest();
         SessionCacheContext ctx = (SessionCacheContext) req.getAttribute(SessionCacheContext.class.getName());
         if ( ctx == null ) {
             ctx = new SessionCacheContext();
@@ -40,19 +40,19 @@ public class SessionCacheProvider extends CacheProvider {
     public static class SessionCacheContext extends CacheProvider.CacheContext {
         
         public String getId() {
-            return WebContext.getRequest().getSession().getId();
+            return WebContext.getInstance().getRequest().getSession().getId();
         }
         
         public Object get(Object key) {
-            return WebContext.getRequest().getSession().getAttribute((String) key);
+            return WebContext.getInstance().getRequest().getSession().getAttribute((String) key);
         }
         
         public void put(Object key, Object value) {
-            WebContext.getRequest().getSession().setAttribute((String) key, value);
+            WebContext.getInstance().getRequest().getSession().setAttribute((String) key, value);
         }
         
         public void remove(Object key) {
-            WebContext.getRequest().getSession().removeAttribute((String) key);
+            WebContext.getInstance().getRequest().getSession().removeAttribute((String) key);
         }
         
     }

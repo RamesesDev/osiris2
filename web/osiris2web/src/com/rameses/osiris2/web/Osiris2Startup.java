@@ -3,14 +3,8 @@ package com.rameses.osiris2.web;
 import com.rameses.client.updates.UpdateCenter;
 import com.rameses.common.CacheProvider;
 import com.rameses.osiris2.AppContext;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -26,10 +20,9 @@ public class Osiris2Startup extends HttpServlet {
     public static String CLIENT_CONF = "CLIENT_CONF";
     public static String APP_ROOT = "APP_ROOT";
     
-    private ServletConfig servletConfig;
-    
-    private static int version = 0;
+    private ServletConfig servletConfig;    
     private static String appRoot;
+    
     
     public Osiris2Startup() {
     }
@@ -77,19 +70,9 @@ public class Osiris2Startup extends HttpServlet {
             String appurl = props.getProperty("app.url");
             if(appurl==null)
                 throw new ServletException("app.url does not exist in the client.conf " + conf);
-            
-            String appPath = appRoot + "-" + version;
-            if ( version > 0 ) {
-                File next = new File(appPath);
-                File prev = new File(appRoot + "-" + (version - 1));
-                if ( !next.exists() && prev.exists() ) {
-                    copyDirectory(prev, next);
-                }
-            }
-            version++;
-            
+                        
             UpdateCenter uc = new UpdateCenter( appurl );
-            uc.setAppPath(appPath);
+            uc.setAppPath(appRoot);
             
             uc.start();
             
@@ -119,7 +102,8 @@ public class Osiris2Startup extends HttpServlet {
         
         StringBuffer sb = new StringBuffer();
         while(found) {
-            m.appendReplacement(sb, System.getProperty(m.group(1)) );
+            String property = System.getProperty(m.group(1));
+            m.appendReplacement(sb, (property!=null? property : "") );
             found = m.find();
         }
         m.appendTail(sb);
@@ -132,46 +116,4 @@ public class Osiris2Startup extends HttpServlet {
         reload();
     }
     
-    //<editor-fold defaultstate="collapsed" desc="  helper method  ">
-    private static final int BUFF_SIZE = 1024 * 32;
-    
-    private void copyDirectory(File sourceLocation , File targetLocation) {
-        
-        if (sourceLocation.isDirectory()) {
-            if (!targetLocation.exists()) {
-                targetLocation.mkdir();
-            }
-            
-            String[] children = sourceLocation.list();
-            for (int i=0; i<children.length; i++) {
-                copyDirectory(new File(sourceLocation, children[i]),
-                        new File(targetLocation, children[i]));
-            }
-        } else {
-            
-            BufferedInputStream bis = null;
-            BufferedOutputStream bos = null;
-            
-            try {
-                InputStream in = new FileInputStream(sourceLocation);
-                OutputStream out = new FileOutputStream(targetLocation);
-                
-                bis = new BufferedInputStream(in, BUFF_SIZE);
-                bos = new BufferedOutputStream(out, BUFF_SIZE);
-                
-                // Copy the bits from instream to outstream
-                byte[] buf = new byte[BUFF_SIZE];
-                int len = -1;
-                while ((len = bis.read(buf)) != -1) {
-                    bos.write(buf, 0, len);
-                }
-                bos.flush();
-            } catch(Exception e) {
-            } finally {
-                try { bis.close(); } catch(Exception e){}
-                try { bos.close(); } catch(Exception e){}
-            }
-        }
-    }
-    //</editor-fold>
 }
