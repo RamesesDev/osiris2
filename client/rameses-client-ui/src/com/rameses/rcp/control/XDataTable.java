@@ -48,6 +48,9 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     private String caption;
     private String varStatus;
     
+    private ListItem currentItem;
+    
+    
     
     public XDataTable() {
         init();
@@ -238,17 +241,21 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
         ListItem item = listModel.getSelectedItem();
         
-        if ( !ValueUtil.isEmpty(name) ) {
-            Object value = null;
-            if( item != null ) value = item.getItem();
+        if( !ValueUtil.isEqual(currentItem, item) ) {
+            if ( !ValueUtil.isEmpty(name) ) {
+                Object value = null;
+                if( item != null ) value = item.getItem();
+                
+                resolver.setProperty(binding.getBean(), name, value);
+                binding.notifyDepends(this);
+            }
             
-            resolver.setProperty(binding.getBean(), name, value);
-            binding.notifyDepends(this);
+            if ( !ValueUtil.isEmpty(varStatus) ) {
+                resolver.setProperty(binding.getBean(), varStatus, item);
+            }
         }
         
-        if ( !ValueUtil.isEmpty(varStatus) ) {
-            resolver.setProperty(binding.getBean(), varStatus, item);
-        }
+        currentItem = item;
         
         if ( rowHeaderView != null )
             rowHeaderView.clearEditing();
