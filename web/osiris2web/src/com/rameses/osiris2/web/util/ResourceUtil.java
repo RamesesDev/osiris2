@@ -49,6 +49,8 @@ public class ResourceUtil {
     //<editor-fold defaultstate="collapsed" desc="  ResourceRenderer (class)  ">
     private static class ResourceRenderer {
         
+        private static final Pattern MOD_RES_FORMAT = Pattern.compile("^/?([^/]+)/(.+)$");
+        
         public void renderResource(WebResource webRes) {
             InputStream is = null;
             
@@ -65,11 +67,10 @@ public class ResourceUtil {
                 } catch (FileNotFoundException ign) {;}
                 
             } else if ( resource instanceof String ) {
-                String regex = "^/?([^/]+)/(.+)$";
-                Matcher m = Pattern.compile(regex).matcher(resource+"");
+                Matcher m = MOD_RES_FORMAT.matcher(resource+"");
                 if ( m.matches() ) {
                     try {
-                        SessionContext ctx = WebContext.getSessionContext();
+                        SessionContext ctx = WebContext.getInstance().getSessionContext();
                         Module mod = ctx.getModule( m.group(1) );
                         is = mod.getResourceAsStream( m.group(2) );
                     }
@@ -79,7 +80,7 @@ public class ResourceUtil {
                 
             }
             
-            HttpServletResponse resp = WebContext.getResponse();
+            HttpServletResponse resp = WebContext.getInstance().getResponse();
             BufferedOutputStream bos = null;
             BufferedInputStream bis = null;
             if ( is != null ) {
@@ -92,7 +93,7 @@ public class ResourceUtil {
                     resp.addHeader("Cache-Control", "public");
                 }
                 
-                //add headers from WebResource is there is specified
+                //add headers from WebResource if specified
                 Set<Map.Entry> headers = webRes.getHeaders().entrySet();
                 for(Map.Entry me: headers ) {
                     resp.addHeader( me.getKey()+"", me.getValue()+"" );
@@ -117,7 +118,7 @@ public class ResourceUtil {
                 
             } else {
                 try {
-                    HttpServletRequest req = WebContext.getRequest();
+                    HttpServletRequest req = WebContext.getInstance().getRequest();
                     StringBuffer resPath = new StringBuffer();
                     resPath.append( req.getRequestURI() );
                     if ( req.getQueryString() != null ) {

@@ -22,7 +22,7 @@ public class Osiris2VariableResolver extends VariableResolver {
     
     public Object resolveVariable(FacesContext context, String name) throws EvaluationException {
         if ("Controller".equals(name)) {
-            WorkUnitInstance wi = WebContext.getCurrentWorkUnitInstance();
+            WorkUnitInstance wi = WebContext.getInstance().getCurrentWorkUnitInstance();
             if ( wi != null ) {
                 return wi.getController();
             }

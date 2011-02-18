@@ -14,7 +14,7 @@ public class InvokerFunctions {
     
     
     public static String resourcePath( String path ) {
-        String ctxPath = WebContext.getExternalContext().getRequestContextPath();
+        String ctxPath = WebContext.getInstance().getExternalContext().getRequestContextPath();
         if ( path.startsWith("/") )
             return ctxPath + path;
         
@@ -22,7 +22,7 @@ public class InvokerFunctions {
     }
     
     public static String invokerPath( Invoker inv ) {
-        String ctxPath = WebContext.getExternalContext().getRequestContextPath();
+        String ctxPath = WebContext.getInstance().getExternalContext().getRequestContextPath();
         StringBuffer uri = new StringBuffer(ctxPath);
         uri.append("/" + inv.getWorkunitid().replace(":", "/"));
         if ( inv.getAction() != null ) {
