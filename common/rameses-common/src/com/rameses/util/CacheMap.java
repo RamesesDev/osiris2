@@ -26,5 +26,15 @@ public abstract class CacheMap extends Hashtable {
         return data;
     }
     
+    
+    public Object getData(Object key, Object param) {
+        Object data = super.get( key );
+        if(data==null) {
+            data = fetch(param);
+            super.put(key, data);
+        }
+        return data;
+    }
+    
     public abstract Object fetch(Object key);
 }
