@@ -1,4 +1,4 @@
-package com.rameses.bi.chart;
+package com.rameses.bi.common;
 
 import java.awt.Font;
 import java.util.List;

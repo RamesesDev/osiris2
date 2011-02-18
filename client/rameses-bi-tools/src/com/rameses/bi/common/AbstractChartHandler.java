@@ -1,4 +1,4 @@
-package com.rameses.bi.chart;
+package com.rameses.bi.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

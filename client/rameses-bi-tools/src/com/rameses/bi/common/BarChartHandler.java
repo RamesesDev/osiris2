@@ -1,5 +1,5 @@
 
-package com.rameses.bi.chart;
+package com.rameses.bi.common;
 
 import java.util.List;
 import org.jfree.chart.ChartFactory;

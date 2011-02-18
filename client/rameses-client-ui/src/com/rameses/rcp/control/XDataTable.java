@@ -46,7 +46,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     private boolean dynamic;
     private boolean showRowHeader;
     private String caption;
-    private String varStatus;
     
     private ListItem currentItem;
     
@@ -231,7 +230,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 ControlSupport.fireNavigation(this, outcome);
                 
             } catch(Exception ex){
-                MsgBox.err(new IllegalStateException("XTable::openItem", ex));
+                MsgBox.err(new IllegalStateException(ex));
             }
         }
     }
@@ -250,8 +249,11 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 binding.notifyDepends(this);
             }
             
+            String varStatus = table.getVarStatus();
             if ( !ValueUtil.isEmpty(varStatus) ) {
-                resolver.setProperty(binding.getBean(), varStatus, item);
+                try {
+                    resolver.setProperty(binding.getBean(), varStatus, item);
+                } catch(Exception e){}
             }
         }
         
@@ -392,8 +394,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public int getRowHeight()       { return table.getRowHeight(); }
     public void setRowHeight(int h) { table.setRowHeight(h); }
     
-    public String getVarStatus()               { return varStatus; }
-    public void setVarStatus(String varStatus) { this.varStatus = varStatus; }
+    public String getVarStatus()               { return table.getVarStatus(); }
+    public void setVarStatus(String varStatus) { table.setVarStatus(varStatus); }
     
     //</editor-fold>
     

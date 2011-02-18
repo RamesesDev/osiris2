@@ -14,15 +14,14 @@ import com.rameses.rcp.framework.ClientContext;
 import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 public class DataTableModel extends AbstractTableModel implements TableControlModel {
     
     private AbstractListModel listModel;
     private List<Column> columnList = new ArrayList();
+    private String varStatus;
     
     
     public void setListModel(AbstractListModel model) {
@@ -71,11 +70,14 @@ public class DataTableModel extends AbstractTableModel implements TableControlMo
         if ( item != null ) {
             String name = columnList.get(columnIndex).getName();
             if( !ValueUtil.isEmpty(name) ) {
-                if( name.startsWith("_status") ) {
-                    Map bean = new HashMap();
-                    bean.put("_status", item);
-                    return resolver.getProperty(bean, name);
-                } else if( item.getItem() != null ) {
+                if( varStatus == null); //do nothing
+                else if( name.equals(varStatus) ) {
+                    return item;
+                } else if( name.startsWith(varStatus + ".") ) {
+                    return resolver.getProperty(item, name.substring(name.indexOf(".")+1));
+                }
+                
+                if( item.getItem() != null ) {
                     return resolver.getProperty(item.getItem(), name);
                 }
             }
@@ -91,6 +93,14 @@ public class DataTableModel extends AbstractTableModel implements TableControlMo
     
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
+    }
+    
+    public String getVarStatus() {
+        return varStatus;
+    }
+    
+    public void setVarStatus(String varStatus) {
+        this.varStatus = varStatus;
     }
     
 }

@@ -1,5 +1,5 @@
 /*
- * ReportSheetHelper.java
+ * ReportSheetUtil.java
  *
  * Created on June 26, 2010, 10:53 AM
  * @author jaycverg
@@ -7,13 +7,18 @@
 
 package com.rameses.bi.control.reportsheet;
 
-import com.rameses.rcp.common.AbstractListModel;
+import com.rameses.bi.common.ReportSheetModel;
+import com.rameses.common.ExpressionResolver;
+import com.rameses.rcp.common.BeanWrapper;
 import com.rameses.rcp.common.Column;
+import com.rameses.rcp.common.ListItem;
+import com.rameses.rcp.common.StyleRule;
+import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
-import java.beans.Beans;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -23,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -41,7 +47,7 @@ import javax.swing.table.TableCellRenderer;
  *  3. string - left
  */
 
-public final class ReportSheetHelper {
+public final class ReportSheetUtil {
     
     public static final Insets CELL_MARGIN = new Insets(1, 5, 1, 5);
     public static final Color FOCUS_BG = new Color(254, 255, 208);
@@ -70,7 +76,7 @@ public final class ReportSheetHelper {
     public static TableCellRenderer getCellRenderer(String type) {
         return renderers.get(type);
     }
-        
+    
     public static JComponent getTableCornerComponent() {
         JLabel label = new JLabel(" ");
         Border bb = new HeaderBorder();
@@ -87,7 +93,10 @@ public final class ReportSheetHelper {
         public abstract void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column);
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            ReportSheetComponent xtable = (ReportSheetComponent) table;
+            ReportSheetTable xtable = (ReportSheetTable) table;
+            ReportSheetTableModel xtableModel = (ReportSheetTableModel) xtable.getModel();
+            Column colModel = xtableModel.getColumn(column);
+            
             JComponent comp = getComponent(table, row, column);
             comp.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
             comp.setFont(table.getFont());
@@ -127,19 +136,67 @@ public final class ReportSheetHelper {
                 }
             }
             
-            AbstractListModel lm = xtable.getListModel();
-            String errmsg = lm.getErrorMessage(row);
+            ReportSheetModel model = xtable.getListModel();
+            StyleRule[] styles = xtable.getBinding().getStyleRules();
+            ExpressionResolver exprRes = ClientContext.getCurrentContext().getExpressionResolver();
+            ListItem listItem = model.getItemList().get(row);
+            if( styles != null && styles.length > 0) {
+                Map bean = new HashMap();
+                bean.put("row", listItem.getRownum());
+                bean.put("column", column);
+                bean.put("columnName", colModel.getName());
+                bean.put("root", listItem.getRoot());
+                bean.put("item", listItem.getItem());
+                applyStyle( xtable.getName(), bean, comp, styles, exprRes );
+            }
             
-            if (errmsg != null) {
-                if (!hasFocus) {
-                    comp.setBackground( xtable.getErrorBackground() );
-                    comp.setForeground( xtable.getErrorForeground() );
-                    comp.setOpaque(true);
+            boolean iconVisible = false;
+            Icon icon = null;
+            Icon toggleIcon = null;
+            if( !ValueUtil.isEmpty(colModel.getIconVisibleWhen()) ) {
+                try {
+                    Map ext = null;
+                    if( !ValueUtil.isEmpty(xtable.getVarStatus()) ) {
+                        ext = new HashMap();
+                        ext.put(xtable.getVarStatus(), listItem);
+                    }
+                    Object bean = new BeanWrapper(listItem.getItem(), ext);
+                    Object o = exprRes.evaluate(bean, colModel.getIconVisibleWhen());
+                    iconVisible = Boolean.valueOf(o+"");
+                    
+                    if( colModel.getIcon() == null && colModel.getToggleIcon() == null ) {
+                        icon = UIManager.getIcon("Tree.collapsedIcon");
+                        toggleIcon = UIManager.getIcon("Tree.expandedIcon");
+                    }
+                } catch(Exception e) {;}
+            }
+            
+            Object rowData = listItem.getItem();
+            int borderPaddingLeft = 0;
+            if( comp instanceof JLabel ) {
+                JLabel label = (JLabel) comp;
+                label.setIconTextGap(5);
+                if( rowData != null && comp instanceof JLabel ) {
+                    ItemStatus status = model.getStatus(rowData);
+                    borderPaddingLeft = status.level * model.getIndentWidth();
+                    
+                    if( iconVisible ) {
+                        if( status.expanded )
+                            label.setIcon(toggleIcon);
+                        else
+                            label.setIcon(icon);
+                    } else {
+                        if ( icon != null ) {
+                            borderPaddingLeft += icon.getIconWidth() + 5;
+                        }
+                        label.setIcon(null);
+                    }
                 }
             }
             
+            
             //border support
-            Border inner = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right);
+            Border inner = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left + borderPaddingLeft, CELL_MARGIN.bottom, CELL_MARGIN.right);
             Border border = BorderFactory.createEmptyBorder(1,1,1,1);
             if (hasFocus) {
                 if (isSelected) {
@@ -154,6 +211,37 @@ public final class ReportSheetHelper {
             refresh(table, value, isSelected, hasFocus, row, column);
             return comp;
         }
+        
+        private void applyStyle(String name, Map bean, Component comp, StyleRule[] styles, ExpressionResolver exprRes) {
+            if ( styles == null ) return;
+            
+            if( name == null ) name = "_any_name";
+            
+            //apply style rules
+            for(StyleRule r : styles) {
+                String pattern = r.getPattern();
+                if( !pattern.startsWith("table:") ) continue;
+                
+                pattern = pattern.substring(6);
+                String rule = r.getExpression();
+                
+                //test expression
+                boolean applyStyles = false;
+                if ( rule!=null && name.matches(pattern) ){
+                    try {
+                        Object o = exprRes.evaluate(bean, rule);
+                        applyStyles = Boolean.valueOf(o+"");
+                    } catch (Exception ign){
+                        System.out.println("STYLE RULE ERROR: " + ign.getMessage());
+                    }
+                }
+                
+                if ( applyStyles ) {
+                    ControlSupport.setStyles( r.getProperties(), comp );
+                }
+            }
+        }
+        
         
     }
     //</editor-fold>
@@ -173,8 +261,8 @@ public final class ReportSheetHelper {
         }
         
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
-            ReportSheetComponent tc = (ReportSheetComponent) table;
-            Column c = ((ReportSheetModel) tc.getModel()).getColumn(column);
+            ReportSheetTable tc = (ReportSheetTable) table;
+            Column c = ((ReportSheetTableModel) tc.getModel()).getColumn(column);
             String format = c.getFormat();
             String type = c.getType();
             if ( "decimal".equals(type) || "double".equals(type) || value instanceof BigDecimal || value instanceof Double ) {
@@ -254,7 +342,7 @@ public final class ReportSheetHelper {
         }
         
         public JComponent getComponent(JTable table, int row, int column) {
-            AbstractListModel alm = ((ReportSheetComponent) table).getListModel();
+            ReportSheetModel alm = ((ReportSheetTable) table).getListModel();
             if ( alm.getItemList().get(row).getItem() == null )
                 return empty;
             
@@ -262,7 +350,7 @@ public final class ReportSheetHelper {
         }
         
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
-            AbstractListModel alm = ((ReportSheetComponent) table).getListModel();
+            ReportSheetModel alm = ((ReportSheetTable) table).getListModel();
             if ( alm.getItemList().get(row).getItem() == null ) return;
             
             component.setSelected("true".equals(value+""));

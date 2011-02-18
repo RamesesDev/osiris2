@@ -1,5 +1,5 @@
 /*
- * ReportSheetComponent.java
+ * ReportSheetTable.java
  *
  * Created on January 31, 2011
  * @author jaycverg
@@ -7,6 +7,7 @@
 
 package com.rameses.bi.control.reportsheet;
 
+import com.rameses.bi.common.ReportSheetModel;
 import com.rameses.rcp.common.*;
 import com.rameses.rcp.framework.Binding;
 import java.awt.Color;
@@ -19,16 +20,17 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-public class ReportSheetComponent extends JTable implements ListModelListener {
+public class ReportSheetTable extends JTable implements ListModelListener {
     
     private static final String COLUMN_POINT = "COLUMN_POINT";
     
-    private ReportSheetModel tableModel;
+    private ReportSheetTableModel tableModel;
     private ReportSheetListener tableListener;
-    private AbstractListModel listModel;
+    private ReportSheetModel listModel;
     private ListSelectionListener selectionListener;
     
     //row background color options
@@ -46,16 +48,19 @@ public class ReportSheetComponent extends JTable implements ListModelListener {
     private boolean multiselect;
     
     
-    public ReportSheetComponent() {
+    public ReportSheetTable() {
         initComponents();
     }
     
     //<editor-fold defaultstate="collapsed" desc="  initComponents  ">
     private void initComponents() {
         selectionListener = new SheetSelectionListener();
-        setTableHeader(new ReportSheetHeader());
+        //setTableHeader(new ReportSheetHeader());
+        JTableHeader header = getTableHeader();
+        header.setReorderingAllowed(false);
+        header.setDefaultRenderer(new ReportSheetHeader.TableHeaderRenderer());
         
-        tableModel = new ReportSheetModel();
+        tableModel = new ReportSheetTableModel();
         addKeyListener(new TableKeyAdapter());
         
         int cond = super.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -70,7 +75,7 @@ public class ReportSheetComponent extends JTable implements ListModelListener {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public void setListModel(AbstractListModel listModel) {
+    public void setListModel(ReportSheetModel listModel) {
         this.listModel = listModel;
         listModel.setListener(this);
         tableModel.setListModel(listModel);
@@ -78,7 +83,7 @@ public class ReportSheetComponent extends JTable implements ListModelListener {
         buildColumns();
     }
     
-    public AbstractListModel getListModel() { return listModel; }
+    public ReportSheetModel getListModel() { return listModel; }
     
     public Binding getBinding()             { return binding; }
     public void setBinding(Binding binding) { this.binding = binding; }
@@ -134,6 +139,9 @@ public class ReportSheetComponent extends JTable implements ListModelListener {
         }
     }
     
+    public String getVarStatus()            { return tableModel.getVarStatus(); }
+    public void setVarStatus(String status) { tableModel.setVarStatus(status); }
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  buildColumns  ">
@@ -141,7 +149,7 @@ public class ReportSheetComponent extends JTable implements ListModelListener {
         int length = tableModel.getColumnCount();
         for ( int i=0; i<length; i++ ) {
             Column col = tableModel.getColumn(i);
-            TableCellRenderer cellRenderer = ReportSheetHelper.getCellRenderer(col.getType());
+            TableCellRenderer cellRenderer = ReportSheetUtil.getCellRenderer(col.getType());
             TableColumn tableCol = getColumnModel().getColumn(i);
             tableCol.setCellRenderer(cellRenderer);
             applyColumnProperties(tableCol, col);
@@ -169,7 +177,7 @@ public class ReportSheetComponent extends JTable implements ListModelListener {
             List list = new ArrayList(rows.length);
             for(int r : rows) {
                 Object item = listModel.getItemList().get(r).getItem();
-                if( item != null ) list.add( item );                
+                if( item != null ) list.add( item );
             }
             return list;
         }
@@ -250,6 +258,12 @@ public class ReportSheetComponent extends JTable implements ListModelListener {
         listModel.setSelectedItem( getSelectedRow() );
         tableListener.rowChanged();
     }
+
+    public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+        listModel.setSelectedColumnIndex(columnIndex);
+        super.changeSelection(rowIndex, columnIndex, toggle, extend);
+    }
+    
     
     //<editor-fold defaultstate="collapsed" desc="  SheetSelectionListener (class)  ">
     private class SheetSelectionListener implements ListSelectionListener {

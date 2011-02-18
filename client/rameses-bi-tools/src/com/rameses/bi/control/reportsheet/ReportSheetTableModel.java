@@ -1,5 +1,5 @@
 /*
- * ReportSheetModel.java
+ * ReportSheetTableModel.java
  *
  * Created on January 31, 2011
  * @author jaycverg
@@ -10,7 +10,6 @@ package com.rameses.bi.control.reportsheet;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.ListItem;
-import com.rameses.rcp.control.table.*;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
@@ -20,10 +19,11 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
-public class ReportSheetModel extends AbstractTableModel {
+public class ReportSheetTableModel extends AbstractTableModel {
     
     private AbstractListModel listModel;
     private List<Column> columnList = new ArrayList();
+    private String varStatus;
     
     
     public void setListModel(AbstractListModel model) {
@@ -92,6 +92,14 @@ public class ReportSheetModel extends AbstractTableModel {
     
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
+    }
+
+    public String getVarStatus() {
+        return varStatus;
+    }
+
+    public void setVarStatus(String varStatus) {
+        this.varStatus = varStatus;
     }
     
 }

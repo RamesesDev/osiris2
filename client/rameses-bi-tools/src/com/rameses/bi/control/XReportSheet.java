@@ -7,21 +7,29 @@
 
 package com.rameses.bi.control;
 
+import com.rameses.bi.common.ReportSheetModel;
 import com.rameses.common.PropertyResolver;
-import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
-import com.rameses.bi.control.reportsheet.ReportSheetComponent;
+import com.rameses.bi.control.reportsheet.ReportSheetTable;
 import com.rameses.bi.control.reportsheet.HeaderBorder;
 import com.rameses.bi.control.reportsheet.ReportSheetListener;
-import com.rameses.bi.control.reportsheet.ReportSheetHelper;
+import com.rameses.bi.control.reportsheet.ReportSheetUtil;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.*;
 import com.rameses.rcp.util.*;
 import com.rameses.util.ValueUtil;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
@@ -32,12 +40,12 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 public class XReportSheet extends JPanel implements UIOutput, ReportSheetListener, FocusListener {
     
-    private ReportSheetComponent table;
+    private ReportSheetTable table;
     private ListScrollBar scrollBar;
     private RowHeaderView rowHeaderView;
     private JScrollPane scrollPane;
     
-    private AbstractListModel listModel;
+    private ReportSheetModel listModel;
     private String[] depends;
     private Binding binding;
     private int index;
@@ -53,25 +61,14 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
     
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
     private void init() {
-        table = new ReportSheetComponent();
+        table = new ReportSheetTable();
         scrollBar = new ListScrollBar();
         
         //--create and decorate scrollpane for the JTable
-        scrollPane = new JScrollPane(table);
+        scrollPane = new SheetScrollPane(table);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.addMouseWheelListener(new MouseWheelListener() {
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                int rotation = e.getWheelRotation();
-                if ( rotation == 0 ) return;
-                
-                if ( rotation < 0 )
-                    listModel.moveBackRecord();
-                else
-                    listModel.moveNextRecord();
-            }
-        });
         
         super.setLayout(new BorderLayout());
         add(scrollPane, BorderLayout.CENTER);
@@ -94,18 +91,20 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
         
         if ( table.getEvenForeground() == null ) {
             Color fg = (Color) UIManager.get("Table.evenForeground");
-            if ( fg != null ) table.setEvenForeground(fg);
+            if ( fg == null ) fg = table.getForeground();
+            table.setEvenForeground(fg);
         }
         
         if ( table.getOddBackground() == null ) {
             Color bg = (Color) UIManager.get("Table.oddBackground");
-            if ( bg == null ) bg = new Color(225, 232, 246);
+            if ( bg == null ) bg = table.getBackground();
             table.setOddBackground(bg);
         }
         
         if ( table.getOddForeground() == null ) {
             Color fg = (Color) UIManager.get("Table.oddForeground");
-            if ( fg != null ) table.setOddForeground(fg);
+            if ( fg == null ) fg = table.getForeground();
+            table.setOddForeground(fg);
         }
         
         //--design time display
@@ -175,8 +174,8 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
     public void load() {
         if ( handler != null ) {
             Object obj = UIControlUtil.getBeanValue(this, handler);
-            if ( obj instanceof AbstractListModel ) {
-                listModel = (AbstractListModel) obj;
+            if ( obj instanceof ReportSheetModel ) {
+                listModel = (ReportSheetModel) obj;
                 table.setListModel(listModel);
                 table.setListener(this);
                 table.setBinding(binding);
@@ -217,7 +216,7 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
                 ControlSupport.fireNavigation(this, outcome);
                 
             } catch(Exception ex){
-                MsgBox.err(new IllegalStateException("XTable::openItem", ex));
+                MsgBox.err(ex);
             }
         }
     }
@@ -300,7 +299,7 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
         this.showRowHeader = showRowHeader;
         
         if ( showRowHeader ) {
-            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, ReportSheetHelper.getTableCornerComponent());
+            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, ReportSheetUtil.getTableCornerComponent());
             scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
             rowHeaderView.setRowCount( table.getRowCount() );
         } else {
@@ -327,10 +326,37 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
     public boolean isMultiselect()            { return table.isMultiselect(); }
     public void setMultiselect(boolean multi) { table.setMultiselect(multi); }
     
+    public String getVarStatus()            { return table.getVarStatus(); }
+    public void setVarStatus(String status) { table.setVarStatus(status); }
+    
     //</editor-fold>
     
     
     //--- inner classess
+    
+    
+    //<editor-fold defaultstate="collapsed" desc="  SheetScrollPane (class)  ">
+    private class SheetScrollPane extends JScrollPane {
+        
+        SheetScrollPane(Component view) {
+            super(view);
+        }
+        
+        
+        
+        protected void processMouseWheelEvent(MouseWheelEvent e) {
+            int rotation = e.getWheelRotation();
+            if ( rotation == 0 ) return;
+            
+            if ( rotation < 0 ) {
+                listModel.moveBackRecord();
+            } else {
+                listModel.moveNextRecord();
+            }
+        }
+        
+    }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  TableBorder (class)  ">
     private static class TableBorder extends AbstractBorder {
@@ -381,7 +407,7 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
             });
             
             setVisible( scrollBar.isVisible() );
-            add(ReportSheetHelper.getTableCornerComponent(), BorderLayout.NORTH);
+            add(ReportSheetUtil.getTableCornerComponent(), BorderLayout.NORTH);
             add(scrollBar, BorderLayout.CENTER);
         }
         

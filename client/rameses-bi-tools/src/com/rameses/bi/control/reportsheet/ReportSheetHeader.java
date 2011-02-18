@@ -32,14 +32,14 @@ public class ReportSheetHeader extends JTableHeader {
     }
     
     //<editor-fold defaultstate="collapsed" desc="  TableHeaderRenderer (class)  ">
-    private static class TableHeaderRenderer implements TableCellRenderer {
+    public static class TableHeaderRenderer implements TableCellRenderer {
         
         private JLabel label = new JLabel();
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             if ( !Beans.isDesignTime() ) {
-                ReportSheetComponent xtable = (ReportSheetComponent) table;
-                Column c = ((ReportSheetModel)xtable.getModel()).getColumn(column);
+                ReportSheetTable xtable = (ReportSheetTable) table;
+                Column c = ((ReportSheetTableModel)xtable.getModel()).getColumn(column);
                 if ( isRightAligned(c, value) ) {
                     label.setHorizontalAlignment( SwingConstants.RIGHT );
                     

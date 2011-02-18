@@ -170,6 +170,10 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     
     public Color getErrorForeground() { return errorForeground; }
     public void setErrorForeground(Color errorForeground) { this.errorForeground = errorForeground; }
+    
+    public String getVarStatus()            { return tableModel.getVarStatus(); }
+    public void setVarStatus(String status) { tableModel.setVarStatus(status); }
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  buildColumns  ">

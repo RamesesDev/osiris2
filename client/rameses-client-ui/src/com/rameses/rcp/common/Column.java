@@ -29,7 +29,9 @@ public class Column implements Serializable {
     private Class fieldType;
     private String alignment;
     private String vAlignment;
+    private String iconVisibleWhen;
     private String icon;
+    private String toggleIcon;
     private String headerIcon;
     private String expression;
     private String category;
@@ -311,5 +313,21 @@ public class Column implements Serializable {
         this.category = category;
     }
     //</editor-fold>
+
+    public String getToggleIcon() {
+        return toggleIcon;
+    }
+
+    public void setToggleIcon(String toggleIcon) {
+        this.toggleIcon = toggleIcon;
+    }
+
+    public String getIconVisibleWhen() {
+        return iconVisibleWhen;
+    }
+
+    public void setIconVisibleWhen(String iconVisibleWhen) {
+        this.iconVisibleWhen = iconVisibleWhen;
+    }
     
 }

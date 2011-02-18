@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.bi.chart;
+package com.rameses.bi.common;
 
 import java.util.Date;
 import java.util.Map;

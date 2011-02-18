@@ -7,7 +7,7 @@
 
 package com.rameses.bi.control;
 
-import com.rameses.bi.chart.AbstractChartHandler;
+import com.rameses.bi.common.AbstractChartHandler;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
