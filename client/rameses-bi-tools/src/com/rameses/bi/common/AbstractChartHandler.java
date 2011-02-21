@@ -22,8 +22,6 @@ public abstract class AbstractChartHandler implements Serializable {
     private String width= "500";
     private String height= "300";
     private String title = "<no title>";
-    private String onclick;
-    private String timer;
     private String topCaption= "";
     private String bottomCaption;
     private String xlabel = "category";
@@ -51,7 +49,6 @@ public abstract class AbstractChartHandler implements Serializable {
         if(map.get("ylabel")!=null ) setYlabel((String)map.get("ylabel"));
         if(map.get("topCaption")!=null ) setTopCaption((String) map.get("topCaption"));
         if(map.get("is3D") != null) setDisplay3d(Boolean.valueOf((String)map.get("is3D")));
-        if(map.get("timer")!=null) setTimer((String) map.get("timer"));
     }
     
     // <editor-fold defaultstate="collapsed" desc="GETTER/SETTER">
@@ -76,11 +73,7 @@ public abstract class AbstractChartHandler implements Serializable {
     public String getTitle() {
         return title;
     }
-    
-    public String getTimer() {
-        return timer;
-    }
-    
+
     public String getTopCaption() {
         return topCaption;
     }
@@ -101,19 +94,7 @@ public abstract class AbstractChartHandler implements Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
-    
-    public String getOnclick() {
-        return onclick;
-    }
-    
-    public void setOnclick(String onclick) {
-        this.onclick = onclick;
-    }
-    
-    public void setTimer(String timer) {
-        this.timer = timer;
-    }
-    
+
     public void setTopCaption(String topCaption) {
         this.topCaption = topCaption;
     }

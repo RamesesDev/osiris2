@@ -25,8 +25,7 @@ public class ReportSheetTableModel extends AbstractTableModel {
     private List<Column> columnList = new ArrayList();
     private String varStatus;
     
-    
-    public void setListModel(AbstractListModel model) {
+    public ReportSheetTableModel(AbstractListModel model) {
         listModel = model;
         columnList.clear();
         if ( listModel == null ) return;
@@ -41,12 +40,7 @@ public class ReportSheetTableModel extends AbstractTableModel {
             }
         }
     }
-    
-    public void reIndexColumns() {
-        columnList.clear();
-        indexColumns();
-    }
-    
+
     public AbstractListModel getListModel() {
         return listModel;
     }
@@ -93,11 +87,11 @@ public class ReportSheetTableModel extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
-
+    
     public String getVarStatus() {
         return varStatus;
     }
-
+    
     public void setVarStatus(String varStatus) {
         this.varStatus = varStatus;
     }

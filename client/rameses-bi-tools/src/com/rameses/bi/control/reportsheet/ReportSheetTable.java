@@ -60,7 +60,6 @@ public class ReportSheetTable extends JTable implements ListModelListener {
         header.setReorderingAllowed(false);
         header.setDefaultRenderer(new ReportSheetHeader.TableHeaderRenderer());
         
-        tableModel = new ReportSheetTableModel();
         addKeyListener(new TableKeyAdapter());
         
         int cond = super.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -78,7 +77,7 @@ public class ReportSheetTable extends JTable implements ListModelListener {
     public void setListModel(ReportSheetModel listModel) {
         this.listModel = listModel;
         listModel.setListener(this);
-        tableModel.setListModel(listModel);
+        tableModel = new ReportSheetTableModel(listModel);
         setModel(tableModel);
         buildColumns();
     }
@@ -237,9 +236,9 @@ public class ReportSheetTable extends JTable implements ListModelListener {
     public void refreshSelectedItem() {}
     
     public void rebuildColumns() {
-//        tableModel.reIndexColumns();
-//        buildColumns();
-        setListModel( listModel );
+        tableModel = new ReportSheetTableModel(listModel);
+        setModel(tableModel);
+        buildColumns();
     }
     
     public void movePrevRecord() {
@@ -258,7 +257,7 @@ public class ReportSheetTable extends JTable implements ListModelListener {
         listModel.setSelectedItem( getSelectedRow() );
         tableListener.rowChanged();
     }
-
+    
     public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
         listModel.setSelectedColumnIndex(columnIndex);
         super.changeSelection(rowIndex, columnIndex, toggle, extend);

@@ -13,6 +13,7 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -20,8 +21,6 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.RenderingHints;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.beans.Beans;
 import javax.swing.Icon;
@@ -41,7 +40,6 @@ public class XChart extends JLabel implements UIControl {
     
     private AbstractChartHandler chartHandler;
     private JFreeChart chart;
-    private ChartIcon icon;
     
     
     public XChart() {
@@ -49,50 +47,19 @@ public class XChart extends JLabel implements UIControl {
         
         if( Beans.isDesignTime() ) {
             setPreferredSize(new Dimension(50, 50));
+            setOpaque(true);
+            setBackground(Color.LIGHT_GRAY);
         } else {
-            init();
+            setIcon( new ChartIcon() );
         }
     }
     
     public void setLayout(LayoutManager mgr) {;}
-    
-    //<editor-fold defaultstate="collapsed" desc="  init method  ">
-    private void init() {
-        icon = new ChartIcon();
-        addComponentListener(new ComponentListener() {
-            public void componentHidden(ComponentEvent e) {}
-            public void componentMoved(ComponentEvent e) {}
-            public void componentShown(ComponentEvent e) {}
-            
-            public void componentResized(ComponentEvent e) {
-                XChart c = XChart.this;
-                
-                int w=0, h=0;
-                Dimension d = c.getSize();
-                w = d.width;
-                h = d.height;
-                
-                Insets in = c.getInsets();
-                if( in != null ) {
-                    w -= in.left + in.right;
-                    h -= in.top + in.bottom;
-                }
-                Border b = c.getBorder();
-                if( b != null && (in = b.getBorderInsets(c)) != null ) {
-                    w -= in.left + in.right;
-                    h -= in.top + in.bottom;
-                }
-                
-                icon.setSize(new Dimension(w, h));
-            }
-        });
-        setIcon(icon);
-    }
-    //</editor-fold>
-    
+        
     public void refresh() {
         if( chartHandler != null && dynamic ) {
             chart = chartHandler.createChart();
+            super.repaint();
         }
         
     }
@@ -171,11 +138,28 @@ public class XChart extends JLabel implements UIControl {
     //<editor-fold defaultstate="collapsed" desc="  ChartIcon (class)  ">
     private class ChartIcon implements Icon {
         
-        private Dimension size = new Dimension(0,0);
-        
-        public void paintIcon(Component c, Graphics g, int x, int y) {
+        public void paintIcon(Component comp, Graphics g, int x, int y) {
+            JLabel c = (JLabel) comp;
+            int w=0, h=0;
+            Dimension d = c.getSize();
+            w = d.width;
+            h = d.height;
+            
+            Insets in = c.getInsets();
+            if( in != null ) {
+                w -= in.left + in.right;
+                h -= in.top + in.bottom;
+            }
+            Border b = c.getBorder();
+            if( b != null && (in = b.getBorderInsets(c)) != null ) {
+                w -= in.left + in.right;
+                h -= in.top + in.bottom;
+            }
+            
+            if( w <= 0 || h <= 0 ) return;
+            
             if( chart != null ) {
-                BufferedImage img = chart.createBufferedImage(size.width, size.height);
+                BufferedImage img = chart.createBufferedImage(w, h);
                 
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -186,16 +170,7 @@ public class XChart extends JLabel implements UIControl {
         
         public int getIconWidth() { return 0; }
         public int getIconHeight() { return 0;}
-        
-        public void setSize(Dimension size) {
-            this.size.width = size.width;
-            this.size.height = size.height;
-        }
-        
-        public Dimension getSize() {
-            return size;
-        }
-        
+
     }
     //</editor-fold>
     

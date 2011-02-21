@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -49,8 +51,10 @@ import javax.swing.table.TableCellRenderer;
 
 public final class ReportSheetUtil {
     
-    public static final Insets CELL_MARGIN = new Insets(1, 5, 1, 5);
-    public static final Color FOCUS_BG = new Color(254, 255, 208);
+    private static final Insets CELL_MARGIN = new Insets(1, 5, 1, 5);
+    private static final Color FOCUS_BG = new Color(254, 255, 208);
+    private static final String COLLAPSED_ICON = "/com/rameses/bi/icons/collapsed.png";
+    private static final String EXPANDED_ICON = "/com/rameses/bi/icons/expanded.png";
     
     private static Map<String, TableCellRenderer> renderers = new HashMap();
     
@@ -138,7 +142,8 @@ public final class ReportSheetUtil {
             
             ReportSheetModel model = xtable.getListModel();
             StyleRule[] styles = xtable.getBinding().getStyleRules();
-            ExpressionResolver exprRes = ClientContext.getCurrentContext().getExpressionResolver();
+            ClientContext clientCtx = ClientContext.getCurrentContext();
+            ExpressionResolver exprRes = clientCtx.getExpressionResolver();
             ListItem listItem = model.getItemList().get(row);
             if( styles != null && styles.length > 0) {
                 Map bean = new HashMap();
@@ -150,7 +155,7 @@ public final class ReportSheetUtil {
                 applyStyle( xtable.getName(), bean, comp, styles, exprRes );
             }
             
-            boolean iconVisible = false;
+            boolean iconVisible = true;
             Icon icon = null;
             Icon toggleIcon = null;
             if( !ValueUtil.isEmpty(colModel.getIconVisibleWhen()) ) {
@@ -165,11 +170,26 @@ public final class ReportSheetUtil {
                     iconVisible = Boolean.valueOf(o+"");
                     
                     if( colModel.getIcon() == null && colModel.getToggleIcon() == null ) {
-                        icon = UIManager.getIcon("Tree.collapsedIcon");
-                        toggleIcon = UIManager.getIcon("Tree.expandedIcon");
+                        icon = new ImageIcon(getClass().getResource(COLLAPSED_ICON));
+                        toggleIcon = new ImageIcon(getClass().getResource(EXPANDED_ICON));
                     }
                 } catch(Exception e) {;}
             }
+            
+            if( colModel.getIcon() != null ) {
+                try {
+                    URL u = clientCtx.getClassLoader().getResource( colModel.getIcon() );
+                    icon = new ImageIcon(u);
+                } catch(Exception e) {}
+            }
+            
+            if( colModel.getToggleIcon() != null ) {
+                try {
+                    URL u = clientCtx.getClassLoader().getResource( colModel.getToggleIcon() );
+                    toggleIcon = new ImageIcon(u);
+                } catch(Exception e) {}
+            }
+            
             
             Object rowData = listItem.getItem();
             int borderPaddingLeft = 0;

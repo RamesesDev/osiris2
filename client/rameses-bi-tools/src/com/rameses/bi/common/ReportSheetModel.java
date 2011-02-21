@@ -40,6 +40,12 @@ public abstract class ReportSheetModel extends SubListModel {
         }
     };
     
+    public void load() {
+        statusIndex.clear();
+        cache.clear();
+        super.load();
+    }
+    
     protected void fetch() {
         if( dataList == null) {
             dataList = new ArrayList();
@@ -75,6 +81,10 @@ public abstract class ReportSheetModel extends SubListModel {
         pageCount = ((maxRows+1) / getRows()) + (((maxRows+1) % getRows()>0)?1:0);
     }
     
+    public List getDataList() {
+        return dataList;
+    }
+    
     public abstract List fetchChildren(Object parent);
     
     /** non-overridable since report sheet is for viewing only **/
@@ -107,37 +117,61 @@ public abstract class ReportSheetModel extends SubListModel {
         if( selectedColumnIndex != 0 ) return null;
         
         try {
-            Object id = getRowId(obj);
-            
-            ArrayList arrayList = (ArrayList) dataList;
-            
-            int idx = arrayList.indexOf(obj);
-            ItemStatus status = getStatus(obj);
-            int level = status.level;
-            
-            if( !status.expanded ) {
-                List subList = (List) cache.getData( id, obj );
-                if( subList == null ) return null;
-                
-                arrayList.addAll(idx+1, subList);
-                status.expanded = true;
-            } else {
-                List removed = new ArrayList();
-                for( int j=idx+1; j<arrayList.size(); j++ ) {
-                    Object x = arrayList.get(j);
-                    ItemStatus xStatus = getStatus(x);
-                    if( xStatus.level <= level ) break;
-                    removed.add(x);
-                }
-                arrayList.removeAll(removed);
-                status.expanded = false;
-            }
+            processToggle(obj);
         } catch(Exception e){;}
         
         refresh();
         return null;
     }
     
+    private void processToggle(Object obj) {
+        Object id = getRowId(obj);
+        
+        ArrayList arrayList = (ArrayList) dataList;
+        
+        int idx = arrayList.indexOf(obj);
+        ItemStatus status = getStatus(obj);
+        int level = status.level;
+        
+        if( !status.expanded ) {
+            List subList = (List) cache.getData( id, obj );
+            if( subList == null ) return;
+            
+            arrayList.addAll(idx+1, subList);
+            for(Object o : subList) {
+                ItemStatus is = getStatus(o);
+                if( is.expanded ) loadExpandedItems(o);
+            }
+            status.expanded = true;
+        } else {
+            List removed = new ArrayList();
+            for( int j=idx+1; j<arrayList.size(); j++ ) {
+                Object x = arrayList.get(j);
+                ItemStatus xStatus = getStatus(x);
+                if( xStatus.level <= level ) break;
+                removed.add(x);
+            }
+            arrayList.removeAll(removed);
+            status.expanded = false;
+        }
+    }
+    
+    private void loadExpandedItems(Object obj) {
+        ArrayList arrayList = (ArrayList) dataList;
+        int idx = arrayList.indexOf(obj);
+        
+        Object id = getRowId(obj);
+        List subList = (List) cache.getData( id, obj );
+        if( subList == null ) return;
+        
+        arrayList.addAll(idx+1, subList);
+        for(Object o : subList) {
+            ItemStatus is = getStatus(o);
+            if( is.expanded ) loadExpandedItems(o);
+        }
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="  getters/setters  ">
     public int getIndentWidth() {
         return indentWidth;
     }
@@ -153,5 +187,6 @@ public abstract class ReportSheetModel extends SubListModel {
     public final void setSelectedColumnIndex(int selectedColumnIndex) {
         this.selectedColumnIndex = selectedColumnIndex;
     }
+    //</editor-fold>
     
 }

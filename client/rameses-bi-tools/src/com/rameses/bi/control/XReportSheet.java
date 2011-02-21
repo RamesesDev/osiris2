@@ -97,13 +97,13 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
         
         if ( table.getOddBackground() == null ) {
             Color bg = (Color) UIManager.get("Table.oddBackground");
-            if ( bg == null ) bg = table.getBackground();
+            if ( bg == null ) bg = new Color(225, 232, 246);
             table.setOddBackground(bg);
         }
         
         if ( table.getOddForeground() == null ) {
             Color fg = (Color) UIManager.get("Table.oddForeground");
-            if ( fg == null ) fg = table.getForeground();
+            if ( fg == null ) fg = Color.BLACK;
             table.setOddForeground(fg);
         }
         

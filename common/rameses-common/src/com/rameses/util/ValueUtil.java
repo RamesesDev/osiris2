@@ -96,7 +96,7 @@ public class ValueUtil {
                 case '\n': rep = "\\\\n"; break;
                 case '\r': rep = "\\\\r"; break;
                 case '\t': rep = "\\\\t"; break;
-                case '\\': rep = "\\\\"; break;
+                case '\\': rep = "\\\\\\\\"; break;
                 case '"' : rep = "\\\\\""; break;
                 case '$' : rep = "\\\\\\$"; break;
             }
