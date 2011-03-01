@@ -29,6 +29,12 @@ public class Column implements Serializable {
     private Class fieldType;
     private String alignment;
     private String vAlignment;
+    private String iconVisibleWhen;
+    private String icon;
+    private String toggleIcon;
+    private String headerIcon;
+    private String expression;
+    private String category;
     
     
     private Map properties = new HashMap();
@@ -45,7 +51,7 @@ public class Column implements Serializable {
         this(name, caption);
         this.type = type;
         if( props != null) {
-            this.properties = props;
+            this.setProperties(props);
         }
     }
     
@@ -77,7 +83,7 @@ public class Column implements Serializable {
         col.resizable = resizable;
         col.editable = editable;
         col.visible = visible;
-        col.properties = properties;
+        col.setProperties(getProperties());
         col.fieldname = fieldname;
         col.rowheight = rowheight;
         col.primary = primary;
@@ -240,7 +246,6 @@ public class Column implements Serializable {
     public void setFieldType(Class fieldType) {
         this.fieldType = fieldType;
     }
-    //</editor-fold>
     
     public String getEditableWhen() {
         return editableWhen;
@@ -274,6 +279,55 @@ public class Column implements Serializable {
     
     public void setVAlignment(String vAlignment) {
         this.vAlignment = vAlignment;
+    }
+    
+    public String getIcon() {
+        return icon;
+    }
+    
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+    
+    public String getHeaderIcon() {
+        return headerIcon;
+    }
+    
+    public void setHeaderIcon(String headerIcon) {
+        this.headerIcon = headerIcon;
+    }
+    
+    public String getExpression() {
+        return expression;
+    }
+    
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+    
+    public String getCategory() {
+        return category;
+    }
+    
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    //</editor-fold>
+
+    public String getToggleIcon() {
+        return toggleIcon;
+    }
+
+    public void setToggleIcon(String toggleIcon) {
+        this.toggleIcon = toggleIcon;
+    }
+
+    public String getIconVisibleWhen() {
+        return iconVisibleWhen;
+    }
+
+    public void setIconVisibleWhen(String iconVisibleWhen) {
+        this.iconVisibleWhen = iconVisibleWhen;
     }
     
 }

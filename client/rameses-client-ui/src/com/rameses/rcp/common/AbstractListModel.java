@@ -33,6 +33,7 @@ public abstract class AbstractListModel {
     protected List dataList;
     
     private Column primaryColumn;
+    private boolean primaryColChecked;
     
     //used by XTable to register error messages
     private Map<ListItem, String> errorMessages = new HashMap();
@@ -198,7 +199,7 @@ public abstract class AbstractListModel {
             }
         }
     }
-
+    
     
     /**
      * default columns will display item's toString() with a blank header
@@ -394,6 +395,7 @@ public abstract class AbstractListModel {
      */
     public void rebuildColumns() {
         primaryColumn = null;
+        primaryColChecked = false;
         if ( listener != null ) listener.rebuildColumns();
     }
     
@@ -440,7 +442,8 @@ public abstract class AbstractListModel {
     }
     
     public Column getPrimaryColumn() {
-        if ( primaryColumn == null ) {
+        if ( primaryColumn == null && !primaryColChecked ) {
+            primaryColChecked = true;
             Column[] cols = getColumns();
             if ( cols != null && cols.length > 0 ) {
                 //primaryColumn = cols[0];

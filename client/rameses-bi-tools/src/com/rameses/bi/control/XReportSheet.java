@@ -1,27 +1,35 @@
 /*
- * XDataTable.java
+ * XReportSheet.java
  *
  * Created on January 31, 2011, 10:51 AM
  * @author jaycverg
  */
 
-package com.rameses.rcp.control;
+package com.rameses.bi.control;
 
+import com.rameses.bi.common.ReportSheetModel;
 import com.rameses.common.PropertyResolver;
-import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
-import com.rameses.rcp.control.table.DataTableComponent;
+import com.rameses.bi.control.reportsheet.ReportSheetTable;
+import com.rameses.bi.control.reportsheet.HeaderBorder;
+import com.rameses.bi.control.reportsheet.ReportSheetListener;
+import com.rameses.bi.control.reportsheet.ReportSheetUtil;
 import com.rameses.rcp.control.table.ListScrollBar;
-import com.rameses.rcp.control.table.TableHeaderBorder;
-import com.rameses.rcp.control.table.TableListener;
-import com.rameses.rcp.control.table.TableManager;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.*;
 import com.rameses.rcp.util.*;
 import com.rameses.util.ValueUtil;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
@@ -30,69 +38,37 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 
 
-public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
+public class XReportSheet extends JPanel implements UIOutput, ReportSheetListener, FocusListener {
     
-    private DataTableComponent table;
+    private ReportSheetTable table;
     private ListScrollBar scrollBar;
     private RowHeaderView rowHeaderView;
     private JScrollPane scrollPane;
     
-    private AbstractListModel listModel;
+    private ReportSheetModel listModel;
     private String[] depends;
     private Binding binding;
     private int index;
     private String handler;
-    private ActionMessage actionMessage = new ActionMessage();
-    private boolean dynamic;
     private boolean showRowHeader;
-    private String caption;
     
-    private ListItem currentItem;
-    
+    private boolean loaded;
     
     
-    public XDataTable() {
+    public XReportSheet() {
         init();
-    }
-    
-    //-- channel events to TableComponent
-    public void addMouseListener(MouseListener l) {
-        table.addMouseListener(l);
-    }
-    
-    public void removeMouseListener(MouseListener l) {
-        table.removeMouseListener(l);
-    }
-    
-    public void addKeyListener(KeyListener l) {
-        table.addKeyListener(l);
-    }
-    
-    public void removeKeyListener(KeyListener l) {
-        table.removeKeyListener(l);
     }
     
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
     private void init() {
-        table = new DataTableComponent();
+        table = new ReportSheetTable();
         scrollBar = new ListScrollBar();
         
         //--create and decorate scrollpane for the JTable
-        scrollPane = new JScrollPane(table);
+        scrollPane = new SheetScrollPane(table);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.addMouseWheelListener(new MouseWheelListener() {
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                int rotation = e.getWheelRotation();
-                if ( rotation == 0 ) return;
-                
-                if ( rotation < 0 )
-                    listModel.moveBackRecord();
-                else
-                    listModel.moveNextRecord();
-            }
-        });
         
         super.setLayout(new BorderLayout());
         add(scrollPane, BorderLayout.CENTER);
@@ -115,7 +91,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         
         if ( table.getEvenForeground() == null ) {
             Color fg = (Color) UIManager.get("Table.evenForeground");
-            if ( fg != null ) table.setEvenForeground(fg);
+            if ( fg == null ) fg = table.getForeground();
+            table.setEvenForeground(fg);
         }
         
         if ( table.getOddBackground() == null ) {
@@ -126,7 +103,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         
         if ( table.getOddForeground() == null ) {
             Color fg = (Color) UIManager.get("Table.oddForeground");
-            if ( fg != null ) table.setOddForeground(fg);
+            if ( fg == null ) fg = Color.BLACK;
+            table.setOddForeground(fg);
         }
         
         //--design time display
@@ -142,6 +120,23 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         }
     }
     //</editor-fold>
+    
+    //-- channel events to TableComponent
+    public void addMouseListener(MouseListener l) {
+        table.addMouseListener(l);
+    }
+    
+    public void removeMouseListener(MouseListener l) {
+        table.removeMouseListener(l);
+    }
+    
+    public void addKeyListener(KeyListener l) {
+        table.addKeyListener(l);
+    }
+    
+    public void removeKeyListener(KeyListener l) {
+        table.removeKeyListener(l);
+    }
     
     //<editor-fold defaultstate="collapsed" desc="  UIInput properties  ">
     public String[] getDepends() {
@@ -169,19 +164,18 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     }
     
     public void refresh() {
-        if ( listModel != null ) {
-            if ( dynamic )
-                listModel.load();
-            else
-                listModel.refresh();
+        if ( listModel != null && loaded  ) {
+            listModel.refresh();
         }
+        
+        loaded = true;
     }
     
     public void load() {
         if ( handler != null ) {
             Object obj = UIControlUtil.getBeanValue(this, handler);
-            if ( obj instanceof AbstractListModel ) {
-                listModel = (AbstractListModel) obj;
+            if ( obj instanceof ReportSheetModel ) {
+                listModel = (ReportSheetModel) obj;
                 table.setListModel(listModel);
                 table.setListener(this);
                 table.setBinding(binding);
@@ -190,8 +184,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 if ( rowHeaderView != null )
                     rowHeaderView.setRowCount( listModel.getRows() );
                 
-                if( !dynamic )
-                    listModel.load();
+                listModel.load();
             }
             
         }
@@ -203,12 +196,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         return listModel.getSelectedItem();
     }
     
-    public void setValue(Object value) {}
-    
-    public boolean isNullWhenEmpty() {
-        return true;
-    }
-    
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
     }
@@ -217,7 +204,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     //<editor-fold defaultstate="collapsed" desc="  table listener methods  ">
     public void refreshList() {
         scrollBar.adjustValues();
-        rowChanged();
     }
     
     public void openItem() {
@@ -230,7 +216,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 ControlSupport.fireNavigation(this, outcome);
                 
             } catch(Exception ex){
-                MsgBox.err(new IllegalStateException(ex));
+                MsgBox.err(ex);
             }
         }
     }
@@ -238,26 +224,11 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public void rowChanged() {
         String name = getName();
         PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-        ListItem item = listModel.getSelectedItem();
         
-        if( !ValueUtil.isEqual(currentItem, item) ) {
-            if ( !ValueUtil.isEmpty(name) ) {
-                Object value = null;
-                if( item != null ) value = item.getItem();
-                
-                resolver.setProperty(binding.getBean(), name, value);
-                binding.notifyDepends(this);
-            }
-            
-            String varStatus = table.getVarStatus();
-            if ( !ValueUtil.isEmpty(varStatus) ) {
-                try {
-                    resolver.setProperty(binding.getBean(), varStatus, item);
-                } catch(Exception e){}
-            }
+        if ( !ValueUtil.isEmpty(name) ) {
+            resolver.setProperty(binding.getBean(), name, table.getSelectedValue());
+            binding.notifyDepends(this);
         }
-        
-        currentItem = item;
         
         if ( rowHeaderView != null )
             rowHeaderView.clearEditing();
@@ -275,45 +246,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
-    public boolean isRequired() {
-        return table.isRequired();
-    }
-    
-    public void setRequired(boolean required) {}
-    
-    public void validateInput() {
-        String errmsg = listModel.getErrorMessages();
-        actionMessage.clearMessages();
-        if ( errmsg != null ) {
-            StringBuffer buffer = new StringBuffer(errmsg);
-            if( !ValueUtil.isEmpty(caption) ) {
-                buffer.insert(0, caption + " (\n")
-                .append("\n)");
-            }
-            actionMessage.addMessage(null, buffer.toString(), null);
-        }
-    }
-    
-    public ActionMessage getActionMessage() {
-        return actionMessage;
-    }
-    
-    public void setReadonly(boolean readonly) {
-        table.setReadonly(readonly);
-    }
-    
-    public boolean isReadonly() {
-        return table.isReadonly();
-    }
-    
-    public String getCaption() {
-        return this.caption;
-    }
-    
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
-    
     public void setName(String name) {
         super.setName(name);
         if ( table != null ) table.setName(name);
@@ -323,9 +255,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     
     public String getHandler()             { return handler; }
     public void setHandler(String handler) { this.handler = handler; }
-    
-    public boolean isDynamic()              { return dynamic; }
-    public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
     
     public void setShowHorizontalLines(boolean show) { table.setShowHorizontalLines(show); }
     public boolean isShowHorizontalLines()           { return table.getShowHorizontalLines(); }
@@ -370,7 +299,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         this.showRowHeader = showRowHeader;
         
         if ( showRowHeader ) {
-            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
+            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, ReportSheetUtil.getTableCornerComponent());
             scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
             rowHeaderView.setRowCount( table.getRowCount() );
         } else {
@@ -394,13 +323,40 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public int getRowHeight()       { return table.getRowHeight(); }
     public void setRowHeight(int h) { table.setRowHeight(h); }
     
-    public String getVarStatus()               { return table.getVarStatus(); }
-    public void setVarStatus(String varStatus) { table.setVarStatus(varStatus); }
+    public boolean isMultiselect()            { return table.isMultiselect(); }
+    public void setMultiselect(boolean multi) { table.setMultiselect(multi); }
+    
+    public String getVarStatus()            { return table.getVarStatus(); }
+    public void setVarStatus(String status) { table.setVarStatus(status); }
     
     //</editor-fold>
     
     
     //--- inner classess
+    
+    
+    //<editor-fold defaultstate="collapsed" desc="  SheetScrollPane (class)  ">
+    private class SheetScrollPane extends JScrollPane {
+        
+        SheetScrollPane(Component view) {
+            super(view);
+        }
+        
+        
+        
+        protected void processMouseWheelEvent(MouseWheelEvent e) {
+            int rotation = e.getWheelRotation();
+            if ( rotation == 0 ) return;
+            
+            if ( rotation < 0 ) {
+                listModel.moveBackRecord();
+            } else {
+                listModel.moveNextRecord();
+            }
+        }
+        
+    }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  TableBorder (class)  ">
     private static class TableBorder extends AbstractBorder {
@@ -451,7 +407,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
             });
             
             setVisible( scrollBar.isVisible() );
-            add(TableManager.getTableCornerComponent(), BorderLayout.NORTH);
+            add(ReportSheetUtil.getTableCornerComponent(), BorderLayout.NORTH);
             add(scrollBar, BorderLayout.CENTER);
         }
         
@@ -525,7 +481,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 for (int i=0; i<comps.length; i++) {
                     if (!(comps[i] instanceof RowHeader)) continue;
                     
-                    int rh = XDataTable.this.table.getRowHeight(i);
+                    int rh = XReportSheet.this.table.getRowHeight(i);
                     comps[i].setBounds(x, y, w, rh);
                     y += rh;
                 }
@@ -542,7 +498,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                     
                     Dimension dim = comps[i].getPreferredSize();
                     w = Math.max(w, dim.width);
-                    h += XDataTable.this.table.getRowHeight(i);
+                    h += XReportSheet.this.table.getRowHeight(i);
                 }
                 
                 Insets margin = parent.getInsets();
@@ -559,7 +515,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         
         public RowHeader() {
             setOpaque(true);
-            setBorder(new TableHeaderBorder(new Insets(2,0,0,0)));
+            setBorder(new HeaderBorder(new Insets(2,0,0,0)));
             setPreferredSize(new Dimension(23,23));
             setHorizontalAlignment(SwingConstants.CENTER);
             setForeground(Color.BLUE);

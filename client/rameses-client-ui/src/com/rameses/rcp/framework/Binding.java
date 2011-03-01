@@ -300,6 +300,9 @@ public class Binding {
     public final void applyStyle(UIControl u) {
         if ( styleRules == null ) return;
         
+        String name = u.getName();
+        if( name == null ) name = "_any_name";
+        
         //apply style rules
         for(StyleRule r : styleRules) {
             String pattern = r.getPattern();
@@ -307,7 +310,7 @@ public class Binding {
             
             //test expression
             boolean applyStyles = false;
-            if ( rule!=null ){
+            if ( rule!=null && name.matches(pattern) ){
                 try {
                     Object o = ClientContext.getCurrentContext().getExpressionResolver().evaluate(getBean(), rule);
                     applyStyles = Boolean.valueOf(o+"");
@@ -316,11 +319,7 @@ public class Binding {
                 }
             }
             if ( applyStyles ) {
-                String name = u.getName();
-                if( name == null ) name = "_any_name";
-                if( name.matches(pattern) ) {
-                    ControlSupport.setStyles( r.getProperties(), (Component) u );
-                }
+                ControlSupport.setStyles( r.getProperties(), (Component) u );
             }
         }
     }
