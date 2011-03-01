@@ -173,7 +173,9 @@ public class CustomResourceInjector extends ResourceInjector {
             return com.rameses.annotations.Invoker.class;
         }
         public Object getResource(Annotation a) {
-            return new InvokerProxy(env);
+            InvokerProxy ip = new InvokerProxy(env);
+            ip.setDefaultName( CustomResourceInjector.this.serviceName );
+            return ip;
         }
     }
     

@@ -22,6 +22,7 @@ public class InvokerProxy {
     
     private Map env;
     private String host;
+    private String defaultName;
     
     public InvokerProxy(Map env) {
         this.env = env;
@@ -36,6 +37,18 @@ public class InvokerProxy {
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public Object create() {
+        return create(defaultName);
+    }
+    
+    public String getDefaultName() {
+        return defaultName;
+    }
+
+    public void setDefaultName(String defaultName) {
+        this.defaultName = defaultName;
     }
     
     
