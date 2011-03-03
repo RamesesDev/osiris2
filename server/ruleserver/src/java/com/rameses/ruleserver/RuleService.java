@@ -24,9 +24,13 @@ public class RuleService implements RuleServiceLocal {
     //the data is the map coming from the client. we need to copy its properties
     public Object createFact( String ruleset, String name, Map data ) throws Exception {
         KnowledgeBase kb = RuleManager.getInstance().getKnowledgeBase(ruleset);
+        if(kb==null)
+            throw new Exception("Knowledge set " + ruleset + " not found"); 
         String pkg = name.substring(0, name.lastIndexOf("."));
         String cls = name.substring(name.lastIndexOf(".")+1);
         FactType ftype = kb.getFactType( pkg, cls );
+        if( ftype ==null )
+            throw new Exception("Fact type " + pkg + "." + cls + " does not exist");
         Object fact = ftype.newInstance();
         if( data !=null ) {
             //ftype.setFromMap( fact, data );
@@ -59,7 +63,9 @@ public class RuleService implements RuleServiceLocal {
                     try {
                         session.setGlobal(ac.getName(), ac);
                     }
-                    catch(Exception ign){;}
+                    catch(Exception ign){
+                        System.out.println(ign.getMessage());
+                    }
                 }
                 else if( globals instanceof Map ) {
                     Map g = (Map)globals;
@@ -68,7 +74,9 @@ public class RuleService implements RuleServiceLocal {
                         try {
                             session.setGlobal( me.getKey()+"", me.getValue() );
                         }
-                        catch(Exception ign){;}
+                        catch(Exception ign){
+                            System.out.println(ign.getMessage());
+                        }
                     }
                 }
                 else {
@@ -76,13 +84,12 @@ public class RuleService implements RuleServiceLocal {
                 }
             }
             
-            if( agenda ==null || agenda.trim().length()==0 ) {
-                session.fireAllRules();
+            if( agenda !=null && agenda.trim().length() > 0 ) {
+                session.getAgenda().getAgendaGroup(agenda).setFocus();
             }
-            else {
-                session.fireAllRules();
-            }
-        } catch(Exception ex) {
+            session.fireAllRules();
+        } 
+        catch(Exception ex) {
             ex.printStackTrace();
             throw ex;
         } finally{

@@ -14,5 +14,4 @@ public interface RuleServiceLocal {
     void execute( String ruleset, List facts, Object globals ) throws Exception;
     RuleAction createRuleAction();
     
-    
 }

@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class RuleSetScanner implements URLFilter {
     
-    private static final String ROOT_URL = "META-INF/rules/";
+    private static final String ROOT_URL = "META-INF/rulesets/";
     private SqlContext sqlContext;
     private List<KnowledgeSet> results;
     

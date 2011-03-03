@@ -27,7 +27,7 @@ import org.drools.io.ResourceFactory;
  */
 public class DrlResourceLoader implements URLFilter {
     
-    private static final String ROOT_URL = "META-INF/rules/";
+    private static final String ROOT_URL = "META-INF/rulesets/";
     private KnowledgeBuilder builder;
     private String name;
     private String rulegroup;
