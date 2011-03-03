@@ -40,4 +40,8 @@ public class AsyncResult {
         this.status = status;
     }
     
+    public void completed() {
+        this.status = COMPLETED;
+    }
+    
 }

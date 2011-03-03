@@ -75,7 +75,10 @@ public class InvokerProxy extends AbstractScriptServiceProxy {
         
         public void execute() {
             try {
-                if ( handler.execute() ) {
+                if ( handler.isCancelled() ) {
+                    counter = 10;
+                }
+                else if ( handler.execute() ) {
                     counter = 0;
                 } else {
                     counter++;
@@ -85,6 +88,10 @@ public class InvokerProxy extends AbstractScriptServiceProxy {
             } catch(Exception e) {
                 MsgBox.err( ExceptionManager.getOriginal(e) );
                 counter = 10;
+            }
+            
+            if( isEnded() ) {
+                handler.end();
             }
         }
         

@@ -1,9 +1,13 @@
 package com.rameses.rcp.common;
 
+import com.rameses.util.ValueUtil;
+import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Task {
+    
+    private String id = "TASK-" + new UID();
     
     private boolean cancelled;
     private boolean ended = true;
@@ -12,6 +16,14 @@ public abstract class Task {
     protected boolean _started;
     
     public Task() {
+    }
+
+    public boolean equals(Object obj) {
+        return obj != null && obj instanceof Task && ValueUtil.isEqual(id, ((Task)obj).id);
+    }
+
+    public int hashCode() {
+        return Task.class.getName().hashCode() + id.hashCode();
     }
     
     public abstract boolean accept();
@@ -53,5 +65,13 @@ public abstract class Task {
     
     public void setEnded(boolean ended) {
         this.ended = ended;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
