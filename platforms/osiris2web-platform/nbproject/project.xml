@@ -10,10 +10,6 @@
                     <file>${libs.facelets-1-1-12.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
-                <library files="1">
-                    <file>${libs.rameses-common.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
                 <library files="12">
                     <file>${libs.osiris2-web-lib.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>

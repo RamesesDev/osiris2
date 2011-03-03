@@ -10,6 +10,9 @@ import javax.faces.context.FacesContext;
 
 public class Osiris2ResourceResolver extends DefaultResourceResolver {
     
+    private static final Pattern RES_PATTERN = Pattern.compile("^/([^/]+)/(.+)$");
+    
+    
     public Osiris2ResourceResolver() {
     }
     
@@ -30,15 +33,14 @@ public class Osiris2ResourceResolver extends DefaultResourceResolver {
                     
                     resource = wi.getModule().getResource(template.toString());
                 } else {
-                    String regex = "^/([^/]+)/(.+)$";
-                    Matcher m = Pattern.compile(regex).matcher(path);
+                    Matcher m = RES_PATTERN.matcher(path);
                     if ( m.matches() ) {
                         SessionContext ctx = webCtx.getSessionContext();
                         Module mod = ctx.getModule( m.group(1) );
                         resource = mod.getResource( m.group(2) );
                     }
                 }
-                
+
                 if ( resource != null ) return resource;
             }
         } catch(Exception e) {
@@ -46,6 +48,6 @@ public class Osiris2ResourceResolver extends DefaultResourceResolver {
         }
         
         return super.resolveUrl(path);
-        
+
     }
 }

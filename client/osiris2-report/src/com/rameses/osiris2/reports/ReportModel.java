@@ -27,9 +27,6 @@ import net.sf.jasperreports.engine.JasperReport;
  */
 public abstract class ReportModel {
     
-    public ReportModel() {
-    }
-    
     public abstract Object getReportData();
     public abstract String getReportName();
     

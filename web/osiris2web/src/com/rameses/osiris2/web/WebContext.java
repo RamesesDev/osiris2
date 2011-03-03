@@ -84,10 +84,6 @@ public class WebContext implements Serializable {
         String redirectPath = createActionUrl(targetId);
         redirect(redirectPath);
     }
-    
-    public String getSessionId() {
-        return (String) getRequest().getAttribute(Osiris2WebFilter.SESSION_ID);
-    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  OsirisWeb  ">
@@ -120,6 +116,50 @@ public class WebContext implements Serializable {
             properties.put("WEB_SESSION_ENV", new Hashtable());
         }
         return (Map) properties.get("WEB_SESSION_ENV");
+    }
+    
+    public Map getProperties() {
+        Map properties = getSessionContext().getProperties();
+        if( !properties.containsKey("WEB_SESSION_PROPERTIES") ) {
+            properties.put("WEB_SESSION_PROPERTIES", new Hashtable());
+        }
+        return (Map) properties.get("WEB_SESSION_PROPERTIES");
+    }
+    
+    public WebInvokerProxy getInvokerProxy() {
+        OsirisWebSessionContext sessCtx = (OsirisWebSessionContext) getSessionContext();
+        Map properties = sessCtx.getProperties();
+        
+        WebInvokerProxy proxy = (WebInvokerProxy) properties.get(WebInvokerProxy.class.getName());
+        if ( proxy == null ) {
+            proxy = new WebInvokerProxy();
+            properties.put(WebInvokerProxy.class.getName(), proxy);
+        }
+        return proxy;
+    }
+    
+    public HttpClientManager getHttpClientManager() {
+        OsirisWebAppContext appCtx = (OsirisWebAppContext) getAppContext();
+        Map properties = appCtx.getProperties();
+        
+        HttpClientManager mgr = (HttpClientManager) properties.get(HttpClientManager.class.getName());
+        if ( mgr == null ) {
+            mgr = new HttpClientManager();
+            properties.put(HttpClientManager.class.getName(), mgr);
+        }
+        return mgr;
+    }
+    
+    public WebScriptProvider getScriptProvider() {
+        OsirisWebSessionContext sessCtx = (OsirisWebSessionContext) getSessionContext();
+        Map properties = sessCtx.getProperties();
+        
+        WebScriptProvider provider = (WebScriptProvider) properties.get(WebScriptProvider.class.getName());
+        if ( provider == null ) {
+            provider = new WebScriptProvider();
+            properties.put(WebScriptProvider.class.getName(), provider);
+        }
+        return provider;
     }
     //</editor-fold>
     
@@ -167,6 +207,11 @@ public class WebContext implements Serializable {
         HttpSession sess = getRequest().getSession();
         return (String) sess.getAttribute(Loader.SECURED_REQ_URL_KEY);
     }
+    
+    public void removeKeepedUri() {
+        HttpSession sess = getRequest().getSession();
+        sess.removeAttribute(Loader.SECURED_REQ_URL_KEY);
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Workunit  ">
@@ -212,42 +257,6 @@ public class WebContext implements Serializable {
     public String createActionUrl(String viewId) {
         ViewHandler viewHandler = getApplication().getViewHandler();
         return viewHandler.getActionURL(FacesContext.getCurrentInstance(), viewId);
-    }
-    
-    public WebInvokerProxy getInvokerProxy() {
-        OsirisWebSessionContext sessCtx = (OsirisWebSessionContext) getSessionContext();
-        Map properties = sessCtx.getProperties();
-        
-        WebInvokerProxy proxy = (WebInvokerProxy) properties.get(WebInvokerProxy.class.getName());
-        if ( proxy == null ) {
-            proxy = new WebInvokerProxy();
-            properties.put(WebInvokerProxy.class.getName(), proxy);
-        }
-        return proxy;
-    }
-    
-    public HttpClientManager getHttpClientManager() {
-        OsirisWebAppContext appCtx = (OsirisWebAppContext) getAppContext();
-        Map properties = appCtx.getProperties();
-        
-        HttpClientManager mgr = (HttpClientManager) properties.get(HttpClientManager.class.getName());
-        if ( mgr == null ) {
-            mgr = new HttpClientManager();
-            properties.put(HttpClientManager.class.getName(), mgr);
-        }
-        return mgr;
-    }
-    
-    public ScriptProvider getScriptProvider() {
-        OsirisWebSessionContext sessCtx = (OsirisWebSessionContext) getSessionContext();
-        Map properties = sessCtx.getProperties();
-        
-        ScriptProvider provider = (ScriptProvider) properties.get(ScriptProvider.class.getName());
-        if ( provider == null ) {
-            provider = new ScriptProvider();
-            properties.put(ScriptProvider.class.getName(), provider);
-        }
-        return provider;
     }
     //</editor-fold>
 }

@@ -52,13 +52,10 @@ public class ReportSheetTable extends JTable implements ListModelListener {
         initComponents();
     }
     
+    
     //<editor-fold defaultstate="collapsed" desc="  initComponents  ">
     private void initComponents() {
         selectionListener = new SheetSelectionListener();
-        //setTableHeader(new ReportSheetHeader());
-        JTableHeader header = getTableHeader();
-        header.setReorderingAllowed(false);
-        header.setDefaultRenderer(new ReportSheetHeader.TableHeaderRenderer());
         
         addKeyListener(new TableKeyAdapter());
         
@@ -167,6 +164,11 @@ public class ReportSheetTable extends JTable implements ListModelListener {
         tc.setResizable( c.isResizable() );
     }
     //</editor-fold>
+    
+    
+    protected JTableHeader createDefaultTableHeader() {
+        return new ReportSheetHeader(columnModel);
+    }
     
     public Object getSelectedValue() {
         if( !multiselect ) {

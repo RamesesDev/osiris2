@@ -1,6 +1,6 @@
 package com.rameses.osiris2.web;
 
-import com.rameses.client.updates.UpdateCenter;
+import com.rameses.web.updates.UpdateCenter;
 import com.rameses.common.CacheProvider;
 import com.rameses.osiris2.AppContext;
 import java.io.IOException;
@@ -80,6 +80,9 @@ public class Osiris2Startup extends HttpServlet {
             ClassLoader classLoader = uc.getClassLoader(defaultLoader);
             OsirisWebAppContext ctx = new OsirisWebAppContext(classLoader);
             ctx.setEnv( uc.getEnv() );
+            
+            //keep update center so that it will not be garbage collected immediately
+            ctx.getProperties().put("UPDATE_CENTER", uc);
             
             //loading the modules...
             ctx.load();

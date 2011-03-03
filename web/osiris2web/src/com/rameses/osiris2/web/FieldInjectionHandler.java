@@ -26,10 +26,9 @@ public class FieldInjectionHandler implements AnnotationFieldHandler {
             String hostKey = s.host();
             if(serviceName==null || serviceName.trim().length()==0)
                 return WebContext.getInstance().getInvokerProxy();
-            else {
-                //return InvokerProxy.getInstance().create(serviceName, hostKey);
+            else 
                 return WebContext.getInstance().getInvokerProxy().create(serviceName);
-            }
+            
         } else if ( a.annotationType() == Script.class ) {
             Script s = (Script) f.getAnnotation(Script.class);
             String scriptName = s.value();

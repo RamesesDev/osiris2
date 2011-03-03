@@ -96,12 +96,14 @@ public class Osiris2RestorePhase implements PhaseListener {
         //check if workunit is secured
         String secured = (String) wi.getWorkunit().getProperties().get("secured");
         secured = (secured + "").trim().toLowerCase();
-        if ( secured.equals("true") ) {
+        if ( "true".equals(secured) ) {
             Loader loader = webCtx.getLoader();
             if ( !loader.isDone() ) {
                 WorkUnitInstance loaderWi = loader.getWorkUnitInstance();
                 if ( loaderWi != null ) {
-                    webCtx.keepUri(request);
+                    if( webCtx.getKeepedUri() == null )
+                        webCtx.keepUri(request);
+                    
                     wi = loaderWi;
                 }
                 //reset session invokers after successfully login
@@ -115,10 +117,9 @@ public class Osiris2RestorePhase implements PhaseListener {
             if ( "get".equals(reqMethod) && loader.isDone() ) {
                 String permKey = parser.getPermissionKey();
                 if ( !secProvider.checkPermission(permKey) ) {
-                    int accessDenied = HttpServletResponse.SC_UNAUTHORIZED;
                     String uri = request.getRequestURI();
                     try {
-                        webCtx.getResponse().sendError(accessDenied, uri);
+                        webCtx.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, uri);
                     } catch(Exception e){;}
                     fContext.responseComplete();
                 }

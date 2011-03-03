@@ -5,8 +5,6 @@
  * @author jaycverg
  */
 
-package com.rameses.rcp.control.table;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;

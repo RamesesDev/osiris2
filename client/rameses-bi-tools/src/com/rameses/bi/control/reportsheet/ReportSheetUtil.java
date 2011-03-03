@@ -81,9 +81,9 @@ public final class ReportSheetUtil {
         return renderers.get(type);
     }
     
-    public static JComponent getTableCornerComponent() {
+    public static JComponent getTableCornerComponent(Color borderColor) {
         JLabel label = new JLabel(" ");
-        Border bb = new HeaderBorder();
+        Border bb = BorderFactory.createLineBorder(borderColor);
         Border eb = BorderFactory.createEmptyBorder(2,5,2,1);
         label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
         return label;

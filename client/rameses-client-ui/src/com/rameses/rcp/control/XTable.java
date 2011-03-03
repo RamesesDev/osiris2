@@ -11,7 +11,7 @@ import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
-import com.rameses.rcp.control.table.TableManager;
+import com.rameses.rcp.control.table.TableUtil;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -30,7 +30,6 @@ import java.awt.event.FocusListener;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -38,19 +37,17 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.ListScrollBar;
+import com.rameses.rcp.control.table.RowHeader;
 import com.rameses.rcp.control.table.TableComponent;
-import com.rameses.rcp.control.table.TableHeaderBorder;
 import com.rameses.rcp.framework.ClientContext;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Font;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -374,7 +371,8 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         this.showRowHeader = showRowHeader;
         
         if ( showRowHeader ) {
-            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
+            Color gridColor = table.getGridColor();
+            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableUtil.getTableCornerComponent(gridColor));
             scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
             rowHeaderView.setRowCount( table.getRowCount() );
         } else {
@@ -451,7 +449,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
             });
             
             setVisible( scrollBar.isVisible() );
-            add(TableManager.getTableCornerComponent(), BorderLayout.NORTH);
+            add(TableUtil.getTableCornerComponent(table.getGridColor()), BorderLayout.NORTH);
             add(scrollBar, BorderLayout.CENTER);
         }
         
@@ -475,7 +473,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
             removeAll();
             JComponent label = null;
             for (int i = 0; i < rowCount; ++i) {
-                add(new RowHeader());
+                add(new RowHeader(table.getGridColor()));
             }
             SwingUtilities.updateComponentTreeUI(this);
         }
@@ -550,30 +548,6 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                 h += (margin.top + margin.bottom);
                 return new Dimension(w,h);
             }
-        }
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  RowHeader (class)  ">
-    private class RowHeader extends JLabel {
-        
-        public RowHeader() {
-            setOpaque(true);
-            setBorder(new TableHeaderBorder(new Insets(2,0,0,0)));
-            setPreferredSize(new Dimension(23,23));
-            setHorizontalAlignment(SwingConstants.CENTER);
-            setForeground(Color.BLUE);
-            setFont(new Font("Courier", Font.PLAIN, 11));
-            //edit(true);
-        }
-        
-        public void setText(String text) {;}
-        
-        public void edit(boolean b) {
-            if (b)
-                super.setText("<html><b>*</b></html>");
-            else
-                super.setText("");
         }
     }
     //</editor-fold>

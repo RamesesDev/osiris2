@@ -4,6 +4,8 @@ package com.rameses.osiris2.reports;
 import com.rameses.rcp.common.Column;
 import com.rameses.util.ValueUtil;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Date;
 import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.design.JRDesignBand;
@@ -52,8 +54,20 @@ public class DynamicReportUtil {
             for(Object o : model.getColumns()) {
                 Column c = (Column) o;
                 String type = c.getType();
-                if( type == null || type.equals("string") ) //string is the default type of Column
+                if( type == null || "string".equals(type) ) //string is the default type of Column
                     type = String.class.getName();
+                else if ( "decimal".equals(type) )
+                    type = BigDecimal.class.getName();
+                else if ( "integer".equals(type) )
+                    type = Integer.class.getName();
+                else if ( "boolean".equals(type) )
+                    type = Boolean.class.getName();
+                else if ( "double".equals(type) )
+                    type = Double.class.getName();
+                else if ( "date".equals(type) )
+                    type = Date.class.getName();
+                else if ( "timestamp".equals(type) )
+                    type = Timestamp.class.getName();
                 
                 if( c.getWidth() == 0 ) c.setWidth(100);
                 

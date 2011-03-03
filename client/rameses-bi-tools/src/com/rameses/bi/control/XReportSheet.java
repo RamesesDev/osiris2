@@ -12,10 +12,10 @@ import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.bi.control.reportsheet.ReportSheetTable;
-import com.rameses.bi.control.reportsheet.HeaderBorder;
 import com.rameses.bi.control.reportsheet.ReportSheetListener;
 import com.rameses.bi.control.reportsheet.ReportSheetUtil;
 import com.rameses.rcp.control.table.ListScrollBar;
+import com.rameses.rcp.control.table.RowHeader;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.*;
@@ -26,7 +26,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
@@ -299,7 +298,8 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
         this.showRowHeader = showRowHeader;
         
         if ( showRowHeader ) {
-            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, ReportSheetUtil.getTableCornerComponent());
+            Color gridColor = table.getGridColor();
+            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, ReportSheetUtil.getTableCornerComponent(gridColor));
             scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
             rowHeaderView.setRowCount( table.getRowCount() );
         } else {
@@ -407,7 +407,7 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
             });
             
             setVisible( scrollBar.isVisible() );
-            add(ReportSheetUtil.getTableCornerComponent(), BorderLayout.NORTH);
+            add(ReportSheetUtil.getTableCornerComponent(table.getGridColor()), BorderLayout.NORTH);
             add(scrollBar, BorderLayout.CENTER);
         }
         
@@ -431,7 +431,7 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
             removeAll();
             JComponent label = null;
             for (int i = 0; i < rowCount; ++i) {
-                add(new RowHeader());
+                add(new RowHeader(table.getGridColor()));
             }
             SwingUtilities.updateComponentTreeUI(this);
         }
@@ -509,29 +509,5 @@ public class XReportSheet extends JPanel implements UIOutput, ReportSheetListene
         }
     }
     //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  RowHeader (class)  ">
-    private class RowHeader extends JLabel {
-        
-        public RowHeader() {
-            setOpaque(true);
-            setBorder(new HeaderBorder(new Insets(2,0,0,0)));
-            setPreferredSize(new Dimension(23,23));
-            setHorizontalAlignment(SwingConstants.CENTER);
-            setForeground(Color.BLUE);
-            setFont(new Font("Courier", Font.PLAIN, 11));
-            //edit(true);
-        }
-        
-        public void setText(String text) {;}
-        
-        public void edit(boolean b) {
-            if (b)
-                super.setText("<html><b>*</b></html>");
-            else
-                super.setText("");
-        }
-    }
-    //</editor-fold>
-    
+
 }

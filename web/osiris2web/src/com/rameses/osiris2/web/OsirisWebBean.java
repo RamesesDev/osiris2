@@ -36,6 +36,14 @@ public class OsirisWebBean implements Serializable {
         return null;
     }
     
+    public Map getEnv() {
+        return WebContext.getInstance().getEnv();
+    }
+    
+    public Map getProperties() {
+        return WebContext.getInstance().getProperties();
+    }
+    
     public Map getInvokers() {
         return invokers;
     }

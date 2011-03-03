@@ -1,5 +1,5 @@
 /*
- * ScriptProvider.java
+ * WebScriptProvider.java
  *
  * Created on August 11, 2010, 2:20 PM
  * @author jaycverg
@@ -15,15 +15,15 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-public final class ScriptProvider {
+public final class WebScriptProvider {
     
     private AnnotationFieldHandler fieldHandler = new FieldInjectionHandler();
     private GroovyClassLoader loader;
     
     private Map<String,Class> scriptMap = new Hashtable();
     
-    public ScriptProvider() {
-        loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
+    public WebScriptProvider() {
+        loader = new GroovyClassLoader(WebContext.getInstance().getSessionContext().getClassLoader());
     }
     
     public Object create(String name ) throws Exception {

@@ -400,8 +400,6 @@
         <copy-ear-war file="${libs.facelets-1-1-12.classpath.libfile.3}" propname="included.lib.libs.facelets-1-1-12.classpath.3.X"/>
         <copy-ear-war file="${libs.facelets-1-1-12.classpath.libfile.2}" propname="included.lib.libs.facelets-1-1-12.classpath.2.X"/>
         <copy-ear-war file="${libs.facelets-1-1-12.classpath.libfile.1}" propname="included.lib.libs.facelets-1-1-12.classpath.1.X"/>
-        <basename property="included.lib.libs.rameses-common.classpath" file="${libs.rameses-common.classpath}"/>
-        <copy-ear-war file="${libs.rameses-common.classpath}" propname="included.lib.libs.rameses-common.classpath.X"/>
         <basename property="included.lib.libs.osiris2-web-lib.classpath.12" file="${libs.osiris2-web-lib.classpath.libfile.12}"/>
         <basename property="included.lib.libs.osiris2-web-lib.classpath.11" file="${libs.osiris2-web-lib.classpath.libfile.11}"/>
         <basename property="included.lib.libs.osiris2-web-lib.classpath.10" file="${libs.osiris2-web-lib.classpath.libfile.10}"/>
@@ -428,7 +426,7 @@
         <copy-ear-war file="${libs.osiris2-web-lib.classpath.libfile.1}" propname="included.lib.libs.osiris2-web-lib.classpath.1.X"/>
         <mkdir dir="${build.web.dir.real}/META-INF"/>
         <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.libs.facelets-1-1-12.classpath.1.X} ${included.lib.libs.facelets-1-1-12.classpath.2.X} ${included.lib.libs.facelets-1-1-12.classpath.3.X} ${included.lib.libs.rameses-common.classpath} ${included.lib.libs.osiris2-web-lib.classpath.1.X} ${included.lib.libs.osiris2-web-lib.classpath.2.X} ${included.lib.libs.osiris2-web-lib.classpath.3.X} ${included.lib.libs.osiris2-web-lib.classpath.4.X} ${included.lib.libs.osiris2-web-lib.classpath.5.X} ${included.lib.libs.osiris2-web-lib.classpath.6.X} ${included.lib.libs.osiris2-web-lib.classpath.7.X} ${included.lib.libs.osiris2-web-lib.classpath.8.X} ${included.lib.libs.osiris2-web-lib.classpath.9.X} ${included.lib.libs.osiris2-web-lib.classpath.10.X} ${included.lib.libs.osiris2-web-lib.classpath.11.X} ${included.lib.libs.osiris2-web-lib.classpath.12.X} "/>
+            <attribute name="Class-Path" value="${included.lib.libs.facelets-1-1-12.classpath.1.X} ${included.lib.libs.facelets-1-1-12.classpath.2.X} ${included.lib.libs.facelets-1-1-12.classpath.3.X} ${included.lib.libs.osiris2-web-lib.classpath.1.X} ${included.lib.libs.osiris2-web-lib.classpath.2.X} ${included.lib.libs.osiris2-web-lib.classpath.3.X} ${included.lib.libs.osiris2-web-lib.classpath.4.X} ${included.lib.libs.osiris2-web-lib.classpath.5.X} ${included.lib.libs.osiris2-web-lib.classpath.6.X} ${included.lib.libs.osiris2-web-lib.classpath.7.X} ${included.lib.libs.osiris2-web-lib.classpath.8.X} ${included.lib.libs.osiris2-web-lib.classpath.9.X} ${included.lib.libs.osiris2-web-lib.classpath.10.X} ${included.lib.libs.osiris2-web-lib.classpath.11.X} ${included.lib.libs.osiris2-web-lib.classpath.12.X} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
@@ -436,7 +434,6 @@
         <copy file="${libs.facelets-1-1-12.classpath.libfile.3}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${libs.facelets-1-1-12.classpath.libfile.2}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${libs.facelets-1-1-12.classpath.libfile.1}" todir="${build.web.dir.real}/WEB-INF/lib"/>
-        <copy file="${libs.rameses-common.classpath}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${libs.osiris2-web-lib.classpath.libfile.12}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${libs.osiris2-web-lib.classpath.libfile.11}" todir="${build.web.dir.real}/WEB-INF/lib"/>
         <copy file="${libs.osiris2-web-lib.classpath.libfile.10}" todir="${build.web.dir.real}/WEB-INF/lib"/>

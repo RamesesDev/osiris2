@@ -7,8 +7,11 @@
 
 package com.rameses.osiris2.web;
 
+import com.rameses.osiris2.Invoker;
 import com.rameses.osiris2.WorkUnitInstance;
 import com.rameses.osiris2.web.util.WebUtil;
+import com.rameses.util.ValueUtil;
+import java.util.List;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
@@ -35,6 +38,20 @@ public class Osiris2NavigationHandler extends NavigationHandler {
                     Loader loader = webCtx.getLoader();
                     loader.removeCurrentInvoker();
                     redirectPath = webCtx.getKeepedUri();
+                    if( ValueUtil.isEmpty(redirectPath) ) {
+                        List list = webCtx.getSessionContext().getInvokers("home");
+                        if( list.size() > 0 ) {
+                            Invoker inv = (Invoker) list.get(0);
+                            StringBuffer sb = new StringBuffer();
+                            sb.append("/" + inv.getModule());
+                            sb.append("/" + inv.getWorkunitname());
+                            sb.append(WebContext.PAGE_SUFFIX);
+                            redirectPath = sb.toString();
+                        }
+                    }
+                    if( loader.isDone() )
+                        webCtx.removeKeepedUri();
+                    
                 } else if ( WebUtil.OPENER_OUTCOME.equals(outcome) ) {
                     HttpSession sess = webCtx.getRequest().getSession();
                     Opener op = (Opener) sess.getAttribute(Opener.class.getName());

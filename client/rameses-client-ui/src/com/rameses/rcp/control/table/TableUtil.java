@@ -1,5 +1,5 @@
 /*
- * TableManager.java
+ * TableUtil.java
  *
  * Created on June 26, 2010, 10:53 AM
  * @author jaycverg
@@ -21,7 +21,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.FocusListener;
-import java.beans.Beans;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -50,7 +49,7 @@ import javax.swing.table.TableCellRenderer;
  *  3. string - left
  */
 
-public final class TableManager {
+public final class TableUtil {
     
     public static final Insets CELL_MARGIN = new Insets(1, 5, 1, 5);
     public static final Color FOCUS_BG = new Color(254, 255, 208);
@@ -117,9 +116,9 @@ public final class TableManager {
         return headerRenderer;
     }
     
-    public static JComponent getTableCornerComponent() {
+    public static JComponent getTableCornerComponent(Color borderColor) {
         JLabel label = new JLabel(" ");
-        Border bb = new TableHeaderBorder();
+        Border bb = BorderFactory.createLineBorder(borderColor);
         Border eb = BorderFactory.createEmptyBorder(2,5,2,1);
         label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
         return label;
@@ -202,48 +201,6 @@ public final class TableManager {
         }
     }
     //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  TableHeaderRenderer (class)  ">
-    private static class TableHeaderRenderer implements TableCellRenderer {
-        
-        private JLabel label = new JLabel();
-        
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if ( !Beans.isDesignTime() ) {
-                TableControl xtable = (TableControl) table;
-                Column c = ((TableControlModel)xtable.getModel()).getColumn(column);
-                if ( isRightAligned(c, value) ) {
-                    label.setHorizontalAlignment( SwingConstants.RIGHT );
-                    
-                } else if ( isCenterAligned(c, value) ) {
-                    label.setHorizontalAlignment( SwingConstants.CENTER );
-                    
-                } else {
-                    label.setHorizontalAlignment( SwingConstants.LEFT );
-                }
-            }
-            
-            label.setText( ValueUtil.isEmpty(value) ? " " : value + "");
-            Border bb = new TableHeaderBorder();
-            Border eb = BorderFactory.createEmptyBorder(2,5,2,5);
-            label.setBorder( BorderFactory.createCompoundBorder(bb, eb) );
-            return label;
-        }
-        
-        private boolean isRightAligned(Column c, Object value) {
-            return (c.getType()+"").matches("decimal|double") ||
-                    value instanceof Double || value instanceof BigDecimal;
-        }
-        
-        private boolean isCenterAligned(Column c, Object value) {
-            return (c.getType()+"").matches("date|integer|boolean|checkbox") ||
-                    value instanceof Number || value instanceof Date ||
-                    value instanceof Time || value instanceof Timestamp;
-        }
-        
-    }
-    //</editor-fold>
-    
     
     //<editor-fold defaultstate="collapsed" desc="  AbstractRenderer (class)  ">
     private static abstract class AbstractRenderer implements TableCellRenderer {

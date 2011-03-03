@@ -69,7 +69,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
     private void initComponents() {
         tableModel = new TableComponentModel();
         getTableHeader().setReorderingAllowed(false);
-        getTableHeader().setDefaultRenderer(TableManager.getHeaderRenderer());
+        getTableHeader().setDefaultRenderer(TableUtil.getHeaderRenderer());
         addKeyListener(new TableKeyAdapter());
         
         addComponentListener(new ComponentAdapter() {
@@ -175,7 +175,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
         
         for ( int i=0; i<length; i++ ) {
             Column col = tableModel.getColumn(i);
-            TableCellRenderer cellRenderer = TableManager.getCellRenderer(col.getType());
+            TableCellRenderer cellRenderer = TableUtil.getCellRenderer(col.getType());
             TableColumn tableCol = getColumnModel().getColumn(i);
             tableCol.setCellRenderer(cellRenderer);
             applyColumnProperties(tableCol, col);
@@ -186,7 +186,7 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
             if ( !col.isEditable() ) continue;
             if ( editors.containsKey(i) ) continue;
             
-            JComponent editor = TableManager.createCellEditor(col);
+            JComponent editor = TableUtil.createCellEditor(col);
             editor.setVisible(false);
             editor.setBounds(-10, -10, 10, 10);
             

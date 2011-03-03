@@ -35,8 +35,6 @@ import javax.servlet.http.HttpSession;
 
 public class Osiris2WebFilter implements Filter {
     
-    public static final String SESSION_ID = Osiris2WebFilter.class.getName()+"_sessId";
-    
     private static final Pattern CACHEABLE_PATTERN = Pattern.compile(".*\\.(?:js|css|jpg|jpeg|gif|png|bmp|swf)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern WORKUNIT_PATTERN = Pattern.compile("^/[^/]*/(.*\\.[^/]+)$");
     
@@ -52,16 +50,7 @@ public class Osiris2WebFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) resp;
         HttpSession session = request.getSession();
         Principal principal = (Principal) session.getAttribute(OsirisUserPrincipal.class.getName());
-        
-//        String sessId = getSessionId(request);
-//        if ( sessId == null ) {
-//            sessId = "SESSID-" + new UID();
-//        }
-//        Cookie cookie = new Cookie(Osiris2WebFilter.class.getName(), sessId);
-//        cookie.setPath("/");
-//        cookie.setMaxAge(86400);
-//        response.addCookie(cookie);
-        
+                
         String ae = request.getHeader("accept-encoding");
         if (ae != null && ae.indexOf("gzip") != -1) {
             response = new GZIPResponseWrapper(response);
@@ -69,6 +58,8 @@ public class Osiris2WebFilter implements Filter {
         
         String path = request.getServletPath();
         Matcher m = WORKUNIT_PATTERN.matcher(path);
+        
+        //serve resources from the modules
         if ( !isJsfPage(path) && m.matches() ) {
             PathParser p = new PathParser(path);
             SessionContext ctx = getSessionContext(request);
@@ -117,10 +108,13 @@ public class Osiris2WebFilter implements Filter {
     private boolean checkAllowed(PathParser p, Principal principal, SessionContext ctx) {
         WorkUnit wu = ctx.getWorkUnit(p.getWorkunitId());
         if ( wu == null ) return true;
+        
         String secured = (String) wu.getProperties().get("secured");
         if ( secured == null ) return true;
+        
         secured = secured.toLowerCase().trim();
         if ( secured.equals("true") && principal != null) return true;
+        
         return false;
     }
     

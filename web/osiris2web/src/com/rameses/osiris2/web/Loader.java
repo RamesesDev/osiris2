@@ -31,6 +31,13 @@ public class Loader implements Serializable {
     public Loader() {
         SessionContext ctx = WebContext.getInstance().getSessionContext();
         invokers = ctx.getInvokers("loader");
+        
+        Map loadersIndex = new HashMap();
+        for(Object i : invokers) {
+            Invoker inv = (Invoker) i;
+            loadersIndex.put(inv.getWorkunitid(), i);
+        }
+        ctx.getProperties().put("LOADER_INDEX", loadersIndex);
     }
     
     public WorkUnitInstance getWorkUnitInstance() {
@@ -80,7 +87,6 @@ public class Loader implements Serializable {
                 continue;
             }
             
-            wi.getWorkunit().getProperties().put(LOADER_WI_KEY, true);
             sess.setAttribute(LOADER_WI_KEY, wi);
         }
         
@@ -100,17 +106,19 @@ public class Loader implements Serializable {
     }
     
     public static boolean isLoaderWorkUnit(WorkUnitInstance wi) {
-        return wi.getWorkunit().getProperties().get(LOADER_WI_KEY) != null;
+        SessionContext ctx = WebContext.getInstance().getSessionContext();
+        Map index = (Map) ctx.getProperties().get("LOADER_INDEX");
+        return index != null && index.containsKey(wi.getWorkunit().getId());
     }
-
+    
     public Map getProperties() {
         return properties;
     }
-
+    
     public boolean isDone() {
         return done;
     }
-
+    
     public void setDone(boolean done) {
         this.done = done;
     }

@@ -6,6 +6,8 @@
 
 package com.rameses.rcp.common;
 
+import com.rameses.util.ValueUtil;
+
 
 public class ListItem implements Cloneable {
     
@@ -38,11 +40,11 @@ public class ListItem implements Cloneable {
         if( obj == null || !(obj instanceof ListItem) ) return false;
         
         ListItem target = (ListItem) obj;
-        return rownum == target.rownum;
+        return rownum == target.rownum && ValueUtil.isEqual(item, target.item);
     }
     
     public int hashCode() {
-        return parent.hashCode() + rownum;
+        return parent.hashCode() + rownum + (item != null? item.hashCode() : 0);
     }
 
     public final void setItem(Object newitem) {

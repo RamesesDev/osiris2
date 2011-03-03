@@ -13,9 +13,9 @@ import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.control.table.DataTableComponent;
 import com.rameses.rcp.control.table.ListScrollBar;
-import com.rameses.rcp.control.table.TableHeaderBorder;
+import com.rameses.rcp.control.table.RowHeader;
 import com.rameses.rcp.control.table.TableListener;
-import com.rameses.rcp.control.table.TableManager;
+import com.rameses.rcp.control.table.TableUtil;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.*;
@@ -257,7 +257,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
             }
         }
         
-        currentItem = item;
+        //keep the actual state at this time
+        currentItem = item.clone();
         
         if ( rowHeaderView != null )
             rowHeaderView.clearEditing();
@@ -370,7 +371,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         this.showRowHeader = showRowHeader;
         
         if ( showRowHeader ) {
-            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableManager.getTableCornerComponent());
+            Color gridColor = getGridColor();
+            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableUtil.getTableCornerComponent(gridColor));
             scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
             rowHeaderView.setRowCount( table.getRowCount() );
         } else {
@@ -451,7 +453,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
             });
             
             setVisible( scrollBar.isVisible() );
-            add(TableManager.getTableCornerComponent(), BorderLayout.NORTH);
+            add(TableUtil.getTableCornerComponent(getGridColor()), BorderLayout.NORTH);
             add(scrollBar, BorderLayout.CENTER);
         }
         
@@ -475,7 +477,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
             removeAll();
             JComponent label = null;
             for (int i = 0; i < rowCount; ++i) {
-                add(new RowHeader());
+                add(new RowHeader(table.getGridColor()));
             }
             SwingUtilities.updateComponentTreeUI(this);
         }
@@ -550,30 +552,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 h += (margin.top + margin.bottom);
                 return new Dimension(w,h);
             }
-        }
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  RowHeader (class)  ">
-    private class RowHeader extends JLabel {
-        
-        public RowHeader() {
-            setOpaque(true);
-            setBorder(new TableHeaderBorder(new Insets(2,0,0,0)));
-            setPreferredSize(new Dimension(23,23));
-            setHorizontalAlignment(SwingConstants.CENTER);
-            setForeground(Color.BLUE);
-            setFont(new Font("Courier", Font.PLAIN, 11));
-            //edit(true);
-        }
-        
-        public void setText(String text) {;}
-        
-        public void edit(boolean b) {
-            if (b)
-                super.setText("<html><b>*</b></html>");
-            else
-                super.setText("");
         }
     }
     //</editor-fold>

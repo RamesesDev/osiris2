@@ -47,7 +47,11 @@ public class ResponseHandler {
                 } else if(result instanceof Exception ) {
                     throw ExceptionManager.getOriginal((Exception)result);
                 } else {
-                    listener.onMessage( new AsyncResult( result, AsyncResult.PROCESSING ) );
+                    AsyncResult ar = new AsyncResult( result, AsyncResult.PROCESSING );
+                    listener.onMessage( ar );
+                    if( ar.getStatus() == AsyncResult.COMPLETED ) {
+                        return false;
+                    }
                     counter++;
                 }
             }
