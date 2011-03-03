@@ -46,6 +46,12 @@ public abstract class ReportSheetModel extends SubListModel {
         super.load();
     }
     
+    public void reload(Object parent) {
+        Object id = getRowId(parent);
+        cache.remove(id);
+        processToggle(parent);
+    }
+    
     protected void fetch() {
         if( dataList == null) {
             dataList = new ArrayList();
