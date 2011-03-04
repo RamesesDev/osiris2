@@ -137,6 +137,11 @@ public final class FormSupport {
         return filterFormControls(controls, entityMap, entityVarName, extProps);
     }
     
+    public static List<FormControl> buildFormControls(List<Map> infos, List<Map> meta, String entityVarName, Map entityMap, Map extProps) {
+        List<FormControl> controls = buildFormControls(infos, meta, entityVarName);
+        return filterFormControls(controls, entityMap, entityVarName, extProps);
+    }
+    
     public static List<FormControl> filterFormControls(List<FormControl> controls, Map entityMap) {
         return filterFormControls(controls, entityMap, null, null);
     }
