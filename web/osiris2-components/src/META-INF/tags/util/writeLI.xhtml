@@ -1,0 +1,41 @@
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:h="http://java.sun.com/jsf/html" 
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:menu="http://com.rameses.osiris2.web/menu"
+    xmlns:inv="http://com.rameses.osiris2.web/invoker"
+    xmlns:c="http://java.sun.com/jstl/core">  
+    
+    <li class="#{empty isRoot ? 'menumain' : ''}">
+        <c:set var="isRoot" value="true"/>                       
+        
+        <!-- non invoker folder -->
+        <h:outputLink value="#" rendered="#{empty folder.invoker}">
+            #{folder.caption}
+            <h:graphicImage width="#{width}" height="#{height}" value="#{inv:resourcePath(folder.properties['icon'])}"
+                            style="vertical-align: bottom"
+                            rendered="#{inv:hasIcon(folder)}"/>
+        </h:outputLink>
+        
+        <!-- invoker type folder -->
+        <c:if test="#{!empty folder.invoker}">                        
+            <a href="#{inv:invokerPath(folder.invoker)}">
+                <h:graphicImage width="#{width}" height="#{height}" value="#{ inv:resourcePath(folder.properties['icon']) }"
+                                style="vertical-align: bottom"
+                                rendered="#{inv:hasIcon(folder)}"/>              
+                #{folder.caption}
+            </a>
+        </c:if>
+        
+        <c:set var="folders" value="#{context.folders[folder.fullId]}"/>
+        <c:if test="#{!empty folders}">            
+            <ul>
+                <c:forEach items="#{folders}" var="folder">
+                    <c:if test="#{!empty folder.invoker or inv:hasInvokers(folder)}">
+                        <menu:writeLI folder="#{folder}" theme="#{theme}"/>
+                    </c:if>
+                </c:forEach>
+            </ul>
+        </c:if>
+    </li>            
+</ui:composition>

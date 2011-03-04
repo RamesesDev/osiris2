@@ -1,8 +1,6 @@
-import com.rameses.osiris2.SessionContext;
-import com.rameses.osiris2.web.OsirisUserPrincipal;
-import com.rameses.osiris2.web.WebContext;
+import com.rameses.osiris2.AppContext;
+import com.rameses.osiris2.FolderManager;
 import java.io.IOException;
-import java.util.zip.GZIPOutputStream;
 import junit.framework.*;
 
 /*
@@ -16,6 +14,8 @@ import junit.framework.*;
 public class Test extends TestCase {
     
     public void testHello() throws IOException {
+        
+        
     }
     
 }

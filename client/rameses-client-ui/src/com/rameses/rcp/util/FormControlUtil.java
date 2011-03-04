@@ -21,6 +21,7 @@ import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UISubControl;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.net.URL;
@@ -123,6 +124,16 @@ public class FormControlUtil {
                 sb.append("<td valign='top' colspan='2'>");
             }
             
+            Color fg = ((Component) c).getForeground();
+            String strColor = null;
+            if( fg != null ) {
+                strColor = "rgb(" + fg.red + "," + fg.green + "," + fg.blue + ")";
+            }
+            
+            if( strColor != null ) {
+                sb.append("<font color='" + strColor + "'>");
+            }
+            
             Object value = null;
             try {
                 if( c instanceof UISubControl ) {
@@ -144,8 +155,13 @@ public class FormControlUtil {
                 }
             } catch(Exception e){;}
             
-            sb.append((value==null? "" : value))
-            .append("</td>")
+            sb.append((value==null? "" : value));
+            
+            if( strColor != null ) {
+                sb.append("</font>");
+            }
+            
+            sb.append("</td>")
             .append("</tr>");
         }
         sb.append("</table>");

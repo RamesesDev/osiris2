@@ -10,9 +10,12 @@
 package com.rameses.rcp.support;
 
 import com.rameses.rcp.common.FormControl;
+import com.rameses.rcp.control.border.XUnderlineBorder;
 import com.rameses.rcp.util.FormControlUtil;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,31 +31,100 @@ public final class FormSupport {
      * Builds the form controls from a map.
      */
     public static List<FormControl> buildFormControls(List<Map> infos) {
-        return buildFormControls(infos, null);
+        return buildFormControls(infos, (List) null, null);
+    }
+    
+    public static List<FormControl> buildFormControls(List<Map> infos, List<Map> categories) {
+        return buildFormControls(infos, categories, null);
     }
     
     public static List<FormControl> buildFormControls(List<Map> infos, String entityVarName) {
+        return buildFormControls(infos, null, entityVarName);
+    }
+    
+    public static List<FormControl> buildFormControls(List<Map> infos, List<Map> categories, String entityVarName) {
         List<FormControl> list = new ArrayList();
-        for( Map m : infos ) {
-            Map nm = new HashMap();
-            nm.putAll( m );
-            String mode = (String)nm.remove("mode");
-            if( mode!=null && mode.equals("hidden") ) continue;
-            
-            String name = (String)nm.remove("name");
-            String type = (String)nm.remove("type");
-            if( type==null ) type="text";
-            if( entityVarName!=null && entityVarName.trim().length()>0 ) {
-                name = entityVarName + "." + name;
+        
+        List<Map> items = null;
+        Map<String, List<Map>> categoryItems = null;
+        if( categories != null ) {
+            items = new ArrayList();
+            items.addAll( infos );
+            categoryItems = new HashMap();
+            Iterator<Map> itr = infos.iterator();
+            while(itr.hasNext()) {
+                Map elm = itr.next();
+                String catId = (String) elm.get("category");
+                if( catId != null ) {
+                    itr.remove();
+                    List<Map> ci = categoryItems.get(catId);
+                    if( ci == null ) {
+                        ci = new ArrayList();
+                        categoryItems.put(catId, ci);
+                    }
+                    ci.add( elm );
+                }
             }
             
-            nm.put("name", name);
-            FormControl fc = new FormControl();
-            fc.setType(type);
-            fc.setProperties(nm);
-            list.add(fc);
+        } else {
+            items = infos;
         }
+        
+        for( Map m : items ) {
+            addFormControl(list, m, entityVarName);
+        }
+        
+        if( categories != null && categoryItems != null ) {
+            for(Map cat : categories) {
+                List<Map> ciList = categoryItems.get(cat.get("name"));
+                if( ciList != null ) {
+                    //add category label
+                    FormControl fc = new FormControl();
+                    fc.setType("label");
+                    
+                    Map props = fc.getProperties();
+                    props.put("text", "<html><b>" + cat.get("caption") + "</b></html>");
+                    props.put("foreground", java.awt.Color.RED);
+                    props.put("padding", new java.awt.Insets(10,0,0,0));
+                    props.put("showCaption", false);
+                    props.put("border", new XUnderlineBorder());
+                    props.put("preferredSize", new Dimension(0, 30));
+                    
+                    Map ext = new HashMap(cat);
+                    ext.remove("name");
+                    ext.remove("caption");
+                    if( !ext.isEmpty() ) props.putAll(ext);
+                    
+                    list.add(fc);
+                    
+                    for( Map m : ciList ) {
+                        addFormControl(list, m, entityVarName);
+                    }
+                }
+            }
+        }
+        
         return list;
+    }
+    
+    private static void addFormControl(List list, Map m, String entityVarName) {
+        Map nm = new HashMap();
+        nm.putAll( m );
+        String mode = (String)nm.remove("mode");
+        if( mode!=null && mode.equals("hidden") ) return;
+        
+        String name = (String)nm.remove("name");
+        String type = (String)nm.remove("type");
+        if( type==null ) type="text";
+        if( entityVarName!=null && entityVarName.trim().length()>0 ) {
+            name = entityVarName + "." + name;
+        }
+        
+        nm.put("name", name);
+        FormControl fc = new FormControl();
+        fc.setType(type);
+        fc.setProperties(nm);
+        list.add(fc);
     }
     
     public static List<FormControl> buildFormControls(List<Map> infos, String entityVarName, Map entityMap) {

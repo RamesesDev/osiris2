@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <link href="dropdown.css" rel="stylesheet"/>
+        <script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" src="dropdown.js"></script>
+        <script type="text/javascript">                
+            $(function()
+            {
+                var options = {
+                    hoverOpenDelay: 200,
+                    minWidth: 120, 
+                    copyClassAttr: true, 
+                    onOpen: function (e, menuItem){}
+                };
+
+                $('.menu').menu(options, null, '');
+            });
+        </script>
+        <style type="text/css">
+            body { font: 11pt/145% 'arial'; }
+        </style>
+    </head>
+    <body>
+        <div>
+            <div class="menubar">            
+                <ul class="menu">
+                    <li class="menumain">
+                        <a href="#">Account</a>
+                        <ul>
+                            <li><a href="#">Edit</a></li>
+                            <li><a href="#">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li class="menumain">
+                        <a href="#">Transactions</a>
+                        <ul>
+                            <li><a href="#">Loan Application</a></li>
+                            <li>
+                                <a href="#">Search</a>
+                                <ul>
+                                    <li><a href="#">Pending Applications</a></li>
+                                    <li><a href="#">Approved Applications</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menumain">
+                        <a href="#">Reports</a>
+                        <ul>
+                            <li><a href="#">Monthly</a></li>
+                            <li><a href="#">Yearly</a></li>
+                        </ul>
+                    </li>
+                </ul>                
+            </div>
+            <div class="menubar-footer"></div>
+        </div>
+    </body>
+</html>

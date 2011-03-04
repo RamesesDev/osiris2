@@ -131,7 +131,12 @@ public class Osiris2WebFilter implements Filter {
     }
     
     private void renderResource(String path, HttpServletRequest req, HttpServletResponse resp, Module module) {
-        InputStream is = module.getResourceAsStream(path);
+        InputStream is = null;
+        if( module != null )
+            is = module.getResourceAsStream(path);
+        else
+            is = req.getSession().getServletContext().getResourceAsStream(path);
+        
         BufferedOutputStream bos = null;
         BufferedInputStream bis = null;
         if ( is != null ) {
