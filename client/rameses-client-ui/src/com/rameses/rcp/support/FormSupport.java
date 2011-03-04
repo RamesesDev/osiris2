@@ -48,10 +48,9 @@ public final class FormSupport {
         List<Map> items = null;
         Map<String, List<Map>> categoryItems = null;
         if( categories != null ) {
-            items = new ArrayList();
-            items.addAll( infos );
+            items = new ArrayList(infos);
             categoryItems = new HashMap();
-            Iterator<Map> itr = infos.iterator();
+            Iterator<Map> itr = items.iterator();
             while(itr.hasNext()) {
                 Map elm = itr.next();
                 String catId = (String) elm.get("category");
