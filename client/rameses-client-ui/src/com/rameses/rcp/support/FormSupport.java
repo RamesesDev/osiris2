@@ -13,6 +13,7 @@ import com.rameses.rcp.common.FormControl;
 import com.rameses.rcp.control.border.XUnderlineBorder;
 import com.rameses.rcp.util.FormControlUtil;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,12 +21,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.swing.SwingConstants;
 
 /**
  *
  * @author ms
  */
 public final class FormSupport {
+    
+    public static final String CATEGORY_LABEL = "__category_label";
+    
     
     /**
      * Builds the form controls from a map.
@@ -74,6 +79,7 @@ public final class FormSupport {
         }
         
         if( categories != null && categoryItems != null ) {
+            boolean first = items.isEmpty();
             for(Map cat : categories) {
                 List<Map> ciList = categoryItems.get(cat.get("name"));
                 if( ciList != null ) {
@@ -82,12 +88,26 @@ public final class FormSupport {
                     fc.setType("label");
                     
                     Map props = fc.getProperties();
+                    props.put("name", CATEGORY_LABEL);
                     props.put("text", "<html><b>" + cat.get("caption") + "</b></html>");
                     props.put("foreground", java.awt.Color.RED);
-                    props.put("padding", new java.awt.Insets(10,0,0,0));
+                    
+                    Dimension prefSize = null; 
+                    Insets padding = null; 
+                    if( first ) {
+                        padding = new Insets(0,0,0,0);
+                        prefSize = new Dimension(0, 20);
+                    }
+                    else {
+                        padding = new Insets(10,0,0,0);
+                        prefSize = new Dimension(0, 30);
+                    }
+                    
+                    props.put("padding", padding);
                     props.put("showCaption", false);
                     props.put("border", new XUnderlineBorder());
-                    props.put("preferredSize", new Dimension(0, 30));
+                    props.put("preferredSize", prefSize);
+                    props.put("verticalAlignment", SwingConstants.TOP);
                     
                     Map ext = new HashMap(cat);
                     ext.remove("name");
@@ -99,6 +119,8 @@ public final class FormSupport {
                     for( Map m : ciList ) {
                         addFormControl(list, m, entityVarName);
                     }
+                    
+                    first = false;
                 }
             }
         }
@@ -151,10 +173,13 @@ public final class FormSupport {
     
     public static List<FormControl> filterFormControls(List<FormControl> controls, Map entityMap, String entityVarName, Map extProps) {
         List<FormControl> list = new ArrayList();
+        List<FormControl> labels = new ArrayList();
+        
         for(FormControl fc: controls) {
             String name = (String) fc.getProperties().get("name");
-            if( name == null ) {
+            if( CATEGORY_LABEL.equals(name) ) {
                 list.add(fc);
+                labels.add(fc);
                 continue;
             }
             
@@ -174,6 +199,29 @@ public final class FormSupport {
                 list.add( f );
             }
         }
+        
+        //remove all labels w/o elements
+        for(FormControl lbl : labels) {
+            int index = list.indexOf(lbl);
+            if( index == list.size() - 1 ) {
+                list.remove(lbl);
+            } else {
+                FormControl fc = list.get(index + 1);
+                if( CATEGORY_LABEL.equals(fc.getProperties().get("name")) ) {
+                    list.remove(lbl);
+                }
+            }
+            
+        }
+        
+        if( !list.isEmpty() ) {
+            FormControl fc = list.get(0);
+            if( CATEGORY_LABEL.equals(fc.getProperties().get("name")) ) {
+                fc.getProperties().put("padding", new Insets(0,0,0,0));
+                fc.getProperties().put("preferredSize", new Dimension(0, 20));
+            }
+        }
+        
         return list;
     }
     

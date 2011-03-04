@@ -16,6 +16,7 @@ import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.support.FormSupport;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
@@ -37,7 +38,9 @@ import java.util.regex.Pattern;
 public class FormControlUtil {
     
     private static final String CONF = "META-INF/form-controls.properties";
+    private static final String HTML_TAGS = "<\\/?html>|<\\/?body>";
     private static FormControlUtil instance;
+    
     
     public static synchronized final FormControlUtil getInstance() {
         if ( instance == null ) {
@@ -112,6 +115,8 @@ public class FormControlUtil {
             .append("<body>");
         }
         sb.append("<table>");
+        
+        boolean first = true;
         for(UIControl c : controls) {
             if( !(c instanceof ActiveControl) ) continue;
             
@@ -127,7 +132,7 @@ public class FormControlUtil {
             Color fg = ((Component) c).getForeground();
             String strColor = null;
             if( fg != null ) {
-                strColor = "rgb(" + fg.red + "," + fg.green + "," + fg.blue + ")";
+                strColor = "rgb(" + fg.getRed() + "," + fg.getGreen() + "," + fg.getBlue() + ")";
             }
             
             if( strColor != null ) {
@@ -154,8 +159,12 @@ public class FormControlUtil {
                     value = UIControlUtil.getBeanValue(c);
                 }
             } catch(Exception e){;}
+
+            if( !first && FormSupport.CATEGORY_LABEL.equals(c.getName()) ) {
+                sb.append("<br>");
+            }
             
-            sb.append((value==null? "" : value));
+            sb.append((value==null? "" : value.toString().replaceAll(HTML_TAGS, "")));
             
             if( strColor != null ) {
                 sb.append("</font>");
@@ -163,6 +172,8 @@ public class FormControlUtil {
             
             sb.append("</td>")
             .append("</tr>");
+            
+            first = false;
         }
         sb.append("</table>");
         if( !partial ) {
