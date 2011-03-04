@@ -154,6 +154,11 @@ public final class FormSupport {
         List<FormControl> list = new ArrayList();
         for(FormControl fc: controls) {
             String name = (String) fc.getProperties().get("name");
+            if( name == null ) {
+                list.add(fc);
+                continue;
+            }
+            
             if(entityVarName !=null && entityVarName.trim().length()>0) {
                 name = name.replaceAll( entityVarName+"\\.","" );
             }
