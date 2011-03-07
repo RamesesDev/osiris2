@@ -40,16 +40,19 @@ public class InvokerFunctions {
     }
     
     public static boolean hasInvokers(Folder folder) {
-        OsirisWebSessionContext sc = (OsirisWebSessionContext) WebContext.getInstance().getSessionContext();
+        try {
+            OsirisWebSessionContext sc = (OsirisWebSessionContext) WebContext.getInstance().getSessionContext();
+            
+            //if has invokers return true
+            if( !sc.getFolderInvokers(folder.getFullId()).isEmpty() ) return true;
+            
+            //otherwise check recursively
+            List<Folder> folders = sc.getFolders(folder);
+            for(Folder f : folders) {
+                if( hasInvokers(f) ) return true;
+            }
+        } catch(Exception e) {;}
         
-        //if has invokers return true
-        if( !sc.getFolderInvokers(folder.getFullId()).isEmpty() ) return true;
-        
-        //otherwise check recursively
-        List<Folder> folders = sc.getFolders(folder);
-        for(Folder f : folders) {
-            if( hasInvokers(f) ) return true;
-        }
         return false;
     }
     

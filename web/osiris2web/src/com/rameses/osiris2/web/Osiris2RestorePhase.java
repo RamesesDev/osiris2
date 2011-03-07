@@ -48,9 +48,7 @@ public class Osiris2RestorePhase implements PhaseListener {
         HttpServletRequest request = webCtx.getRequest();
         String reqMethod = request.getMethod().toLowerCase();
         if ( request.getParameter(WebUtil.LOGOUT_OUTCOME) != null ) {
-            webCtx.getRequest().getSession().invalidate();
-            webCtx.redirect(request.getRequestURI());
-            fContext.responseComplete();
+            doLogout( WebUtil.removeHash(request.getRequestURI()) );
         }
         
         if ( fContext.getResponseComplete() ) return;
@@ -153,14 +151,19 @@ public class Osiris2RestorePhase implements PhaseListener {
             }
         }
         
-        //add AppContext hashcode in the viewId so that the caching of templates
-        //would happen for every instance of AppContext
-        SessionContext sessCtx = webCtx.getSessionContext();
-        String viewId = webCtx.getViewId(wi);
-        viewId = WebUtil.addHash(viewId, sessCtx.hashCode());
-        String actualViewId = fContext.getViewRoot().getViewId();
-        if ( !actualViewId.equals(viewId)) {
-            fContext.getViewRoot().setViewId(viewId);
+        //check if not response complete if is fired
+        //routines above may abort processing
+        if( !fContext.getResponseComplete() ) {
+            
+            //add AppContext hashcode in the viewId so that the caching of templates
+            //would happen for every instance of AppContext
+            SessionContext sessCtx = webCtx.getSessionContext();
+            String viewId = webCtx.getViewId(wi);
+            viewId = WebUtil.addHash(viewId, sessCtx.hashCode());
+            String actualViewId = fContext.getViewRoot().getViewId();
+            if ( !actualViewId.equals(viewId)) {
+                fContext.getViewRoot().setViewId(viewId);
+            }
         }
     }
     //</editor-fold>
@@ -201,8 +204,17 @@ public class Osiris2RestorePhase implements PhaseListener {
                     webCtx.redirect(opr);
                     ctx.responseComplete();
                     
-                } else if ( outcome instanceof String && !isEmpty(outcome+"") ) {
-                    wi.setCurrentPage(outcome+"");
+                } else if ( outcome instanceof String && !isEmpty(outcome.toString()) ) {
+                    String str = outcome.toString();
+                    if( WebUtil.LOGOUT_OUTCOME.equals(str) ) {
+                        StringBuffer path = new StringBuffer( webCtx.getViewId(wi) );
+                        if( req.getContextPath() != null )
+                            path.insert(0, req.getContextPath() );
+                        
+                        doLogout( path.toString() );
+                    } else {
+                        wi.setCurrentPage(outcome+"");
+                    }
                     
                 } else if ( opener != null && opener.getOutcome() != null ) {
                     wi.setCurrentPage(opener.getOutcome());
@@ -247,6 +259,13 @@ public class Osiris2RestorePhase implements PhaseListener {
         if ( scope.equals("request") ) {
             wi.setCurrentPage(parser.getAction());
         }
+    }
+    
+    private void doLogout(String redirectPath) {
+        WebContext webCtx = WebContext.getInstance();
+        webCtx.getRequest().getSession().invalidate();
+        webCtx.redirect( redirectPath );
+        FacesContext.getCurrentInstance().responseComplete();
     }
     //</editor-fold>
     
