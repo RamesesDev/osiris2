@@ -163,7 +163,7 @@ public abstract class AbstractPersistenceHandler implements SchemaHandler {
             map.putAll( (Map)d );
             //find out the fields you want removed. to do this we need to scan the schema again.
             SchemaScanner scanner = schemaManager.newScanner();
-            scanner.scan( this.schema, new ExcludeFieldsSchemaHandler(map) );
+            scanner.scan( this.schema, sf.getElement(), new ExcludeFieldsSchemaHandler(map) );
             d = map;
         }
         else if(!mapfield.equals(".")) {
