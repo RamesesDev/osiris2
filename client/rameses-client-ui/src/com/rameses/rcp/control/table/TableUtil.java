@@ -7,14 +7,19 @@
 
 package com.rameses.rcp.control.table;
 
+import com.rameses.common.ExpressionResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
+import com.rameses.rcp.common.ListItem;
+import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
 import com.rameses.rcp.control.XDateField;
 import com.rameses.rcp.control.XLookupField;
 import com.rameses.rcp.control.XNumberField;
 import com.rameses.rcp.control.XTextField;
+import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.util.ControlSupport;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Component;
@@ -203,7 +208,7 @@ public final class TableUtil {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  AbstractRenderer (class)  ">
-    private static abstract class AbstractRenderer implements TableCellRenderer {
+    public static abstract class AbstractRenderer implements TableCellRenderer {
         
         public abstract JComponent getComponent(JTable table, int row, int column);
         
@@ -211,6 +216,7 @@ public final class TableUtil {
         
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             TableControl xtable = (TableControl) table;
+            TableControlModel xmodel = (TableControlModel) xtable.getModel();
             JComponent comp = getComponent(table, row, column);
             comp.setBorder(BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left, CELL_MARGIN.bottom, CELL_MARGIN.right));
             comp.setFont(table.getFont());
@@ -251,8 +257,23 @@ public final class TableUtil {
             }
             
             AbstractListModel lm = xtable.getListModel();
-            String errmsg = lm.getErrorMessage(row);
+            ListItem listItem = lm.getSelectedItem();
+            ClientContext clientCtx = ClientContext.getCurrentContext();
+            ExpressionResolver exprRes = clientCtx.getExpressionResolver();
+            Column colModel = xmodel.getColumn(column);
             
+            StyleRule[] styles = xtable.getBinding().getStyleRules();
+            if( styles != null && styles.length > 0) {
+                Map bean = new HashMap();
+                bean.put("row", listItem.getRownum());
+                bean.put("column", column);
+                bean.put("columnName", colModel.getName());
+                bean.put("root", listItem.getRoot());
+                bean.put("item", listItem.getItem());
+                applyStyle( xtable.getName(), bean, comp, styles, exprRes );
+            }
+            
+            String errmsg = lm.getErrorMessage(row);
             if (errmsg != null) {
                 if (!hasFocus) {
                     comp.setBackground( xtable.getErrorBackground() );
@@ -278,15 +299,45 @@ public final class TableUtil {
             return comp;
         }
         
+        private void applyStyle(String name, Map bean, Component comp, StyleRule[] styles, ExpressionResolver exprRes) {
+            if ( styles == null ) return;
+            
+            if( name == null ) name = "_any_name";
+            
+            //apply style rules
+            for(StyleRule r : styles) {
+                String pattern = r.getPattern();
+                if( !pattern.startsWith("table:") ) continue;
+                
+                pattern = pattern.substring(6);
+                String rule = r.getExpression();
+                
+                //test expression
+                boolean applyStyles = false;
+                if ( rule!=null && name.matches(pattern) ){
+                    try {
+                        Object o = exprRes.evaluate(bean, rule);
+                        applyStyles = Boolean.valueOf(o+"");
+                    } catch (Exception ign){
+                        System.out.println("STYLE RULE ERROR: " + ign.getMessage());
+                    }
+                }
+                
+                if ( applyStyles ) {
+                    ControlSupport.setStyles( r.getProperties(), comp );
+                }
+            }
+        }
+        
     }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  StringRenderer (class)  ">
-    private static class StringRenderer extends AbstractRenderer {
+    public static class StringRenderer extends AbstractRenderer {
         
         private JLabel label;
         
-        StringRenderer() {
+        public StringRenderer() {
             label = new JLabel();
             label.setVerticalAlignment(SwingConstants.CENTER);
         }
@@ -362,12 +413,12 @@ public final class TableUtil {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  BooleanRenderer (class)  ">
-    private static class BooleanRenderer extends AbstractRenderer {
+    public static class BooleanRenderer extends AbstractRenderer {
         
         private JCheckBox component;
         private JLabel empty;
         
-        BooleanRenderer() {
+        public BooleanRenderer() {
             component = new JCheckBox();
             component.setHorizontalAlignment(SwingConstants.CENTER);
             component.setBorderPainted(true);

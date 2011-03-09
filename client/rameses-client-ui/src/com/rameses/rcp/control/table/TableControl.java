@@ -8,12 +8,15 @@
 package com.rameses.rcp.control.table;
 
 import com.rameses.rcp.common.AbstractListModel;
+import com.rameses.rcp.framework.Binding;
 import java.awt.Color;
 import javax.swing.table.TableModel;
 
 
 public interface TableControl {
     
+    String getName();
+    Binding getBinding();
     TableModel getModel();
     AbstractListModel getListModel();
     public Color getEvenBackground();

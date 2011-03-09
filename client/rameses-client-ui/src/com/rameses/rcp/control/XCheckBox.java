@@ -23,8 +23,8 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     private Binding binding;
     private String[] depends;
     private int index;
-    private Object checkValue = true;
-    private Object uncheckValue = false;
+    private Object checkValue = 1;
+    private Object uncheckValue = 0;
     private ControlProperty property = new ControlProperty();
     private boolean readonly;
     

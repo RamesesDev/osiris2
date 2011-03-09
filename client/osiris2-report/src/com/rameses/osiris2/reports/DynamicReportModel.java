@@ -34,6 +34,8 @@ public class DynamicReportModel extends ReportModel {
     private String reportHeader;
     private int reportHeaderHeight;
     
+    private boolean showColumnHeaderPerPage = true;
+    
     
     public DynamicReportModel(){}
     
@@ -159,5 +161,13 @@ public class DynamicReportModel extends ReportModel {
 
     public void setReportHeader(String reportHeader) {
         this.reportHeader = reportHeader;
+    }
+
+    public boolean isShowColumnHeaderPerPage() {
+        return showColumnHeaderPerPage;
+    }
+
+    public void setShowColumnHeaderPerPage(boolean showColumnHeaderPerPage) {
+        this.showColumnHeaderPerPage = showColumnHeaderPerPage;
     }
 }

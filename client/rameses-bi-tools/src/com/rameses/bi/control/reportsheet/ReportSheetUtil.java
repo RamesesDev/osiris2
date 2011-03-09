@@ -141,10 +141,11 @@ public final class ReportSheetUtil {
             }
             
             ReportSheetModel model = xtable.getListModel();
-            StyleRule[] styles = xtable.getBinding().getStyleRules();
             ClientContext clientCtx = ClientContext.getCurrentContext();
             ExpressionResolver exprRes = clientCtx.getExpressionResolver();
             ListItem listItem = model.getItemList().get(row);
+            
+            StyleRule[] styles = xtable.getBinding().getStyleRules();
             if( styles != null && styles.length > 0) {
                 Map bean = new HashMap();
                 bean.put("row", listItem.getRownum());
@@ -155,65 +156,76 @@ public final class ReportSheetUtil {
                 applyStyle( xtable.getName(), bean, comp, styles, exprRes );
             }
             
-            boolean iconVisible = true;
-            Icon icon = null;
-            Icon toggleIcon = null;
-            if( !ValueUtil.isEmpty(colModel.getIconVisibleWhen()) ) {
-                try {
-                    Map ext = null;
-                    if( !ValueUtil.isEmpty(xtable.getVarStatus()) ) {
-                        ext = new HashMap();
-                        ext.put(xtable.getVarStatus(), listItem);
-                    }
-                    Object bean = new BeanWrapper(listItem.getItem(), ext);
-                    Object o = exprRes.evaluate(bean, colModel.getIconVisibleWhen());
-                    iconVisible = Boolean.valueOf(o+"");
-                    
+            
+            int borderPaddingLeft = 0;
+            
+            //reset icon
+            if( comp instanceof JLabel ) {
+                JLabel label = (JLabel) comp;
+                label.setIcon(null);
+            }
+            
+            if( column == 0 ) {
+                boolean iconVisible = true;
+                Icon icon = null;
+                Icon toggleIcon = null;
+                if( !ValueUtil.isEmpty(colModel.getIconVisibleWhen()) ) {
+                    try {
+                        Map ext = null;
+                        if( !ValueUtil.isEmpty(xtable.getVarStatus()) ) {
+                            ext = new HashMap();
+                            ext.put(xtable.getVarStatus(), listItem);
+                        }
+                        Object bean = new BeanWrapper(listItem.getItem(), ext);
+                        Object o = exprRes.evaluate(bean, colModel.getIconVisibleWhen());
+                        iconVisible = Boolean.valueOf(o+"");
+                    } catch(Exception e) {;}
+                }
+                
+                if( iconVisible ) {
                     if( colModel.getIcon() == null && colModel.getToggleIcon() == null ) {
                         icon = new ImageIcon(getClass().getResource(COLLAPSED_ICON));
                         toggleIcon = new ImageIcon(getClass().getResource(EXPANDED_ICON));
                     }
-                } catch(Exception e) {;}
-            }
-            
-            if( colModel.getIcon() != null ) {
-                try {
-                    URL u = clientCtx.getClassLoader().getResource( colModel.getIcon() );
-                    icon = new ImageIcon(u);
-                } catch(Exception e) {}
-            }
-            
-            if( colModel.getToggleIcon() != null ) {
-                try {
-                    URL u = clientCtx.getClassLoader().getResource( colModel.getToggleIcon() );
-                    toggleIcon = new ImageIcon(u);
-                } catch(Exception e) {}
-            }
-            
-            
-            Object rowData = listItem.getItem();
-            int borderPaddingLeft = 0;
-            if( comp instanceof JLabel ) {
-                JLabel label = (JLabel) comp;
-                label.setIconTextGap(5);
-                if( rowData != null && comp instanceof JLabel ) {
-                    ItemStatus status = model.getStatus(rowData);
-                    borderPaddingLeft = status.level * model.getIndentWidth();
-                    
-                    if( iconVisible ) {
-                        if( status.expanded )
-                            label.setIcon(toggleIcon);
-                        else
-                            label.setIcon(icon);
-                    } else {
-                        if ( icon != null ) {
-                            borderPaddingLeft += icon.getIconWidth() + 5;
+                }
+                
+                if( colModel.getIcon() != null ) {
+                    try {
+                        URL u = clientCtx.getClassLoader().getResource( colModel.getIcon() );
+                        icon = new ImageIcon(u);
+                    } catch(Exception e) {}
+                }
+                
+                if( colModel.getToggleIcon() != null ) {
+                    try {
+                        URL u = clientCtx.getClassLoader().getResource( colModel.getToggleIcon() );
+                        toggleIcon = new ImageIcon(u);
+                    } catch(Exception e) {}
+                }
+                
+                
+                Object rowData = listItem.getItem();
+                if( comp instanceof JLabel ) {
+                    JLabel label = (JLabel) comp;
+                    label.setIconTextGap(5);
+                    if( rowData != null && comp instanceof JLabel ) {
+                        ItemStatus status = model.getStatus(rowData);
+                        borderPaddingLeft = status.level * model.getIndentWidth();
+                        
+                        if( iconVisible ) {
+                            if( status.expanded )
+                                label.setIcon(toggleIcon);
+                            else
+                                label.setIcon(icon);
+                        } else {
+                            if ( icon != null ) {
+                                borderPaddingLeft += icon.getIconWidth() + 5;
+                            }
+                            label.setIcon(null);
                         }
-                        label.setIcon(null);
                     }
                 }
             }
-            
             
             //border support
             Border inner = BorderFactory.createEmptyBorder(CELL_MARGIN.top, CELL_MARGIN.left + borderPaddingLeft, CELL_MARGIN.bottom, CELL_MARGIN.right);

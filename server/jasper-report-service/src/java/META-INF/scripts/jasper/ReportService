@@ -1,0 +1,13 @@
+import com.rameses.annotations.*;
+import com.rameses.util.*;
+import com.rameses.reports.jasper.*;
+
+class ReportService {
+
+
+    @ProxyMethod
+    public def getReport(String name, Double version) {
+        return JasperReportManager.instance.getReport(name, version);
+    }
+
+}
