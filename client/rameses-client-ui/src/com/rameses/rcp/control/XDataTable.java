@@ -258,7 +258,10 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         }
         
         //keep the actual state at this time
-        currentItem = item.clone();
+        if( item != null )
+            currentItem = item.clone();
+        else
+            currentItem = null;
         
         if ( rowHeaderView != null )
             rowHeaderView.clearEditing();
