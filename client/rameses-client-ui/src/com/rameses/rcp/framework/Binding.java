@@ -4,6 +4,7 @@ package com.rameses.rcp.framework;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XButton;
+import com.rameses.rcp.ui.NonStylable;
 import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
@@ -299,6 +300,7 @@ public class Binding {
     
     public final void applyStyle(UIControl u) {
         if ( styleRules == null ) return;
+        if ( u instanceof NonStylable ) return;
         
         String name = u.getName();
         if( name == null ) name = "_any_name";

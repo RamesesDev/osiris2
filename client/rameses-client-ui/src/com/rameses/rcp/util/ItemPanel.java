@@ -9,12 +9,14 @@ package com.rameses.rcp.util;
 
 import com.rameses.rcp.constant.UIConstants;
 import com.rameses.rcp.control.XLabel;
+import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
@@ -42,6 +44,7 @@ class ItemPanel extends JPanel {
     private XLabel label;
     private ControlProperty property;
     private FormPanel formPanel;
+    private Insets padding;
     
     
     ItemPanel(FormPanel parent, Component editor) {
@@ -88,10 +91,20 @@ class ItemPanel extends JPanel {
         setOpaque(false);
         setLayout(new ItemPanelLayout(property));
         
+        if( property.getCellPadding() != null ) {
+            padding = property.getCellPadding();
+        }
+        
         label = new XLabel(true);
         label.setLabelFor(editor);
         label.setAddCaptionColon(parent.isAddCaptionColon());
-        label.setFont(parent.getCaptionFont());
+        
+        if( property.getCaptionFont() != null ) {
+            label.setFont( property.getCaptionFont() );
+        } else {
+            label.setFont(parent.getCaptionFont());
+        }
+        
         label.setForeground(parent.getCaptionForeground());
         
         if ( !ValueUtil.isEmpty(label.getText()) )
@@ -105,7 +118,7 @@ class ItemPanel extends JPanel {
             add(editor, "editor");
         }
         
-        PropertyChangeListener listener = new ContainablePropetyListener(this);
+        PropertyChangeListener listener = new ActiveControlPropetyListener();
         property.addPropertyChangeListener(listener);
     }
     //</editor-fold>
@@ -121,14 +134,46 @@ class ItemPanel extends JPanel {
     public XLabel getLabelComponent() { return label; }
     public ControlProperty getControlProperty() { return property; }
     
+    public Insets getInsets() {
+        Insets insets = new Insets(0,0,0,0);
+        Insets i = super.getInsets();
+        if( i != null ) {
+            insets.top += i.top;
+            insets.left += i.left;
+            insets.bottom += i.bottom;
+            insets.right += i.right;
+        }
+        
+        if( padding != null ) {
+            insets.top += padding.top;
+            insets.left += padding.left;
+            insets.bottom += padding.bottom;
+            insets.right += padding.right;
+        }
+        
+        return insets;
+    }
     
-    //<editor-fold defaultstate="collapsed" desc=" ContainablePropetyListener (Class) ">
-    private class ContainablePropetyListener implements PropertyChangeListener {
+    public Insets getInsets(Insets insets) {
+        Insets i = this.getInsets();
+        
+        if( insets == null ) return i;
+        
+        insets.top = i.top;
+        insets.left = i.left;
+        insets.bottom = i.bottom;
+        insets.right = i.right;
+        
+        return insets;
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc=" ActiveControlPropetyListener (Class) ">
+    private class ActiveControlPropetyListener implements PropertyChangeListener {
         
         private ItemPanel panel;
         
-        ContainablePropetyListener(ItemPanel panel) {
-            this.panel = panel;
+        ActiveControlPropetyListener() {
+            this.panel = ItemPanel.this;
         }
         
         public void propertyChange(PropertyChangeEvent evt) {
@@ -145,6 +190,19 @@ class ItemPanel extends JPanel {
                     panel.getLabelComponent().setBorder(BorderFactory.createEmptyBorder());
                 } else if ( !ValueUtil.isEqual(b, formPanel.getCaptionBorder()) ) {
                     panel.getLabelComponent().setBorder(formPanel.getCaptionBorder());
+                }
+            } else if ( "captionFont".equals(propName) ) {
+                Font f = (Font) value;
+                if( f != null )
+                    panel.getLabelComponent().setFont( f );
+                else
+                    panel.getLabelComponent().setFont( ThemeUI.getFont("XLabel.font") );
+                
+            } else if ( "cellPadding".equals(propName) ) {
+                Insets i = (Insets) value;
+                if( i != null ) {
+                    panel.padding = i;
+                    panel.revalidate();
                 }
             }
         }

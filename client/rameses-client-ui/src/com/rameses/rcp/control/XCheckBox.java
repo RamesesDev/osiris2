@@ -8,6 +8,7 @@ import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.Beans;
@@ -23,8 +24,8 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     private Binding binding;
     private String[] depends;
     private int index;
-    private Object checkValue = true;
-    private Object uncheckValue = false;
+    private Object checkValue = 1;
+    private Object uncheckValue = 0;
     private ControlProperty property = new ControlProperty();
     private boolean readonly;
     
@@ -116,6 +117,22 @@ public class XCheckBox extends JCheckBox implements UIInput, ActiveControl {
     
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
+    }
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
     }
     
     public boolean isNullWhenEmpty() {

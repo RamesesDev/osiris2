@@ -293,7 +293,7 @@ public abstract class AbstractListModel {
     }
     
     public void onAddItem(Object o) {
-        throw new IllegalStateException("Error add item. onAddItem(Object item) must be implemented.");
+        //do nothing
     }
     
     public void onUpdateItem(Object o) {
@@ -301,7 +301,7 @@ public abstract class AbstractListModel {
     }
     
     public void onRemoveItem(Object o) {
-        throw new IllegalStateException("Error remove item. onRemoveItem(Object item) must be implemented.");
+        //throw new IllegalStateException("Error remove item. onRemoveItem(Object item) must be implemented.");
     }
     
     public void onReplaceItem( Object oldValue, Object o ) {

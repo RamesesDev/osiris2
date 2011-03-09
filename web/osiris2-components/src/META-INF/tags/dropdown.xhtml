@@ -42,7 +42,7 @@
             <div class="menubar">            
                 <ul class="menu">
                     <c:forEach items="#{folders}" var="folder">
-                        <c:if test="#{inv:hasInvokers(folder)}">
+                        <c:if test="#{!empty folder.invoker or inv:hasInvokers(folder)}">
                             <c:set var="isRoot" value=""/>
                             <menu:writeLI folder="#{folder}" item="#{folder}" theme="#{theme}"/>
                             <c:set var="isRoot" value=""/>

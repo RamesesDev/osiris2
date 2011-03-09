@@ -190,6 +190,22 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
         property.setCaptionWidth(width);
     }
     
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
+    }
+    
     public String[] getDepends() {
         return depends;
     }

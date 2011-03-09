@@ -9,6 +9,8 @@
 
 package com.rameses.rcp.ui;
 
+import java.awt.Font;
+import java.awt.Insets;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -28,6 +30,8 @@ public class ControlProperty {
     private int captionWidth = 0;
     private boolean showCaption = true;
     private String errorMessage;
+    private Font captionFont;
+    private Insets cellPadding = new Insets(0,0,0,0);
     
     
     public ControlProperty() {;}
@@ -86,6 +90,20 @@ public class ControlProperty {
     public void setErrorMessage(String message) {
         support.firePropertyChange("errorMessage", this.errorMessage, message);
         this.errorMessage = message;
+    }
+
+    public Font getCaptionFont() { return captionFont; }
+
+    public void setCaptionFont(Font captionFont) {
+        support.firePropertyChange("captionFont", this.captionFont, captionFont);
+        this.captionFont = captionFont;
+    }
+
+    public Insets getCellPadding() { return cellPadding; }
+
+    public void setCellPadding(Insets cellPadding) {
+        support.firePropertyChange("cellPadding", this.cellPadding, cellPadding);
+        this.cellPadding = cellPadding;
     }
     
 }

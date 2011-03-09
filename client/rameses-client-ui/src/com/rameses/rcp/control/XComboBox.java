@@ -22,6 +22,7 @@ import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -339,6 +340,22 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
+    }
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
     }
     
     public void validateInput() {

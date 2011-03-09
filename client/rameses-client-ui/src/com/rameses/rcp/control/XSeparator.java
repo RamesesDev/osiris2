@@ -15,6 +15,7 @@ import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -119,6 +120,22 @@ public class XSeparator extends JComponent implements UIControl, ActiveControl, 
         property.setCaptionWidth(width);
     }
     
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
+    }
+    
     public String getOrientation() {
         return orientation;
     }
@@ -170,16 +187,16 @@ public class XSeparator extends JComponent implements UIControl, ActiveControl, 
         this.lineShadow = lineShadow;
     }
     //</editor-fold>
-
+    
     public String[] getDepends() { return null; }
-
+    
     public int getIndex() { return 0; }
-
+    
     public void setBinding(Binding binding) {}
     public Binding getBinding() { return null; }
     public void refresh() {}
     public void load() {}
-
+    
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
     }

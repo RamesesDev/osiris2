@@ -81,6 +81,7 @@ public class DynamicReportUtil {
             band.setHeight( height );
             dataBand.setHeight( height );
             
+            
             jd.setColumnHeader( band );
             jd.setDetail( dataBand );
             
@@ -160,6 +161,7 @@ public class DynamicReportUtil {
         st.setLeftPadding( padding );
         st.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_CENTER);
         st.setStyle(columnStyle);
+        st.setPrintWhenDetailOverflows(true);
         return st;
     }
     
