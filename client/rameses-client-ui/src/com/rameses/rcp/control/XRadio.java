@@ -16,6 +16,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
@@ -168,13 +169,29 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     public void setShowCaption(boolean show) {
         property.setShowCaption(show);
     }
-
+    
     public int getCaptionWidth() {
         return property.getCaptionWidth();
     }
     
     public void setCaptionWidth(int width) {
         property.setCaptionWidth(width);
+    }
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
     }
     
     public boolean isImmediate() {

@@ -314,6 +314,9 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
         
         super.changeSelection(rowIndex, columnIndex, toggle, extend);
         
+        Column col = tableModel.getColumn(columnIndex);
+        listModel.setSelectedColumn(col.getName());
+        
         if ( rowIndex != oldRowIndex ) {
             rowChanged();
         }

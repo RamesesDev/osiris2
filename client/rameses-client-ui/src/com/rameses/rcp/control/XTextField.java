@@ -17,6 +17,7 @@ import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,7 +104,7 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
                 setValue(value);
             }
         } catch(Exception e) {
-            //just block the input when the name is null 
+            //just block the input when the name is null
             setText("");
             setEditable(false);
             setFocusable(false);
@@ -265,6 +266,22 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
+    }
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
     }
     
     public ControlProperty getControlProperty() {

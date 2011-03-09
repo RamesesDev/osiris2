@@ -12,7 +12,10 @@ public class Column implements Serializable {
     private String caption;
     private String type = "string";
     private String handler;
+    
+    //for combo box support
     private String items;
+    
     private String fieldname;
     private int width;
     private int minWidth;
@@ -27,14 +30,24 @@ public class Column implements Serializable {
     private String format;
     private boolean required;
     private Class fieldType;
+    
+    //alignment support
     private String alignment;
     private String vAlignment;
+    
+    //icon support
     private String iconVisibleWhen;
     private String icon;
     private String toggleIcon;
     private String headerIcon;
+    
+    
     private String expression;
     private String category;
+    
+    //checkbox support
+    private Object checkValue;
+    private Object uncheckValue;
     
     
     private Map properties = new HashMap();
@@ -328,6 +341,22 @@ public class Column implements Serializable {
 
     public void setIconVisibleWhen(String iconVisibleWhen) {
         this.iconVisibleWhen = iconVisibleWhen;
+    }
+
+    public Object getUncheckValue() {
+        return uncheckValue;
+    }
+
+    public void setUncheckValue(Object uncheckValue) {
+        this.uncheckValue = uncheckValue;
+    }
+
+    public Object getCheckValue() {
+        return checkValue;
+    }
+
+    public void setCheckValue(Object checkValue) {
+        this.checkValue = checkValue;
     }
     
 }

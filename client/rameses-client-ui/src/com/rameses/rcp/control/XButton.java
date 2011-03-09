@@ -9,6 +9,8 @@ import com.rameses.rcp.ui.UICommand;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -52,8 +54,7 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
             if ( "false".equals(value+"") ) {
                 setVisible(false);
                 return;
-            }
-            else if (!isVisible()) {
+            } else if (!isVisible()) {
                 setVisible(true);
             }
         }
@@ -114,6 +115,22 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     public int getCaptionWidth() { return property.getCaptionWidth(); }
     public void setCaptionWidth(int width) { property.setCaptionWidth(width); }
     
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
+    }
+    
     public String getTarget() { return target; }
     public void setTarget(String target) { this.target = target; }
     
@@ -126,7 +143,7 @@ public class XButton extends JButton implements UICommand, ActionListener, Activ
     }
     
     public String getExpression() { return expression; }
-    public void setExpression(String expression) { 
+    public void setExpression(String expression) {
         this.expression = expression;
         setText(expression);
     }

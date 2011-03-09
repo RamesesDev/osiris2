@@ -13,7 +13,8 @@ import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.control.table.DataTableComponent;
 import com.rameses.rcp.control.table.ListScrollBar;
-import com.rameses.rcp.control.table.RowHeader;
+import com.rameses.rcp.control.table.RowHeaderView;
+import com.rameses.rcp.control.table.TableBorder;
 import com.rameses.rcp.control.table.TableListener;
 import com.rameses.rcp.control.table.TableUtil;
 import com.rameses.rcp.framework.Binding;
@@ -25,12 +26,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 
-
-
-public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
+public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener, NonStylable {
     
     private DataTableComponent table;
     private ListScrollBar scrollBar;
@@ -373,7 +370,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         if ( showRowHeader ) {
             Color gridColor = getGridColor();
             scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TableUtil.getTableCornerComponent(gridColor));
-            scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
+            scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView(table)) );
             rowHeaderView.setRowCount( table.getRowCount() );
         } else {
             scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, null);
@@ -404,36 +401,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     
     //--- inner classess
     
-    //<editor-fold defaultstate="collapsed" desc="  TableBorder (class)  ">
-    private static class TableBorder extends AbstractBorder {
-        
-        private static final Insets insets = new Insets(1, 1, 2, 2);
-        
-        public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-            
-            g.translate( x, y);
-            
-            g.setColor( MetalLookAndFeel.getControlDarkShadow() );
-            g.drawRect( 0, 0, w-2, h-2 );
-            g.setColor( MetalLookAndFeel.getControlHighlight() );
-            
-            g.drawLine( w-1, 1, w-1, h-1);
-            g.drawLine( 1, h-1, w-1, h-1);
-            
-            g.setColor( MetalLookAndFeel.getControl() );
-            g.drawLine( w-2, 2, w-2, 2 );
-            g.drawLine( 1, h-2, 1, h-2 );
-            
-            g.translate( -x, -y);
-            
-        }
-        
-        public Insets getBorderInsets(Component c)       {
-            return insets;
-        }
-    }
-    //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="  ScrollBarPanel (class)  ">
     private class ScrollBarPanel extends JPanel {
         
@@ -457,102 +424,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
             add(scrollBar, BorderLayout.CENTER);
         }
         
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  RowHeaderView (class)  ">
-    private class RowHeaderView extends JPanel {
-        
-        private int rowCount;
-        private int currentRow = -1;
-        
-        RowHeaderView() {
-            setLayout(new RowHeaderLayout());
-        }
-        
-        public void setRowCount(int rowCount) {
-            if ( this.rowCount == rowCount ) return;
-            this.rowCount = rowCount;
-            
-            removeAll();
-            JComponent label = null;
-            for (int i = 0; i < rowCount; ++i) {
-                add(new RowHeader(table.getGridColor()));
-            }
-            SwingUtilities.updateComponentTreeUI(this);
-        }
-        
-        public void clearEditing() {
-            if ( currentRow != -1 ) {
-                RowHeader rh = (RowHeader) getComponent(currentRow);
-                rh.edit(false);
-            }
-            currentRow = -1;
-        }
-        
-        public void editRow(int row) {
-            if ( currentRow != row ) {
-                clearEditing();
-            }
-            RowHeader rh = (RowHeader) getComponent(row);
-            rh.edit(true);
-            currentRow = row;
-        }
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  RowHeaderLayout (Class) ">
-    private class RowHeaderLayout implements LayoutManager {
-        
-        public void addLayoutComponent(String name, Component comp) {;}
-        public void removeLayoutComponent(Component comp) {;}
-        
-        public Dimension preferredLayoutSize(Container parent) {
-            return getLayoutSize(parent);
-        }
-        
-        public Dimension minimumLayoutSize(Container parent) {
-            return getLayoutSize(parent);
-        }
-        
-        public void layoutContainer(Container parent) {
-            synchronized (parent.getTreeLock()) {
-                Insets margin = parent.getInsets();
-                int x = margin.left;
-                int y = margin.top;
-                int w = parent.getWidth() - (margin.left + margin.right);
-                int h = parent.getHeight() - (margin.top + margin.bottom);
-                
-                Component[] comps = parent.getComponents();
-                for (int i=0; i<comps.length; i++) {
-                    if (!(comps[i] instanceof RowHeader)) continue;
-                    
-                    int rh = XDataTable.this.table.getRowHeight(i);
-                    comps[i].setBounds(x, y, w, rh);
-                    y += rh;
-                }
-            }
-        }
-        
-        private Dimension getLayoutSize(Container parent) {
-            synchronized (parent.getTreeLock()) {
-                int w = 0;
-                int h = 0;
-                Component[] comps = parent.getComponents();
-                for (int i=0; i<comps.length; i++) {
-                    if (!(comps[i] instanceof RowHeader)) continue;
-                    
-                    Dimension dim = comps[i].getPreferredSize();
-                    w = Math.max(w, dim.width);
-                    h += XDataTable.this.table.getRowHeight(i);
-                }
-                
-                Insets margin = parent.getInsets();
-                w += (margin.left + margin.right);
-                h += (margin.top + margin.bottom);
-                return new Dimension(w,h);
-            }
-        }
     }
     //</editor-fold>
     

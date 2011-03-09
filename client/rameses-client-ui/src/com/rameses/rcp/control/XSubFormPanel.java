@@ -16,6 +16,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.beans.Beans;
 import java.util.ArrayList;
@@ -128,13 +130,12 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             handlerObj = UIControlUtil.getBeanValue(this, getHandler());
             multiForm = true; //reset, check based on passed value
         }
-
+        
         List<Opener> openers = new ArrayList();
         
         if ( handlerObj == null ) {
             //do nothing
-        }
-        else if ( handlerObj instanceof Collection ) {
+        } else if ( handlerObj instanceof Collection ) {
             for(Object o: (Collection) handlerObj) {
                 openers.add( (Opener)o );
             }
@@ -322,6 +323,22 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
+    }
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
     }
     
     public ControlProperty getControlProperty() {

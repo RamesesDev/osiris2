@@ -252,9 +252,6 @@ public final class ReportSheetUtil {
             //apply style rules
             for(StyleRule r : styles) {
                 String pattern = r.getPattern();
-                if( !pattern.startsWith("table:") ) continue;
-                
-                pattern = pattern.substring(6);
                 String rule = r.getExpression();
                 
                 //test expression

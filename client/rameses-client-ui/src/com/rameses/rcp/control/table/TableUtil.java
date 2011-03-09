@@ -140,10 +140,13 @@ public final class TableUtil {
         }
         
         String type = col.getType()+"";
-        if ( editor instanceof JCheckBox ) {
-            JCheckBox jcb = (JCheckBox) editor;
-            jcb.setHorizontalAlignment(SwingConstants.CENTER);
-            jcb.setBorderPainted(true);
+        if ( editor instanceof XCheckBox ) {
+            XCheckBox xcb = (XCheckBox) editor;
+            xcb.setHorizontalAlignment(SwingConstants.CENTER);
+            xcb.setBorderPainted(true);
+            
+            if( col.getCheckValue() != null )  xcb.setCheckValue( col.getCheckValue() );
+            if( col.getUncheckValue() != null )xcb.setUncheckValue( col.getUncheckValue() );
             
         } else if ( editor instanceof XNumberField ) {
             XNumberField xnf = (XNumberField) editor;
@@ -307,9 +310,6 @@ public final class TableUtil {
             //apply style rules
             for(StyleRule r : styles) {
                 String pattern = r.getPattern();
-                if( !pattern.startsWith("table:") ) continue;
-                
-                pattern = pattern.substring(6);
                 String rule = r.getExpression();
                 
                 //test expression

@@ -23,6 +23,7 @@ public class RowHeader extends TableHeaderRenderer {
         setBorder(BorderFactory.createLineBorder(borderColor));
         setPreferredSize(new Dimension(23,23));
         setHorizontalAlignment(SwingConstants.CENTER);
+        setVerticalAlignment(SwingConstants.CENTER);
         setForeground(Color.BLUE);
         setFont(new Font("Courier", Font.PLAIN, 11));
         //edit(true);
@@ -32,7 +33,7 @@ public class RowHeader extends TableHeaderRenderer {
     
     public void edit(boolean b) {
         if (b)
-            super.setText("<html><b>*</b></html>");
+            super.setText("*");
         else
             super.setText("");
     }
