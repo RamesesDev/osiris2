@@ -70,8 +70,9 @@ public abstract class AbstractSqlTxn {
     /** 
      * expands the values size but does not erase existing values
      */
-    protected final void reallocate() {
-        int diff = parameterNames.size() - parameterValues.size();
+    protected final void reallocate( int len ) {
+        //int diff = parameterNames.size() - parameterValues.size();
+        int diff = len - parameterValues.size();
         for(int i=0; i<diff;i++) {
             parameterValues.add(null);
         }
@@ -146,7 +147,11 @@ public abstract class AbstractSqlTxn {
         this.statement = ExprUtil.substituteValues( this.origStatement, map );
         //reparse the statement after parsing to update the parameter names
         this.statement = SqlUtil.parseStatement(statement, parameterNames);  
-        reallocate();
+        reallocate( countChar( statement, "?" ));
+    }
+    
+    private int countChar( String s, String schar ){
+        return s.replaceAll("[^" + schar+ "]", "").length();
     }
     
     /***
