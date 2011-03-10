@@ -10,12 +10,16 @@ import javax.faces.context.FacesContext;
 
 public class Osiris2ResourceResolver extends DefaultResourceResolver {
     
+    private static final Pattern RES_PATTERN = Pattern.compile("^/([^/]+)/(.+)$");
+    
+    
     public Osiris2ResourceResolver() {
     }
     
     public URL resolveUrl(String path) {
         String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        WorkUnitInstance wi = WebContext.getCurrentWorkUnitInstance();
+        WebContext webCtx = WebContext.getInstance();
+        WorkUnitInstance wi = webCtx.getCurrentWorkUnitInstance();
         
         try {
             if ( wi != null ) {
@@ -29,15 +33,14 @@ public class Osiris2ResourceResolver extends DefaultResourceResolver {
                     
                     resource = wi.getModule().getResource(template.toString());
                 } else {
-                    String regex = "^/([^/]+)/(.+)$";
-                    Matcher m = Pattern.compile(regex).matcher(path);
+                    Matcher m = RES_PATTERN.matcher(path);
                     if ( m.matches() ) {
-                        SessionContext ctx = WebContext.getSessionContext();
+                        SessionContext ctx = webCtx.getSessionContext();
                         Module mod = ctx.getModule( m.group(1) );
                         resource = mod.getResource( m.group(2) );
                     }
                 }
-                
+
                 if ( resource != null ) return resource;
             }
         } catch(Exception e) {

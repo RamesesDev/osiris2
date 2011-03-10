@@ -23,7 +23,9 @@ import com.rameses.sql.CrudModel;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlUnit;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -155,9 +157,19 @@ public abstract class AbstractPersistenceHandler implements SchemaHandler {
         String mapfield = (String)sf.getProperties().get("mapfield");
         if(mapfield==null) mapfield = refname;
                 
-        if(!mapfield.equals(".")) {
+        String merge = (String)sf.getProperties().get("merge");
+        if( merge!=null && "true".equals(merge) ) {
+            Map map = new HashMap();
+            map.putAll( (Map)d );
+            //find out the fields you want removed. to do this we need to scan the schema again.
+            SchemaScanner scanner = schemaManager.newScanner();
+            scanner.scan( this.schema, sf.getElement(), new ExcludeFieldsSchemaHandler(map) );
+            d = map;
+        }
+        else if(!mapfield.equals(".")) {
             d = schemaManager.getConf().getPropertyResolver().getProperty(d, mapfield);
         }
+        
         if(d==null) return null;
         return schemaManager.getSerializer().write( d );
     }

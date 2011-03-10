@@ -16,6 +16,8 @@ import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.Font;
+import java.awt.Insets;
 import java.beans.Beans;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -195,6 +197,22 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
     
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
+    }
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
     }
     
     public String getLinkAction() {

@@ -83,7 +83,7 @@ public class EntityManager {
         Queue queue = null;
         List<String> removeFields = new ArrayList();
         List<String> serializedFields = new ArrayList();
-        
+        List<String> mergeFields = new ArrayList();
         try {
             SchemaScanner scanner = schemaManager.newScanner();
             ReadPersistenceHandler handler = new ReadPersistenceHandler(schemaManager,sqlContext,data);
@@ -93,6 +93,7 @@ public class EntityManager {
             queue = handler.getQueue();
             removeFields = handler.getRemoveFields();
             serializedFields = handler.getSerializedFields();
+            mergeFields = handler.getMergeFields();
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -125,6 +126,10 @@ public class EntityManager {
                 for(String s: serializedFields) {
                     System.out.println("       " +s);
                 }
+                if(mergeFields.size()>0) System.out.println("merge fields:");
+                for(String s: mergeFields) {
+                    System.out.println("       " +s);
+                }
             }
             
             
@@ -132,8 +137,8 @@ public class EntityManager {
                 map.remove(s);
             }
             
+            PropertyResolver resolver = schemaManager.getConf().getPropertyResolver();
             if(serializedFields.size()>0) {
-                PropertyResolver resolver = schemaManager.getConf().getPropertyResolver();
                 for(String s: serializedFields) {
                     String o = (String)resolver.getProperty(map, s);
                     if(o!=null) {
@@ -142,7 +147,18 @@ public class EntityManager {
                     }
                 }
             }
-            
+            if(mergeFields.size()>0) {
+                for(String s: mergeFields) {
+                    String o = (String)resolver.getProperty(map, s);
+                    if(o!=null) {
+                        map.remove(s);
+                        Object x = schemaManager.getSerializer().read(o);
+                        if(x instanceof Map) {
+                            map.putAll( (Map)x );    
+                        }
+                    }
+                }
+            }
             if(map.size()==0)
                 data = null;
             else

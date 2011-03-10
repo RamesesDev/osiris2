@@ -22,6 +22,7 @@ import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -79,11 +80,19 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     //</editor-fold>
     
     public void refresh() {
-        if ( dynamic ) {
-            buildList();
+        try {
+            if( !isReadonly() && !isFocusable() ) setReadonly(false);
+            
+            if ( dynamic ) {
+                buildList();
+            }
+            Object value = UIControlUtil.getBeanValue(this);
+            setValue(value);
+        } catch(Exception e) {
+            setValue(null);
+            setEnabled(false);
+            setFocusable(false);
         }
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
     }
     
     public void load() {
@@ -176,7 +185,10 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void itemStateChanged(ItemEvent e) {
         if ( e.getStateChange() == ItemEvent.SELECTED && !updating ) {
-            UIInputUtil.updateBeanValue(this);
+            try {
+                UIControlUtil.getBeanValue(this); //check if bean is not null
+                UIInputUtil.updateBeanValue(this);
+            } catch(Exception ex) {;}
         }
     }
     
@@ -313,7 +325,7 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public void setRequired(boolean required) {
         property.setRequired(required);
     }
-
+    
     public int getCaptionWidth() {
         return property.getCaptionWidth();
     }
@@ -329,7 +341,23 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     public void setShowCaption(boolean showCaption) {
         property.setShowCaption(showCaption);
     }
-        
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
+    }
+    
     public void validateInput() {
         actionMessage.clearMessages();
         property.setErrorMessage(null);

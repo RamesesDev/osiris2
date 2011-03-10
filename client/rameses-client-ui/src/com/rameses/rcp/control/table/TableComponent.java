@@ -30,11 +30,11 @@ import javax.swing.JRootPane;
  *
  * @author jaycverg
  */
-public class TableComponent extends JTable implements ListModelListener {
+public class TableComponent extends JTable implements ListModelListener, TableControl {
     
     private static final String COLUMN_POINT = "COLUMN_POINT";
     
-    private DefaultTableModel tableModel;
+    private TableComponentModel tableModel;
     private Map<Integer, JComponent> editors = new HashMap();
     private Binding itemBinding = new Binding();
     private TableListener tableListener;
@@ -67,9 +67,9 @@ public class TableComponent extends JTable implements ListModelListener {
     
     //<editor-fold defaultstate="collapsed" desc="  initComponents  ">
     private void initComponents() {
-        tableModel = new DefaultTableModel();
+        tableModel = new TableComponentModel();
         getTableHeader().setReorderingAllowed(false);
-        getTableHeader().setDefaultRenderer(TableManager.getHeaderRenderer());
+        getTableHeader().setDefaultRenderer(TableUtil.getHeaderRenderer());
         addKeyListener(new TableKeyAdapter());
         
         addComponentListener(new ComponentAdapter() {
@@ -175,7 +175,7 @@ public class TableComponent extends JTable implements ListModelListener {
         
         for ( int i=0; i<length; i++ ) {
             Column col = tableModel.getColumn(i);
-            TableCellRenderer cellRenderer = TableManager.getCellRenderer(col.getType());
+            TableCellRenderer cellRenderer = TableUtil.getCellRenderer(col.getType());
             TableColumn tableCol = getColumnModel().getColumn(i);
             tableCol.setCellRenderer(cellRenderer);
             applyColumnProperties(tableCol, col);
@@ -186,7 +186,7 @@ public class TableComponent extends JTable implements ListModelListener {
             if ( !col.isEditable() ) continue;
             if ( editors.containsKey(i) ) continue;
             
-            JComponent editor = TableManager.createCellEditor(col);
+            JComponent editor = TableUtil.createCellEditor(col);
             editor.setVisible(false);
             editor.setBounds(-10, -10, 10, 10);
             
@@ -369,7 +369,7 @@ public class TableComponent extends JTable implements ListModelListener {
             
         } else {
             ListItem item = listModel.getSelectedItem();
-            boolean lastRow = !(rowIndex + listModel.getTopRow() < listModel.getMaxRows());
+            boolean lastRow = getRowCount() == item.getIndex()+1;
             
             if ( item.getState() == 0 ) lastRow = false;
             
@@ -682,7 +682,7 @@ public class TableComponent extends JTable implements ListModelListener {
                     listModel.moveBackPage();
                     break;
                 case KeyEvent.VK_DELETE:
-                    listModel.removeSelectedItem();
+                    if( !isReadonly() ) listModel.removeSelectedItem();
                     break;
                 case KeyEvent.VK_ENTER:
                     if ( e.isControlDown() ) openItem();

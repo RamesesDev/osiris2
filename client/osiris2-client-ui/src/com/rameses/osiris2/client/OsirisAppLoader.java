@@ -45,12 +45,27 @@ public class OsirisAppLoader implements AppLoader {
             ctx.setClassLoader(loader);
             ctx.setAppEnv(env);
             
-            Thread.currentThread().setContextClassLoader(loader);
-            
             OsirisContext.setSession(startupApp);
+            if( env.get("CLIENT_PERMISSIONS") != null ) {
+                List permissions = (List) env.remove("CLIENT_PERMISSIONS");
+                OsirisSecurityProvider scp = (OsirisSecurityProvider) OsirisContext.getSession().getSecurityProvider();
+                scp.getPermissions().addAll(permissions);
+            }
+            if( env.get("CLIENT_ENV") != null ) {
+                Map clientEnv = (Map) env.remove("CLIENT_ENV");
+                OsirisContext.getEnv().putAll( clientEnv );
+            }
+            if( env.get("PROPERTIES") != null ) {
+                Map properties = (Map) env.remove("PROPERTIES");
+                ctx.getProperties().putAll( properties );
+            }
             
             //load all loaders
-            List loaders = startupApp.getInvokers("loader", false);
+            String loaderType = "loader";
+            if( env.get("LOADER_TYPE") != null )
+                loaderType = (String) env.remove("LOADER_TYPE");
+            
+            List loaders = startupApp.getInvokers(loaderType, false);
             if( loaders.size() > 0 ) {
                 //Collections.reverse(loaders);
                 UIControllerPanel uip = new UIControllerPanel();
@@ -58,10 +73,11 @@ public class OsirisAppLoader implements AppLoader {
                 uls.setLoaders( loaders );
                 uip.setControllers(uls);
                 
-                env.put("canclose", "false" );
-                env.put("title", "Home");
-                env.put("id", "loader_workunits");
-                platform.showStartupWindow(null, uip, env);
+                Map winProps = new HashMap();
+                winProps.put("canclose", "false" );
+                winProps.put("title", "Home");
+                winProps.put("id", "loader_workunits");
+                platform.showStartupWindow(null, uip, winProps);
             }
             startupApp.load();
             ctx.getTaskManager().start();

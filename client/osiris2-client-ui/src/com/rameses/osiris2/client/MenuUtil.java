@@ -13,6 +13,7 @@ import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.Folder;
 import com.rameses.osiris2.Invoker;
 import com.rameses.rcp.util.ControlSupport;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -30,9 +31,41 @@ public final class MenuUtil {
     public static JMenuBar getMenuBar(String name) {
         JMenuBar menuBar = new JMenuBar();
         for(JMenuItem m: getMenuCollection(name)) {
+            if( m instanceof JMenu && !hasChildren((JMenu) m) ) {
+                continue;
+            }
             menuBar.add( m );
         }
         return menuBar;
+    }
+    
+    private static boolean hasChildren(JMenu jm) {
+        jm.getComponentCount();
+        if ( jm.getMenuComponentCount() == 0 )
+            return false;
+        
+        boolean hasChildren = false;
+        List emptyMenus = new ArrayList();
+        for(int i=0; i<jm.getMenuComponentCount(); ++i) {
+            Component c = jm.getMenuComponent(i);
+            if ( c instanceof JMenu ) {
+                JMenu subMenu = (JMenu) c;
+                if ( !hasChildren(subMenu) ) {
+                    emptyMenus.add(subMenu);
+                } else {
+                    hasChildren = true;
+                }
+            } else {
+                hasChildren = true;
+            }
+        }
+        
+        while (!emptyMenus.isEmpty()) {
+            JMenu mnu = (JMenu) emptyMenus.remove(0);
+            jm.remove(mnu);
+        }
+        
+        return hasChildren;
     }
     
     public static List<JMenuItem> getMenuCollection(String name) {
@@ -48,8 +81,7 @@ public final class MenuUtil {
                     if( f.getInvoker() ==null ) {
                         separator = (String) f.getProperties().get("separator");
                         mi = new MenuProxy((Folder) o);
-                    }
-                    else {
+                    } else {
                         separator = (String) f.getInvoker().getProperties().get("separator");
                         mi = new MenuItemProxy((Folder)o);
                     }
@@ -83,13 +115,13 @@ public final class MenuUtil {
             String icon = (String)menu.getProperties().get("icon");
             if( icon !=null) {
                 setIcon(ControlSupport.getImageIcon(icon));
-            }            
+            }
         }
-
+        
         public int getComponentCount() {
             if(!init) {
                 List<JMenuItem> menus = getMenuCollection( id );
-                int sz = menus.size(); 
+                int sz = menus.size();
                 for( int i=0; i<sz; i++ ) {
                     JMenuItem mi = menus.get(i);
                     String separator = (String)mi.getClientProperty("separator");

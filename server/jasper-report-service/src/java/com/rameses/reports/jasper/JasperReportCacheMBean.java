@@ -9,12 +9,10 @@
 
 package com.rameses.reports.jasper;
 
-import java.util.Map;
+import java.io.Serializable;
 
-
-public interface JasperReportCacheMBean {
+public interface JasperReportCacheMBean extends Serializable {
     
-    Map getReport(String name);
     void start();
     void stop();
     void flushAll();

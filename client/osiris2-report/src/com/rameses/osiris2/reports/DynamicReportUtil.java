@@ -2,7 +2,10 @@
 package com.rameses.osiris2.reports;
 
 import com.rameses.rcp.common.Column;
+import com.rameses.util.ValueUtil;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Date;
 import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.design.JRDesignBand;
@@ -26,11 +29,11 @@ public class DynamicReportUtil {
     
     public static JasperDesign build(DynamicReportModel model) {
         JasperDesign jd = new JasperDesign();
-        jd.setName("TEST");
-        jd.setBottomMargin(0);
-        jd.setTopMargin(0);
-        jd.setLeftMargin(0);
-        jd.setRightMargin(0);
+        jd.setName( model.getReportName() );
+        jd.setBottomMargin( model.getBottomMargin() );
+        jd.setTopMargin( model.getTopMargin() );
+        jd.setLeftMargin( model.getLeftMargin() );
+        jd.setRightMargin( model.getRightMargin() );
         try{
             int x = 0;
             int y = 0;
@@ -51,28 +54,79 @@ public class DynamicReportUtil {
             for(Object o : model.getColumns()) {
                 Column c = (Column) o;
                 String type = c.getType();
-                if( type == null || type.equals("string") ) //string is the default type of Column
+                if( type == null || "string".equals(type) ) //string is the default type of Column
                     type = String.class.getName();
+                else if ( "decimal".equals(type) )
+                    type = BigDecimal.class.getName();
+                else if ( "integer".equals(type) )
+                    type = Integer.class.getName();
+                else if ( "boolean".equals(type) )
+                    type = Boolean.class.getName();
+                else if ( "double".equals(type) )
+                    type = Double.class.getName();
+                else if ( "date".equals(type) )
+                    type = Date.class.getName();
+                else if ( "timestamp".equals(type) )
+                    type = Timestamp.class.getName();
                 
                 if( c.getWidth() == 0 ) c.setWidth(100);
                 
                 Class typeClass = DynamicReportUtil.class.getClassLoader().loadClass( type );
                 jd.addField( createField( c.getName(), typeClass ));
-                band.addElement( createStaticText( c.getName(), x ,y , c.getWidth(), height, padding, columnStyle ) );
-                dataBand.addElement( createTextField( "$F{" + c.getName() + "}", typeClass, x, y, c.getWidth(), height, padding, columnStyle ) );
+                band.addElement( createStaticText( c.getCaption(), x ,y , c.getWidth(), height, padding, columnStyle ) );
+                dataBand.addElement( createTextField( c, typeClass, x, y, c.getWidth(), height, padding, columnStyle ) );
                 x += c.getWidth();
             }
             
             band.setHeight( height );
             dataBand.setHeight( height );
             
+            
             jd.setColumnHeader( band );
             jd.setDetail( dataBand );
+            
+            String orientation = model.getOrientation()+"";
+            if( "landscape".equals(orientation.toLowerCase()) ) {
+                jd.setOrientation(JasperDesign.ORIENTATION_LANDSCAPE);
+            } else {
+                jd.setOrientation(JasperDesign.ORIENTATION_PORTRAIT);
+            }
+            
+            if( model.getPageHeight() > 0 )
+                jd.setPageHeight( model.getPageHeight() );
+            if( model.getPageWidth() > 0 )
+                jd.setPageWidth( model.getPageWidth() );
+            
+            if( !ValueUtil.isEmpty(model.getReportHeader()) ) {
+                JRDesignBand header = new JRDesignBand();
+                
+                JRDesignStyle headerStyle = new JRDesignStyle();
+                headerStyle.setName("Header_Style");
+                headerStyle.setFontSize( fontSize );
+                headerStyle.setBold(true);
+                headerStyle.setVerticalAlignment(JRAlignment.VERTICAL_ALIGN_MIDDLE);
+                headerStyle.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_CENTER);
+                jd.addStyle(headerStyle);
+                
+                if( model.getReportHeaderHeight() > 0 )
+                    height = model.getReportHeaderHeight();
+                
+                int width = jd.getPageWidth();
+                width -= model.getLeftMargin() + model.getRightMargin();
+                
+                JRDesignStaticText h = createStaticText(model.getReportHeader(), 0, 0, width, height, 3, headerStyle);
+                header.addElement(h);
+                header.setHeight(height);
+                
+                jd.setTitle(header);
+            }
+            
+            
         }catch(Exception ex) { ex.printStackTrace(); }
         
         return jd;
     }
-
+    
     //<editor-fold defaultstate="collapsed" desc="----- Helper methods -----">
     
     private static JRField createField(String name, Class clz) {
@@ -107,12 +161,13 @@ public class DynamicReportUtil {
         st.setLeftPadding( padding );
         st.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_CENTER);
         st.setStyle(columnStyle);
+        st.setPrintWhenDetailOverflows(true);
         return st;
     }
     
-    private static JRDesignElement createTextField(String name, Class clz, int x, int y, int w, int h, int cellPadding, JRDesignStyle detailStyle) {
+    private static JRDesignElement createTextField(Column c, Class clz, int x, int y, int w, int h, int cellPadding, JRDesignStyle detailStyle) {
         JRDesignExpression exp = new JRDesignExpression();
-        exp.setText(name);
+        exp.setText("$F{" + c.getName() + "}");
         exp.setValueClass(clz);
         
         JRDesignTextField tf = new JRDesignTextField();
@@ -129,6 +184,22 @@ public class DynamicReportUtil {
             tf.setPattern("#,##0.00");
             tf.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_RIGHT);
             tf.setRightPadding( cellPadding );
+        }
+        
+        if( !ValueUtil.isEmpty(c.getFormat()) ) {
+            tf.setPattern( c.getFormat() );
+        }
+        if( !ValueUtil.isEmpty(c.getAlignment()) ) {
+            String align = c.getAlignment().toLowerCase();
+            if( "right".equals(align) )
+                tf.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_RIGHT);
+            else if ( "center".equals(align) )
+                tf.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_CENTER);
+            else if ( "justified".equals(align) )
+                tf.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_JUSTIFIED);
+            else
+                tf.setHorizontalAlignment(JRAlignment.HORIZONTAL_ALIGN_LEFT);
+            
         }
         
         return tf;

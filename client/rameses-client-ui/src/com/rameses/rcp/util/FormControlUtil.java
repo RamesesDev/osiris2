@@ -9,27 +9,38 @@ package com.rameses.rcp.util;
 
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.FormControl;
+import com.rameses.rcp.common.Opener;
+import com.rameses.rcp.common.SubControlModel;
 import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.constant.TrimSpaceOption;
+import com.rameses.rcp.control.XLabel;
+import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.support.FormSupport;
+import com.rameses.rcp.ui.ActiveControl;
+import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.ui.UISubControl;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class FormControlUtil {
     
     private static final String CONF = "META-INF/form-controls.properties";
+    private static final String HTML_TAGS = "<\\/?html>|<\\/?body>";
     private static FormControlUtil instance;
+    
     
     public static synchronized final FormControlUtil getInstance() {
         if ( instance == null ) {
@@ -87,6 +98,180 @@ public class FormControlUtil {
         return resolvers.remove(res);
     }
     
+    public String renderHtml(List<UIControl> controls, FormPanel panel) {
+        return renderHtml(controls, panel, false);
+    }
+    
+    public String renderHtml(List<UIControl> controls, FormPanel panel, boolean partial) {
+        StringBuffer sb = new StringBuffer();
+        if( !partial ) {
+            sb.append("<html>")
+            .append("<head>")
+            .append("<style> body, td, div, span { ")
+            .append("  font-family: \"" + panel.getFont().getFamily() + "\"; ")
+            .append("  font-size: " + panel.getFont().getSize())
+            .append("}</style>")
+            .append("</head>")
+            .append("<body>");
+        }
+        sb.append("<table>");
+        
+        boolean first = true;
+        for(UIControl c : controls) {
+            if( !(c instanceof ActiveControl) ) continue;
+            
+            ControlProperty cp = ((ActiveControl) c).getControlProperty();
+            sb.append("<tr>");
+            if( cp.isShowCaption() ) {
+                sb.append("<td valign='top'><b>" + cp.getCaption() + ":</b></td>")
+                .append("<td valign='top'>");
+            } else {
+                sb.append("<td valign='top' colspan='2'>");
+            }
+            
+            Color fg = ((Component) c).getForeground();
+            String strColor = null;
+            if( fg != null ) {
+                strColor = "rgb(" + fg.getRed() + "," + fg.getGreen() + "," + fg.getBlue() + ")";
+            }
+            
+            if( strColor != null ) {
+                sb.append("<font color='" + strColor + "'>");
+            }
+            
+            Object value = null;
+            try {
+                if( c instanceof UISubControl ) {
+                    UISubControl sc = (UISubControl) c;
+                    Object handler = sc.getHandlerObject();
+                    if( handler instanceof Opener ) {
+                        Opener opener = (Opener) handler;
+                        if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
+                            value = ((SubControlModel) opener.getHandle()).getHtmlFormat();
+                        }
+                    }
+                } else if ( c instanceof FormPanel ) {
+                    FormPanel fp = (FormPanel) c;
+                    value = renderHtml( fp.getAllControls(), fp, true );
+                } else if ( c instanceof XLabel ) {
+                    value = ((XLabel) c).getValue();
+                } else {
+                    value = UIControlUtil.getBeanValue(c);
+                }
+            } catch(Exception e){;}
+
+            if( !first && FormSupport.CATEGORY_LABEL.equals(c.getName()) ) {
+                sb.append("<br>");
+            }
+            
+            sb.append((value==null? "" : value.toString().replaceAll(HTML_TAGS, "")));
+            
+            if( strColor != null ) {
+                sb.append("</font>");
+            }
+            
+            sb.append("</td>")
+            .append("</tr>");
+            
+            first = false;
+        }
+        sb.append("</table>");
+        if( !partial ) {
+            sb.append("</body>")
+            .append("</html>");
+        }
+        
+        return sb.toString();
+    }
+    
+    public Map buildHtmlValueFormat(List<FormControl> controls, Object entity) {
+        Map valueIndex = new HashMap();
+        
+        Binding b = new Binding();
+        b.setBean(entity);
+        
+        for(FormControl fc : controls) {
+            UIControl c = getControl(fc);
+            c.setBinding(b);
+            c.load();
+            c.refresh();
+            if( !(c instanceof ActiveControl) ) continue;
+            
+            Object value = null;
+            if( c instanceof UISubControl ) {
+                UISubControl sc = (UISubControl) c;
+                Object handler = sc.getHandlerObject();
+                if( handler instanceof Opener ) {
+                    Opener opener = (Opener) handler;
+                    if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
+                        value = ((SubControlModel) opener.getHandle()).getHtmlFormat();
+                    }
+                }
+            } else if ( c instanceof FormPanel ) {
+                FormPanel fp = (FormPanel) c;
+                value = renderHtml( fp.getAllControls(), fp, true );
+            } else if ( c instanceof XLabel ) {
+                value = ((XLabel) c).getValue();
+            } else {
+                value = UIControlUtil.getBeanValue(c);
+            }
+            
+            String name = (String) fc.getProperties().get("name");
+            if( name != null )
+                valueIndex.put(name, value==null? "" : value );
+            
+            //set control to null
+            c = null;
+        }
+        b = null;
+        
+        return valueIndex;
+    }
+    
+    public Map buildPrintValueFormat(List<FormControl> controls, Object entity) {
+        Map valueIndex = new HashMap();
+        
+        Binding b = new Binding();
+        b.setBean(entity);
+        
+        for(FormControl fc : controls) {
+            UIControl c = getControl(fc);
+            c.setBinding(b);
+            c.load();
+            c.refresh();
+            if( !(c instanceof ActiveControl) ) continue;
+            
+            Object value = null;
+            if( c instanceof UISubControl ) {
+                UISubControl sc = (UISubControl) c;
+                Object handler = sc.getHandlerObject();
+                if( handler instanceof Opener ) {
+                    Opener opener = (Opener) handler;
+                    if( opener.getHandle() != null && opener.getHandle() instanceof SubControlModel ) {
+                        value = ((SubControlModel) opener.getHandle()).getPrintFormat();
+                    }
+                }
+            } else if ( c instanceof FormPanel ) {
+                FormPanel fp = (FormPanel) c;
+                value = renderHtml( fp.getAllControls(), fp, true );
+            } else if ( c instanceof XLabel ) {
+                value = ((XLabel) c).getValue();
+            } else {
+                value = UIControlUtil.getBeanValue(c);
+            }
+            
+            String name = (String) fc.getProperties().get("name");
+            if( name != null )
+                valueIndex.put(name, value==null? "" : value );
+            
+            //set control to null
+            c = null;
+        }
+        b = null;
+        
+        return valueIndex;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private void setProperties(Object control, Map properties) {
         if ( properties == null ) return;
@@ -102,9 +287,7 @@ public class FormControlUtil {
                 Object value = resolveValue(key, me.getValue());
                 resolver.setProperty(control, key, value );
                 
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
+            } catch(Exception e) {;}
         }
     }
     

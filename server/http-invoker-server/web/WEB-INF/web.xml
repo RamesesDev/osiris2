@@ -8,6 +8,10 @@
         <servlet-name>SecuredWebInvoker</servlet-name>
         <servlet-class>com.rameses.invoker.server.SecuredHttpInvoker</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>JsonScriptInvoker</servlet-name>
+        <servlet-class>com.rameses.invoker.server.JsonScriptInvoker</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>WebInvoker</servlet-name>
         <url-pattern>/invoke/*</url-pattern>
@@ -16,6 +20,12 @@
         <servlet-name>SecuredWebInvoker</servlet-name>
         <url-pattern>/invoke/secured/*</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>JsonScriptInvoker</servlet-name>
+        <url-pattern>/json/*</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>
             30

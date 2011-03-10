@@ -1,5 +1,5 @@
 /*
- * Application.java
+ * SessionContext.java
  *
  * Created on February 21, 2009, 3:53 PM
  *
@@ -42,6 +42,9 @@ public class SessionContext {
     //this holds a map of categorized invokers
     protected Map invokers = new Hashtable();
     
+    private Map properties = new Hashtable();
+    
+    
     protected SessionContext(AppContext ctx) {
         this.context = ctx;
         env = new EnvMap(ctx.getEnv());
@@ -50,8 +53,7 @@ public class SessionContext {
     public Map getEnv() {
         return env;
     }
-    
-    
+
     public Module getModule(String name) {
         Module c = context.getModule(name);
         if( c == null )
@@ -194,6 +196,9 @@ public class SessionContext {
     public ClassLoader getClassLoader() {
         return context.getClassLoader();
     }
-    
-    
+
+    public Map getProperties() {
+        return properties;
+    }
+
 }

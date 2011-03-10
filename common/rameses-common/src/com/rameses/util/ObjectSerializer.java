@@ -10,10 +10,12 @@ package com.rameses.util;
 import com.rameses.util.ObjectScanner.ObjectScannerHandler;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
 /**
- * 
- * 
+ *
+ *
  * @description basic implementation of abstract class ObjectSerializer
  */
 public class ObjectSerializer {
@@ -59,8 +61,7 @@ public class ObjectSerializer {
     private String correctKeyName(String n) {
         if(n.contains(".") || n.contains("[") || n.contains("]")) {
             return "\"" + n + "\"";
-        }
-        else {
+        } else {
             return n;
         }
     }
@@ -68,6 +69,24 @@ public class ObjectSerializer {
     private class ScanHandler implements ObjectScannerHandler {
         
         public void startDocument() {}
+        
+        public void emptyElement(String name, Object value, int pos) {
+            try {
+                if(pos>0) writer.write(",");
+                if( name!=null ) 
+                    writer.write(correctKeyName(name)+":");
+                
+                if( value instanceof Map )
+                    writer.write("[:]");
+                else if ( value instanceof List )
+                    writer.write("[]");
+                else
+                    writer.write("null");
+                
+            } catch(Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
         
         public void startElement(String name, int pos) {
             try {
@@ -105,7 +124,6 @@ public class ObjectSerializer {
         }
         
         public void endDocument() {}
-        
         
     }
     

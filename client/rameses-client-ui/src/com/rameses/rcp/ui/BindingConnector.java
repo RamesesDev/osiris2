@@ -12,13 +12,14 @@ package com.rameses.rcp.ui;
 import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.framework.*;
 import com.rameses.rcp.util.ActionMessage;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Component;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BindingConnector implements BindingListener {
     
     private Binding parentBinding;
-    private List<Binding> subBindings = new ArrayList();
+    private Set<Binding> subBindings = new HashSet();
     private UISubControl parent;
     
     
@@ -39,14 +40,19 @@ public class BindingConnector implements BindingListener {
         if( parentBinding != null )
             parentBinding.addBindingListener(this);
         
-        this.parentBinding = parentBinding;        
+        this.parentBinding = parentBinding;
     }
     
-    public List<Binding> getSubBindings() {
+    public Set<Binding> getSubBindings() {
         return subBindings;
     }
     
     public void validate(ActionMessage actionMessage, Binding pbinding) {
+        Component comp = ((Component) parent);
+        //do not participate in validation
+        //when the subform is hidden or not attched to a Component
+        if( !comp.isShowing() || comp.getParent() == null ) return;
+        
         ActionMessage subMessages = new ActionMessage();
         for (Binding sb : subBindings ) {
             sb.validate(subMessages);
@@ -57,6 +63,11 @@ public class BindingConnector implements BindingListener {
     }
     
     public void validateBean(ValidatorEvent evt) {
+        Component comp = ((Component) parent);
+        //do not participate in validation
+        //when the subform is hidden or not attched to a Component
+        if( !comp.isShowing() || comp.getParent() == null ) return;
+        
         for(Binding sb: subBindings) {
             ValidatorEvent subEvt = new ValidatorEvent(sb);
             sb.validateBean(subEvt);

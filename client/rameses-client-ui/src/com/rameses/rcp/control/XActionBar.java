@@ -365,7 +365,7 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public boolean isButtonAsHyperlink()                        { return buttonAsHyperlink; }
     public void setButtonAsHyperlink(boolean buttonAsHyperlink) { this.buttonAsHyperlink = buttonAsHyperlink; }
-    
+
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" OuterLayout (Class) ">

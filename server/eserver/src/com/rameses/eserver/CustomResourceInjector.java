@@ -8,21 +8,12 @@
  */
 package com.rameses.eserver;
 
-import com.rameses.persistence.EntityManager;
-import com.rameses.schema.SchemaManager;
 import com.rameses.scripting.ResourceInjector;
-import com.rameses.scripting.ScriptManager;
-import com.rameses.scripting.ScriptProxyInvocationHandler;
 import com.rameses.scripting.ScriptServiceLocal;
-
-import com.rameses.sql.SqlContext;
-import com.rameses.sql.SqlManager;
-import com.rameses.util.ExprUtil;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import javax.ejb.SessionContext;
-import javax.naming.InitialContext;
 
 public class CustomResourceInjector extends ResourceInjector {
     
@@ -50,20 +41,12 @@ public class CustomResourceInjector extends ResourceInjector {
         public Class getAnnotationClass() {
             return com.rameses.annotations.Resource.class;
         }
-        
         public Object getResource(Annotation annotation) {
-            String resname = null;
+            String resname = ((com.rameses.annotations.Resource)annotation).value();
             try {
-                Map m = AppContext.getSysMap();
-                resname = ExprUtil.substituteValues(((com.rameses.annotations.Resource)annotation).value(),m);
-                if(resname==null)
-                    throw new Exception("Resource name must be provided");
-                if(!resname.startsWith("java:")) {
-                    resname = AppContext.getPath() + resname;
-                }
-                InitialContext ctx = new InitialContext();
-                return ctx.lookup(resname);
-            } catch(Exception e) {
+                return LookupUtil.lookupResource( resname );
+            } 
+            catch(Exception e) {
                 System.out.println("Cannot inject @Resource. " + resname + "." + e.getMessage() );
                 return null;
             }
@@ -94,6 +77,16 @@ public class CustomResourceInjector extends ResourceInjector {
         }
         public Object getResource(Annotation a) {
             com.rameses.annotations.Service asvc = (com.rameses.annotations.Service)a;
+            String name = asvc.value();
+            String host = asvc.host();
+            try {
+                return LookupUtil.lookupService( scriptService,name,host,serviceName,env );
+            }
+            catch(Exception ex){
+                System.out.println("error looking up service " + name + ". " + ex.getMessage() );
+                return null;
+            }
+            /*
             Map m = AppContext.getSysMap();
             String scriptname = ExprUtil.substituteValues(asvc.value(),m);
             String host = ExprUtil.substituteValues(asvc.host(),m);
@@ -108,7 +101,7 @@ public class CustomResourceInjector extends ResourceInjector {
                 //    throw new IllegalStateException("Please provide a remote service name value for @Service");
                 //return mbean.createRemoteProxy(scriptname, env, host );
             }
-            return ScriptManager.getInstance().createProxy( scriptname, handler );
+            return ScriptManager.getInstance().createProxy( scriptname, handler );*/
         }
     }
     
@@ -126,6 +119,15 @@ public class CustomResourceInjector extends ResourceInjector {
             return com.rameses.annotations.SqlContext.class;
         }
         public Object getResource(Annotation a) {
+            String name = ((com.rameses.annotations.SqlContext)a).value();
+            try {
+                return LookupUtil.lookupSqlContext( name );
+            }
+            catch(Exception ex){
+                System.out.println("error looking up service " + name + ". " + ex.getMessage() );
+                return null;
+            }
+            /*
             Map m = AppContext.getSysMap();
             String dsName =ExprUtil.substituteValues(((com.rameses.annotations.SqlContext)a).value(), m);
             if(dsName!=null && dsName.trim().length()>0) {
@@ -133,15 +135,25 @@ public class CustomResourceInjector extends ResourceInjector {
             } else {
                 return SqlManager.getInstance().createContext();
             }
+             */
         }
     }
-    
+     
     private class PersistenceContextHandler implements ResourceInjector.Handler {
         
         public Class getAnnotationClass() {
             return com.rameses.annotations.PersistenceContext.class;
         }
         public Object getResource(Annotation a) {
+            String name = ((com.rameses.annotations.PersistenceContext)a).value();
+             try {
+                return LookupUtil.lookupPersistenceContext( name );
+            }
+            catch(Exception ex){
+                System.out.println("error looking up persistence context " + name + ". " + ex.getMessage() );
+                return null;
+            }
+            /*
             Map m = AppContext.getSysMap();
             String dsName = ExprUtil.substituteValues(((com.rameses.annotations.PersistenceContext)a).value(), m);
             SqlContext sqlContext = null;
@@ -151,6 +163,7 @@ public class CustomResourceInjector extends ResourceInjector {
                 sqlContext = SqlManager.getInstance().createContext();
             }
             return new EntityManager( SchemaManager.getInstance(),sqlContext);
+             */
         }
     }
     
@@ -160,7 +173,9 @@ public class CustomResourceInjector extends ResourceInjector {
             return com.rameses.annotations.Invoker.class;
         }
         public Object getResource(Annotation a) {
-            return new InvokerProxy(env);
+            InvokerProxy ip = new InvokerProxy(env);
+            ip.setDefaultName( CustomResourceInjector.this.serviceName );
+            return ip;
         }
     }
     

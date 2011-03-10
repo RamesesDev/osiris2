@@ -16,11 +16,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -36,21 +39,23 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     private String handler;
     private String[] depends;
     private int index;
-    private Binding binding;
-    private BindingConnector bindingConnector = new  BindingConnector(this);
     private boolean dynamic;
     
     private boolean multiForm;
     private JPanel multiPanel;
-    private List<Binding> subBindings = new ArrayList();
-    private List<SubFormContext> subFormItems = new ArrayList();
     
+    /** this can be set when you want to add openers
+     *  directly to this component
+     */
     private List<Opener> openers;
+    private List<Binding> subBindings = new ArrayList();
+    private Object handlerObj;
     
-    private ControlProperty property = new ControlProperty();
-    
-    
-    private List<Opener> currentOpeners = new ArrayList();
+    protected Binding binding;
+    protected BindingConnector bindingConnector = new  BindingConnector(this);
+    protected List<SubFormContext> subFormItems = new ArrayList();
+    protected List<Opener> currentOpeners = new ArrayList();
+    protected ControlProperty property = new ControlProperty();
     
     
     public XSubFormPanel() {
@@ -114,45 +119,45 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
-    private void buildForm() {
-        Object obj = null;
+    protected void buildForm() {
+        handlerObj = null;
         
         //this is usually set by XTabbedPane or
         //other controls that used XSubForm internally
         if ( getOpeners().size() > 0 ) {
-            obj = getOpeners();
+            handlerObj = getOpeners();
         } else {
-            obj = UIControlUtil.getBeanValue(this, getHandler());
+            handlerObj = UIControlUtil.getBeanValue(this, getHandler());
             multiForm = true; //reset, check based on passed value
         }
-        if ( obj == null ) return;
         
         List<Opener> openers = new ArrayList();
         
-        if ( obj instanceof Collection ) {
-            for(Object o: (Collection) obj) {
+        if ( handlerObj == null ) {
+            //do nothing
+        } else if ( handlerObj instanceof Collection ) {
+            for(Object o: (Collection) handlerObj) {
                 openers.add( (Opener)o );
             }
             
-        } else if ( obj.getClass().isArray() ) {
-            for(Object o: (Object[]) obj) {
+        } else if ( handlerObj.getClass().isArray() ) {
+            for(Object o: (Object[]) handlerObj) {
                 openers.add( (Opener)o );
             }
             
-        } else if ( obj instanceof Opener ) {
-            openers.add( (Opener)obj );
+        } else if ( handlerObj instanceof Opener ) {
+            openers.add( (Opener)handlerObj );
             multiForm = false;
             
-        } else {
-            throw new IllegalStateException("XSubFormPanel handler must be an instance of Opener, Opener[], or List<Opener>");
         }
         
         //-- display support
-        List<Binding> connectorBindings = bindingConnector.getSubBindings();
+        Set<Binding> connectorBindings = bindingConnector.getSubBindings();
         connectorBindings.clear();
+        
         if ( openers.size() == 0 ) {
-            subFormItems.clear();
             removeAll();
+            subFormItems.clear();
             SwingUtilities.updateComponentTreeUI(this);
             return;
         }
@@ -164,11 +169,11 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             //register new subBindings
             connectorBindings.addAll(getSubBindings());
         } else {
+            removeAll();
             subFormItems.clear();
             currentOpeners.clear();
             currentOpeners.addAll( openers );
             
-            removeAll();
             SwingUtilities.updateComponentTreeUI(this);
             
             //check if is a multi form
@@ -216,6 +221,10 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
             if ( b.focusFirstInput() ) return true;
         }
         return false;
+    }
+    
+    public Object getHandlerObject() {
+        return handlerObj;
     }
     
     
@@ -316,6 +325,22 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
         property.setShowCaption(showCaption);
     }
     
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
+    }
+    
     public ControlProperty getControlProperty() {
         return property;
     }
@@ -323,7 +348,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
     
     
     //<editor-fold defaultstate="collapsed" desc="  SubFormContext (class)  ">
-    private class SubFormContext extends UIControllerPanel {
+    protected class SubFormContext extends UIControllerPanel {
         
         SubFormContext(UIControllerContext controller) {
             super(controller);
@@ -334,7 +359,7 @@ public class XSubFormPanel extends JPanel implements UISubControl, ActiveControl
         public void renderView() {
             super.renderView();
             
-            List<Binding> connectorBindings = bindingConnector.getSubBindings();
+            Set<Binding> connectorBindings = bindingConnector.getSubBindings();
             connectorBindings.clear();
             connectorBindings.addAll(getSubBindings());
         }

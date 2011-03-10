@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class Action implements Comparable {
+public class Action implements Comparable<Action> {
     
     private String name;
     //index is used for sorting
@@ -59,11 +59,7 @@ public class Action implements Comparable {
         this.permission = perm;
     }
     
-    public int compareTo(Object o) {
-        if( o == null ) return 0;
-        if(!(o instanceof Action)) return 0;
-        
-        Action a = (Action)o;
+    public int compareTo(Action a) {
         return index - a.index;
     }
     

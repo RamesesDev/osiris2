@@ -14,6 +14,7 @@ import com.rameses.platform.interfaces.MainWindowListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
@@ -33,17 +34,14 @@ import javax.swing.border.AbstractBorder;
  */
 public class MainDialog implements MainWindow {
     
-    private JFrame dialog = new JFrame();
+    private JFrame dialog;
     private MainWindowListener listener;
     
     public MainDialog() {
+        dialog = new JFrame();
         dialog.setTitle("Main Dialog");
         dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        dialog.setLayout( new BorderLayout() );
-        
-        JPanel dummy = new JPanel();
-        dummy.setPreferredSize(new Dimension(500,500));
-        dialog.add(dummy, BorderLayout.CENTER, 0);
+        dialog.setContentPane(new TestPlatformContentPane());
         
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -55,7 +53,7 @@ public class MainDialog implements MainWindow {
     public JFrame getComponent() { return dialog; }
     
     public void show() {
-        SwingUtilities.invokeLater(new Runnable() {
+        EventQueue.invokeLater(new Runnable() {
             public void run() {
                 dialog.pack();
                 dialog.setVisible(true);
@@ -110,7 +108,7 @@ public class MainDialog implements MainWindow {
             g2.drawLine(x, height-2, width-1, height-2);
             g2.dispose();
         }
-
+        
         public Insets getBorderInsets(Component c) {
             return new Insets(1,1,4,1);
         }

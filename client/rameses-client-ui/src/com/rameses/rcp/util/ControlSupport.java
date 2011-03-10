@@ -107,6 +107,10 @@ public final class ControlSupport {
     public static Opener initOpener( Opener opener, UIController caller, boolean invokeOpenerAction ) {
         if ( caller != null && ValueUtil.isEmpty(opener.getName()) ) {
             opener.setController( caller );
+            if( opener.getCaption() != null )
+                caller.setTitle( opener.getCaption() );
+            if( opener.getId() != null )
+                caller.setId( opener.getId() );
             
         } else if ( opener.getController() == null ) {
             //this checking should not be here

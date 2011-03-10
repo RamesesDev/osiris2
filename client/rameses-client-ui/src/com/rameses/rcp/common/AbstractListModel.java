@@ -33,6 +33,8 @@ public abstract class AbstractListModel {
     protected List dataList;
     
     private Column primaryColumn;
+    private boolean primaryColChecked;
+    
     //used by XTable to register error messages
     private Map<ListItem, String> errorMessages = new HashMap();
     
@@ -184,7 +186,7 @@ public abstract class AbstractListModel {
                 Object item = list.get(i);
                 li.loadItem( item );
                 li.setState(1);
-                li.initSelected(checkSelected(item) );
+                li.setSelected(checkSelected(item) );
             } else {
                 li.loadItem(null);
                 li.setState(0);
@@ -193,7 +195,7 @@ public abstract class AbstractListModel {
                     newRowadded = true;
                     li.loadItem(newItem);
                 }
-                li.initSelected(false);
+                li.setSelected(false);
             }
         }
     }
@@ -220,7 +222,8 @@ public abstract class AbstractListModel {
             Object item = selectedItem.getItem();
             if(item==null)
                 throw new IllegalStateException("addCreateItem error. Selected new object is null. createItem must be implemented");
-            if(item!=null) addItem( item );
+            
+            addItem( item );
         }
         return null;
     }
@@ -244,12 +247,13 @@ public abstract class AbstractListModel {
     }
     
     /**
-     * this method is called when there are changes in the row made and
+     * this method is called when there are changes in the row made
      *
      */
     public final void updateSelectedItem() {
         if(selectedItem.getItem()!=null) {
             onUpdateItem( selectedItem.getItem() );
+            onColumnUpdate( selectedItem.getItem(), selectedColumn );
         }
     }
     
@@ -259,16 +263,18 @@ public abstract class AbstractListModel {
      * which means it already exists. If the method is successfully called
      * it triggers the onRemoveItem method which must be implemented by the developer.
      */
-    public final Object removeSelectedItem() {
+    public final void removeSelectedItem() {
         ListItem item = getSelectedItem();
-        if(item==null) return null;
-        if( item.getState() != 1 ) return null;
-        if(item.getItem()==null)
-            throw new IllegalStateException("remove item error. Cannot remove a null item");
-        if(item.getState()==1) {
+        if( item==null || item.getItem()==null ) {
+            //do nothing
+        } else if( item.getState() != 1 ) {
+            item.setItem( createItem() );
+            errorMessages.remove(item);
+            refreshSelectedItem();
+        } else if( item.getState()==1 ) {
+            errorMessages.remove(item);
             removeItem( item.getItem() );
         }
-        return null;
     }
     /**
      * this is called to get the list items
@@ -288,15 +294,23 @@ public abstract class AbstractListModel {
     }
     
     public void onAddItem(Object o) {
-        throw new IllegalStateException("Error add item. onAddItem(Object item) must be implemented.");
+        //do nothing
     }
     
+    /**
+     * this method had been deprecated in favor of #onColumnUpdate
+     */
+    @Deprecated
     public void onUpdateItem(Object o) {
         //do nothing.
     }
     
+    public void onColumnUpdate(Object o, String colName) {
+        //do nothing.
+    }
+    
     public void onRemoveItem(Object o) {
-        throw new IllegalStateException("Error remove item. onRemoveItem(Object item) must be implemented.");
+        //throw new IllegalStateException("Error remove item. onRemoveItem(Object item) must be implemented.");
     }
     
     public void onReplaceItem( Object oldValue, Object o ) {
@@ -390,9 +404,10 @@ public abstract class AbstractListModel {
      */
     public void rebuildColumns() {
         primaryColumn = null;
+        primaryColChecked = false;
         if ( listener != null ) listener.rebuildColumns();
     }
-
+    
     /**
      * these methods below are used by the XTable to register/retrieve/remove error messages
      */
@@ -425,14 +440,19 @@ public abstract class AbstractListModel {
         for (Map.Entry<ListItem, String> me: errorMessages.entrySet()) {
             if ( !first ) sb.append("\n");
             else first = false;
-            sb.append("row " + me.getKey().getRownum() + ": " + me.getValue());
+            sb.append("Row " + (me.getKey().getRownum()+1) + ": " + me.getValue());
         }
         
         return sb.toString();
     }
-
+    
+    public boolean hasErrorMessages() {
+        return !errorMessages.isEmpty();
+    }
+    
     public Column getPrimaryColumn() {
-        if ( primaryColumn == null ) {
+        if ( primaryColumn == null && !primaryColChecked ) {
+            primaryColChecked = true;
             Column[] cols = getColumns();
             if ( cols != null && cols.length > 0 ) {
                 //primaryColumn = cols[0];

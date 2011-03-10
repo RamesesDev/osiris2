@@ -15,6 +15,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Font;
+import java.awt.Insets;
 import javax.swing.JTextArea;
 
 /**
@@ -47,9 +48,17 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     
     public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
-        setCaretPosition(0);
+        try {
+            if( !isReadonly() && !isFocusable() ) setReadonly(false);
+            
+            Object value = UIControlUtil.getBeanValue(this);
+            setValue(value);
+            setCaretPosition(0);
+        } catch(Exception e) {
+            setText("");
+            setEditable(false);
+            setFocusable(false);
+        }
     }
     
     public void load() {
@@ -163,6 +172,22 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     
     public void setCaptionWidth(int width) {
         property.setCaptionWidth(width);
+    }
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
     }
     
     public ActionMessage getActionMessage() {

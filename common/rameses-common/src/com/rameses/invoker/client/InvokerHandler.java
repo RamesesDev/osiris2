@@ -47,6 +47,10 @@ public class InvokerHandler implements InvocationHandler {
                     if(handler==null) handler = new UnhandledMessageListener();
                     ResponseHandler r = new ResponseHandler(scriptService, (AsyncResponse)o, handler );
                     proxy.invokeLater(r);
+                    
+                    //return the response handler
+                    return r;
+                    
                 } catch(Exception ex) {
                     System.out.println(ex.getMessage());
                 }

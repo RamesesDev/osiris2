@@ -7,9 +7,6 @@
 
 package com.rameses.rcp.control;
 
-import com.rameses.rcp.ui.ActiveControl;
-import com.rameses.rcp.ui.UIInput;
-import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
@@ -18,7 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 
-public class XFileBrowser extends AbstractIconedTextField implements UIInput, Validatable, ActiveControl {
+public class XFileBrowser extends AbstractIconedTextField {
     
     private JFileChooser fchooser;
     private FileFilter filter;
@@ -46,8 +43,6 @@ public class XFileBrowser extends AbstractIconedTextField implements UIInput, Va
         setOrientation( super.ICON_ON_RIGHT );
         super.setEditable(false);
     }
-    
-    public void setEditable(boolean b) {;}
     //</editor-fold>
     
     public void actionPerformed() {
@@ -74,29 +69,37 @@ public class XFileBrowser extends AbstractIconedTextField implements UIInput, Va
     
     //<editor-fold defaultstate="collapsed" desc="  refresh/load  ">
     public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        if ( value != null ) {
-            if ( value.getClass().isArray() ) {
-                Object[] arr = (Object[]) value;
-                StringBuffer sb = new StringBuffer();
-                for ( int i = 0; i < arr.length; ++i ) {
-                    if ( i > 0 ) sb.append(", ");
-                    sb.append(arr[i]+"");
-                    setText( sb.toString() );
-                }
-                fchooser.setSelectedFiles( (File[]) arr);
-            } else {
-                setText( value+"" );
-                fchooser.setSelectedFile( (File) value);
-            }
+        try {
+            if( !isReadonly() && !isFocusable() ) setFocusable(true);
             
-        } else {
-            setText("");
-            if ( multiSelect ) {
-                fchooser.setSelectedFiles(null);
+            Object value = UIControlUtil.getBeanValue(this);
+            if ( value != null ) {
+                if ( value.getClass().isArray() ) {
+                    Object[] arr = (Object[]) value;
+                    StringBuffer sb = new StringBuffer();
+                    for ( int i = 0; i < arr.length; ++i ) {
+                        if ( i > 0 ) sb.append(", ");
+                        sb.append(arr[i]+"");
+                        setText( sb.toString() );
+                    }
+                    fchooser.setSelectedFiles( (File[]) arr);
+                } else {
+                    setText( value+"" );
+                    fchooser.setSelectedFile( (File) value);
+                }
+                
             } else {
-                fchooser.setSelectedFile(null);
+                setText("");
+                if ( multiSelect ) {
+                    fchooser.setSelectedFiles(null);
+                } else {
+                    fchooser.setSelectedFile(null);
+                }
             }
+        } catch(Exception e) {
+            //block the input if name is null
+            setText("");
+            setFocusable(false);
         }
     }
     
@@ -109,6 +112,8 @@ public class XFileBrowser extends AbstractIconedTextField implements UIInput, Va
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public void setEditable(boolean b) {;}
+    
     public Object getValue() {
         return multiSelect? fchooser.getSelectedFiles() : fchooser.getSelectedFile();
     }

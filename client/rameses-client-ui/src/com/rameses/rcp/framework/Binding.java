@@ -4,6 +4,7 @@ package com.rameses.rcp.framework;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XButton;
+import com.rameses.rcp.ui.NonStylable;
 import com.rameses.rcp.ui.UIComposite;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
@@ -36,6 +37,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.swing.JComponent;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -106,6 +109,9 @@ public class Binding {
      * Reference to the ViewContext
      */
     private ViewContext viewContext;
+    
+    //focus flag
+    private String focusComponentName;
     
     
     public Binding() {}
@@ -202,6 +208,16 @@ public class Binding {
         for (BindingListener bl : listeners) {
             bl.notifyDepends(u, this);
         }
+        
+        //focus component specified
+        if( focusComponentName != null ) {
+            UIControl c = controlsIndex.get(focusComponentName);
+            if ( c != null ) {
+                Component comp = (Component) c;
+                comp.requestFocusInWindow();
+            }
+            focusComponentName = null;
+        }
     }
     
     /**
@@ -237,6 +253,16 @@ public class Binding {
         if ( viewContext instanceof UIControllerPanel ) {
             ((UIControllerPanel) viewContext).attachDefaultButton();
         }
+        
+        //focus component specified
+        if( focusComponentName != null ) {
+            UIControl c = controlsIndex.get(focusComponentName);
+            if ( c != null ) {
+                Component comp = (Component) c;
+                comp.requestFocusInWindow();
+            }
+            focusComponentName = null;
+        }
     }
     
     private void _doRefresh( UIControl u, Set refreshed ) {
@@ -244,17 +270,20 @@ public class Binding {
             if ( u instanceof UIComposite ) {
                 UIComposite comp = (UIComposite)u;
                 if ( comp.isDynamic() ) {
+                    JComponent jc = (JComponent) comp;
                     //do not reload on first refresh since load is first called
                     //this should only be called on the next refresh
-                    if( properties.get(comp.hashCode()) != null )
+                    if( jc.getClientProperty(getClass() + "REFRESHED") != null )
                         comp.reload();
                     else
-                        properties.put(comp.hashCode(), comp);
+                        jc.putClientProperty(getClass() + "REFRESHED", true);
                 }
                 
-                for (UIControl uic: comp.getControls()) {
-                    applyStyle(uic);
-                }
+                //apply style rules to children
+                for (UIControl uic: comp.getControls()) applyStyle(uic);
+                //apply style rules to parent
+                applyStyle(u);
+                
             } else {
                 applyStyle(u);
             }
@@ -271,6 +300,10 @@ public class Binding {
     
     public final void applyStyle(UIControl u) {
         if ( styleRules == null ) return;
+        if ( u instanceof NonStylable ) return;
+        
+        String name = u.getName();
+        if( name == null ) name = "_any_name";
         
         //apply style rules
         for(StyleRule r : styleRules) {
@@ -279,7 +312,7 @@ public class Binding {
             
             //test expression
             boolean applyStyles = false;
-            if ( rule!=null ){
+            if ( rule!=null && name.matches(pattern) ){
                 try {
                     Object o = ClientContext.getCurrentContext().getExpressionResolver().evaluate(getBean(), rule);
                     applyStyles = Boolean.valueOf(o+"");
@@ -288,11 +321,7 @@ public class Binding {
                 }
             }
             if ( applyStyles ) {
-                String name = u.getName();
-                if( name == null ) name = "_any_name";
-                if( name.matches(pattern) ) {
-                    ControlSupport.setStyles( r.getProperties(), (Component) u );
-                }
+                ControlSupport.setStyles( r.getProperties(), (Component) u );
             }
         }
     }
@@ -303,14 +332,14 @@ public class Binding {
         ActionMessage am = new ActionMessage();
         validate(am);
         if ( am.hasMessages() ) {
-            if ( am.getSource() != null ) am.getSource().requestFocus();
+            if ( am.getSource() != null ) am.getSource().requestFocusInWindow();
             throw new BusinessException(am.toString());
         }
         
         ValidatorEvent evt = new ValidatorEvent(this);
         validateBean(evt);
         if ( evt.hasMessages() ) {
-            if ( evt.getSource() != null ) evt.getSource().requestFocus();
+            if ( evt.getSource() != null ) evt.getSource().requestFocusInWindow();
             throw new BusinessException(evt.toString());
         }
     }
@@ -318,7 +347,7 @@ public class Binding {
     public void validate(ActionMessage actionMessage) {
         for ( Validatable vc: validatables ) {
             Component comp = (Component) vc;
-            if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isVisible() ) {
+            if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isShowing() || comp.getParent() == null ) {
                 //do not validate non-focusable, disabled, or hidden fields.
                 continue;
             }
@@ -330,7 +359,7 @@ public class Binding {
             
             vc.validateInput();
             ActionMessage ac = vc.getActionMessage();
-            if ( ac.hasMessages() ) {
+            if ( ac != null && ac.hasMessages() ) {
                 if ( ValueUtil.isEmpty(actionMessage.getSource()) )
                     actionMessage.setSource( comp );
                 
@@ -355,6 +384,11 @@ public class Binding {
     
     public void formCommit() {
         for ( UIControl u: focusableControls ) {
+            Component comp = (Component) u;
+            if( !comp.isEnabled() || !comp.isShowing() ) continue;
+            if( u instanceof UIInput && ((UIInput) u).isReadonly() ) continue;
+            if( u instanceof JTextComponent && !((JTextComponent) u).isEditable() ) continue;
+            
             if ( u instanceof UIComposite ) {
                 UIComposite uc = (UIComposite) u;
                 for( UIControl uu: uc.getControls() )
@@ -377,7 +411,11 @@ public class Binding {
         if ( ui.isImmediate() || ui.isReadonly() ) return;
         
         Component c = (Component) ui;
-        if ( !c.isEnabled() || !c.isFocusable() || !c.isVisible() ) return;
+        if ( !c.isEnabled() || !c.isFocusable() || !c.isShowing() ) return;
+        
+        //do not validate components which are hidden
+        //and not yet attached to a panel
+        if ( c.getParent() == null ) return;
         
         Object compValue = ui.getValue();
         Object beanValue = UIControlUtil.getBeanValue(ui);
@@ -431,7 +469,7 @@ public class Binding {
                 UIInput ui = (UIInput) u;
                 Component comp = (Component) ui;
                 if ( !ui.isReadonly() && comp.isEnabled() && comp.isFocusable() ) {
-                    comp.requestFocus();
+                    comp.requestFocusInWindow();
                     return true;
                 }
             }
@@ -463,16 +501,13 @@ public class Binding {
     
     /**
      * focuses a UIControl from a code bean
-     * this is helpful when you do the validation from the code and
-     * you want to focus a control after displaying an error message
+     * This is helpful when you do the validation from the code and
+     * you want to focus a control after displaying an error message.
+     * This mehod just keep the control's name to be focused which is
+     * fired after all the controls had been refreshed
      */
     public void focus(String name) {
-        if ( name == null ) return;
-        UIControl c = controlsIndex.get(name);
-        if ( c != null ) {
-            Component comp = (Component) c;
-            comp.requestFocus();
-        }
+        focusComponentName = name;
     }
     
     /**
@@ -513,6 +548,7 @@ public class Binding {
         return bean;
     }
     
+    //-- this is called the first time the bean is injected
     public void setBean(Object bean) {
         this.bean = bean;
         initAnnotatedFields( bean, bean.getClass() );
@@ -520,6 +556,8 @@ public class Binding {
         _load();
     }
     
+    //-- this is called when the controller changes page
+    //-- (after a Navigation handler fires navigation)
     public void reinjectAnnotations() {
         initAnnotatedFields( bean, bean.getClass() );
     }
@@ -691,7 +729,10 @@ public class Binding {
         public void keyReleased(KeyEvent e) {
             if ( e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z ) {
                 if ( changeLog.hasChanges() ) {
-                    changeLog.undo();
+                    ChangeLog.ChangeEntry ce = changeLog.undo();
+                    if( ce != null ) {
+                        focus( ce.getFieldName() );
+                    }
                     refresh();
                 }
             }

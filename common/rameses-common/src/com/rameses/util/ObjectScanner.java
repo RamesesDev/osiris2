@@ -41,45 +41,51 @@ public final class ObjectScanner {
             handler.property(name, o, pos);
         } else if( o instanceof Map ) {
             Map map = (Map)o;
-            handler.startElement(name,pos);
-            int i = 0;
-            for(Object m : map.entrySet()) {
-                Map.Entry me = (Map.Entry)m;
-                String key = me.getKey()+"";
-                if(excludeMatch==null || !key.matches(excludeMatch)) {
-                    Object value = me.getValue();
-                    scanObject(key, value,i++);
+            if( map.isEmpty() ) {
+                handler.emptyElement(name, map, pos);
+            } else {
+                handler.startElement(name,pos);
+                int i = 0;
+                for(Object m : map.entrySet()) {
+                    Map.Entry me = (Map.Entry)m;
+                    String key = me.getKey()+"";
+                    if(excludeMatch==null || !key.matches(excludeMatch)) {
+                        Object value = me.getValue();
+                        scanObject(key, value,i++);
+                    }
                 }
+                handler.endElement(name);
             }
-            handler.endElement(name);
-        }
-        else if( (o instanceof List) || o.getClass().isArray() ) {
+        } else if( (o instanceof List) || o.getClass().isArray() ) {
             List list = null;
             if ( o.getClass().isArray() ) {
                 list = Arrays.asList((Object[])o);
             } else {
                 list = (List) o;
             }
-            
-            handler.startElement(name, pos);
-            int i = 0;
-            for(Object item: list) {
-                scanObject( null, item, i++ );
+            if( list.isEmpty() ) {
+                handler.emptyElement(name, list, pos);
+            } else {
+                handler.startElement(name, pos);
+                int i = 0;
+                for(Object item: list) {
+                    scanObject( null, item, i++ );
+                }
+                handler.endElement(name);
             }
-            handler.endElement(name);
-            
         } else {
             handler.property(name, o, pos);
         }
     }
     
     /**
-     * 
-     * 
+     *
+     *
      * @description scan event handler of ObjectScanner
      */
     public static interface ObjectScannerHandler {
         void startDocument();
+        void emptyElement(String name, Object value, int pos);
         void startElement(String name, int pos);
         void property(String name, Object value, int pos);
         void endElement(String name);
@@ -88,8 +94,8 @@ public final class ObjectScanner {
     
     
     /**
-     * 
-     * 
+     *
+     *
      * @description default implementation of ObjectScannerHandler interface
      */
     public static class DefaultHandler implements ObjectScannerHandler {
@@ -106,6 +112,9 @@ public final class ObjectScanner {
         }
         
         public void endDocument() {
+        }
+        
+        public void emptyElement(String name, Object value, int pos) {
         }
         
     }

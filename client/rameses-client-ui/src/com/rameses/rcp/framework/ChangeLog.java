@@ -252,17 +252,23 @@ public final class ChangeLog {
         return changeHandler.getHasChanges();
     }
     
-    public void undo() {
-        if(entries.empty()) return;
+    public ChangeEntry undo() {
+        if(entries.empty()) return null;
+        
         ChangeEntry ce = entries.pop();
         PropertyResolver pr = ClientContext.getCurrentContext().getPropertyResolver();
         pr.setProperty( ce.getEntity(), ce.getFieldName(), ce.getOldValue());
+        
+        return ce;
     }
     
-    public void undoAll() {
+    public List<ChangeEntry> undoAll() {
+        List<ChangeEntry> ceList = new ArrayList();
         while(!entries.empty()) {
-            undo();
+            ChangeEntry ce = undo();
+            if( ce != null ) ceList.add( ce );
         }
+        return ceList;
     }
     
     public void destroy() {

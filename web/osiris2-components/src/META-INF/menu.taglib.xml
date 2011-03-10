@@ -7,4 +7,15 @@
         <source>tags/iconpanel.xhtml</source>
     </tag>
     
+    <tag>  
+        <tag-name>dropdown</tag-name>  
+        <source>tags/dropdown.xhtml</source>
+    </tag>
+    
+    <!-- utlitiy for dropdown menu -->
+    <tag>  
+        <tag-name>writeLI</tag-name>  
+        <source>tags/util/writeLI.xhtml</source>
+    </tag>
+    
 </facelet-taglib> 

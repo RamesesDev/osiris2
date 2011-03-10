@@ -105,6 +105,11 @@ public class NBSubWindow extends TopComponent implements SubWindow {
         }
     }
     
+    public void forceClose() {
+        bypassVerifyClose = true;
+        close();
+    }
+    
     private ViewContext getViewContext() {
         Component c = content;
         if (c instanceof ViewContext) {

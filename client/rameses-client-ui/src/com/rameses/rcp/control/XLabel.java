@@ -1,10 +1,13 @@
 package com.rameses.rcp.control;
 
+import com.rameses.common.ExpressionResolver;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIControl;
+import com.rameses.rcp.ui.UIOutput;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
@@ -23,7 +26,7 @@ import javax.swing.border.Border;
  *
  * @author jaycverg
  */
-public class XLabel extends JLabel implements UIControl, ActiveControl {
+public class XLabel extends JLabel implements UIOutput, ActiveControl {
     
     private int index;
     private String[] depends;
@@ -61,16 +64,21 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     }
     
     public void refresh() {
-        Object value = null;
-        if ( !ValueUtil.isEmpty(expression) ) {
-            value = UIControlUtil.evaluateExpr(binding.getBean(), expression);
-        } else if ( !ValueUtil.isEmpty(getName()) ) {
-            value = UIControlUtil.getBeanValue(this);
-        } else {
-            value = super.getText();
+        try {
+            Object value = null;
+            if ( !ValueUtil.isEmpty(expression) ) {
+                value = UIControlUtil.evaluateExpr(binding.getBean(), expression);
+            } else if ( !ValueUtil.isEmpty(getName()) ) {
+                value = UIControlUtil.getBeanValue(this);
+            } else {
+                value = super.getText();
+            }
+            
+            super.setText(( value != null? value+"" : ""));
+            
+        } catch(Exception e) {
+            super.setText("");
         }
-        
-        super.setText(( value != null? value+"" : ""));
     }
     
     public void load() {
@@ -104,8 +112,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public void setName(String name) {
         super.setName(name);
-        if( !ValueUtil.isEmpty(expression) )
-            super.setText(name);
+        super.setText(name);
     }
     
     public String getText() {
@@ -124,6 +131,15 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     public void setText(String text) {
         setExpression(text);
+    }
+    
+    public String getExpression() {
+        return expression;
+    }
+    
+    public void setExpression(String expression) {
+        this.expression = expression;
+        super.setText(expression);
     }
     
     public void setBorder(Border border) {
@@ -157,7 +173,7 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setShowCaption(boolean show) {
         property.setShowCaption(show);
     }
-
+    
     public char getCaptionMnemonic() {
         return property.getCaptionMnemonic();
     }
@@ -173,7 +189,23 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setCaptionWidth(int width) {
         property.setCaptionWidth(width);
     }
-   
+    
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
+    }
+    
     public String[] getDepends() {
         return depends;
     }
@@ -200,15 +232,6 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     
     public ControlProperty getControlProperty() {
         return property;
-    }
-    
-    public String getExpression() {
-        return expression;
-    }
-    
-    public void setExpression(String expression) {
-        this.expression = expression;
-        super.setText(expression);
     }
     
     public String getFor() {
@@ -254,6 +277,17 @@ public class XLabel extends JLabel implements UIControl, ActiveControl {
     public void setAddCaptionColon(boolean addCaptionColon) {
         this.addCaptionColon = addCaptionColon;
         formatText( activeProperty.getCaption(), activeProperty.isRequired() );
+    }
+    
+    public Object getValue() {
+        if ( !ValueUtil.isEmpty(expression) ) {
+            ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+            return er.evaluate(binding.getBean(), expression);
+        } else if ( !ValueUtil.isEmpty(getName()) )
+            return UIControlUtil.getBeanValue(this);
+        else
+            return super.getText();
+        
     }
     //</editor-fold>
     

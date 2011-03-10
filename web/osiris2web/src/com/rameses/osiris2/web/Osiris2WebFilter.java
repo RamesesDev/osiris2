@@ -12,6 +12,7 @@ import com.rameses.osiris2.Module;
 import com.rameses.osiris2.SessionContext;
 import com.rameses.osiris2.WorkUnit;
 import com.rameses.osiris2.web.util.GZIPResponseWrapper;
+import com.rameses.osiris2.web.util.PathParser;
 import com.rameses.osiris2.web.util.ResourceUtil;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -34,7 +35,8 @@ import javax.servlet.http.HttpSession;
 
 public class Osiris2WebFilter implements Filter {
     
-    public static final String SESSION_ID = Osiris2WebFilter.class.getName()+"_sessId";
+    private static final Pattern CACHEABLE_PATTERN = Pattern.compile(".*\\.(?:js|css|jpg|jpeg|gif|png|bmp|swf)$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern WORKUNIT_PATTERN = Pattern.compile("^/[^/]*/(.*\\.[^/]+)$");
     
     private FilterConfig filterConfig;
     
@@ -48,24 +50,16 @@ public class Osiris2WebFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) resp;
         HttpSession session = request.getSession();
         Principal principal = (Principal) session.getAttribute(OsirisUserPrincipal.class.getName());
-        
-//        String sessId = getSessionId(request);
-//        if ( sessId == null ) {
-//            sessId = "SESSID-" + new UID();
-//        }
-//        Cookie cookie = new Cookie(Osiris2WebFilter.class.getName(), sessId);
-//        cookie.setPath("/");
-//        cookie.setMaxAge(86400);
-//        response.addCookie(cookie);
-        
+                
         String ae = request.getHeader("accept-encoding");
         if (ae != null && ae.indexOf("gzip") != -1) {
             response = new GZIPResponseWrapper(response);
         }
         
         String path = request.getServletPath();
-        String regex = "^/[^/]*/(.*\\.[^/]+)$";
-        Matcher m = Pattern.compile(regex).matcher(path);
+        Matcher m = WORKUNIT_PATTERN.matcher(path);
+        
+        //serve resources from the modules
         if ( !isJsfPage(path) && m.matches() ) {
             PathParser p = new PathParser(path);
             SessionContext ctx = getSessionContext(request);
@@ -114,10 +108,13 @@ public class Osiris2WebFilter implements Filter {
     private boolean checkAllowed(PathParser p, Principal principal, SessionContext ctx) {
         WorkUnit wu = ctx.getWorkUnit(p.getWorkunitId());
         if ( wu == null ) return true;
+        
         String secured = (String) wu.getProperties().get("secured");
         if ( secured == null ) return true;
+        
         secured = secured.toLowerCase().trim();
         if ( secured.equals("true") && principal != null) return true;
+        
         return false;
     }
     
@@ -134,18 +131,23 @@ public class Osiris2WebFilter implements Filter {
     }
     
     private void renderResource(String path, HttpServletRequest req, HttpServletResponse resp, Module module) {
-        InputStream is = module.getResourceAsStream(path);
+        InputStream is = null;
+        if( module != null )
+            is = module.getResourceAsStream(path);
+        else
+            is = req.getSession().getServletContext().getResourceAsStream(path);
+        
         BufferedOutputStream bos = null;
         BufferedInputStream bis = null;
         if ( is != null ) {
             String mimeType = req.getSession().getServletContext().getMimeType(path);
             resp.setContentType(mimeType);
-            if ( isCacheable(path) ) {
+            if ( CACHEABLE_PATTERN.matcher(path).matches() ) {
                 resp.addHeader("Cache-Control", "max-age=86400");
                 resp.addHeader("Cache-Control", "public");
             }
             
-            try {                
+            try {
                 ResourceUtil.renderResource(is, resp.getOutputStream());
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -157,12 +159,6 @@ public class Osiris2WebFilter implements Filter {
                 ex.printStackTrace();
             }
         }
-    }
-    
-    private boolean isCacheable(String path) {
-        String exp = ".*\\.(?:js|css|jpg|jpeg|gif|png|bmp|swf)$";
-        Matcher m = Pattern.compile(exp, Pattern.CASE_INSENSITIVE).matcher(path);
-        return m.matches();
     }
     //</editor-fold>
     

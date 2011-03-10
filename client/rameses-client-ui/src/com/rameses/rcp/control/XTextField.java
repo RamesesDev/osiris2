@@ -17,7 +17,10 @@ import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JTextField;
 
 /**
@@ -27,6 +30,8 @@ import javax.swing.JTextField;
 public class XTextField extends JTextField implements UIInput, Validatable, ActiveControl {
     
     protected Binding binding;
+    protected ControlProperty property = new ControlProperty();
+    protected ActionMessage actionMessage = new ActionMessage();
     
     private int index;
     private String[] depends = new String[]{};
@@ -43,8 +48,11 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     private TextDocument document = new TextDocument();
     private TrimSpaceOption trimSpaceOption = TrimSpaceOption.ALL;
-    protected ControlProperty property = new ControlProperty();
-    protected ActionMessage actionMessage = new ActionMessage();
+    
+    private String securityPattern;
+    private String securityChar;
+    private String securedValue; //internal value
+    
     
     public XTextField() {
         document.setTextCase(TextCase.UPPER);
@@ -69,8 +77,45 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     //<editor-fold defaultstate="collapsed" desc="  UIControl implementation  ">
     public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue(value);
+        try {
+            Object value = UIControlUtil.getBeanValue(this);
+            if( isSecured() ) {
+                //keep the actual value
+                securedValue = (String) value;
+                
+                if( !readonly ) {
+                    setEditable(false);
+                    setFocusable(false);
+                }
+                
+                if( value == null ) {
+                    setText("");
+                } else {
+                    StringBuffer text = new StringBuffer();
+                    Matcher m = Pattern.compile(securityPattern).matcher(value.toString());
+                    while( m.find() ) {
+                        m.appendReplacement(text, repeat(securityChar, m.group().length()));
+                    }
+                    m.appendTail(text);
+                    setText(text.toString());
+                }
+            } else {
+                if( !readonly && !isFocusable() ) setReadonly(false);
+                setValue(value);
+            }
+        } catch(Exception e) {
+            //just block the input when the name is null
+            setText("");
+            setEditable(false);
+            setFocusable(false);
+        }
+    }
+    
+    private String repeat(String str, int count) {
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i<count && sb.length()<count; ++i) sb.append(str);
+        if( sb.length() > count) sb.setLength(count);
+        return sb.toString();
     }
     
     public void load() {
@@ -93,9 +138,9 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
             }
         } else if ( !ValueUtil.isEmpty(inputFormat) && !getText().matches(inputFormat) ) {
             String msg = null;
-            if ( inputFormatErrorMsg != null ) 
+            if ( inputFormatErrorMsg != null )
                 msg = inputFormatErrorMsg;
-            else 
+            else
                 msg = "Invalid input format for {0}";
             
             actionMessage.addMessage(null, msg, new Object[]{ getCaption() });
@@ -114,6 +159,8 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     }
     
     public Object getValue() {
+        if( isSecured() ) return securedValue;
+        
         String txtValue = getText();
         if ( ValueUtil.isEmpty(txtValue) && nullWhenEmpty )
             return null;
@@ -221,6 +268,22 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         property.setShowCaption(showCaption);
     }
     
+    public Font getCaptionFont() {
+        return property.getCaptionFont();
+    }
+    
+    public void setCaptionFont(Font f) {
+        property.setCaptionFont(f);
+    }
+    
+    public Insets getCellPadding() {
+        return property.getCellPadding();
+    }
+    
+    public void setCellPadding(Insets padding) {
+        property.setCellPadding(padding);
+    }
+    
     public ControlProperty getControlProperty() {
         return property;
     }
@@ -306,6 +369,26 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
     
     public void setReplaceString(String[] replaceString) {
         this.replaceString = replaceString;
+    }
+    
+    public String getSecurityPattern() {
+        return securityPattern;
+    }
+    
+    public void setSecurityPattern(String securityPattern) {
+        this.securityPattern = securityPattern;
+    }
+    
+    public String getSecurityChar() {
+        return securityChar;
+    }
+    
+    public void setSecurityChar(String securityChar) {
+        this.securityChar = securityChar;
+    }
+    
+    public boolean isSecured() {
+        return securityPattern != null && securityPattern.length() > 0 && securityChar != null && securityChar.length() > 0;
     }
     //</editor-fold>
     

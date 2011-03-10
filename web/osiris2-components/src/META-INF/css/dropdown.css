@@ -1,0 +1,80 @@
+
+/*Style for the Menu Bar*/
+.menubar {
+	height: 25px;
+	background: #94a229;
+}
+
+/*Style for the footer of the Menu Bar*/
+.menubar-footer {
+    border-top:1px solid #b4dd63;
+    border-bottom:1px solid #c0e47b;
+}
+/*Style for the Root Menu*/
+li.menumain {    
+	float: left;
+	padding: 0 10px;
+	height: 25px;
+	border-right: 1px solid #F7F7F7;
+	background: #94a229;
+}
+
+/*Style for the text used in the Root Menu*/
+li.menumain a{
+    text-decoration: none;
+    color: #F7F7F7;
+    font-weight: bold;
+    font-size: 11px;
+}
+/*Style for the Root Menu when hovered;*/
+.activetarget{ 
+	background-color: #7b8621; 
+	color: #000;
+}
+
+/*Styles that help form the dropwdown menu*/
+ul { cursor: default; }
+.root-menu-div div.outerbox{ padding: 0 5px 5px 0; }
+.root-menu-div div.innerbox{ margin: 0; display: inherit; }
+.root-menu-div div.menu-item { display: inline; /* fixes problem in ie6 */ }
+.root-menu-div div.menu-item { padding: 1px 10px 1px 4px;}
+
+.root-menu-div li { white-space:nowrap;}
+.root-menu-div li{ height: 1.5em; /* fixing ie6 problem */ }
+.root-menu-div ul { border: 1px solid #aca899; }
+
+/*Style for the dropdown panel*/
+.root-menu-div ul, ul.menu {
+	background-color: #adb24a;
+	list-style: none;
+        text-align: left;
+	margin: 0;
+	padding: 0;
+}
+
+/*Style for the text of the MenuItem of the dropdown panel */
+.root-menu-div div.menu-item a, img { 
+    text-decoration: none;  
+    font-size: 11px;
+    color: #F7F7F7;
+    font-weight: bold;
+    border: none;
+
+}
+
+/*Style for the MenuItem of the dropdown panel when hovered */
+.root-menu-div li.active { 
+	background-color:  #94a229; 
+	color: #fff;
+}
+
+/*Style of the arrow */
+.root-menu-div .menu-item-arrow{
+	position: absolute;
+        display: block;
+	right: 4px;
+	top: 8px;
+        width: 4px;
+        height: 7px;
+        background: url(../images/arrow-right.gif) no-repeat center center;
+}

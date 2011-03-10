@@ -7,7 +7,8 @@
 
 package httptest;
 
-import com.rameses.invoker.client.DynamicHttpInvoker;
+import com.rameses.util.NumberUtil;
+import java.math.BigDecimal;
 import junit.framework.*;
 
 /**
@@ -24,14 +25,17 @@ public class HttpInvokerTest extends TestCase {
     }
 
     protected void tearDown() throws Exception {
+        
     }
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testHello() throws Exception {
-        DynamicHttpInvoker h = new DynamicHttpInvoker("localhost:8080", "mlglobal");
-        DynamicHttpInvoker.Action a = h.create("DateService");
-        System.out.println( a.invoke( "getServerDate") );
-    
+        //DynamicHttpInvoker h = new DynamicHttpInvoker("localhost:8080", "mlglobal");
+        //DynamicHttpInvoker.Action a = h.create("DateService");
+        //System.out.println( a.invoke( "getServerDate") );
+        
+        BigDecimal b =new BigDecimal("100.00");
+        System.out.println(  NumberUtil.formatDecimal( b, "#0.00") );
     }
 
 }

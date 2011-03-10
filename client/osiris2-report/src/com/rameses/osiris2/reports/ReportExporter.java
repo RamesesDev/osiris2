@@ -1,5 +1,6 @@
 package com.rameses.osiris2.reports;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -38,7 +39,7 @@ public abstract class ReportExporter {
                 exporters.put(name, (ReportExporter) loader.loadClass(index.getProperty(name)).newInstance());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
-            } 
+            }
         }
         return exporters.get(name);
     }
@@ -47,6 +48,14 @@ public abstract class ReportExporter {
     public abstract JRExporter getExporter();
     
     public final void export(ReportModel model, String output) {
+        try {
+            export(model, new FileOutputStream(output));
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public final void export(ReportModel model, File output) {
         try {
             export(model, new FileOutputStream(output));
         } catch (FileNotFoundException ex) {

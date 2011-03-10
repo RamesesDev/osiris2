@@ -69,7 +69,7 @@ public class WebResource implements Serializable {
 
     public String getContentType() {
         if ( contentType == null && filename != null ) {
-            return WebContext.getServletContext().getMimeType(filename);
+            return WebContext.getInstance().getServletContext().getMimeType(filename);
         }
         
         return contentType;

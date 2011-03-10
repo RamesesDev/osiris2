@@ -10,6 +10,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.beans.Beans;
@@ -21,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -47,11 +50,12 @@ public class XImageViewer extends JPanel implements UIControl {
     private int width;
     private int height;
     private JSlider slider;
-    private JCheckBox isFit;
+    private JCheckBox isFit = new JCheckBox("Fit:");
     private TitledBorder sliderBorder;
     private JScrollPane jsp = new JScrollPane();
     private ImageCanvas imageCanvas  = new ImageCanvas();
-    private JPanel columnHeader;
+    private JPanel columnHeader = new JPanel();
+    private JLabel zoomDesc = new JLabel("Zoom: 100%");
     private double zoomLevel = 1;
     private double fitPercentageWidth = 1.0;
     private double fitPercentageHeight = 1.0;
@@ -69,6 +73,17 @@ public class XImageViewer extends JPanel implements UIControl {
         jsp.setViewportView(imageCanvas);
         
         super.add(jsp, BorderLayout.CENTER);
+        isFit.setSelected( true );
+        isFit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(fitImage)
+                    fitImage = false;
+                else
+                    fitImage = true;
+                
+                repaint();
+            }
+        });
     }
     
     public void setLayout(LayoutManager mgr) {;}
@@ -88,26 +103,28 @@ public class XImageViewer extends JPanel implements UIControl {
     //<editor-fold defaultstate="collapsed" desc="  helper method(s)  ">
     private void attachAdvancedOptions() {
         if( advanced ) {
-            if ( columnHeader == null ) {
-                columnHeader = new JPanel();
-                columnHeader.setBorder(BorderFactory.createEtchedBorder());
-                columnHeader.setLayout( new FlowLayout(FlowLayout.LEFT, 1, 1) );
-                
-                slider = new JSlider(10,200,100);
-                sliderBorder = BorderFactory.createTitledBorder("Zoom: " + (int)(zoomLevel * 100) + "%");
-                slider.setBorder(sliderBorder);
-                slider.addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        zoomLevel = (slider.getValue()/100.00);
-                        width = (int) (image.getWidth(null) * zoomLevel);
-                        height = (int) (image.getHeight(null) * zoomLevel);
-                        sliderBorder.setTitle("Zoom: " + (int)(zoomLevel * 100) + "%");
-                        imageCanvas.repaint();
-                        imageCanvas.revalidate();
-                    }
-                });
-                columnHeader.add(slider);
-            }
+            //if ( columnHeader == null ) {
+            columnHeader.setBorder(BorderFactory.createEtchedBorder());
+            columnHeader.setLayout( new FlowLayout(FlowLayout.LEFT, 1, 1) );
+            
+            slider = new JSlider(10,200,100);
+            //sliderBorder = BorderFactory.createTitledBorder("Zoom: " + (int)(zoomLevel * 100) + "%");
+            //slider.setBorder(sliderBorder);
+            slider.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    zoomLevel = (slider.getValue()/100.00);
+                    width = (int) (image.getWidth(null) * zoomLevel);
+                    height = (int) (image.getHeight(null) * zoomLevel);
+                    //sliderBorder.setTitle("Zoom: " + (int)(zoomLevel * 100) + "%");
+                    zoomDesc.setText("Zoom: " + (int)(zoomLevel * 100) + "%");
+                    imageCanvas.repaint();
+                    imageCanvas.revalidate();
+                }
+            });
+            columnHeader.add(zoomDesc);
+            columnHeader.add(slider);
+            columnHeader.add(isFit);
+            //}
             add(columnHeader, BorderLayout.NORTH);
         } else {
             remove(columnHeader);
@@ -154,6 +171,7 @@ public class XImageViewer extends JPanel implements UIControl {
         }
     }
     //</editor-fold>
+    
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String[] getDepends() {

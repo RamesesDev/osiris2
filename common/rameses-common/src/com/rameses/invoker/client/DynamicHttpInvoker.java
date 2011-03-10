@@ -20,7 +20,6 @@ public final class DynamicHttpInvoker {
     
     private HttpScriptService service;
 
-    
     public DynamicHttpInvoker(String host, String appContext, boolean secured ) {
         HttpInvokerClient client = new HttpInvokerClient();   
         if(host==null) 
@@ -75,7 +74,9 @@ public final class DynamicHttpInvoker {
         public Object invoke(String action, List list ) throws Exception {
             return svc.invoke(serviceName,action, list.toArray(new Object[]{}) ,env);
         }
-
     }
+    
+    
+    
     
 }

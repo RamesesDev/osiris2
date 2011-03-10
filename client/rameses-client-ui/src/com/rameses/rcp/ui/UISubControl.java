@@ -10,5 +10,6 @@ package com.rameses.rcp.ui;
 public interface UISubControl extends UICompositeFocusable {
  
     String getCaption();
+    Object getHandlerObject();
     
 }

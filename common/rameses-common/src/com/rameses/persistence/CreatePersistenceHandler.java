@@ -65,14 +65,12 @@ public class CreatePersistenceHandler extends AbstractPersistenceHandler {
         
         //serialize object if serializer is mentioned.
         //lookup appropriate serializer if not exist use default
-        
         if(serializer!=null) {
             if(!stack.empty()) {
                 Object svalue = passSerializer( cf, data, refname );
                 DbElementContext dbec = stack.peek();
                 SqlExecutor se = (SqlExecutor)dbec.getSqlTxn();
                 se.setParameter( cf.getName() , svalue );
-                
             }
         }
     }

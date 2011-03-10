@@ -1,17 +1,21 @@
 /*
  * StyleRuleParser.java
  *
- * Created on June 24, 2010, 5:22 PM
+ * modified by: jaycverg
+ * version:     1.1
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * updated the parser
+ * - added support on quoted strings
  */
 package com.rameses.rcp.support;
 
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.framework.ClientContext;
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,74 +24,72 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 
+
 public class StyleRuleParser {
     
-    private boolean startStyle;
-    private boolean startProperties;
-    private StringBuffer buffer = new StringBuffer();
-    
-    private String propertyName;
-    private String stylePattern;
     
     //<editor-fold defaultstate="collapsed" desc="  parse method  ">
     public void parse( InputStream is, ParseHandler handler ) throws Exception {
-        StreamTokenizer tokenizer = new StreamTokenizer(is);
+        boolean startStyle = false;
+        boolean startExpr = false;
+        
+        String pattern = null;
+        String expr = null;
+        String propertyName = null;
+        StringBuffer buffer = new StringBuffer();
+        
+        Reader reader = new BufferedReader(new InputStreamReader(is));
+        StreamTokenizer tokenizer = new StreamTokenizer(reader);
         tokenizer.ordinaryChar('.');
         tokenizer.ordinaryChar('/');
         tokenizer.ordinaryChars('0', '9');
+        tokenizer.slashSlashComments(true);
+        tokenizer.slashStarComments(true);
         while(tokenizer.nextToken() != tokenizer.TT_EOF ) {
-            if(tokenizer.ttype == '"') {
-                startStyle = true;
-                stylePattern = tokenizer.sval;
-                handler.startStyle();
-                buffer.delete(0, buffer.length() );
-                
-            } else if(tokenizer.ttype == '[') {
-                if ( stylePattern == null ) {
-                    stylePattern = buffer.toString();
-                    buffer.delete(0, buffer.length() );
-                }
-            } else if(tokenizer.ttype == ']') {
-                handler.setStyle( stylePattern, buffer.toString() );
-                buffer.delete(0, buffer.length() );
-                stylePattern = null;
-                
-            } else if( tokenizer.ttype == '{' ) {
-                handler.startProperties();
-                startProperties = true;
-                
-            } else if( tokenizer.ttype == '}' ) {
-                handler.endProperties();
-                startProperties = false;
-                startStyle = false;
-                handler.endStyle();
-                
-            } else if( tokenizer.ttype == ':' ) {
-                propertyName = buffer.toString();
-                buffer.delete(0, buffer.length() );
-                
-            } else if( tokenizer.ttype == ';' ) {
-                handler.addProperty( propertyName, buffer.toString() );
-                buffer.delete(0, buffer.length() );
-                propertyName = null;
-                
-            } else {
-                if(!startStyle) {
+            int ttype = tokenizer.ttype;
+            if( ttype == '"' ) {
+                if( !startStyle ) {
                     startStyle = true;
+                    buffer.delete(0, buffer.length());
                     handler.startStyle();
-                    buffer.delete(0, buffer.length() );
                 }
-                if( tokenizer.ttype==39) {
+                if( startExpr ) {
                     buffer.append("'"+tokenizer.sval+"'");
-                    
-                } else if(tokenizer.ttype==tokenizer.TT_WORD) {
-                    buffer.append(tokenizer.sval);
-                    
-                } else if(tokenizer.ttype==tokenizer.TT_NUMBER) {
-                    buffer.append(tokenizer.nval);
-                    
                 } else {
-                    buffer.append((char)tokenizer.ttype);
+                    buffer.append(tokenizer.sval);
+                }
+            } else if ( ttype == '[' ) {
+                pattern = buffer.toString();
+                buffer.delete(0, buffer.length());
+                startExpr = true;
+            } else if ( ttype == ']' ) {
+                handler.setStyle(pattern, buffer.toString());
+                buffer.delete(0, buffer.length());
+                startExpr = false;
+            } else if ( ttype == '{' ) {
+                handler.startProperties();
+            } else if ( ttype == '}' ) {
+                handler.endProperties();
+                handler.endStyle();
+            } else if ( ttype == ':' ) {
+                propertyName = buffer.toString();
+                buffer.delete(0, buffer.length());
+            } else if ( ttype == ';' ) {
+                handler.addProperty(propertyName, buffer.toString());
+                propertyName = null;
+                buffer.delete(0, buffer.length());
+            } else {
+                if( ttype == '\'' ) {
+                    if( startExpr )
+                        buffer.append("'"+tokenizer.sval+"'");
+                    else
+                        buffer.append(tokenizer.sval);
+                } else if(ttype == tokenizer.TT_NUMBER) {
+                    buffer.append(tokenizer.nval);
+                } else if(ttype == tokenizer.TT_WORD) {
+                    buffer.append(tokenizer.sval);
+                } else {
+                    buffer.append((char)ttype);
                 }
             }
         }

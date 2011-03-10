@@ -1,12 +1,17 @@
 package com.rameses.rcp.util;
 
+import com.rameses.common.ExpressionResolver;
+import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.FormControl;
+import com.rameses.rcp.common.FormPanelModel;
 import com.rameses.rcp.common.ValidatorEvent;
 import com.rameses.rcp.constant.UIConstants;
+import com.rameses.rcp.control.XEditorPane;
 import com.rameses.rcp.control.XLabel;
 import com.rameses.rcp.control.border.XUnderlineBorder;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.BindingListener;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.ControlContainer;
@@ -16,6 +21,7 @@ import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.util.ValueUtil;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -31,12 +37,17 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+
+/**
+ * @author jaycverg
+ */
 public class FormPanel extends JPanel implements UIComposite, ControlContainer, Validatable, ActiveControl, UIConstants {
     
     private int cellspacing = 2;
@@ -67,15 +78,35 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     
     private List<UIControl> nonDynamicControls = new ArrayList();
     
-    //internal flag
-    private boolean _loaded;
+    //-- internal flags
+    //used to determine dynamically and non-dynamically added controls
+    private boolean loaded;
+    //used to determine if the dynamically controls were reloaded
+    private boolean reloaded;
+    //used to determine if non-dynamic controls were removed temporarily
+    private boolean dynamicControlsRemoved;
+    
+    private String viewType;
+    private String oldViewType;
+    private boolean viewTypeSet;
+    
+    private LayoutManager layout;
+    private JEditorPane htmlPane;
+    
+    private String emptyWhen;
+    private String emptyText;
+    private XLabel emptyLbl;
+    
+    private FormPanelModel model;
+    private FormPanelModel.Listener  defaultListener;
     
     
     public FormPanel() {
-        super.setLayout(new Layout());
+        super.setLayout(layout = new Layout());
         setPadding(new Insets(5,5,5,5));
         setOpaque(false);
         
+        setFont(Font.decode("Arial-plain-11"));
         setCaptionFont(Font.decode("Arial-plain-11"));
         setCaptionForeground(UIManager.getColor("Label.foreground"));
     }
@@ -97,7 +128,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         }
         
         if ( p != null ) {
-            if ( !_loaded && control instanceof UIControl )
+            if ( !loaded && control instanceof UIControl )
                 nonDynamicControls.add( (UIControl) control );
             
             super.addImpl(p, constraints, index);
@@ -158,31 +189,24 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     public boolean isDynamic()              { return dynamic; }
     public void setDynamic(boolean dynamic) { this.dynamic = dynamic; }
     
-    public void refresh() {}
-    
-    public void load() {
-        _loaded = true;
-        binding.addBindingListener(new FormPanelBindingListener());
-        build();
-    }
-    
-    public void reload() {
-        build();
-    }
-    
     public int compareTo(Object o) {
         return UIControlUtil.compare(this, o);
     }
     
     public void validateInput() {
         actionMessage.clearMessages();
+        
+        //do not validate if in html view
+        if( ValueUtil.isEqual(viewType, HTML_VIEW) ) return;
+        
         for(UIControl c: controls) {
             if( !(c instanceof Validatable) ) continue;
             
             Validatable v = (Validatable) c;
             v.validateInput();
-            if( v.getActionMessage().hasMessages() )
-                actionMessage.addMessage(v.getActionMessage());
+            ActionMessage ac = v.getActionMessage();
+            if( ac != null && ac.hasMessages() )
+                actionMessage.addMessage(ac);
         }
     }
     
@@ -197,7 +221,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     public boolean focusFirstInput() {
         List<UIControl> allControls = new ArrayList();
         if ( !nonDynamicControls.isEmpty() )
-            allControls.addAll( nonDynamicControls );    
+            allControls.addAll( nonDynamicControls );
         
         allControls.addAll(controls);
         
@@ -219,7 +243,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                 } else if ( c instanceof UIInput ) {
                     UIInput u = (UIInput) c;
                     JComponent jc = (JComponent) c;
-                    if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isVisible())
+                    if ( u.isReadonly() || !jc.isFocusable() || !jc.isEnabled() || !jc.isShowing() )
                         continue;
                     
                     jc.requestFocus();
@@ -238,6 +262,30 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  refresh/load  ">
+    public void refresh() {
+        if( reloaded || (viewTypeSet && !ValueUtil.isEqual(oldViewType, viewType))) {
+            refreshForm();
+            oldViewType = viewType;
+            reloaded = false;
+        } else if ( ValueUtil.isEqual(viewType, HTML_VIEW)) {
+            refreshHtml();
+        }
+    }
+    
+    public void load() {
+        binding.addBindingListener(new FormPanelBindingListener());
+        build();
+        loaded = true;
+        reloaded = true;
+    }
+    
+    public void reload() {
+        build();
+        reloaded = true;
+    }
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="  helper method  ">
     private void build() {
         if ( ValueUtil.isEmpty(getName()) ) return;
@@ -245,15 +293,18 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         //remove only dynamic controls
         for(UIControl u: controls) {
             remove((Component) u);
+            //let garbage collector collect the reference
+            u = null;
         }
-        controls.clear();
         
+        controls.clear();
         property.setRequired(false);
+        boolean htmlView = HTML_VIEW.equals(viewType);
         
         List<FormControl> list = getFormControls();
-        FormControlUtil util = FormControlUtil.getInstance();
+        FormControlUtil fcUtil = FormControlUtil.getInstance();
         for(FormControl fc: list) {
-            UIControl uic = util.getControl(fc);
+            UIControl uic = fcUtil.getControl(fc);
             if ( uic == null ) continue;
             
             uic.setBinding(binding);
@@ -263,10 +314,139 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                 property.setRequired(true);
             
             controls.add( uic );
-            add( (Component)uic );
+        }
+    }
+    
+    private void refreshForm() {
+        //check if view is html
+        boolean htmlView = HTML_VIEW.equals(viewType);
+        
+        if( !htmlView && htmlPane != null ) {
+            remove( htmlPane );
+            htmlPane = null;
+        }
+        
+        if( htmlView ) {
+            //remove controls
+            for(UIControl u : nonDynamicControls) {
+                u.refresh();
+                remove((Component)u);
+            }
+            dynamicControlsRemoved = true;
+            
+            for(UIControl u: controls) {
+                u.refresh();
+                remove((Component) u);
+            }
+            
+            if( htmlPane == null ) {
+                initHtmlPane();
+            }
+        } else {
+            super.setLayout(layout);
+        }
+        
+        boolean empty = false;
+        
+        //visibility and empty text support
+        if( controls.size() == 0 && nonDynamicControls.size() == 0 && !ValueUtil.isEmpty(emptyText) ) {
+            empty = true;
+        } else {
+            if( !ValueUtil.isEmpty(emptyWhen) ) {
+                ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+                Object value = er.evaluate(binding.getBean(), emptyWhen);
+                if( value != null )
+                    empty = !"false".equals(value.toString());
+            }
+        }
+        
+        if( !empty ) {
+            if( emptyLbl != null ) {
+                remove(emptyLbl);
+                emptyLbl = null;
+            }
+            if( htmlView ) {
+                FormControlUtil fcUtil = FormControlUtil.getInstance();
+                htmlPane.setText( fcUtil.renderHtml(getAllControls(), this) );
+            } else {
+                //attach again the nonDynamicControls
+                //if they were removed temporarily
+                if( dynamicControlsRemoved ) {
+                    for(UIControl u : nonDynamicControls) {
+                        add((Component)u);
+                        u.refresh();
+                    }
+                    dynamicControlsRemoved = false;
+                }
+                
+                for(UIControl u : controls) {
+                    u.refresh();
+                    if( !htmlView ) {
+                        if(layout != super.getLayout()) super.setLayout(layout);
+                        
+                        //add component if form panel is reloaded
+                        //this happends if the form panel is dynamic
+                        if( reloaded ) add( (Component)u );
+                        u.refresh();
+                    }
+                }
+            }
+        } else {
+            if( htmlView ) {
+                Font f = getFont();
+                String html = "<font face='"+f.getFamily()+"' size='"+f.getSize()+"pt'>"+(emptyText==null?"":emptyText)+"</font>";
+                htmlPane.setText(html);
+                htmlPane.setCaretPosition(0);
+            } else {
+                if( emptyText != null ) {
+                    if( emptyLbl == null ) {
+                        emptyLbl = new XLabel();
+                        emptyLbl.setShowCaption(false);
+                    }
+                    emptyLbl.setExpression(emptyText);
+                    add( emptyLbl );
+                }
+            }
         }
         
         SwingUtilities.updateComponentTreeUI(this);
+    }
+    
+    private void refreshHtml() {
+        boolean empty = false;
+        
+        //visibility and empty text support
+        if( controls.size() == 0 && nonDynamicControls.size() == 0 && !ValueUtil.isEmpty(emptyText) ) {
+            empty = true;
+        } else {
+            if( !ValueUtil.isEmpty(emptyWhen) ) {
+                ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+                Object value = er.evaluate(binding.getBean(), emptyWhen);
+                if( value != null )
+                    empty = !"false".equals(value.toString());
+            }
+        }
+        
+        if( !empty ) {
+            List<UIControl> allControls = getAllControls();
+            for(UIControl c : allControls) c.refresh();
+            
+            FormControlUtil fcUtil = FormControlUtil.getInstance();
+            htmlPane.setText( fcUtil.renderHtml(allControls, this) );
+            htmlPane.setCaretPosition(0);
+        } else {
+            Font f = getFont();
+            String html = "<font face='"+f.getFamily()+"' size='"+f.getSize()+"pt'>"+(emptyText==null?"":emptyText)+"</font>";
+            htmlPane.setText(html);
+        }
+    }
+    
+    private void initHtmlPane() {
+        XEditorPane editorPane = new XEditorPane();
+        editorPane.setBinding(binding);
+        super.setLayout(new BorderLayout());
+        super.addImpl( editorPane, null, 0 );
+        htmlPane = editorPane;
     }
     
     private List getFormControls() {
@@ -276,6 +456,18 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         try {
             value = UIControlUtil.getBeanValue(this);
         } catch(Exception e) {;}
+        
+        if (value instanceof FormPanelModel) {
+            if( model != null ) {
+                model.setListener(null);
+                model = null;
+            }
+            
+            model = (FormPanelModel) value;
+            if( defaultListener == null ) defaultListener = new ModelListener();
+            model.setListener(defaultListener);
+            value = model.getFormControls();
+        }
         
         if (value == null) {
             //do nothing
@@ -438,6 +630,40 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         return property.isRequired();
     }
     
+    
+    public String getViewType() { return viewType; }
+    public void setViewType(String viewType) {
+        if( !viewTypeSet )
+            oldViewType = viewType;
+        else
+            oldViewType = this.viewType;
+        
+        this.viewType = viewType;
+        viewTypeSet = true;
+    }
+    
+    public boolean isChildrenAcceptStyles() {
+        return false;
+    }
+    
+    public String getEmptyText()               { return emptyText; }
+    public void setEmptyText(String emptyText) { this.emptyText = emptyText; }
+    
+    public List<UIControl> getAllControls() {
+        List<UIControl> allControls = new ArrayList();
+        allControls.addAll(nonDynamicControls);
+        allControls.addAll(controls);
+        return allControls;
+    }
+    
+    public String getEmptyWhen() {
+        return emptyWhen;
+    }
+    
+    public void setEmptyWhen(String emptyWhen) {
+        this.emptyWhen = emptyWhen;
+    }
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" Layout (Class) ">
@@ -534,13 +760,26 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         
         public void notifyDepends(UIControl u, Binding parent) {
             if ( ValueUtil.isEmpty(u.getName()) ) return;
-            Set<UIControl> refreshed = new HashSet();
-            for( UIControl control : controls ) {
-                if ( !isDependent( u.getName(), control ) ) continue;
-                _doRefresh( control, refreshed );
+            
+            //if view type is HTML_VIEW do not refresh the control
+            //the html renderer also refresh the items before rendering
+            if( ValueUtil.isEqual(viewType, HTML_VIEW)) {
+                boolean shouldRefresh = false;
+                for( UIControl control : controls ) {
+                    if ( !isDependent( u.getName(), control ) ) continue;
+                    shouldRefresh = true;
+                }
+                
+                if( shouldRefresh ) refreshHtml();
+            } else {
+                Set<UIControl> refreshed = new HashSet();
+                for( UIControl control : controls ) {
+                    if ( !isDependent( u.getName(), control ) ) continue;
+                    _doRefresh( control, refreshed );
+                }
+                refreshed.clear();
+                refreshed = null;
             }
-            refreshed.clear();
-            refreshed = null;
         }
         
         private boolean isDependent( String parentName, UIControl child ) {
@@ -553,6 +792,10 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         }
         
         public void refresh(String regEx) {
+            //if view type is HTML_VIEW do not refresh
+            //the html renderer also refresh the items before rendering
+            if( ValueUtil.isEqual(viewType, HTML_VIEW)) return;
+            
             Set<UIControl> refreshed = new HashSet();
             for( UIControl uu : controls ) {
                 String name = uu.getName();
@@ -576,7 +819,32 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         public void validateBean(ValidatorEvent evt) {}
         public void formCommit() {}
         public void update() {}
-
+        
     }
     //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  ModelListener (clas)  ">
+    private class ModelListener implements FormPanelModel.Listener {
+        
+        public void onPropertyUpdated(String name, Object value) {
+            FormPanel handle = FormPanel.this;
+            PropertyResolver res = ClientContext.getCurrentContext().getPropertyResolver();
+            try {
+                res.setProperty(handle, name, value);
+            } catch(Exception e){;}
+        }
+        
+        public String getHtmlFormat(boolean partial) {
+            FormControlUtil fcUtil = FormControlUtil.getInstance();
+            return fcUtil.renderHtml(getAllControls(), FormPanel.this, partial);
+        }
+        
+        public void onReload() {
+            reload();
+            refresh();
+        }
+        
+    }
+    //</editor-fold>
+    
 }

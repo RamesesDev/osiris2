@@ -47,6 +47,15 @@ public class FileTransferInputStream extends InputStream {
         }
     }
     
+    public FileTransferInputStream(File f, FileTransferInfo fileInfo) throws Exception {
+        inputStream = new FileInputStream( f );
+        boolean exists = retrieveInfo( f, fileInfo );
+        if(exists) {
+            verify( f );
+            restore();
+        }
+    }
+    
     public void setSuffix(String suffix) {
         this.suffix = suffix;
     }
@@ -55,7 +64,16 @@ public class FileTransferInputStream extends InputStream {
      * returns true if the file already exists.
      */
     private boolean retrieveInfo(File sourceFile) throws Exception {
-        String tmpFileName = sourceFile.getPath() + suffix;
+        return retrieveInfo(sourceFile, null);
+    }
+    
+    private boolean retrieveInfo(File sourceFile, FileTransferInfo fileInfo) throws Exception {
+        String tmpFileName = null;
+        if( fileInfo == null )
+            tmpFileName = sourceFile.getPath() + suffix;
+        else
+            tmpFileName = fileInfo.getTempFileName();
+        
         File tmpFile = new File(tmpFileName);
         if( !tmpFile.exists() ) {
             fileTransferInfo = new FileTransferInfo( sourceFile );
@@ -76,10 +94,9 @@ public class FileTransferInputStream extends InputStream {
         }
         if(fileTransferInfo.isEof())  {
             fileTransferInfo.delete();
-            throw new EOFException("File Transfer Info is currently at EOF position. Exisitng file is removed");
+            throw new EOFException("File Transfer Info is currently at EOF position. Existing file is removed");
             
-        }
-        else {
+        } else {
             return true;
         }
     }

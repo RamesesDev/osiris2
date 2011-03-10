@@ -21,19 +21,27 @@ public class OsirisWebBean implements Serializable {
     private Map folderInvokers = new FolderInvokerLookup();
     
     public String getPath() {
-        return WebContext.getExternalContext().getRequestContextPath();
+        return WebContext.getInstance().getExternalContext().getRequestContextPath();
     }
     
     public OsirisUserPrincipal getUser() {
-        return (OsirisUserPrincipal) WebContext.getUserPrincipal();
+        return (OsirisUserPrincipal) WebContext.getInstance().getUserPrincipal();
     }
     
     public String getUsername() {
-        Principal p = WebContext.getUserPrincipal();
+        Principal p = WebContext.getInstance().getUserPrincipal();
         if ( p != null )
             return p.getName();
         
         return null;
+    }
+    
+    public Map getEnv() {
+        return WebContext.getInstance().getEnv();
+    }
+    
+    public Map getProperties() {
+        return WebContext.getInstance().getProperties();
     }
     
     public Map getInvokers() {
@@ -53,7 +61,7 @@ public class OsirisWebBean implements Serializable {
     class InvokerLookup extends HashMap {
         
         public Object get(Object key) {
-            OsirisWebSessionContext ctx = (OsirisWebSessionContext) WebContext.getSessionContext();
+            OsirisWebSessionContext ctx = (OsirisWebSessionContext) WebContext.getInstance().getSessionContext();
             return ctx.getInvokersMap( key+"" );
         }
         
@@ -64,7 +72,7 @@ public class OsirisWebBean implements Serializable {
     class FolderLookup extends HashMap {
         
         public Object get(Object key) {
-            SessionContext ctx = WebContext.getSessionContext();
+            SessionContext ctx = WebContext.getInstance().getSessionContext();
             return ctx.getFolders( key+"" );
         }
         
@@ -75,7 +83,7 @@ public class OsirisWebBean implements Serializable {
     class FolderInvokerLookup extends HashMap {
         
         public Object get(Object key) {
-            OsirisWebSessionContext ctx = (OsirisWebSessionContext) WebContext.getSessionContext();
+            OsirisWebSessionContext ctx = (OsirisWebSessionContext) WebContext.getInstance().getSessionContext();
             return ctx.getFolderInvokers( key+"" );
         }
         

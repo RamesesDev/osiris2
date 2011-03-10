@@ -12,7 +12,10 @@ public class Column implements Serializable {
     private String caption;
     private String type = "string";
     private String handler;
+    
+    //for combo box support
     private String items;
+    
     private String fieldname;
     private int width;
     private int minWidth;
@@ -27,8 +30,24 @@ public class Column implements Serializable {
     private String format;
     private boolean required;
     private Class fieldType;
+    
+    //alignment support
     private String alignment;
     private String vAlignment;
+    
+    //icon support
+    private String iconVisibleWhen;
+    private String icon;
+    private String toggleIcon;
+    private String headerIcon;
+    
+    
+    private String expression;
+    private String category;
+    
+    //checkbox support
+    private Object checkValue;
+    private Object uncheckValue;
     
     
     private Map properties = new HashMap();
@@ -45,7 +64,7 @@ public class Column implements Serializable {
         this(name, caption);
         this.type = type;
         if( props != null) {
-            this.properties = props;
+            this.setProperties(props);
         }
     }
     
@@ -77,7 +96,7 @@ public class Column implements Serializable {
         col.resizable = resizable;
         col.editable = editable;
         col.visible = visible;
-        col.properties = properties;
+        col.setProperties(getProperties());
         col.fieldname = fieldname;
         col.rowheight = rowheight;
         col.primary = primary;
@@ -240,7 +259,6 @@ public class Column implements Serializable {
     public void setFieldType(Class fieldType) {
         this.fieldType = fieldType;
     }
-    //</editor-fold>
     
     public String getEditableWhen() {
         return editableWhen;
@@ -274,6 +292,71 @@ public class Column implements Serializable {
     
     public void setVAlignment(String vAlignment) {
         this.vAlignment = vAlignment;
+    }
+    
+    public String getIcon() {
+        return icon;
+    }
+    
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+    
+    public String getHeaderIcon() {
+        return headerIcon;
+    }
+    
+    public void setHeaderIcon(String headerIcon) {
+        this.headerIcon = headerIcon;
+    }
+    
+    public String getExpression() {
+        return expression;
+    }
+    
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+    
+    public String getCategory() {
+        return category;
+    }
+    
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    //</editor-fold>
+
+    public String getToggleIcon() {
+        return toggleIcon;
+    }
+
+    public void setToggleIcon(String toggleIcon) {
+        this.toggleIcon = toggleIcon;
+    }
+
+    public String getIconVisibleWhen() {
+        return iconVisibleWhen;
+    }
+
+    public void setIconVisibleWhen(String iconVisibleWhen) {
+        this.iconVisibleWhen = iconVisibleWhen;
+    }
+
+    public Object getUncheckValue() {
+        return uncheckValue;
+    }
+
+    public void setUncheckValue(Object uncheckValue) {
+        this.uncheckValue = uncheckValue;
+    }
+
+    public Object getCheckValue() {
+        return checkValue;
+    }
+
+    public void setCheckValue(Object checkValue) {
+        this.checkValue = checkValue;
     }
     
 }

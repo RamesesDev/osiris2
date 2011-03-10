@@ -31,6 +31,7 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
     
     private List<String> removeFields = new ArrayList();
     private List<String> serializedFields = new ArrayList();
+    private List<String> mergeFields = new ArrayList();
     
     public ReadPersistenceHandler(SchemaManager schemaManager, SqlContext context, Object rootData) {
         super(schemaManager,context,rootData);
@@ -76,12 +77,18 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
         
         //serialize object if serializer is mentioned.
         //lookup appropriate serializer if not exist use default
-        
+        //the purpose here is just to mark the fields which will be processed later
+        //before returning to the client. Refer to last part in EntityManager.read.
         if(serializer!=null) {
             if(!stack.empty()) {
                 DbElementContext dbec = stack.peek();
                 String sname = dbec.correctName( cf.getName() );
-                serializedFields.add(sname);
+                
+                String merge = (String)cf.getProperties().get("merge");
+                if(merge!=null && "true".equals(merge)) 
+                    mergeFields.add(sname);
+                else
+                    serializedFields.add(sname);
             }
         }
     }
@@ -93,4 +100,9 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
     public List<String> getSerializedFields() {
         return serializedFields;
     }
+    
+    public List<String> getMergeFields() {
+        return mergeFields;
+    }
+    
 }

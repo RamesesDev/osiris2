@@ -38,6 +38,8 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     
     private int oldIndex;
     private List<Opener> openers = new ArrayList();
+    private boolean nameAutoLookupAsOpener = true;
+    
     
     public XTabbedPane() {
         super();
@@ -89,29 +91,33 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
     
     private void loadOpeners() {
         openers.clear();
-        //--get openers defined from the code bean
-        Object value = null;
-        try {
-            value = UIControlUtil.getBeanValue(this);
-        } catch(Exception e) {;}
         
-        if (value == null) {
-            //do nothing
-        } else if (value.getClass().isArray()) {
-            for (Opener o: (Opener[]) value) {
-                openers.add(o);
+        if( nameAutoLookupAsOpener ) {
+            //--get openers defined from the opener provider
+            OpenerProvider openerProvider = ClientContext.getCurrentContext().getOpenerProvider();
+            if (openerProvider != null) {
+                UIController controller = binding.getController();
+                List<Opener> oo = openerProvider.getOpeners(getName(), null);
+                if (oo != null) openers.addAll(oo);
             }
-        } else if (value instanceof Collection) {
-            openers.addAll((Collection) value);
+        } else {
+            //--get openers defined from the code bean
+            Object value = null;
+            try {
+                value = UIControlUtil.getBeanValue(this);
+            } catch(Exception e) {;}
+            
+            if (value == null) {
+                //do nothing
+            } else if (value.getClass().isArray()) {
+                for (Opener o: (Opener[]) value) {
+                    openers.add(o);
+                }
+            } else if (value instanceof Collection) {
+                openers.addAll((Collection) value);
+            }
         }
         
-        //--get openers defined from the opener provider
-        OpenerProvider openerProvider = ClientContext.getCurrentContext().getOpenerProvider();
-        if (openerProvider != null) {
-            UIController controller = binding.getController();
-            List<Opener> oo = openerProvider.getOpeners(getName(), null);
-            if (oo != null) openers.addAll(oo);
-        }
     }
     //</editor-fold>
     
@@ -173,5 +179,13 @@ public class XTabbedPane extends JTabbedPane implements UIControl {
         
     }
     //</editor-fold>
+    
+    public boolean isNameAutoLookupAsOpener() {
+        return nameAutoLookupAsOpener;
+    }
+    
+    public void setNameAutoLookupAsOpener(boolean nameAutoLookupAsOpener) {
+        this.nameAutoLookupAsOpener = nameAutoLookupAsOpener;
+    }
     
 }
