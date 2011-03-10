@@ -259,25 +259,31 @@ public final class TableUtil {
             }
             
             AbstractListModel lm = xtable.getListModel();
-            ListItem listItem = lm.getSelectedItem();
             ClientContext clientCtx = ClientContext.getCurrentContext();
             ExpressionResolver exprRes = clientCtx.getExpressionResolver();
             Column colModel = xmodel.getColumn(column);
             
-            StyleRule[] styles = xtable.getBinding().getStyleRules();
-            if( styles != null && styles.length > 0) {
-                comp.setOpaque(true);
-                
-                Map bean = new HashMap();
-                bean.put("row", listItem.getRownum());
-                bean.put("column", column);
-                bean.put("columnName", colModel.getName());
-                bean.put("root", listItem.getRoot());
-                bean.put("selected", isSelected);
-                bean.put("hasFocus", hasFocus);
-                bean.put("item", listItem.getItem());
-                applyStyle( xtable.getName(), bean, comp, styles, exprRes );
-            }
+            try {
+                StyleRule[] styles = xtable.getBinding().getStyleRules();
+                if( styles != null && styles.length > 0) {
+                    comp.setOpaque(true);
+                    
+                    ListItem listItem = lm.getSelectedItem();
+                    if( listItem == null ) {
+                        listItem = lm.getItemList().get(0);
+                    }
+                    
+                    Map bean = new HashMap();
+                    bean.put("row", listItem.getRownum());
+                    bean.put("column", column);
+                    bean.put("columnName", colModel.getName());
+                    bean.put("root", listItem.getRoot());
+                    bean.put("selected", isSelected);
+                    bean.put("hasFocus", hasFocus);
+                    bean.put("item", listItem.getItem());
+                    applyStyle( xtable.getName(), bean, comp, styles, exprRes );
+                }
+            } catch(Exception e){;}
             
             String errmsg = lm.getErrorMessage(row);
             if (errmsg != null) {
