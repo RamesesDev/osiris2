@@ -23,7 +23,7 @@ public class HttpInvokerClient {
     private String[] hosts;
     private int timeout = 10000;
     
-    HttpInvokerClient() {
+    public HttpInvokerClient() {
         
     }
     
