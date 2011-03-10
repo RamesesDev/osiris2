@@ -3,6 +3,7 @@ package com.rameses.rcp.workspace;
 import com.rameses.platform.interfaces.AppLoader;
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.platform.interfaces.SubPlatform;
 import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.framework.ClientContext;
 import java.net.URLClassLoader;
@@ -15,12 +16,18 @@ import javax.swing.JComponent;
  *
  * @author jaycverg
  */
-public class Workspace implements Platform {
+public class Workspace implements SubPlatform {
     
     public static final Workspace create(Map conf) {
         ClientContext ctx = ClientContext.getCurrentContext();
         Workspace ws = new Workspace();
-        ws.parent = ctx.getPlatform();
+        Platform parent = ctx.getPlatform();
+        
+        if( parent instanceof SubPlatform ) {
+            parent = ((SubPlatform) parent).getParent();
+        }
+        
+        ws.parent = parent;
         
         Map newEnv = new HashMap(ctx.getAppEnv());
         if( conf != null ) {
@@ -226,5 +233,25 @@ public class Workspace implements Platform {
     public void lock() {}
     public void unlock() {}
     //</editor-fold>
+    
+    public Platform getParent() {
+        return parent;
+    }
+    
+    public String getId() {
+        return workspaceId;
+    }
+    
+    public void setId(String workspaceId) {
+        this.workspaceId = workspaceId;
+    }
+    
+    public String getWorkspaceName() {
+        return workspaceName;
+    }
+    
+    public void setWorkspaceName(String workspaceName) {
+        this.workspaceName = workspaceName;
+    }
     
 }
