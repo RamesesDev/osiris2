@@ -166,8 +166,11 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     }
     
     public void refresh() {
-        if ( listModel != null && dynamic ) {
-            listModel.load();
+        if ( listModel != null ) {
+            if( dynamic )
+                listModel.load();
+            else
+                listModel.refresh();
         }
     }
     
