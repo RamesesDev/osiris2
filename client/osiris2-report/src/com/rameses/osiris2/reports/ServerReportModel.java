@@ -33,12 +33,16 @@ public abstract class ServerReportModel extends ReportModel {
     
     private JasperPrint createReport() {
         try {
-            if(report==null) {
+            if( reportConf == null ) {
                 reportConf = ServerReportUtil.getReportConf(getReportName());
-                report = (JasperReport) reportConf.remove("main");
             }
             
-            Map conf = new HashMap(reportConf);            
+            Map conf = new HashMap(reportConf);
+            if(report==null) {
+                report = (JasperReport) conf.remove("main");
+            }
+            
+            
             Map params = getParameters();
             if(params!=null) {
                 conf.putAll(params);

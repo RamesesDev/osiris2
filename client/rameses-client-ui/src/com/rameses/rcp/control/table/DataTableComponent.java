@@ -99,12 +99,10 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
         registerKeyboardAction(new ActionListener() {
             
             public void actionPerformed(ActionEvent e) {
-                if ( !rowCommited ) {
-                    int row = getSelectedRow();
+                if ( !rowCommited ) {                    
                     ChangeLog log = itemBinding.getChangeLog();
                     if ( log.hasChanges() ) {
-                        log.undo();
-                        tableModel.fireTableRowsUpdated(row, row);
+                        undo();
                     }
                     //clear row editing flag of everything is undone
                     if ( !log.hasChanges() ) {
@@ -599,12 +597,26 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     
     public void cancelRowEdit() {
         if ( !rowCommited ) {
-            itemBinding.getChangeLog().undoAll();
+            ChangeLog log = itemBinding.getChangeLog();
+            List<ChangeLog.ChangeEntry> ceList = log.undoAll();
+            for(ChangeLog.ChangeEntry ce : ceList) {
+                listModel.setSelectedColumn(ce.getFieldName());
+                listModel.updateSelectedItem();
+            }
+            
             rowCommited = true;
             int row = getSelectedRow();
             tableModel.fireTableRowsUpdated(row, row);
             tableListener.cancelRowEdit();
         }
+    }
+    
+    public void undo() {
+        int row = getSelectedRow();
+        ChangeLog.ChangeEntry ce = itemBinding.getChangeLog().undo();
+        tableModel.fireTableRowsUpdated(row, row);
+        listModel.setSelectedColumn(ce.getFieldName());
+        listModel.updateSelectedItem();
     }
     //</editor-fold>
     

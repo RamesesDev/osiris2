@@ -729,7 +729,10 @@ public class Binding {
         public void keyReleased(KeyEvent e) {
             if ( e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z ) {
                 if ( changeLog.hasChanges() ) {
-                    changeLog.undo();
+                    ChangeLog.ChangeEntry ce = changeLog.undo();
+                    if( ce != null ) {
+                        focus( ce.getFieldName() );
+                    }
                     refresh();
                 }
             }

@@ -238,8 +238,7 @@ public final class TableUtil {
                 comp.setForeground(table.getForeground());
                 comp.setOpaque(false);
                 
-                boolean even = (row % 2 == 0);
-                if ( even ) {
+                if ( (row % 2 == 0) ) {
                     if ( xtable.getEvenBackground() != null ) {
                         comp.setBackground( xtable.getEvenBackground() );
                         comp.setOpaque(true);
@@ -267,11 +266,15 @@ public final class TableUtil {
             
             StyleRule[] styles = xtable.getBinding().getStyleRules();
             if( styles != null && styles.length > 0) {
+                comp.setOpaque(true);
+                
                 Map bean = new HashMap();
                 bean.put("row", listItem.getRownum());
                 bean.put("column", column);
                 bean.put("columnName", colModel.getName());
                 bean.put("root", listItem.getRoot());
+                bean.put("selected", isSelected);
+                bean.put("hasFocus", hasFocus);
                 bean.put("item", listItem.getItem());
                 applyStyle( xtable.getName(), bean, comp, styles, exprRes );
             }

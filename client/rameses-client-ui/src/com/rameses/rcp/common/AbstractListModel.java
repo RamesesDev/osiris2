@@ -247,12 +247,13 @@ public abstract class AbstractListModel {
     }
     
     /**
-     * this method is called when there are changes in the row made and
+     * this method is called when there are changes in the row made
      *
      */
     public final void updateSelectedItem() {
         if(selectedItem.getItem()!=null) {
             onUpdateItem( selectedItem.getItem() );
+            onColumnUpdate( selectedItem.getItem(), selectedColumn );
         }
     }
     
@@ -296,7 +297,15 @@ public abstract class AbstractListModel {
         //do nothing
     }
     
+    /**
+     * this method had been deprecated in favor of #onColumnUpdate
+     */
+    @Deprecated
     public void onUpdateItem(Object o) {
+        //do nothing.
+    }
+    
+    public void onColumnUpdate(Object o, String colName) {
         //do nothing.
     }
     

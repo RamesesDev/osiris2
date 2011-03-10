@@ -17,19 +17,29 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerReportUtil {
     
+    private static final String REPORT_EXT = ".rpt";
     private static final String KEY_MAIN_REPORT = "main";
     private static final String KEY_VERSION = "report.version";
-    private static final String REPORT_EXT = ".rpt";
+    private static final String KEY_REPORT_IMAGES = "report.images";
+    private static final String SERVER_RES_PREFIX = "server_res:";
     private static final String SERVICE = "jasper/ReportService";
     
     private static HttpScriptService scriptSvc;
     
     
-    public static Map getReportConf(String name) throws Exception {
+    private static Map<String, Map> reportIndex = new HashMap();
+    
+    public static synchronized Map getReportConf(String name) throws Exception {
+        Map report = reportIndex.get(name);
+        if( report != null )
+            return report;
+        
         Map localConf = getLocalReport(name);
         Double version = null;
         if( localConf != null ) {
@@ -45,6 +55,10 @@ public class ServerReportUtil {
         
         //saved updated report
         saveLocalReport(name, serverConf);
+        
+        //cache updated report
+        reportIndex.put(name, serverConf);
+        
         
         return serverConf;
     }
@@ -77,6 +91,29 @@ public class ServerReportUtil {
                 f.getParentFile().mkdirs();
             }
             
+            Map images = (Map) conf.remove(KEY_REPORT_IMAGES);
+            if( images != null ) {
+                for(Map.Entry me : (Set<Map.Entry>)images.entrySet()) {
+                    String path = localPath + me.getKey();
+                    saveImage(path, (byte[]) me.getValue());
+                }
+                
+                for(Map.Entry me : (Set<Map.Entry>)conf.entrySet()) {
+                    if( me.getValue() instanceof String ) {
+                        String path = me.getValue()+"";
+                        if( path.startsWith(SERVER_RES_PREFIX) ) {
+                            path = path.replace(SERVER_RES_PREFIX, "");
+                            if( path.startsWith("/") )
+                                path = localPath + path.substring(1);
+                            else
+                                path = localPath + path;
+                            
+                            me.setValue(path);
+                        }
+                    }
+                }
+            }
+            
             oos = new ObjectOutputStream(new FileOutputStream(f));
             oos.writeObject(conf);
             oos.flush();
@@ -87,6 +124,25 @@ public class ServerReportUtil {
             try{ oos.close(); }catch(Exception e){}
         }
         
+    }
+    
+    private static void saveImage(String name, byte[] bytes) {
+        FileOutputStream fos = null;
+        try {
+            File f = new File(name);
+            if( !f.getParentFile().exists() ) {
+                f.getParentFile().mkdirs();
+            }
+            
+            fos = new FileOutputStream(f);
+            fos.write(bytes);
+            fos.flush();
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            try{ fos.close(); }catch(Exception e){}
+        }
     }
     
     private static Map getServerReportConf(String name, Double version) throws Exception {
