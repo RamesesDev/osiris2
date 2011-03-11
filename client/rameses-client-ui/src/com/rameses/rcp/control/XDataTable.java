@@ -27,7 +27,7 @@ import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
 
-public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener, NonStylable {
+public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
     private DataTableComponent table;
     private ListScrollBar scrollBar;
@@ -166,11 +166,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     }
     
     public void refresh() {
-        if ( listModel != null ) {
-            if ( dynamic )
-                listModel.load();
-            else
-                listModel.refresh();
+        if ( listModel != null && dynamic ) {
+            listModel.load();
         }
     }
     

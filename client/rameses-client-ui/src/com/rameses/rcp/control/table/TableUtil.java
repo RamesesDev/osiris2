@@ -10,7 +10,6 @@ package com.rameses.rcp.control.table;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
-import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
@@ -263,27 +262,27 @@ public final class TableUtil {
             ExpressionResolver exprRes = clientCtx.getExpressionResolver();
             Column colModel = xmodel.getColumn(column);
             
-            try {
-                StyleRule[] styles = xtable.getBinding().getStyleRules();
-                if( styles != null && styles.length > 0) {
-                    comp.setOpaque(true);
-                    
-                    ListItem listItem = lm.getSelectedItem();
-                    if( listItem == null ) {
-                        listItem = lm.getItemList().get(0);
-                    }
-                    
-                    Map bean = new HashMap();
-                    bean.put("row", listItem.getRownum());
-                    bean.put("column", column);
-                    bean.put("columnName", colModel.getName());
-                    bean.put("root", listItem.getRoot());
-                    bean.put("selected", isSelected);
-                    bean.put("hasFocus", hasFocus);
-                    bean.put("item", listItem.getItem());
-                    applyStyle( xtable.getName(), bean, comp, styles, exprRes );
-                }
-            } catch(Exception e){;}
+//            try {
+//                StyleRule[] styles = xtable.getBinding().getStyleRules();
+//                if( styles != null && styles.length > 0) {
+//                    comp.setOpaque(true);
+//                    
+//                    ListItem listItem = lm.getSelectedItem();
+//                    if( listItem == null ) {
+//                        listItem = lm.getItemList().get(0);
+//                    }
+//                    
+//                    Map bean = new HashMap();
+//                    bean.put("row", listItem.getRownum());
+//                    bean.put("column", column);
+//                    bean.put("columnName", colModel.getName());
+//                    bean.put("root", listItem.getRoot());
+//                    bean.put("selected", isSelected);
+//                    bean.put("hasFocus", hasFocus);
+//                    bean.put("item", listItem.getItem());
+//                    applyStyle( xtable.getName(), bean, comp, styles, exprRes );
+//                }
+//            } catch(Exception e){;}
             
             String errmsg = lm.getErrorMessage(row);
             if (errmsg != null) {
