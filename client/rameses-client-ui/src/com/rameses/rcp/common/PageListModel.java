@@ -11,6 +11,7 @@ public abstract class PageListModel extends AbstractListModel {
     protected int pageCount = 1;
     
     //this indicates the absolute row pos;
+    protected int lastToprow = -1;
     protected int toprow;
     protected int maxRows = -1;
     
@@ -29,6 +30,7 @@ public abstract class PageListModel extends AbstractListModel {
     }
     
     public void load() {
+        lastToprow = -1;
         toprow = 0;
         minlimit = 0;
         maxlimit = 0;
@@ -38,6 +40,16 @@ public abstract class PageListModel extends AbstractListModel {
         super.load();
     }
     
+    public void refresh() {
+        if( lastToprow != toprow ) {
+            fetch();
+            lastToprow = toprow;
+        }
+        if(listener!=null) {
+            listener.refreshList();
+            listener.refreshSelectedItem();
+        }
+    }
     
     public String getSearch() {
         return search;
