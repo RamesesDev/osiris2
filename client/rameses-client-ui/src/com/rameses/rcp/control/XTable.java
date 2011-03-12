@@ -13,7 +13,6 @@ import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.control.table.TableUtil;
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.ui.NonStylable;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ActionMessage;
@@ -183,7 +182,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     
     public void refresh() {
         if ( listModel != null ) {
-            if ( dynamic )
+            if( dynamic )
                 listModel.load();
             else
                 listModel.refresh();
