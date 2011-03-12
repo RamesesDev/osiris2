@@ -265,19 +265,19 @@ public final class TableUtil {
             Column colModel = xmodel.getColumn(column);
             
             StyleRule[] styles = xtable.getBinding().getStyleRules();
-            if( styles != null && styles.length > 0) {
-                comp.setOpaque(true);
-                
-                Map bean = new HashMap();
-                bean.put("row", listItem.getRownum());
-                bean.put("column", column);
-                bean.put("columnName", colModel.getName());
-                bean.put("root", listItem.getRoot());
-                bean.put("selected", isSelected);
-                bean.put("hasFocus", hasFocus);
-                bean.put("item", listItem.getItem());
-                applyStyle( xtable.getName(), bean, comp, styles, exprRes );
-            }
+//            if( styles != null && styles.length > 0) {
+//                comp.setOpaque(true);
+//                
+//                Map bean = new HashMap();
+//                bean.put("row", listItem.getRownum());
+//                bean.put("column", column);
+//                bean.put("columnName", colModel.getName());
+//                bean.put("root", listItem.getRoot());
+//                bean.put("selected", isSelected);
+//                bean.put("hasFocus", hasFocus);
+//                bean.put("item", listItem.getItem());
+//                applyStyle( xtable.getName(), bean, comp, styles, exprRes );
+//            }
             
             String errmsg = lm.getErrorMessage(row);
             if (errmsg != null) {

@@ -47,7 +47,7 @@ import javax.swing.UIManager;
 
 
 @Deprecated
-public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener, NonStylable {
+public class XTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
     private TableComponent table;
     private ListScrollBar scrollBar;

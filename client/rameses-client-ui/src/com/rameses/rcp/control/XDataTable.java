@@ -27,7 +27,7 @@ import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
 
-public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener, NonStylable {
+public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener {
     
     private DataTableComponent table;
     private ListScrollBar scrollBar;
