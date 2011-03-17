@@ -15,7 +15,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -58,6 +57,9 @@ public class MonthCalendarRenderer extends JPanel {
     private String selectedValue;
     
     private DatePickerModel parent;
+    
+    private Listener listener;
+    
     
     public MonthCalendarRenderer() {
         init();
@@ -215,6 +217,9 @@ public class MonthCalendarRenderer extends JPanel {
                     buildCalendar();
                     setSelectedValue(selectedValueFormat.format(resultDate.getTime()));
                     parent.setSelectedValue(getSelectedValue());
+                    if( listener != null ) {
+                        listener.onSelect( getSelectedValue() );
+                    }
                 }else {
                     e.consume();
                 }
@@ -257,4 +262,21 @@ public class MonthCalendarRenderer extends JPanel {
         this.selectedValue = selectedValue;
     }
     //</editor-fold>
+    
+    public Listener getListener() {
+        return listener;
+    }
+    
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+    
+    
+    //inner class
+    public static interface Listener {
+        
+        void onSelect(Object value);
+        
+    }
+    
 }

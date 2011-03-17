@@ -43,6 +43,13 @@ public class DatePickerModel extends AbstractCalendarModel {
     public DatePickerModel() {
         dpUI.setSelectedBackgroundColor(Color.DARK_GRAY);
         dpUI.setSelectedFontColor(Color.WHITE);
+        dpUI.setListener(new MonthCalendarRenderer.Listener(){
+            
+            public void onSelect(Object value) {
+                hideCalendar();
+            }
+        
+        });
         popup.add(dpUI);
     }
         
