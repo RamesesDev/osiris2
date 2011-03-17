@@ -283,6 +283,7 @@ public final class TableUtil {
 //                    applyStyle( xtable.getName(), bean, comp, styles, exprRes );
 //                }
 //            } catch(Exception e){;}
+
             
             String errmsg = lm.getErrorMessage(row);
             if (errmsg != null) {

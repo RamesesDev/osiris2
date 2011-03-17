@@ -9,6 +9,7 @@
 
 package com.rameses.persistence;
 
+import com.rameses.common.UpdateChangeHandler;
 import com.rameses.common.PropertyResolver;
 import com.rameses.schema.Schema;
 import com.rameses.schema.SchemaElement;
@@ -18,6 +19,7 @@ import com.rameses.schema.SchemaSerializer;
 import com.rameses.schema.ValidationResult;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlQuery;
+import com.rameses.util.MapVersionControl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -181,13 +183,25 @@ public class EntityManager {
      *
      */
     public Object update(String schemaName, Object data) {
-        return update(schemaName, data, null);
+        return update(schemaName, data, null, null);
     }
     
     public Object update(String schemaName, Object data, Map vars) {
-        if(!(data instanceof Map))
+       return update( schemaName, data, vars, null );
+    }
+    
+    //added version handling of changes during updates
+    public Object update(String schemaName, Object data, Map vars, UpdateChangeHandler vhandler) {
+         if(!(data instanceof Map))
             throw new RuntimeException("Data that is not a map is not yet supported at this time");
         Map oldData = (Map) read( schemaName, data );
+        
+        //log changes before updating.
+        if(vhandler!=null) {
+            Map changes = MapVersionControl.getInstance().diff(oldData, (Map)data);
+            vhandler.handle(changes);
+        }
+        
         oldData.putAll( (Map)data );
         try {
             SchemaScanner scanner = schemaManager.newScanner();
@@ -202,6 +216,11 @@ public class EntityManager {
             throw new RuntimeException(ex);
         }
     }
+    
+    public Object update(String schemaName, Object data, UpdateChangeHandler h) {
+       return update( schemaName, data, null, h ); 
+    }
+    
     
     public void delete(String schemaName, Object data) {
         delete(schemaName, data, null);
@@ -306,17 +325,21 @@ public class EntityManager {
     }
     
     public Object save( String schemaName, Object data, boolean create, boolean update ) {
-        return save( schemaName, data, create, update, null);
+        return save( schemaName, data, create, update, null, null);
     }
     
     public Object save( String schemaName, Object data, boolean create, boolean update, Map vars) {
+        return save( schemaName, data, create, update, vars, null);
+    }
+    
+    public Object save( String schemaName, Object data, boolean create, boolean update, Map vars, UpdateChangeHandler vhandler) {
         if(create==true && update==true) {
             Object test = read(schemaName, data, vars);
             if(test==null) {
                 return create(schemaName, data, vars );
             }
             else {
-                return update(schemaName, data, vars);
+                return update(schemaName, data, vars, vhandler);
             }
         }
         else if(create==true  && update==false) {
@@ -326,7 +349,7 @@ public class EntityManager {
             Object test = read(schemaName, data, vars);
             if(test==null)
                 throw new RuntimeException("Record for update does not exist");
-            return update(schemaName, data, vars);
+            return update(schemaName, data, vars, vhandler );
         }
         else {
             return data;
