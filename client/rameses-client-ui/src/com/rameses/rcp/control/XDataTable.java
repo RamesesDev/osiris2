@@ -165,16 +165,22 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         return binding;
     }
     
+    
+    private boolean refreshed;
+    
     public void refresh() {
         if ( listModel != null ) {
-            if( dynamic )
+            if( !refreshed || dynamic )
                 listModel.load();
             else
                 listModel.refresh();
         }
+        
+        refreshed = true;
     }
     
     public void load() {
+        refreshed = false;
         if ( handler != null ) {
             Object obj = UIControlUtil.getBeanValue(this, handler);
             if ( obj instanceof AbstractListModel ) {
@@ -186,9 +192,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 
                 if ( rowHeaderView != null )
                     rowHeaderView.setRowCount( listModel.getRows() );
-                
-                if( !dynamic )
-                    listModel.load();
             }
             
         }

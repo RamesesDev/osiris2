@@ -1,7 +1,5 @@
 package com.rameses.rcp.common;
 
-import com.rameses.rcp.framework.ClientContext;
-import com.rameses.common.PropertyResolver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +9,7 @@ import java.util.Map;
  * This class makes use of a cached list.
  */
 public abstract class SubListModel extends PageListModel {
+
     
     protected void fetch() {
         if( dataList ==null) {

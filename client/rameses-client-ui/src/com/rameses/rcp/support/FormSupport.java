@@ -52,7 +52,9 @@ public final class FormSupport {
         
         List<Map> items = null;
         Map<String, List<Map>> categoryItems = null;
-        if( categories != null ) {
+        if( infos == null ) {
+            infos = new ArrayList();
+        } else if( categories != null ) {
             items = new ArrayList(infos);
             categoryItems = new HashMap();
             Iterator<Map> itr = items.iterator();
@@ -92,13 +94,12 @@ public final class FormSupport {
                     props.put("text", "<html><b>" + cat.get("caption") + "</b></html>");
                     props.put("foreground", java.awt.Color.RED);
                     
-                    Dimension prefSize = null; 
-                    Insets padding = null; 
+                    Dimension prefSize = null;
+                    Insets padding = null;
                     if( first ) {
                         padding = new Insets(0,0,0,0);
                         prefSize = new Dimension(0, 20);
-                    }
-                    else {
+                    } else {
                         padding = new Insets(10,0,0,0);
                         prefSize = new Dimension(0, 30);
                     }

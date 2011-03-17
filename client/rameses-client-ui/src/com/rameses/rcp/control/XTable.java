@@ -180,16 +180,22 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
         return binding;
     }
     
+    
+    private boolean refreshed;
+    
     public void refresh() {
         if ( listModel != null ) {
-            if( dynamic )
+            if( !refreshed || dynamic )
                 listModel.load();
             else
                 listModel.refresh();
         }
+        
+        refreshed = true;
     }
     
     public void load() {
+        refreshed = false;
         if ( handler != null ) {
             Object obj = UIControlUtil.getBeanValue(this, handler);
             if ( obj instanceof AbstractListModel ) {

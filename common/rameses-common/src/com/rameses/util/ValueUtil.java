@@ -11,6 +11,7 @@ package com.rameses.util;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +28,8 @@ public class ValueUtil {
     private static final Pattern ESC_STRING = Pattern.compile("[\\\\$\"\n\t\r]");
     private static final SimpleDateFormat DT_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat TS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static final DecimalFormat DEC_FORMATTER = new DecimalFormat("###0.00");
+    
 
     public static final boolean isStringValueEqual(Object obj1, Object obj2) {
         if ( obj1 == null && obj2 == null)
@@ -67,12 +70,16 @@ public class ValueUtil {
         else if (value instanceof String) {
             return escape(value.toString()).insert(0, "\"").append("\"").toString();
         } 
+        //if value is double, float or BigDecimal, format it as ###0.00
         else if(type == Double.class || type == double.class ||
-                type == long.class || type == Long.class ||
-                type == int.class || type == Integer.class ||
                 type == float.class || type == Float.class ||
-                type == BigDecimal.class || type == Boolean.class || 
-                type == boolean.class ) 
+                type == BigDecimal.class) 
+        {
+            return DEC_FORMATTER.format( value );
+        } 
+        else if(type == long.class || type == Long.class ||
+                type == int.class || type == Integer.class ||
+                type == Boolean.class || type == boolean.class ) 
         {
             return value+"";
         } 

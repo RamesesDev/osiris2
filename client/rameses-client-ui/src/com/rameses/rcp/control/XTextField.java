@@ -16,6 +16,7 @@ import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
@@ -67,11 +68,18 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         super.paint(g);
         
         if( showHint && getDocument().getLength() == 0 ) {
-            g.setColor(Color.LIGHT_GRAY);
-            g.setFont(getFont());
-            int x = getInsets().left;
-            int y = (int)(getHeight() /2) + (getInsets().top + (int)(getInsets().bottom / 2));
-            g.drawString(" " + getHint(), x, y);
+            Graphics g2 = g.create();
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.setFont(getFont());
+            
+            FontMetrics fm = g2.getFontMetrics(getFont());
+            Insets m = getInsets();
+            
+            int x = m.left;
+            int y = m.top + fm.getAscent();
+            
+            g2.drawString(" " + getHint(), x, y);
+            g2.dispose();
         }
     }
     

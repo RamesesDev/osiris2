@@ -8,6 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.beaninfo.AbstractBeanInfo;
+import com.rameses.beaninfo.editor.SwingConstantsHAlignment;
 import com.rameses.beaninfo.editor.TextCasePropertyEditor;
 import com.rameses.beaninfo.editor.TrimSpaceOptionPropertyEditor;
 import java.beans.BeanDescriptor;
@@ -31,6 +32,8 @@ public class XTextFieldBeanInfo extends AbstractBeanInfo {
             desc.setPropertyEditorClass(TextCasePropertyEditor.class);
         else if ( "trimSpaceOption".equals(propertyName) )
             desc.setPropertyEditorClass(TrimSpaceOptionPropertyEditor.class);
+        else if ( "horizontalAlignment".equals(propertyName) ) 
+            desc.setPropertyEditorClass(SwingConstantsHAlignment.class);
     }
     
 }
