@@ -174,6 +174,15 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 listModel.load();
             else
                 listModel.refresh();
+            
+            if( !ValueUtil.isEmpty(getName()) ) {
+                try {
+                    Object item = UIControlUtil.getBeanValue(this);
+                    listModel.setSelectedItem( item );
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         
         refreshed = true;
