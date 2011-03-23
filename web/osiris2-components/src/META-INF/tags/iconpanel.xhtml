@@ -11,7 +11,7 @@
     <c:set var="ctxPath" value="#{facesContext.externalContext.requestContextPath}"/>
     <c:set var="defaultIcon" value="#{ctxPath}/a4j.res/images/doc.png"/>
     
-    <div styleClass="#{theme}">
+    <div class="#{theme}">
         <c:if test="#{!empty path}">
             <c:set var="rootFolder" value="#{context.folders[path]}" scope="request"/>
         </c:if>

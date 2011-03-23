@@ -13,11 +13,14 @@ import java.text.DecimalFormat;
 
 
 public final class NumberUtil {
-    
-    public static BigDecimal formatDecimal(Number o, String pattern) {
+        
+    public static BigDecimal formatDecimal(Number num, String pattern) {
         DecimalFormat df = new DecimalFormat(pattern);
-        return new BigDecimal( df.format(o)  );
+        return new BigDecimal( df.format(num)  );
     }
     
+    public static BigDecimal round(Number num) {
+        return formatDecimal(num, "###0.00");
+    }
     
 }

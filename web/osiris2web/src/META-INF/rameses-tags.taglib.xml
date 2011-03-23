@@ -5,5 +5,5 @@
 "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
 
 <facelet-taglib>   
-    <library-class>com.rameses.osiris2.web.util.Osiris2InvokerTagLibrary</library-class>
+    <library-class>com.rameses.osiris2.web.util.Osiris2TagLibrary</library-class>
 </facelet-taglib>

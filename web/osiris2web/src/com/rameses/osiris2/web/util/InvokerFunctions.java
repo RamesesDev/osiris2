@@ -56,4 +56,19 @@ public class InvokerFunctions {
         return false;
     }
     
+    public static boolean checkPermission(String permissionKey) {
+        try {
+            OsirisWebSessionContext sc = (OsirisWebSessionContext) WebContext.getInstance().getSessionContext();
+            return sc.getSecurityProvider().checkPermission(permissionKey);            
+        } catch(Exception e) {;}
+        
+        return false;
+    }
+    
+    public static boolean checkPermission(Invoker inv) {
+        String perm = inv.getPermission();
+        if( perm == null || perm.trim().length() == 0 ) return true;
+        
+        return checkPermission(inv.getWorkunitid() + "." + perm);
+    }
 }

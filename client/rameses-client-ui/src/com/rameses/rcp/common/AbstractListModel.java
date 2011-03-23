@@ -354,8 +354,6 @@ public abstract class AbstractListModel {
     }
     
     /**
-     * overridable
-     * @description
      *    this is used when you want explicitly set the selected items
      */
     public boolean checkSelected(Object obj) {
