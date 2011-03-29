@@ -30,7 +30,7 @@ public class Test1 extends TestCase {
         addr.put("Address 2", "negros oriental");
         data.put("Address", addr);
         
-        System.out.println( HTMLBuilder.toHhtml(data) );
+        //System.out.println( HTMLBuilder.toHhtml(data) );
     }
     
 }

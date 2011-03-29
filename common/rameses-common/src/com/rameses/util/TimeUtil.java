@@ -9,9 +9,14 @@
 
 package com.rameses.util;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class TimeUtil {
     
@@ -85,11 +90,37 @@ public final class TimeUtil {
             return sb.toString();
         }
         
+        //returns integer position in list
+        private int findDayInList(String m, String[] days ) {
+            for(int i=0; i<days.length;i++) {
+                if( days[i].equals(m)) return i;
+            }
+            return -1;
+        }
+        
+        
         //pattern passed is ##:##-##:## MWF
         private void parse(String pattern) {
+            if(!pattern.matches("\\d\\d:\\d\\d-\\d\\d:\\d\\d (M|T|W|Th|F|S|Su|-).*"))
+                throw new RuntimeException("Pattern is incorrect. Must follow for example  ##:##-##:## MWF");
             fromTime = pattern.substring(0, pattern.indexOf("-"));
             toTime = pattern.substring(pattern.indexOf("-")+1, pattern.indexOf(" "));
             String days = pattern.substring( pattern.indexOf(" ")+1 );
+            
+            //handle also a days range for example M-F
+            if( days.contains("-")) {
+                String[] arr = days.split("-");
+                String max = arr[1];
+                String[] list = new String[]{"M","T","W","Th","F","S","Su"};
+                int imin = findDayInList(arr[0], list);
+                int imax = findDayInList(arr[1], list);
+                StringBuffer sb = new StringBuffer();
+                for(int i=imin; i<=imax; i++) {
+                    sb.append( list[i]);
+                }
+                days = sb.toString();
+            }
+                    
             if(days.contains("M")) mon = true;
             //uses a negative lookahead to negate Th
             if(days.matches(".*T(?!h).*")) tue = true;
@@ -171,7 +202,51 @@ public final class TimeUtil {
         public void setSun(boolean sun) {
             this.sun = sun;
         }
-        
     }
+
+    public static interface ParseHandler {
+        void handle( String dow, Timestamp from, Timestamp to );
+    } 
+    
+    public static class MapListParseHandler implements ParseHandler {
+        private List<Map> list = new ArrayList();
+        public void handle( String dow, Timestamp from, Timestamp to ){
+            Map m = new HashMap();
+            m.put("day", dow);
+            m.put( "timefrom", from);
+            m.put("timeto", to);
+            list.add(m);
+        }
+        public List<Map> getList() {
+            return list;
+        }
+    } 
+    
+    /**
+     * User passes a ParseHandler interface  
+     * where day is any of ff: M, T, W, Th, F, S, Su
+     * timein and timeout is a timestampvalue. 
+     * If sample day is null, it assumes 1970-01-01
+     */
+    public static void parseToDay( String pattern, ParseHandler handler ) {
+        TimeUtil.ScheduleBean bean = new TimeUtil.ScheduleBean(pattern);
+        String dummyDate = "0000-00-00";
+        Timestamp start = Timestamp.valueOf(dummyDate + " " + bean.getFromTime() + ":00");
+        Timestamp end = Timestamp.valueOf(dummyDate + " " +  bean.getToTime() + ":00");
+        if( bean.isMon() ) handler.handle("M",start,end);
+        if( bean.isTue() ) handler.handle("T",start,end);
+        if( bean.isWed() ) handler.handle("W",start,end);
+        if( bean.isThu() ) handler.handle("Th",start,end);
+        if( bean.isFri() ) handler.handle("F",start,end);
+        if( bean.isSat() ) handler.handle("S",start,end);
+        if( bean.isSun() ) handler.handle("Su",start,end);
+    }
+    
+    public static List<Map> parseToDaylistMap(String pattern) {
+        MapListParseHandler h = new MapListParseHandler();
+        parseToDay(pattern, h);
+        return h.getList();
+    }
+    
     
 }
