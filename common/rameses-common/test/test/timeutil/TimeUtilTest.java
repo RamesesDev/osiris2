@@ -41,7 +41,7 @@ public class TimeUtilTest extends TestCase {
     }
 
     public void testParseToDay() {
-        List<Map> list = TimeUtil.parseToDaylistMap(  "08:30-09:30 MWF" );
+        List<Map> list = TimeUtil.parseToDayListMap(  "08:30-09:30 MWF" );
         assertEquals(list.size(),3);
         for(Map x: list) System.out.println("entry " + x);
     }

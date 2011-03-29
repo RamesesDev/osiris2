@@ -242,7 +242,7 @@ public final class TimeUtil {
         if( bean.isSun() ) handler.handle("Su",start,end);
     }
     
-    public static List<Map> parseToDaylistMap(String pattern) {
+    public static List<Map> parseToDayListMap(String pattern) {
         MapListParseHandler h = new MapListParseHandler();
         parseToDay(pattern, h);
         return h.getList();
