@@ -82,16 +82,20 @@ public class XList extends JList implements UIControl, ListSelectionListener {
         model.clear();
         
         List list = new ArrayList();
-        Object value = UIControlUtil.getBeanValue(this, items);
-        if ( value == null ) return;
-        
-        if ( value instanceof Collection )
-            list.addAll( (Collection) value );
-        else if ( value.getClass().isArray() ) {
-            for(Object o: (Object[]) value) list.add( o );
+        try {
+            Object value = UIControlUtil.getBeanValue(this, items);
+            if ( value == null ) return;
+            
+            if ( value instanceof Collection )
+                list.addAll( (Collection) value );
+            else if ( value.getClass().isArray() ) {
+                for(Object o: (Object[]) value) list.add( o );
+            }
+            
+            if ( list.size() == 0 ) return;
+        } catch(Exception e) {
+            e.printStackTrace();
         }
-        
-        if ( list.size() == 0 ) return;
         
         int i = 0;
         for(Object o: list) {
@@ -105,7 +109,12 @@ public class XList extends JList implements UIControl, ListSelectionListener {
     private void selectSelectedItems() {
         if ( ValueUtil.isEmpty(getName()) ) return;
         
-        Object value = UIControlUtil.getBeanValue(this);
+        Object value = null;
+        try {
+            value = UIControlUtil.getBeanValue(this);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         
         if ( value == null ) return;
         
@@ -260,13 +269,19 @@ public class XList extends JList implements UIControl, ListSelectionListener {
                 return cellLabel;
             }
             
-            Object val = value;
+            Object val = null;
             if( getExpression() != null ) {
-                ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
-                val = er.evaluate( value, getExpression());
+                try {
+                    ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+                    val = er.evaluate( value, getExpression());
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                val = value;
             }
             
-            cellLabel.setText( val.toString() );
+            cellLabel.setText( (val == null? " " : val.toString()) );
             
             return cellLabel;
         }

@@ -60,8 +60,8 @@ public final class ReportUtil {
         JasperViewer.viewReport( p );
     }
     
-    public static void print( JasperPrint jp, boolean withPrintDialog ) throws Exception {
-        JasperPrintManager.printReport(jp, withPrintDialog );
+    public static boolean print( JasperPrint jp, boolean withPrintDialog ) throws Exception {
+        return JasperPrintManager.printReport(jp, withPrintDialog );
     }
     
     //this gets the jasper report

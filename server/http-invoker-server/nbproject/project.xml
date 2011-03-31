@@ -6,17 +6,17 @@
             <name>http-invoker-server</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
-                <library files="1">
+                <library>
                     <file>${reference.rameses-common.jar}</file>
                 </library>
                 <library files="3">
                     <file>${libs.Apache_Bean_Utils.classpath}</file>
                 </library>
-                <library files="1">
+                <library>
                     <file>${file.reference.ezmorph-1.0.6.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
-                <library files="1">
+                <library>
                     <file>${file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>

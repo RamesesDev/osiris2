@@ -203,6 +203,7 @@ public class XNumberField extends XTextField {
         
         public void focusGained(FocusEvent e) {
             showFormattedValue(false);
+            selectAll();
         }
         
         public void focusLost(FocusEvent e) {
