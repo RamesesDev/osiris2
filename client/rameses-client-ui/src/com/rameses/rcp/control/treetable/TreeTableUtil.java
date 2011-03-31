@@ -53,8 +53,8 @@ public final class TreeTableUtil {
     
     private static final Insets CELL_MARGIN = new Insets(1, 5, 1, 5);
     private static final Color FOCUS_BG = new Color(254, 255, 208);
-    private static final String COLLAPSED_ICON = "/com/rameses/bi/icons/collapsed.png";
-    private static final String EXPANDED_ICON = "/com/rameses/bi/icons/expanded.png";
+    private static final String COLLAPSED_ICON = "/com/rameses/rcp/control/treetable/collapsed.png";
+    private static final String EXPANDED_ICON = "/com/rameses/rcp/control/treetable/expanded.png";
     
     private static Map<String, TableCellRenderer> renderers = new HashMap();
     

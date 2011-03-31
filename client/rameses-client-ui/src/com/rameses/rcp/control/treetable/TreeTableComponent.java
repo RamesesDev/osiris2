@@ -8,6 +8,7 @@
 package com.rameses.rcp.control.treetable;
 
 import com.rameses.rcp.common.*;
+import com.rameses.rcp.control.table.TableControl;
 import com.rameses.rcp.control.table.TableUtil;
 import com.rameses.rcp.framework.Binding;
 import java.awt.Color;
@@ -24,7 +25,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-public class TreeTableComponent extends JTable implements ListModelListener {
+public class TreeTableComponent extends JTable implements ListModelListener, TableControl {
     
     private static final String COLUMN_POINT = "COLUMN_POINT";
     

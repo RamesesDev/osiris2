@@ -10,6 +10,7 @@ package com.rameses.rcp.control.treetable;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.ListItem;
+import com.rameses.rcp.control.table.TableControlModel;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.common.PropertyResolver;
 import com.rameses.util.ValueUtil;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
-public class TreeTableComponentModel extends AbstractTableModel {
+public class TreeTableComponentModel extends AbstractTableModel implements TableControlModel {
     
     private AbstractListModel listModel;
     private List<Column> columnList = new ArrayList();
