@@ -134,8 +134,15 @@ public final class ControlSupport {
             
             if ( invokeOpenerAction ) {
                 Object o = controller.init(opener.getParams(), opener.getAction());
-                if ( o != null && o instanceof String ) {
+                if( o == null );
+                else if ( o instanceof String ) {
                     opener.setOutcome( (String)o );
+                } 
+                //if the opener action returns another opener,
+                //then intialize the opener and return it
+                else if ( o instanceof Opener ) {
+                    Opener oo = (Opener) o;
+                    opener = initOpener(oo, oo.getController(), invokeOpenerAction);
                 }
             }
         }

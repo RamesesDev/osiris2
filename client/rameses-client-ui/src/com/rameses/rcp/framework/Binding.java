@@ -221,7 +221,6 @@ public class Binding {
     }
     
     /**
-     *@description
      *  refreshes all UIControls in this binding
      */
     public void refresh() {
@@ -229,7 +228,6 @@ public class Binding {
     }
     
     /**
-     *@description
      *  accepts regex expression of filednames
      *  sample usage: refresh("field1|field2|entity.*")
      */

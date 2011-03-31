@@ -12,8 +12,7 @@ import java.util.Locale;
 /**
  *
  * @author jaycverg
- * @description
- *     Default Implementation of ClientContext
+ * Default Implementation of ClientContext
  */
 public class ClientContextImpl extends ClientContext {
     

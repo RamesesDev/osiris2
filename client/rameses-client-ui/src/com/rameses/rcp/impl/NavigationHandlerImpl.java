@@ -12,8 +12,7 @@ import javax.swing.JComponent;
 
 /**
  * @author jaycverg
- * @description
- *   handles page navigation using the actions outcome
+ * handles page navigation using the actions outcome
  */
 public class NavigationHandlerImpl implements NavigationHandler {
     

@@ -3,7 +3,10 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:menu="http://com.rameses.osiris2.web/menu"
                 xmlns:r="http://com.rameses.web.component"
-                xmlns:c="http://java.sun.com/jstl/core">
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:u3="http://com.rameses.web.component">
     
-    
+    <h:selectOneMenu value="#{Controller.gender}" >
+        <r:selectItems value="#{Controller.genderList}" />
+    </h:selectOneMenu>
 </ui:composition>

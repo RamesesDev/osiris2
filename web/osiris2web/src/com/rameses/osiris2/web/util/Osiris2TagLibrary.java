@@ -5,12 +5,12 @@ import com.rameses.osiris2.Folder;
 import com.rameses.osiris2.Invoker;
 import com.sun.facelets.tag.jsf.html.AbstractHtmlLibrary;
 
-public class Osiris2InvokerTagLibrary extends AbstractHtmlLibrary {
+public class Osiris2TagLibrary extends AbstractHtmlLibrary {
     
     public static final String NameSpace = "http://com.rameses.osiris2.web/invoker";
-    public static final Osiris2InvokerTagLibrary Instance = new Osiris2InvokerTagLibrary();
+    public static final Osiris2TagLibrary Instance = new Osiris2TagLibrary();
     
-    public Osiris2InvokerTagLibrary() {
+    public Osiris2TagLibrary() {
         super(NameSpace);
         
         //hasIcon
@@ -32,6 +32,16 @@ public class Osiris2InvokerTagLibrary extends AbstractHtmlLibrary {
         try {
             super.addFunction( "hasInvokers", InvokerFunctions.class.getDeclaredMethod("hasInvokers", new Class[] { Folder.class } ));
         } catch(Exception ign){System.out.println("error InvokerFunctions.hasInvokers");}
+        
+        //checkPermission(String)
+        try {
+            super.addFunction( "checkPermission", InvokerFunctions.class.getDeclaredMethod("checkPermission", new Class[] { String.class } ));
+        } catch(Exception ign){System.out.println("error InvokerFunctions.checkPermission(String)");}
+        
+        //checkPermission(Invoker)
+        try {
+            super.addFunction( "checkPermission", InvokerFunctions.class.getDeclaredMethod("checkPermission", new Class[] { Invoker.class } ));
+        } catch(Exception ign){System.out.println("error InvokerFunctions.checkPermission(Invoker)");}
         
     }
     

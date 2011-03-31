@@ -21,6 +21,9 @@ public class RamesesTagLibrary extends AbstractHtmlLibrary {
     
     public static final String NAME_SPACE = "http://com.rameses.web.component";
     public static final RamesesTagLibrary INSTANCE = new RamesesTagLibrary();
+    public static final String TAG_DIR = "META-INF/composition-tags/";
+    
+    
     public RamesesTagLibrary() {
         super(NAME_SPACE);
         addHtmlComponent("simpleDate", UISimpleDate.class.getName(), null);
@@ -46,11 +49,11 @@ public class RamesesTagLibrary extends AbstractHtmlLibrary {
         
         //composition tags
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        addUserTag("calendar", loader.getResource("META-INF/xhtml-tags/calendar.xhtml"));
-        addUserTag("datepicker", loader.getResource("META-INF/xhtml-tags/datepicker.xhtml"));
-        addUserTag("imageViewer", loader.getResource("META-INF/xhtml-tags/imageViewer.xhtml"));
-        addUserTag("ajaxFileupload", loader.getResource("META-INF/xhtml-tags/fileupload.xhtml"));
-        addUserTag("popup", loader.getResource("META-INF/xhtml-tags/popup.xhtml"));
-        addUserTag("titledPanel", loader.getResource("META-INF/xhtml-tags/titledpanel.xhtml"));
+        addUserTag("calendar", loader.getResource(TAG_DIR + "calendar.xhtml"));
+        addUserTag("datepicker", loader.getResource(TAG_DIR + "datepicker.xhtml"));
+        addUserTag("imageViewer", loader.getResource(TAG_DIR + "imageViewer.xhtml"));
+        addUserTag("ajaxFileupload", loader.getResource(TAG_DIR + "fileupload.xhtml"));
+        addUserTag("popup", loader.getResource(TAG_DIR + "popup.xhtml"));
+        addUserTag("titledPanel", loader.getResource(TAG_DIR + "titledpanel.xhtml"));
     }
 }

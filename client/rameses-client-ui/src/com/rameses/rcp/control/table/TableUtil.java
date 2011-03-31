@@ -45,7 +45,6 @@ import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * @description
  *   This class handles TableComponents cell renderer and editor management
  * Default Alignments:
  *  1. decimal/double - right

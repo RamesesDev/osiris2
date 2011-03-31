@@ -105,7 +105,6 @@ public class Opener {
     }
     
     /**
-     * @description
      *  Shorthand for getting the controllers codeBean.
      *  Returns null if the controller is null.
      */

@@ -9,6 +9,7 @@
 
 package com.rameses.util;
 
+import com.rameses.common.PropertyResolver;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -30,7 +31,7 @@ public class ValueUtil {
     private static final SimpleDateFormat TS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private static final DecimalFormat DEC_FORMATTER = new DecimalFormat("###0.00");
     
-
+    
     public static final boolean isStringValueEqual(Object obj1, Object obj2) {
         if ( obj1 == null && obj2 == null)
             return true;
@@ -41,7 +42,7 @@ public class ValueUtil {
         
         return (obj1.toString()).equals(obj2.toString());
     }
-
+    
     
     public static final boolean isEqual(Object obj1, Object obj2) {
         if ( obj1 == null && obj2 == null)
@@ -52,6 +53,28 @@ public class ValueUtil {
             return false;
         
         return obj1.equals(obj2);
+    }
+    
+    public static final boolean isEqual(Object obj1, Object obj2, String keyFld, PropertyResolver resolver) {
+        if ( obj1 == null && obj2 == null)
+            return true;
+        if ( obj1 == null && obj2 != null )
+            return false;
+        if ( obj1 != null && obj2 == null )
+            return false;
+        if( isEmpty(keyFld) || resolver == null )
+            return obj1.equals(obj2);
+        
+        try {
+            Object key1 = resolver.getProperty(obj1, keyFld);
+            Object key2 = resolver.getProperty(obj2, keyFld);
+            
+            return isEqual(key1, key2);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        return false;
     }
     
     public static final boolean isEmpty(Object obj) {
@@ -66,27 +89,21 @@ public class ValueUtil {
     public static String getValueAsString(Class type, Object value) {
         if (value == null) {
             //do nothing
-        } 
-        else if (value instanceof String) {
+        } else if (value instanceof String) {
             return escape(value.toString()).insert(0, "\"").append("\"").toString();
-        } 
+        }
         //if value is double, float or BigDecimal, format it as ###0.00
         else if(type == Double.class || type == double.class ||
                 type == float.class || type == Float.class ||
-                type == BigDecimal.class) 
-        {
+                type == BigDecimal.class) {
             return DEC_FORMATTER.format( value );
-        } 
-        else if(type == long.class || type == Long.class ||
+        } else if(type == long.class || type == Long.class ||
                 type == int.class || type == Integer.class ||
-                type == Boolean.class || type == boolean.class ) 
-        {
+                type == Boolean.class || type == boolean.class ) {
             return value+"";
-        } 
-        else if (value instanceof Timestamp) {
+        } else if (value instanceof Timestamp) {
             return "\"" + TS_FORMATTER.format(value) + "\"";
-        } 
-        else if (value instanceof Date) {
+        } else if (value instanceof Date) {
             return "\"" + DT_FORMATTER.format(value) + "\"";
         }
         
@@ -114,7 +131,7 @@ public class ValueUtil {
         
         return sb;
     }
-
+    
     public static String repeat(String val, int repeat ) {
         if(val==null) val = " ";
         StringBuffer sb = new StringBuffer();
@@ -125,5 +142,5 @@ public class ValueUtil {
     }
     
     
-   
+    
 }

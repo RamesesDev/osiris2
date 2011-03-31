@@ -8,6 +8,9 @@
  */
 package com.rameses.rcp.common;
 
+import com.rameses.common.PropertyResolver;
+import com.rameses.rcp.framework.ClientContext;
+import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,6 +75,22 @@ public abstract class AbstractListModel {
     public final void setSelectedItem(int i) {
         if(i>=0 && i < items.size() ) {
             setSelectedItem( items.get(i) );
+        }
+    }
+    
+    public final void setSelectedItem(Object obj) {
+        if( obj == null ) return;
+        
+        Column col = getPrimaryColumn();
+        String id = (col != null)? col.getName() : null;
+        PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
+        
+        for(ListItem item : items) {
+            if( item.getItem() == null ) continue;
+            if( !ValueUtil.isEqual(item.getItem(), obj, id, resolver) ) continue;
+            
+            setSelectedItem( item );
+            break;
         }
     }
     
@@ -335,8 +354,6 @@ public abstract class AbstractListModel {
     }
     
     /**
-     * overridable
-     * @description
      *    this is used when you want explicitly set the selected items
      */
     public boolean checkSelected(Object obj) {

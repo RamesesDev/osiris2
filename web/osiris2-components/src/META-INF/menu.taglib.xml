@@ -12,6 +12,11 @@
         <source>tags/dropdown.xhtml</source>
     </tag>
     
+    <tag>  
+        <tag-name>actionbar</tag-name>  
+        <source>tags/actionbar.xhtml</source>
+    </tag>
+    
     <!-- utlitiy for dropdown menu -->
     <tag>  
         <tag-name>writeLI</tag-name>  
