@@ -75,6 +75,10 @@ public final class DynamicHttpInvoker {
             return svc.invoke(serviceName,action, list.toArray(new Object[]{}) ,env);
         }
     }
+
+    public HttpScriptService getService() {
+        return service;
+    }
     
     
     
