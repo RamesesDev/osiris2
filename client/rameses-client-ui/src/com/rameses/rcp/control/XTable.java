@@ -11,6 +11,7 @@ import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
+import com.rameses.rcp.control.table.TableDelayedActionMgr;
 import com.rameses.rcp.control.table.TableUtil;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIInput;
@@ -62,9 +63,14 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     private boolean dynamic;
     private boolean showRowHeader;
     
+    private TableDelayedActionMgr actionMgr;
+    
     
     public XTable() {
         init();
+        if( !Beans.isDesignTime() ) {
+            actionMgr = new TableDelayedActionMgr(new BeanUpdateAction());
+        }
     }
     
     //-- channel events to TableComponent
@@ -251,19 +257,8 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     
     public void rowChanged() {
-        String name = getName();
-        if ( !ValueUtil.isEmpty(name) ) {
-            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-            ListItem oldValue = (ListItem) resolver.getProperty(binding.getBean(), name);
-            ListItem newValue = listModel.getSelectedItem();
-            if( !ValueUtil.isEqual(oldValue, newValue) ) {
-                resolver.setProperty(binding.getBean(), name, newValue.clone());
-                binding.notifyDepends(this);
-            }
-        }
-        
-        if ( rowHeaderView != null )
-            rowHeaderView.clearEditing();
+        if( actionMgr != null )
+            actionMgr.start();
     }
     
     public void editCellAt(int rowIndex, int colIndex) {
@@ -424,5 +419,23 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     //</editor-fold>
     
-    
+    private class BeanUpdateAction implements TableDelayedActionMgr.Action {
+        
+        public void execute() {
+            String name = getName();
+            if ( !ValueUtil.isEmpty(name) ) {
+                PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
+                ListItem oldValue = (ListItem) resolver.getProperty(binding.getBean(), name);
+                ListItem newValue = listModel.getSelectedItem();
+                if( !ValueUtil.isEqual(oldValue, newValue) ) {
+                    resolver.setProperty(binding.getBean(), name, newValue.clone());
+                    binding.notifyDepends(XTable.this);
+                }
+            }
+            
+            if ( rowHeaderView != null )
+                rowHeaderView.clearEditing();
+        }
+        
+    }
 }
