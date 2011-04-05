@@ -12,6 +12,7 @@ import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.ListItem;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.control.table.DataTableComponent;
+import com.rameses.rcp.control.table.TableDelayedActionMgr;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.RowHeaderView;
 import com.rameses.rcp.control.table.TableBorder;
@@ -46,10 +47,14 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     
     private ListItem currentItem;
     
+    private TableDelayedActionMgr actionMgr;
     
     
     public XDataTable() {
         init();
+        if( !Beans.isDesignTime() ) {
+            actionMgr = new TableDelayedActionMgr(new BeanUpdateAction());
+        }
     }
     
     //-- channel events to TableComponent
@@ -245,35 +250,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     }
     
     public void rowChanged() {
-        String name = getName();
-        PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-        ListItem item = listModel.getSelectedItem();
-        
-        if( !ValueUtil.isEqual(currentItem, item) ) {
-            if ( !ValueUtil.isEmpty(name) ) {
-                Object value = null;
-                if( item != null ) value = item.getItem();
-                
-                resolver.setProperty(binding.getBean(), name, value);
-                binding.notifyDepends(this);
-            }
-            
-            String varStatus = table.getVarStatus();
-            if ( !ValueUtil.isEmpty(varStatus) ) {
-                try {
-                    resolver.setProperty(binding.getBean(), varStatus, item);
-                } catch(Exception e){}
-            }
-        }
-        
-        //keep the actual state at this time
-        if( item != null )
-            currentItem = item.clone();
-        else
-            currentItem = null;
-        
-        if ( rowHeaderView != null )
-            rowHeaderView.clearEditing();
+        if( actionMgr != null )
+            actionMgr.start();
     }
     
     public void editCellAt(int rowIndex, int colIndex) {
@@ -441,5 +419,41 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         
     }
     //</editor-fold>
+    
+    private class BeanUpdateAction implements TableDelayedActionMgr.Action {
+        
+        public void execute() {
+            String name = getName();
+            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
+            ListItem item = listModel.getSelectedItem();
+            
+            if( !ValueUtil.isEqual(currentItem, item) ) {
+                if ( !ValueUtil.isEmpty(name) ) {
+                    Object value = null;
+                    if( item != null ) value = item.getItem();
+                    
+                    resolver.setProperty(binding.getBean(), name, value);
+                    binding.notifyDepends(XDataTable.this);
+                }
+                
+                String varStatus = table.getVarStatus();
+                if ( !ValueUtil.isEmpty(varStatus) ) {
+                    try {
+                        resolver.setProperty(binding.getBean(), varStatus, item);
+                    } catch(Exception e){}
+                }
+            }
+            
+            //keep the actual state at this time
+            if( item != null )
+                currentItem = item.clone();
+            else
+                currentItem = null;
+            
+            if ( rowHeaderView != null )
+                rowHeaderView.clearEditing();
+        }
+        
+    }
     
 }

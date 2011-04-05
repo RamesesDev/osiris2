@@ -41,6 +41,7 @@ public class XFileBrowser extends AbstractIconedTextField {
         setSelectFilesOnly(true);
         setIcon("com/rameses/rcp/icons/folder_open.png");
         setOrientation( super.ICON_ON_RIGHT );
+        setHint("Browse File");
         super.setEditable(false);
     }
     //</editor-fold>
