@@ -1,13 +1,4 @@
 package com.rameses.osiris2.client;
-/*
- * GroovyTemplateProvider.java
- *
- * Created on July 17, 2010, 9:56 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 import com.rameses.util.TemplateProvider;
 import groovy.lang.Writable;
 import groovy.text.SimpleTemplateEngine;
@@ -38,7 +29,8 @@ public class GroovyTemplateProvider extends TemplateProvider {
                 InputStream is = null;
                 try {
                     is = getResourceStream(name);
-                    SimpleTemplateEngine st = new SimpleTemplateEngine();
+                    ClassLoader loader = OsirisContext.getClientContext().getClassLoader();
+                    SimpleTemplateEngine st = new SimpleTemplateEngine( loader );
                     InputStreamReader rd = new InputStreamReader(is);
                     Template t = st.createTemplate(rd);
                     cache.put( name, t );

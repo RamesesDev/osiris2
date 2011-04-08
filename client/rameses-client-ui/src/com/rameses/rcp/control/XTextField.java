@@ -68,18 +68,12 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         super.paint(g);
         
         if( showHint && getDocument().getLength() == 0 ) {
-            Graphics g2 = g.create();
-            g2.setColor(Color.LIGHT_GRAY);
-            g2.setFont(getFont());
-            
-            FontMetrics fm = g2.getFontMetrics(getFont());
-            Insets m = getInsets();
-            
-            int x = m.left;
-            int y = m.top + fm.getAscent();
-            
-            g2.drawString(" " + getHint(), x, y);
-            g2.dispose();
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(getFont());
+            Insets margin = getInsets();
+            int x = margin.left;
+            int y = (int)(getHeight() /2) + (margin.top + (int)(margin.bottom / 2));
+            g.drawString(" " + getHint(), x, y);
         }
     }
     
