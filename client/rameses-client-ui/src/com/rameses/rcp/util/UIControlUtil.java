@@ -13,8 +13,12 @@ import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.common.PropertyResolver;
+import com.rameses.rcp.ui.UIInput;
+import com.rameses.rcp.ui.Validatable;
 import com.rameses.util.ValueUtil;
+import java.awt.Component;
 import java.awt.Container;
+import java.util.List;
 import javax.swing.JComponent;
 
 
@@ -67,4 +71,33 @@ public class UIControlUtil {
         }
         return panel;
     }
+    
+    public static void validate(List<Validatable> validatables, ActionMessage actionMessage) {
+        for ( Validatable vc: validatables ) {
+            validate(vc, actionMessage);
+        }
+    }
+    
+    public static void validate(Validatable vc, ActionMessage actionMessage) {
+        Component comp = (Component) vc;
+        if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isShowing() || comp.getParent() == null ) {
+            //do not validate non-focusable, disabled, or hidden fields.
+            return;
+        }
+        
+        if ( vc instanceof UIInput ) {
+            //do not validate readonly fields
+            if ( ((UIInput)vc).isReadonly() ) return;
+        }
+        
+        vc.validateInput();
+        ActionMessage ac = vc.getActionMessage();
+        if ( ac != null && ac.hasMessages() ) {
+            if ( ValueUtil.isEmpty(actionMessage.getSource()) )
+                actionMessage.setSource( comp );
+            
+            actionMessage.addMessage(ac);
+        }
+    }
+    
 }

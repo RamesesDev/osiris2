@@ -144,6 +144,10 @@ public class XPanel extends JPanel implements UIControl, ControlContainer {
         return true;
     }
     
+    public UIControl find(String name) {
+        return null;
+    }
+    
     public String getVisibleWhen() {
         return visibleWhen;
     }

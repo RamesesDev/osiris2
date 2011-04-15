@@ -38,5 +38,9 @@ public class FormControl {
     public void setProperties(Map properties) {
         this.properties = properties;
     }
+
+    public String toString() {
+        return "type: " + type + ", properties: " + properties;
+    }
     
 }

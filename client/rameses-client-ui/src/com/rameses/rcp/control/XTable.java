@@ -221,6 +221,9 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     public Object getValue() {
         if ( Beans.isDesignTime() ) return null;
         
+        if( listModel == null )
+            return null;
+        
         return listModel.getSelectedItem();
     }
     
@@ -336,6 +339,8 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     }
     
     public void requestFocus() { table.requestFocus(); }
+    
+    public boolean requestFocusInWindow() { return table.requestFocusInWindow(); }
     
     public void focusGained(FocusEvent e) { table.grabFocus(); }
     public void focusLost(FocusEvent e) {}

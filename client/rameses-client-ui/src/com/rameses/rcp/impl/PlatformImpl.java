@@ -34,29 +34,8 @@ public class PlatformImpl implements Platform {
         
         if ( windows.containsKey(id) ) return;
         
-        String title = (String) properties.get("title");
-        if ( ValueUtil.isEmpty(title) ) title = id;
-        
-        String canClose = "false";
-        String modal = properties.get("modal")+"";
-        
-        JFrame parent = mainWindow.getComponent();
-        final PopupDialog d = new PopupDialog(parent);
-        d.setTitle(title);
-        d.setContentPane(comp);
-        d.setCanClose( !"false".equals(canClose) );
-        d.setId( id );
-        d.setPlatformImpl(this);
-        d.setModal(false);
-        d.pack();
-        d.setLocationRelativeTo(parent);
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                d.setVisible(true);
-            }
-        });
-        
-        windows.put(id, d);
+        mainWindow.setComponent(comp, MainWindow.CONTENT);
+        windows.put(id, mainWindow);
     }
     
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {

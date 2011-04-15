@@ -19,4 +19,12 @@ public interface ControlContainer {
      */
     boolean isHasNonDynamicContents();
     
+    /**
+     *  Finds a dynamic control attached to this ControlContainer
+     *
+     *  This is usually called by the binding when finding controls that are not
+     * registered to the Binding's UIControl Map
+     */
+    UIControl find(String name);
+    
 }

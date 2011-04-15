@@ -203,10 +203,7 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
             if( !(c instanceof Validatable) ) continue;
             
             Validatable v = (Validatable) c;
-            v.validateInput();
-            ActionMessage ac = v.getActionMessage();
-            if( ac != null && ac.hasMessages() )
-                actionMessage.addMessage(ac);
+            UIControlUtil.validate(v, actionMessage);
         }
     }
     
@@ -259,6 +256,14 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
     
     public boolean isHasNonDynamicContents() {
         return !nonDynamicControls.isEmpty();
+    }
+    
+    public UIControl find(String name) {
+        for(UIControl uic : controls) {
+            if( ValueUtil.isEqual(name, uic.getName()) )
+                return uic;
+        }
+        return null;
     }
     //</editor-fold>
     

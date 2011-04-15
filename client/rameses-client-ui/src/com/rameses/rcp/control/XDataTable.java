@@ -44,16 +44,19 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     private boolean dynamic;
     private boolean showRowHeader;
     private String caption;
+    private boolean immediate;
     
     private ListItem currentItem;
     
     private TableDelayedActionMgr actionMgr;
+    private BeanUpdateAction rowChangeAction;
     
     
     public XDataTable() {
         init();
         if( !Beans.isDesignTime() ) {
-            actionMgr = new TableDelayedActionMgr(new BeanUpdateAction());
+            rowChangeAction = new BeanUpdateAction();
+            actionMgr = new TableDelayedActionMgr( rowChangeAction );
         }
     }
     
@@ -179,15 +182,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 listModel.load();
             else
                 listModel.refresh();
-            
-            if( !ValueUtil.isEmpty(getName()) ) {
-                try {
-                    Object item = UIControlUtil.getBeanValue(this);
-                    listModel.setSelectedItem( item );
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
         
         refreshed = true;
@@ -214,7 +208,10 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public Object getValue() {
         if ( Beans.isDesignTime() ) return null;
         
-        return listModel.getSelectedItem();
+        if( listModel == null || listModel.getSelectedItem() == null )
+            return null;
+        
+        return listModel.getSelectedItem().getItem();
     }
     
     public void setValue(Object value) {}
@@ -250,8 +247,12 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     }
     
     public void rowChanged() {
-        if( actionMgr != null )
-            actionMgr.start();
+        if( actionMgr != null ) {
+            if( immediate )
+                rowChangeAction.execute();
+            else
+                actionMgr.start();
+        }
     }
     
     public void editCellAt(int rowIndex, int colIndex) {
@@ -333,6 +334,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     
     public void requestFocus() { table.requestFocus(); }
     
+    public boolean requestFocusInWindow() { return table.requestFocusInWindow(); }
+    
     public void focusGained(FocusEvent e) { table.grabFocus(); }
     public void focusLost(FocusEvent e)   {}
     
@@ -354,7 +357,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public Color getErrorForeground()                     { return table.getErrorForeground(); }
     public void setErrorForeground(Color errorForeground) { table.setErrorForeground( errorForeground ); }
     
-    public boolean isImmediate() { return true; }
+    public boolean isImmediate()                { return immediate; }
+    public void setImmediate(boolean immediate) { this.immediate = immediate; }
     
     public boolean isShowRowHeader() { return showRowHeader; }
     public void setShowRowHeader(boolean showRowHeader) {

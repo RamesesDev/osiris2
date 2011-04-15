@@ -28,6 +28,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -42,6 +43,9 @@ public class XList extends JList implements UIControl, ListSelectionListener {
     private Insets padding = new Insets(1,3,1,3);
     
     private DefaultListModel model;
+    
+    private int cellVerticalAlignment = SwingConstants.CENTER;
+    private int cellHorizontalAlignment = SwingConstants.LEADING;
     
     
     public XList() {
@@ -238,6 +242,23 @@ public class XList extends JList implements UIControl, ListSelectionListener {
     }
     //</editor-fold>
     
+    public int getCellVerticalAlignment() {
+        return cellVerticalAlignment;
+    }
+    
+    public void setCellVerticalAlignment(int cellVerticalAlignment) {
+        this.cellVerticalAlignment = cellVerticalAlignment;
+    }
+    
+    public int getCellHorizontalAlignment() {
+        return cellHorizontalAlignment;
+    }
+    
+    public void setCellHorizontalAlignment(int cellHorizontalAlignment) {
+        this.cellHorizontalAlignment = cellHorizontalAlignment;
+    }
+    
+    
     
     //<editor-fold defaultstate="collapsed" desc="  DefaultCellRenderer (class)  ">
     private class DefaultCellRenderer implements ListCellRenderer {
@@ -255,6 +276,8 @@ public class XList extends JList implements UIControl, ListSelectionListener {
             cellLabel.setSize( list.getFixedCellWidth(), list.getFixedCellHeight() );
             cellLabel.setEnabled(list.isEnabled());
             cellLabel.setFont(list.getFont());
+            cellLabel.setVerticalAlignment( getCellVerticalAlignment() );
+            cellLabel.setHorizontalAlignment( getCellHorizontalAlignment() );
             
             if(isSelected) {
                 cellLabel.setBackground(list.getSelectionBackground());

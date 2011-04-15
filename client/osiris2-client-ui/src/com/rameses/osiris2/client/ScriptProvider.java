@@ -58,12 +58,15 @@ public final class ScriptProvider {
                     is = OsirisContext.getSession().getModule(nameSpace).getResourceAsStream(fileName);
                 }
                 
+                if( is == null )
+                    throw new RuntimeException("Cannot find script " + name + ".");
+                
                 //clazz = loader
                 Class clazz = loader.parseClass( is );
                 scriptMap.put( name, clazz );
             }
             catch(Exception e) {
-                throw new IllegalStateException("Error loading " + name + "." + e.getMessage(), e); 
+                throw e; 
             } 
             finally { 
                 try { is.close(); } catch(Exception ign){;} 
@@ -78,7 +81,7 @@ public final class ScriptProvider {
             return obj;
         }
         catch(Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
         
     }

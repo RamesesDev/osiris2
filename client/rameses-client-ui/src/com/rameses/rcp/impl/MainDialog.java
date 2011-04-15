@@ -13,7 +13,6 @@ import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.MainWindowListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -22,7 +21,6 @@ import java.awt.event.WindowEvent;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -36,12 +34,15 @@ public class MainDialog implements MainWindow {
     
     private JFrame dialog;
     private MainWindowListener listener;
+    private Component toolbar;
+    
     
     public MainDialog() {
         dialog = new JFrame();
         dialog.setTitle("Main Dialog");
         dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        dialog.setContentPane(new TestPlatformContentPane());
+        dialog.getContentPane().setLayout(new BorderLayout());
+        dialog.add(new TestPlatformContentPane(), BorderLayout.CENTER);
         
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -89,11 +90,16 @@ public class MainDialog implements MainWindow {
         } else if ( constraint.equals(MainWindow.TOOLBAR) ) {
             if ( comp instanceof JToolBar )
                 ((JToolBar) comp).setFloatable(false);
-            if ( dialog.getComponentCount() > 1 ) {
-                dialog.remove(1);
+            if ( toolbar != null ) {
+                dialog.remove(toolbar);
             }
+            
+            toolbar = comp;
             comp.setBorder(new ToolbarBorder());
             dialog.add(comp, BorderLayout.NORTH, 1);
+        }
+        else if ( constraint.equals(MainWindow.CONTENT) ) {
+            dialog.add(comp, BorderLayout.CENTER);
         }
         SwingUtilities.updateComponentTreeUI( dialog.getContentPane() );
     }

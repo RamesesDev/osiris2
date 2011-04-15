@@ -28,6 +28,9 @@ public class WorkspaceWindow extends JPanel implements MainWindow {
     private Component menubar;
     private Component toolbar;
     
+    private boolean showMenubar;
+    private boolean showToolbar;
+    
     
     public WorkspaceWindow() {
         setLayout( new BorderLayout() );
@@ -54,11 +57,13 @@ public class WorkspaceWindow extends JPanel implements MainWindow {
         if ( constraint.equals(MainWindow.MENUBAR)) {
             menubar = comp;
             headerPanel.add(comp, BorderLayout.NORTH);
+            menubar.setVisible( showMenubar );
             
         } else if ( constraint.equals(MainWindow.TOOLBAR) ) {
             if ( comp instanceof JToolBar ) ((JToolBar) comp).setFloatable(false);
             toolbar = comp;
             headerPanel.add(comp, BorderLayout.CENTER);
+            toolbar.setVisible( showToolbar );
             
         } else if ( constraint.equals(MainWindow.CONTENT) ) {
             contentPane.removeAll();
@@ -68,10 +73,12 @@ public class WorkspaceWindow extends JPanel implements MainWindow {
     }
     
     public void setMenubarVisible(boolean visible) {
+        this.showMenubar = visible;
         if( menubar != null ) menubar.setVisible(visible);
     }
     
     public void setToolbarVisible(boolean visible) {
+        this.showToolbar = visible;
         if( toolbar != null ) toolbar.setVisible(visible);
     }
     

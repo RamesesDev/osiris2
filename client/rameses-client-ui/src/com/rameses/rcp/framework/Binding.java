@@ -343,27 +343,7 @@ public class Binding {
     }
     
     public void validate(ActionMessage actionMessage) {
-        for ( Validatable vc: validatables ) {
-            Component comp = (Component) vc;
-            if ( !comp.isFocusable() || !comp.isEnabled() || !comp.isShowing() || comp.getParent() == null ) {
-                //do not validate non-focusable, disabled, or hidden fields.
-                continue;
-            }
-            
-            if ( vc instanceof UIInput ) {
-                //do not validate readonly fields
-                if ( ((UIInput)vc).isReadonly() ) continue;
-            }
-            
-            vc.validateInput();
-            ActionMessage ac = vc.getActionMessage();
-            if ( ac != null && ac.hasMessages() ) {
-                if ( ValueUtil.isEmpty(actionMessage.getSource()) )
-                    actionMessage.setSource( comp );
-                
-                actionMessage.addMessage(ac);
-            }
-        }
+        UIControlUtil.validate(validatables, actionMessage);
         
         for (BindingListener bl: listeners ) {
             bl.validate(actionMessage, this);
