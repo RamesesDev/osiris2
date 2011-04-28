@@ -40,7 +40,7 @@ public class XImageViewer extends JPanel implements UIControl {
     private String emptyImage;
     private Icon emptyImageIcon;
     
-    private JSlider slider;
+    private JSlider zoomSlider;
     private JCheckBox fitImgCheckBox = new JCheckBox("Fit:");
     private TitledBorder sliderBorder;
     private JScrollPane scrollPane = new JScrollPane();
@@ -58,6 +58,12 @@ public class XImageViewer extends JPanel implements UIControl {
     
     
     public XImageViewer() {
+        if( !Beans.isDesignTime() ) {
+            init();
+        }
+    }
+    
+    private void init() {
         super.setLayout(new BorderLayout());
         super.setBorder(BorderFactory.createEtchedBorder());
         
@@ -72,6 +78,14 @@ public class XImageViewer extends JPanel implements UIControl {
                     fitImage = false;
                 else
                     fitImage = true;
+                
+                if( fitImage ) {
+                    zoomSlider.setValue(100);
+                    zoomSlider.setEnabled(false);
+                } else {
+                    zoomSlider.setEnabled(true);
+                }
+                
                 
                 repaint();
             }
@@ -153,12 +167,12 @@ public class XImageViewer extends JPanel implements UIControl {
             columnHeader.setBorder(BorderFactory.createEtchedBorder());
             columnHeader.setLayout( new FlowLayout(FlowLayout.LEFT, 1, 1) );
             
-            slider = new JSlider(10,200,100);
+            zoomSlider = new JSlider(10,200,100);
             //sliderBorder = BorderFactory.createTitledBorder("Zoom: " + (int)(zoomLevel * 100) + "%");
-            //slider.setBorder(sliderBorder);
-            slider.addChangeListener(new ChangeListener() {
+            //zoomSlider.setBorder(sliderBorder);
+            zoomSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
-                    zoomLevel = (slider.getValue()/100.00);
+                    zoomLevel = (zoomSlider.getValue()/100.00);
                     //sliderBorder.setTitle("Zoom: " + (int)(zoomLevel * 100) + "%");
                     lblZoom.setText("Zoom: " + (int)(zoomLevel * 100) + "%");
                     
@@ -166,8 +180,10 @@ public class XImageViewer extends JPanel implements UIControl {
                     canvas.revalidate();
                 }
             });
+            if( fitImage ) zoomSlider.setEnabled(false);
+            
             columnHeader.add(lblZoom);
-            columnHeader.add(slider);
+            columnHeader.add(zoomSlider);
             columnHeader.add(fitImgCheckBox);
             //}
             add(columnHeader, BorderLayout.NORTH);
@@ -267,7 +283,7 @@ public class XImageViewer extends JPanel implements UIControl {
             super.paintComponent(g);
             Image image = getImage();
             if ( image == null ) return;
-                        
+            
             width = (int) (image.getWidth(this) * zoomLevel);
             height = (int) (image.getHeight(this) * zoomLevel);
             
@@ -277,18 +293,26 @@ public class XImageViewer extends JPanel implements UIControl {
                 at = AffineTransform.getTranslateInstance(fitPercentageWidth, fitPercentageHeight);
                 at.scale(scale, scale);
                 g2.drawImage(image, at, this);
-                setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
+                updateSize(image.getWidth(this), image.getHeight(this));
                 g2.dispose();
             } else {
                 g.drawImage(image, 0, 0, width, height, null);
-                setPreferredSize(new Dimension(width, height));
+                updateSize(width, height);
                 g.dispose();
             }
             
             image.flush();
         }
         
-        public void calculateFit(Image image) {
+        private void updateSize(final int width, final int height) {
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    setPreferredSize(new Dimension(width, height));
+                }
+            });
+        }
+        
+        private void calculateFit(Image image) {
             scaleWidth = scrollPane.getViewport().getExtentSize().getWidth() / width;
             scaleHeight = scrollPane.getViewport().getExtentSize().getHeight() / height;
             scale = Math.min(scaleWidth, scaleHeight);

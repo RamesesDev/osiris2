@@ -101,12 +101,38 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
             sb.append(" :");
         }
         if ( required ) {
+            int mnem = getDisplayedMnemonic();
+            int idx = findDisplayedMnemonicIndex(sb, mnem);
+            if( idx != -1 ) {
+                sb.replace(idx, idx+1, "<u>" + sb.charAt(idx) + "</u>");
+            }
+            
             sb.insert(0, "<html>");
             sb.append(" <font color=\"red\">*</font>");
             sb.append("</html>");
         }
         
         super.setText(sb.toString());
+    }
+    
+    static int findDisplayedMnemonicIndex(StringBuffer text, int mnemonic) {
+        if (text == null || mnemonic == '\0') {
+            return -1;
+        }
+        
+        char uc = Character.toUpperCase((char)mnemonic);
+        char lc = Character.toLowerCase((char)mnemonic);
+        
+        int uci = text.indexOf(uc+"");
+        int lci = text.indexOf(lc+"");
+        
+        if (uci == -1) {
+            return lci;
+        } else if(lci == -1) {
+            return uci;
+        } else {
+            return (lci < uci) ? lci : uci;
+        }
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
@@ -307,6 +333,7 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
                 
             } else if ( "captionMnemonic".equals(propName) ) {
                 setDisplayedMnemonic( (value+"").charAt(0) );
+                formatText( activeProperty.getCaption(), activeProperty.isRequired());
                 
             } else if ( "required".equals(propName) ) {
                 boolean req = Boolean.parseBoolean(value+"");

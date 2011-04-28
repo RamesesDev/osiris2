@@ -35,12 +35,13 @@ public class MainDialog implements MainWindow {
     private JFrame dialog;
     private MainWindowListener listener;
     private Component toolbar;
+    private Component statusbar;
     
     
     public MainDialog() {
         dialog = new JFrame();
         dialog.setTitle("Main Dialog");
-        dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         dialog.getContentPane().setLayout(new BorderLayout());
         dialog.add(new TestPlatformContentPane(), BorderLayout.CENTER);
         
@@ -83,9 +84,10 @@ public class MainDialog implements MainWindow {
     }
     
     public void setComponent(JComponent comp, String constraint) {
-        if ( constraint == null ) {
-            //do nothing
-        } else if ( constraint.equals(MainWindow.MENUBAR)) {
+        //do nothing if comp or constraint is null
+        if ( comp == null || constraint == null ) return;
+        
+        if ( constraint.equals(MainWindow.MENUBAR)) {
             dialog.setJMenuBar((JMenuBar) comp);
         } else if ( constraint.equals(MainWindow.TOOLBAR) ) {
             if ( comp instanceof JToolBar )
@@ -97,9 +99,15 @@ public class MainDialog implements MainWindow {
             toolbar = comp;
             comp.setBorder(new ToolbarBorder());
             dialog.add(comp, BorderLayout.NORTH, 1);
-        }
-        else if ( constraint.equals(MainWindow.CONTENT) ) {
+        } else if ( constraint.equals(MainWindow.CONTENT) ) {
             dialog.add(comp, BorderLayout.CENTER);
+        } else if ( constraint.endsWith(MainWindow.STATUSBAR)) {
+            if( statusbar != null )
+                dialog.remove(statusbar);
+            
+            statusbar = comp;
+            comp.setBorder(new StatusbarBorder());
+            dialog.add(comp, BorderLayout.SOUTH);
         }
         SwingUtilities.updateComponentTreeUI( dialog.getContentPane() );
     }
@@ -117,6 +125,23 @@ public class MainDialog implements MainWindow {
         
         public Insets getBorderInsets(Component c) {
             return new Insets(1,1,4,1);
+        }
+        
+    }
+    
+    private class StatusbarBorder extends AbstractBorder {
+        
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics g2 = g.create();            
+            g2.setColor(UIManager.getColor("controlShadow"));
+            g2.drawLine(x, y, width-1, y);
+            g2.setColor(UIManager.getColor("controlHighlight"));
+            g2.drawLine(x, y+1, width-1, y+1);
+            g2.dispose();
+        }
+        
+        public Insets getBorderInsets(Component c) {
+            return new Insets(4,1,1,1);
         }
         
     }
