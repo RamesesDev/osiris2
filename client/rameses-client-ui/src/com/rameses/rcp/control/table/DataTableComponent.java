@@ -584,7 +584,8 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     public void rowChanged() {
         if ( !rowCommited && previousItem != null ) {
             int oldRowIndex = previousItem.getIndex();
-            if ( validateRow(oldRowIndex) && previousItem.getState() == 0 ) {
+            boolean valid = validateRow(oldRowIndex);
+            if ( valid && previousItem.getState() == 0 ) {
                 listModel.addCreatedItem();
             }
         }
