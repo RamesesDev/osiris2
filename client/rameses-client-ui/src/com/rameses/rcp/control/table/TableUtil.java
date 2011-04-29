@@ -18,6 +18,7 @@ import com.rameses.rcp.control.XLookupField;
 import com.rameses.rcp.control.XNumberField;
 import com.rameses.rcp.control.XTextField;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
@@ -135,6 +136,13 @@ public final class TableUtil {
         //remove all focus listeners (we don't need it in the table)
         for (FocusListener l: editor.getFocusListeners() ) {
             editor.removeFocusListener(l);
+        }
+        
+        //apply required if editor is Validatable
+        if( editor instanceof Validatable ) {
+            Validatable v = (Validatable) editor;
+            v.setRequired( col.isRequired() );
+            v.setCaption( col.getCaption() );
         }
         
         String type = col.getType()+"";

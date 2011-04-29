@@ -99,7 +99,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
         registerKeyboardAction(new ActionListener() {
             
             public void actionPerformed(ActionEvent e) {
-                if ( !rowCommited ) {                    
+                if ( !rowCommited ) {
                     ChangeLog log = itemBinding.getChangeLog();
                     if ( log.hasChanges() ) {
                         undo();
@@ -274,30 +274,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
             if (me.getClickCount() != 2) return false;
         }
         
-        Column col = tableModel.getColumn(colIndex);
-        if (col == null) return false;
-        
-        JComponent editor = editors.get(colIndex);
-        if ( editor == null ) return false;
-        
-        ListItem item = listModel.getSelectedItem();
-        if ( item.getItem() == null ) return false;
-        item.setRoot(binding.getBean());
-        
-        if ( !ValueUtil.isEmpty(col.getEditableWhen()) ) {
-            String exp = col.getEditableWhen();
-            ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
-            try {
-                Object o = er.evaluate(item, exp);
-                if ( !"true".equals(o+"") ) return false;
-                
-            } catch(Exception ex) {
-                ex.printStackTrace();
-                return false;
-            }
-        }
-        
-        showEditor(editor, rowIndex, colIndex, e);
+        editItem(rowIndex, colIndex, e);
         return false;
     }
     
@@ -326,7 +303,155 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
+    //<editor-fold defaultstate="collapsed" desc="  list model listener methods  ">
+    public void refreshList() {
+        if ( editingMode ) hideEditor(false);
+        if ( !rowCommited ) {
+            rowCommited = true;
+            rowChanged();
+        }
+        
+        ListItem item = listModel.getSelectedItem();
+        int col = getSelectedColumn();
+        tableModel.fireTableDataChanged();
+        if(item!=null) {
+            super.setRowSelectionInterval(item.getIndex(),item.getIndex());
+            if ( col >= 0 ) super.setColumnSelectionInterval(col, col);
+            
+        }
+        if ( tableListener != null ) {
+            tableListener.refreshList();
+        }
+        
+        editorBeanLoaded = false;
+    }
+    
+    public void refreshItemUpdated(int row) {
+        tableModel.fireTableRowsUpdated(row, row);
+    }
+    
+    public void refreshItemAdded(int fromRow, int toRow) {
+        tableModel.fireTableRowsInserted(fromRow, toRow);
+    }
+    
+    public void refreshItemRemoved(int fromRow, int toRow) {
+        tableModel.fireTableRowsUpdated(fromRow, toRow);
+    }
+    
+    public void refreshSelectedItem() {
+        if ( listModel != null && listModel.getSelectedItem() != null ) {
+            int row = listModel.getSelectedItem().getIndex();
+            if( getSelectedRow() != row ) {
+                this.changeSelection(row, 0, false, false);
+            } else {
+                tableModel.fireTableRowsUpdated(row, row);
+            }
+        }
+        
+        tableListener.rowChanged();
+    }
+    
+    public void rebuildColumns() {
+//        tableModel.reIndexColumns();
+//        buildColumns();
+        setListModel( listModel );
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  row movements/actions support  ">
+    public void movePrevRecord() {
+        if ( getSelectedRow() == 0 ) {
+            rowChanged();
+            listModel.moveBackRecord();
+        }
+    }
+    
+    public void moveNextRecord() {
+        if ( getSelectedRow() == getRowCount() - 1 ) {
+            rowChanged();
+            listModel.moveNextRecord();
+        }
+    }
+    
+    public void rowChanged() {
+        if ( !rowCommited && previousItem != null ) {
+            int oldRowIndex = previousItem.getIndex();
+            boolean valid = validateRow(oldRowIndex);
+            if ( valid && previousItem.getState() == 0 ) {
+                listModel.addCreatedItem();
+            }
+        }
+        
+        listModel.setSelectedItem(getSelectedRow());
+        editorBeanLoaded = false;
+        rowCommited = true;
+        tableListener.rowChanged();
+    }
+    
+    public void cancelRowEdit() {
+        if ( !rowCommited ) {
+            ChangeLog log = itemBinding.getChangeLog();
+            List<ChangeLog.ChangeEntry> ceList = log.undoAll();
+            for(ChangeLog.ChangeEntry ce : ceList) {
+                listModel.setSelectedColumn(ce.getFieldName());
+                listModel.updateSelectedItem();
+            }
+            
+            rowCommited = true;
+            int row = getSelectedRow();
+            tableModel.fireTableRowsUpdated(row, row);
+            tableListener.cancelRowEdit();
+        }
+    }
+    
+    public void undo() {
+        int row = getSelectedRow();
+        ChangeLog.ChangeEntry ce = itemBinding.getChangeLog().undo();
+        tableModel.fireTableRowsUpdated(row, row);
+        listModel.setSelectedColumn(ce.getFieldName());
+        listModel.updateSelectedItem();
+    }
+    
+    public void removeItem() {
+        //if the ListModel has error messages
+        //allow editing only to the row that caused the error
+        if( listModel.hasErrorMessages() && listModel.getErrorMessage(getSelectedRow()) == null ) return;
+        
+        listModel.removeSelectedItem();
+    }
+    
+    public void editItem(int rowIndex, int colIndex, EventObject e) {
+        Column col = tableModel.getColumn(colIndex);
+        if (col == null) return;
+        
+        JComponent editor = editors.get(colIndex);
+        if ( editor == null ) return;
+        
+        ListItem item = listModel.getSelectedItem();
+        if ( item.getItem() == null ) return;
+        
+        //if the ListModel has error messages
+        //allow editing only to the row that caused the error
+        if( listModel.hasErrorMessages() && listModel.getErrorMessage(rowIndex) == null ) return;
+        
+        item.setRoot(binding.getBean());
+        
+        if ( !ValueUtil.isEmpty(col.getEditableWhen()) ) {
+            String exp = col.getEditableWhen();
+            ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+            try {
+                Object o = er.evaluate(item, exp);
+                if ( !"true".equals(o+"") ) return;
+                
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                return;
+            }
+        }
+        
+        showEditor(editor, rowIndex, colIndex, e);
+    }
+    
     private void openItem() {
         if ( readonly ) return;
         
@@ -334,7 +459,9 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
             tableListener.openItem();
         }
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private boolean isPrintableKey() {
         KeyEvent ke = currentKeyEvent;
         
@@ -511,117 +638,6 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="  list model listener methods  ">
-    public void refreshList() {
-        if ( editingMode ) hideEditor(false);
-        if ( !rowCommited ) {
-            rowCommited = true;
-            rowChanged();
-        }
-        
-        ListItem item = listModel.getSelectedItem();
-        int col = getSelectedColumn();
-        tableModel.fireTableDataChanged();
-        if(item!=null) {
-            super.setRowSelectionInterval(item.getIndex(),item.getIndex());
-            if ( col >= 0 ) super.setColumnSelectionInterval(col, col);
-            
-        }
-        if ( tableListener != null ) {
-            tableListener.refreshList();
-        }
-        
-        editorBeanLoaded = false;
-    }
-    
-    public void refreshItemUpdated(int row) {
-        tableModel.fireTableRowsUpdated(row, row);
-    }
-    
-    public void refreshItemAdded(int fromRow, int toRow) {
-        tableModel.fireTableRowsInserted(fromRow, toRow);
-    }
-    
-    public void refreshItemRemoved(int fromRow, int toRow) {
-        tableModel.fireTableRowsUpdated(fromRow, toRow);
-    }
-    
-    public void refreshSelectedItem() {
-        if ( listModel != null && listModel.getSelectedItem() != null ) {
-            int row = listModel.getSelectedItem().getIndex();
-            if( getSelectedRow() != row ) {
-                this.changeSelection(row, 0, false, false);
-            } else {
-                tableModel.fireTableRowsUpdated(row, row);
-            }
-        }
-        
-        tableListener.rowChanged();
-    }
-    
-    public void rebuildColumns() {
-//        tableModel.reIndexColumns();
-//        buildColumns();
-        setListModel( listModel );
-    }
-    //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="  row movements support  ">
-    public void movePrevRecord() {
-        if ( getSelectedRow() == 0 ) {
-            rowChanged();
-            listModel.moveBackRecord();
-        }
-    }
-    
-    public void moveNextRecord() {
-        if ( getSelectedRow() == getRowCount() - 1 ) {
-            rowChanged();
-            listModel.moveNextRecord();
-        }
-    }
-    
-    public void rowChanged() {
-        if ( !rowCommited && previousItem != null ) {
-            int oldRowIndex = previousItem.getIndex();
-            boolean valid = validateRow(oldRowIndex);
-            if ( valid && previousItem.getState() == 0 ) {
-                listModel.addCreatedItem();
-            }
-        }
-        
-        listModel.setSelectedItem(getSelectedRow());
-        editorBeanLoaded = false;
-        rowCommited = true;
-        tableListener.rowChanged();
-    }
-    
-    public void cancelRowEdit() {
-        if ( !rowCommited ) {
-            ChangeLog log = itemBinding.getChangeLog();
-            List<ChangeLog.ChangeEntry> ceList = log.undoAll();
-            for(ChangeLog.ChangeEntry ce : ceList) {
-                listModel.setSelectedColumn(ce.getFieldName());
-                listModel.updateSelectedItem();
-            }
-            
-            rowCommited = true;
-            int row = getSelectedRow();
-            tableModel.fireTableRowsUpdated(row, row);
-            tableListener.cancelRowEdit();
-        }
-    }
-    
-    public void undo() {
-        int row = getSelectedRow();
-        ChangeLog.ChangeEntry ce = itemBinding.getChangeLog().undo();
-        tableModel.fireTableRowsUpdated(row, row);
-        listModel.setSelectedColumn(ce.getFieldName());
-        listModel.updateSelectedItem();
-    }
-    //</editor-fold>
-    
-    
     
     //<editor-fold defaultstate="collapsed" desc="  EditorFocusSupport (class)  ">
     private class EditorFocusSupport implements FocusListener {
@@ -708,7 +724,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
                     listModel.moveBackPage();
                     break;
                 case KeyEvent.VK_DELETE:
-                    if( !isReadonly() ) listModel.removeSelectedItem();
+                    if( !isReadonly() ) removeItem();
                     break;
                 case KeyEvent.VK_ENTER:
                     if ( e.isControlDown() ) openItem();
