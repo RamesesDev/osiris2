@@ -431,7 +431,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
             PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
             ListItem item = listModel.getSelectedItem();
             
-            if( !ValueUtil.isEqual(currentItem, item) ) {
+            if( currentItem == null || !ValueUtil.isEqual(currentItem.getItem(), item.getItem()) ) {
                 if ( !ValueUtil.isEmpty(name) ) {
                     Object value = null;
                     if( item != null ) value = item.getItem();
