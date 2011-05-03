@@ -169,6 +169,9 @@ public final class TableUtil {
             else
                 xlf.setHandlerObject( col.getHandler() );
             
+            if( col.getExpression() != null )
+                xlf.setExpression( col.getExpression() );
+            
             xlf.setTranserFocusOnSelect(false);
             
         } else if ( editor instanceof XDateField ) {
@@ -279,12 +282,12 @@ public final class TableUtil {
 //                StyleRule[] styles = xtable.getBinding().getStyleRules();
 //                if( styles != null && styles.length > 0) {
 //                    comp.setOpaque(true);
-//                    
+//
 //                    ListItem listItem = lm.getSelectedItem();
 //                    if( listItem == null ) {
 //                        listItem = lm.getItemList().get(0);
 //                    }
-//                    
+//
 //                    Map bean = new HashMap();
 //                    bean.put("row", listItem.getRownum());
 //                    bean.put("column", column);
@@ -296,7 +299,7 @@ public final class TableUtil {
 //                    applyStyle( xtable.getName(), bean, comp, styles, exprRes );
 //                }
 //            } catch(Exception e){;}
-
+            
             
             String errmsg = lm.getErrorMessage(row);
             if (errmsg != null) {
@@ -371,6 +374,16 @@ public final class TableUtil {
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
             TableControl tc = (TableControl) table;
             Column c = ((TableControlModel) tc.getModel()).getColumn(column);
+            
+            if( c.getExpression() != null ) {
+                ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+                try {
+                    value = er.evaluate(value, c.getExpression());
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
             String format = c.getFormat();
             String type = c.getType();
             if ( "decimal".equals(type) || "double".equals(type) || value instanceof BigDecimal || value instanceof Double ) {
