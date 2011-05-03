@@ -89,7 +89,6 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             Object value = UIControlUtil.getBeanValue(this);
             setValue(value);
         } catch(Exception e) {
-            setValue(null);
             setEnabled(false);
             setFocusable(false);
         }

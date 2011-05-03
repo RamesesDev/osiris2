@@ -73,7 +73,7 @@ public abstract class AbstractListModel {
     }
     
     public final void setSelectedItem(int i) {
-        if( i>=0 ) {
+        if( items.size() > 0 && i>=0 ) {
             if( i > items.size()-1 ) {
                 setTopRow( i - items.size() - 1);
                 setSelectedItem( items.get(items.size() - 1) );

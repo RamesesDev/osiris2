@@ -47,8 +47,17 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
     
     
     public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        setValue( value );
+        try {
+            Object value = UIControlUtil.getBeanValue(this);
+            setValue( value );
+            if( !readonly && !isFocusable() ) setReadonly(false);
+        } catch(Exception e) {
+            //disable when there is error
+            setEnabled(false);
+            setFocusable(false);
+            
+            //e.printStackTrace();
+        }
     }
     
     public void load() {

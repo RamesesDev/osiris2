@@ -163,7 +163,12 @@ public final class TableUtil {
             
         } else if ( editor instanceof XLookupField ) {
             XLookupField xlf = (XLookupField) editor;
-            xlf.setHandler( col.getHandler() );
+            
+            if( col.getHandler() instanceof String )
+                xlf.setHandler( col.getHandler().toString() );
+            else
+                xlf.setHandlerObject( col.getHandler() );
+            
             xlf.setTranserFocusOnSelect(false);
             
         } else if ( editor instanceof XDateField ) {
@@ -193,6 +198,7 @@ public final class TableUtil {
         
         if ( editor instanceof XComboBox ) {
             XComboBox cbox = (XComboBox) editor;
+            cbox.setImmediate(true);
             if ( col.getItems() != null ) {
                 cbox.setItems( col.getItems() );
             }

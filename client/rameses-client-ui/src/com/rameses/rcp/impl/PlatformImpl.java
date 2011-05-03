@@ -4,16 +4,19 @@ import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
 import com.rameses.rcp.util.ErrorDialog;
 import com.rameses.util.ValueUtil;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  *
@@ -39,20 +42,23 @@ public class PlatformImpl implements Platform {
     }
     
     public void showWindow(JComponent actionSource, JComponent comp, Map properties) {
-        String id = (String) properties.get("id");
+        String id = (String) properties.remove("id");
         if ( ValueUtil.isEmpty(id) )
             throw new IllegalStateException("id is required for a page.");
         
         if ( windows.containsKey(id) ) return;
         
-        String title = (String) properties.get("title");
+        String title = (String) properties.remove("title");
         if ( ValueUtil.isEmpty(title) ) title = id;
         
-        String canClose = (String) properties.get("canclose");
-        String modal = properties.get("modal")+"";
+        String canClose = (String) properties.remove("canclose");
+        String modal = properties.remove("modal")+"";
         
         JFrame parent = mainWindow.getComponent();
         final PopupDialog d = new PopupDialog(parent);
+        
+        if( properties.size() > 0 ) setProperties(d, properties);
+        
         d.setTitle(title);
         d.setContentPane(comp);
         d.setCanClose( !"false".equals(canClose) );
@@ -71,26 +77,28 @@ public class PlatformImpl implements Platform {
     }
     
     public void showPopup(JComponent actionSource, JComponent comp, Map properties) {
-        String id = (String) properties.get("id");
+        String id = (String) properties.remove("id");
         if ( ValueUtil.isEmpty(id) )
             throw new IllegalStateException("id is required for a page.");
         
         if ( windows.containsKey(id) ) return;
         
-        String title = (String) properties.get("title");
+        String title = (String) properties.remove("title");
         if ( ValueUtil.isEmpty(title) ) title = id;
         
-        String modal = properties.get("modal")+"";
+        String modal = properties.remove("modal")+"";
         
-        JFrame parent = mainWindow.getComponent();
+        Component parent = getParentWindow(actionSource);
         PopupDialog dd = null;
-        if ( actionSource != null ) {
-            Window w = getParentWindow(actionSource);
-            if ( w instanceof JDialog ) {
-                dd = new PopupDialog((JDialog) w);
-            }
+        
+        if ( parent instanceof JDialog ) {
+            dd = new PopupDialog((JDialog) parent);
         }
-        if ( dd == null ) dd = new PopupDialog(parent);
+        else if ( parent instanceof JFrame ) {
+            dd = new PopupDialog((JFrame) parent);
+        }
+        
+        if( properties.size() > 0 ) setProperties(dd, properties);
         
         final PopupDialog d = dd;
         d.setTitle(title);
@@ -108,6 +116,14 @@ public class PlatformImpl implements Platform {
         });
         
         windows.put(id, d);
+    }
+    
+    private void setProperties(Object bean, Map properties) {
+        for(Map.Entry me: (Set<Map.Entry>) properties.entrySet()) {
+            try {
+                PropertyUtils.setNestedProperty(bean, me.getKey().toString(), me.getValue());
+            }catch(Exception e) {;}
+        }
     }
     
     public void showError(JComponent actionSource, Exception e) {
@@ -156,7 +172,11 @@ public class PlatformImpl implements Platform {
     
     private Window getParentWindow(JComponent src) {
         if ( src == null ) {
-            return KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+            Window w = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+            if( w != null && w.isShowing() ) 
+                return w;
+            else
+                return mainWindow.getComponent();
         }
         return SwingUtilities.getWindowAncestor(src);
     }
@@ -182,13 +202,13 @@ public class PlatformImpl implements Platform {
     public void logoff() {
         mainWindow.close();
     }
-
+    
     public void lock() {
     }
-
+    
     public void unlock() {
     }
-
+    
     public void showFloatingWindow(JComponent owner, JComponent comp, Map properties) {
         showPopup(owner, comp, properties);
     }

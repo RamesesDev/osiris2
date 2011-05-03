@@ -432,7 +432,7 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
                 PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
                 ListItem oldValue = (ListItem) resolver.getProperty(binding.getBean(), name);
                 ListItem newValue = listModel.getSelectedItem();
-                if( !ValueUtil.isEqual(oldValue, newValue) ) {
+                if( oldValue == null || !ValueUtil.isEqual(oldValue.getItem(), newValue.getItem()) ) {
                     resolver.setProperty(binding.getBean(), name, newValue.clone());
                     binding.notifyDepends(XTable.this);
                 }

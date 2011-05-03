@@ -237,6 +237,13 @@ public class XActionBar extends JPanel implements UIComposite {
             if (!ValueUtil.isEmpty(expression)) {
                 Object visible = expResolver.evaluate(binding.getBean(), expression);
                 btn.setVisible( !"false".equals(visible+"") );
+            } else {
+                if( btn.getClientProperty("default.button") != null ) {
+                    if( getRootPane() != null )
+                        getRootPane().setDefaultButton( btn );
+                    else
+                        binding.setDefaultButton( btn );
+                }
             }
             
             if ( dirty ) toolbarComponent.add(btn);

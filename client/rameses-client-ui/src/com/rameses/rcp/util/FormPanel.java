@@ -399,8 +399,21 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
         } else {
             if( htmlView ) {
                 Font f = getFont();
-                String html = "<font face='"+f.getFamily()+"' size='"+f.getSize()+"pt'>"+(emptyText==null?"":emptyText)+"</font>";
-                htmlPane.setText(html);
+                
+                StringBuffer sb = new StringBuffer()
+                .append("<html>")
+                .append("<head>")
+                .append("<style> body, td, div, span { ")
+                .append("  font-family: \"" + f.getFamily() + "\"; ")
+                .append("  font-size: " + f.getSize())
+                .append("}</style>")
+                .append("</head>")
+                .append("<body>")
+                .append( emptyText==null? "" : emptyText )
+                .append("</body>")
+                .append("</html>");
+                
+                htmlPane.setText( sb.toString() );
                 htmlPane.setCaretPosition(0);
             } else {
                 if( emptyText != null ) {
