@@ -81,8 +81,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
                 o = new Opener(handler);
             else
                 o = UIControlUtil.getBeanValue(this, handler);
-        }
-        else if ( handlerObject != null ) {
+        } else if ( handlerObject != null ) {
             o = handlerObject;
         }
         
@@ -178,12 +177,15 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     }
     
     public void setValue(Object value) {
-        if ( value instanceof KeyEvent ) return;
-        
-        if ( value != null )
-            setText(value.toString());
-        else
-            setText("");
+        if ( value instanceof KeyEvent ) {
+            setText( ((KeyEvent) value).getKeyChar()+"" );
+            support.setDirty(true);
+        } else {
+            if ( value != null )
+                setText(value.toString());
+            else
+                setText("");
+        }
     }
     
     public String getHandler() {
