@@ -188,9 +188,10 @@ public class XActionBar extends JPanel implements UIComposite {
         btn.setBinding(binding);
         
         Map props = new HashMap(action.getProperties());
-        try {
+        
+        if( props.get("shortcut") != null ) {
             btn.setAccelerator(props.remove("shortcut")+"");
-        } catch(Exception ign){;}
+        }
         
         if ( props.get("target") != null ) {
             btn.setTarget(props.remove("target")+"");
@@ -372,7 +373,7 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public boolean isButtonAsHyperlink()                        { return buttonAsHyperlink; }
     public void setButtonAsHyperlink(boolean buttonAsHyperlink) { this.buttonAsHyperlink = buttonAsHyperlink; }
-
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" OuterLayout (Class) ">

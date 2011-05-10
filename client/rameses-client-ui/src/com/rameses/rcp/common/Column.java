@@ -14,7 +14,7 @@ public class Column implements Serializable {
     private Object handler;
     
     //for combo box support
-    private String items;
+    private Object items;
     
     private String fieldname;
     private int width;
@@ -244,11 +244,11 @@ public class Column implements Serializable {
         this.handler = handler;
     }
     
-    public String getItems() {
+    public Object getItems() {
         return items;
     }
     
-    public void setItems(String items) {
+    public void setItems(Object items) {
         this.items = items;
     }
     
