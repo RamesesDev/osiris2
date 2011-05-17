@@ -128,20 +128,20 @@ public class XActionBar extends JPanel implements UIComposite {
             if (aa != null) actions.addAll(aa);
         }
         
-        if (actions.size() == 0) return;
-        
-        Collections.sort(actions);
-        for (Action action: actions) {
-            //check permission
-            String permission = action.getPermission();
-            if (permission != null && binding.getController().getName() != null)
-                permission = binding.getController().getName() + "." + permission;
-            
-            boolean allowed = ControlSupport.isPermitted(permission);
-            if (!allowed) continue;
-            
-            XButton btn = createButton(action);
-            buttons.add(btn);
+        if (actions.size() > 0) {            
+            Collections.sort(actions);
+            for (Action action: actions) {
+                //check permission
+                String permission = action.getPermission();
+                if (permission != null && binding.getController().getName() != null)
+                    permission = binding.getController().getName() + "." + permission;
+                
+                boolean allowed = ControlSupport.isPermitted(permission);
+                if (!allowed) continue;
+                
+                XButton btn = createButton(action);
+                buttons.add(btn);
+            }
         }
         
         //set dirty flag to true
@@ -372,7 +372,7 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public boolean isButtonAsHyperlink()                        { return buttonAsHyperlink; }
     public void setButtonAsHyperlink(boolean buttonAsHyperlink) { this.buttonAsHyperlink = buttonAsHyperlink; }
-
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" OuterLayout (Class) ">
