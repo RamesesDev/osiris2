@@ -1,3 +1,4 @@
+package com.rameses.web.fileupload;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -11,7 +12,8 @@ public class ProgressMonitorFileItemFactory extends DiskFileItemFactory {
     private WeakReference<HttpServletRequest> requestRef;
     private long requestLength;
     
-    public ProgressMonitorFileItemFactory(HttpServletRequest request) {
+    public ProgressMonitorFileItemFactory(HttpServletRequest request) 
+    {
         super();
         temporaryDirectory = (File)request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir");
         requestRef = new WeakReference<HttpServletRequest>(request);
@@ -23,20 +25,30 @@ public class ProgressMonitorFileItemFactory extends DiskFileItemFactory {
         }
     }
     
-    public FileItem createItem(String fieldName, String contentType,
-            boolean isFormField, String fileName) {
+    public FileItem createItem(
+        String fieldName, 
+        String contentType,
+        boolean isFormField, 
+        String fileName
+    ) 
+    {
         
-        SessionUpdatingProgressObserver observer = null;
+        ProgressObserver observer = null;
         
-        if(isFormField == false)
-            observer = new SessionUpdatingProgressObserver(fieldName,fileName, requestRef.get());
+        if(isFormField == false) {
+            observer = new ProgressObserver(fieldName, requestRef.get(), requestLength);
+        }
         
-        ProgressMonitorFileItem item = new ProgressMonitorFileItem(fieldName,contentType,
-                isFormField,fileName,
+        ProgressMonitorFileItem item = new ProgressMonitorFileItem(
+                fieldName,
+                contentType,
+                isFormField,
+                fileName,
                 DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD,
                 temporaryDirectory,
-                observer,
-                requestLength);
+                observer
+        );
+        
         return item;
     }
 }

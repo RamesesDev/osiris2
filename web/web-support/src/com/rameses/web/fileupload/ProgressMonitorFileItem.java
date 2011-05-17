@@ -1,3 +1,4 @@
+package com.rameses.web.fileupload;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,35 +9,39 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 public class ProgressMonitorFileItem extends DiskFileItem {
     
     private ProgressObserver observer;
-    private long passedInFileSize;
-    private long bytesRead;
+
     
     private boolean isFormField;
     
-    public ProgressMonitorFileItem(String fieldName, String contentType,
-            boolean isFormField, String fileName,
-            int sizeThreshold, File repository,
-            ProgressObserver observer,
-            long passedInFileSize) {
+    public ProgressMonitorFileItem(
+        String fieldName, 
+        String contentType,
+        boolean isFormField, 
+        String fileName,
+        int sizeThreshold, 
+        File repository,
+        ProgressObserver observer
+    ) 
+    {
         super(fieldName, contentType, isFormField, fileName, sizeThreshold, repository);
         this.observer = observer;
-        this.passedInFileSize = passedInFileSize;
         this.isFormField = isFormField;
     }
     
     public OutputStream getOutputStream() throws IOException {
         OutputStream baseOutputStream = super.getOutputStream();
-        if(isFormField == false){
+        if(isFormField == false) {
             return new BytesCountingOutputStream(baseOutputStream);
-        }else{
+        }
+        else {
             return baseOutputStream;
         }
     }
     
     private class BytesCountingOutputStream extends OutputStream{
         
-        private long previousProgressUpdate;
         private OutputStream base;
+        
         
         public BytesCountingOutputStream(OutputStream ous){
             base = ous;
@@ -77,11 +82,8 @@ public class ProgressMonitorFileItem extends DiskFileItem {
             fireProgressEvent(1);
         }
         
-        private void fireProgressEvent(int b){
-            bytesRead += b;
-            int progress = (int) Math.round((bytesRead / (double)passedInFileSize) * 100.0);
-            observer.setProgress(progress);
-            previousProgressUpdate = bytesRead;
+        private void fireProgressEvent(int length){
+            observer.incrementBytesRead( length );
         }
     }
 }

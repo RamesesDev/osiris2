@@ -352,9 +352,10 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     }
     
     public void rebuildColumns() {
-//        tableModel.reIndexColumns();
-//        buildColumns();
-        setListModel( listModel );
+        tableModel = new DataTableModel();
+        tableModel.setListModel(listModel);
+        setModel(tableModel);
+        buildColumns();
     }
     //</editor-fold>
     
