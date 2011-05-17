@@ -94,8 +94,17 @@ public class XDateField extends AbstractIconedTextField {
         } else {
             if (value != null) {
                 try{
-                    Date d = valueFormatter.parse(value.toString());
-                    value = outputFormatter.format(d);
+                    if(value instanceof String) {
+                        Date d = valueFormatter.parse(value.toString());
+                        value = outputFormatter.format(d);
+                        date = d;
+                    } else if( value instanceof Date) {
+                        date = (Date) value;
+                        value = outputFormatter.format( value );
+                        
+                    } else  {
+                        throw new Exception("class conversion to date not yet supported");
+                    }
                 }catch(Exception ex) { ex.printStackTrace(); }
             }
             setText(value==null? "" : value + "");
@@ -184,14 +193,16 @@ public class XDateField extends AbstractIconedTextField {
     private final void showFormattedValue(boolean formatted) {
         try{
             if( formatted && outputFormatter !=null && !ValueUtil.isEmpty(getText())) {
-                date = inputFormatter.parse(getText());
                 setText(outputFormatter.format(date));
+                date = outputFormatter.parse( getText() );
             } else {
-                date = outputFormatter.parse(getText());
+                
                 if(ValueUtil.isEmpty(getText()))
                     setText("");
-                else
+                else {
                     setText(inputFormatter.format(date));
+                    date = inputFormatter.parse( getText() );
+                }
             }
         }catch(Exception ex) {}
         

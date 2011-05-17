@@ -40,10 +40,10 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 
                 String opTarget = opener.getTarget()+"";
                 boolean self = !opTarget.matches("_window|_popup|_floating");
-                String id = opener.getController().getId();
-                
-                if ( !self && platform.isWindowExists( id ) ) {
-                    platform.activateWindow( id );
+                String windowId = opener.getController().getId();
+
+                if ( !self && platform.isWindowExists( windowId ) ) {
+                    platform.activateWindow( windowId );
                     return;
                 }
                 
@@ -61,7 +61,6 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 }
                 
                 UIControllerContext controller = new UIControllerContext(opCon);
-                controller.setId(opener.getController().getId());
                 
                 //check if opener has outcome
                 if ( !ValueUtil.isEmpty(opener.getOutcome()) ) {
@@ -82,8 +81,8 @@ public class NavigationHandlerImpl implements NavigationHandler {
                     if ( opener.getProperties().size() > 0 ) {
                         props.putAll( opener.getProperties() );
                     }
-                    
-                    props.put("id", controller.getId());
+                                        
+                    props.put("id", windowId);
                     props.put("title", controller.getTitle() );
                     props.put("modal", opener.isModal());
                     

@@ -165,7 +165,7 @@ public final class TableUtil {
             XLookupField xlf = (XLookupField) editor;
             
             if( col.getHandler() instanceof String )
-                xlf.setHandler( col.getHandler().toString() );
+                xlf.setHandler( (String) col.getHandler() );
             else
                 xlf.setHandlerObject( col.getHandler() );
             
@@ -203,13 +203,19 @@ public final class TableUtil {
             XComboBox cbox = (XComboBox) editor;
             cbox.setImmediate(true);
             if ( col.getItems() != null ) {
-                cbox.setItems( col.getItems() );
+                if( col.getItems() instanceof String )
+                    cbox.setItems( (String) col.getItems() );
+                else
+                    cbox.setItemsObject( cbox.getItems() );
             }
             if ( col.isRequired() ) {
                 cbox.setAllowNull(false);
             }
             if ( col.getFieldType() != null ) {
                 cbox.setFieldType( col.getFieldType() );
+            }
+            if ( col.getExpression() != null ) {
+                cbox.setExpression( col.getExpression() );
             }
             
         } else {

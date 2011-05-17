@@ -61,7 +61,7 @@ public final class InvokerUtil {
             }
             
             String action = invoker.getAction();
-            u.setId( wuId );
+            u.setId( createInvokerId(invoker) );
             u.setName( wuId );
             u.setTitle( invoker.getCaption() );
             
@@ -100,7 +100,7 @@ public final class InvokerUtil {
                     }
                 }
                 
-                winParams.put("id", uic.getId());
+                winParams.put("id", windowId);
                 winParams.put("title", uic.getTitle());
                 
                 if ( "_popup".equals(target) || "popup".equals(target) ) {
@@ -191,7 +191,7 @@ public final class InvokerUtil {
     public static List lookupActions(String type) {
         return lookupActions(type, (InvokerParameter) null);
     }
-
+    
     public static List lookupActions(String type, Map params) {
         final Map p = params;
         InvokerParameter inv = new InvokerParameter() {
@@ -237,7 +237,7 @@ public final class InvokerUtil {
         if ( !ValueUtil.isEmpty(tooltip) ) {
             a.setTooltip(tooltip+"");
         }
-
+        
         if ( !invProps.isEmpty() ) {
             a.getProperties().putAll( invProps );
         }
@@ -361,7 +361,7 @@ public final class InvokerUtil {
         Opener opener = new Opener(inv.getWorkunitid());
         if(caption==null) caption = inv.getCaption();
         if(caption==null) caption = inv.getWorkunitid();
-        opener.setId(inv.getWorkunitid() + "_" + caption );
+        opener.setId( createInvokerId(inv) );
         opener.setCaption(caption);
         opener.setAction(inv.getAction());
         
@@ -373,6 +373,19 @@ public final class InvokerUtil {
             opener.getProperties().putAll( inv.getProperties() );
         
         return opener;
+    }
+    
+    private static String createInvokerId(Invoker inv) {
+        StringBuffer sb = new StringBuffer();
+        sb.append( inv.getWorkunitid() );
+        
+        String id = (String) inv.getProperties().get("id");
+        if( id != null && id.trim().length() > 0 ) {
+            sb.append("_" + id);
+        } else if( inv.getCaption() != null && inv.getCaption().trim().length() > 0 ) {
+            sb.append("_" + inv.getCaption());
+        }
+        return sb.toString();
     }
     
 }
