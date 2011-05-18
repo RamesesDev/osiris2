@@ -56,10 +56,11 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     }
     
     
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paint(Graphics origGraphics) {
+        super.paint(origGraphics);
         
         if( showHint && getDocument().getLength() == 0 ) {
+            Graphics g = origGraphics.create();
             Font f = getFont();
             FontMetrics fm = g.getFontMetrics(f);
             g.setColor(Color.LIGHT_GRAY);
@@ -68,7 +69,8 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
             Insets margin = getInsets();
             int x = margin.left;
             int y = margin.top + fm.getAscent();
-            g.drawString(getHint(), x, y);
+            g.drawString(" " + getHint(), x, y);
+            g.dispose();
         }
     }
     

@@ -755,12 +755,21 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
         }
         
         public void actionPerformed(ActionEvent e) {
-            JRootPane rp = component.getRootPane();
-            if (rp != null && rp.getDefaultButton() != null ) {
-                JButton btn = rp.getDefaultButton();
-                btn.doClick();
-            } else {
-                origAction.actionPerformed(e);
+            if( !isReadonly()  && editors.size() > 0 ) {
+                JTable tbl = DataTableComponent.this;
+                int row = tbl.getSelectedRow();
+                int col = tbl.getSelectedColumn();
+                focusNextCellFrom(row, col);
+            }
+            else {
+                JRootPane rp = component.getRootPane();
+                if (rp != null && rp.getDefaultButton() != null ) {
+                    JButton btn = rp.getDefaultButton();
+                    btn.doClick();
+                } 
+                else {
+                    origAction.actionPerformed(e);
+                }
             }
         }
     }

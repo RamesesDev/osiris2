@@ -70,18 +70,15 @@ class ItemPanel extends JPanel {
             JScrollPane jsp = (JScrollPane) container;
             JViewport view = jsp.getViewport();
             Dimension d = view.getViewSize();
-            Border b = view.getBorder();
-            if( b != null ) {
-                Insets i = b.getBorderInsets(view);
-                d.width += i.left + i.right;
-                d.height += i.top + i.bottom;
-            }
-            b = jsp.getBorder();
-            if( b != null ) {
-                Insets i = b.getBorderInsets(jsp);
-                d.width += i.left + i.right;
-                d.height += i.top + i.bottom;
-            }
+            
+            Insets i = view.getInsets();
+            d.width += i.left + i.right;
+            d.height += i.top + i.bottom;
+            
+            i = jsp.getInsets();
+            d.width += i.left + i.right;
+            d.height += i.top + i.bottom;
+                        
             container.setPreferredSize(d);
         }
         

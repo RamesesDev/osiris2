@@ -14,6 +14,7 @@ import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
@@ -74,16 +75,25 @@ public class XPasswordField extends JPasswordField implements UIInput, Validatab
     }
     
     
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paint(Graphics origGraphics) {
+        super.paint(origGraphics);
         
         if( showHint && getDocument().getLength() == 0 ) {
+            Graphics g = origGraphics.create();
+            Font f = getFont();
+            FontMetrics fm = g.getFontMetrics(f);
             g.setColor(Color.LIGHT_GRAY);
-            g.setFont(getFont());
+            g.setFont(f);
+            
             Insets margin = getInsets();
+            int width = getWidth() - 1 - margin.left - margin.right;
+            int height = getHeight() - 1 - margin.top - margin.bottom;
             int x = margin.left;
-            int y = (int)(getHeight() /2) + (margin.top + (int)(margin.bottom / 2));
+            int y = (height /2) + (fm.getAscent() / 2 ) + margin.top;
+
+            g.setClip(margin.left, margin.top, width, height);
             g.drawString(" " + getHint(), x, y);
+            g.dispose();
         }
     }
     
