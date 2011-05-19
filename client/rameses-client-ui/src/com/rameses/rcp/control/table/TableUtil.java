@@ -18,6 +18,7 @@ import com.rameses.rcp.control.XLookupField;
 import com.rameses.rcp.control.XNumberField;
 import com.rameses.rcp.control.XTextField;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
@@ -137,6 +138,13 @@ public final class TableUtil {
             editor.removeFocusListener(l);
         }
         
+        //apply required if editor is Validatable
+        if( editor instanceof Validatable ) {
+            Validatable v = (Validatable) editor;
+            v.setRequired( col.isRequired() );
+            v.setCaption( col.getCaption() );
+        }
+        
         String type = col.getType()+"";
         if ( editor instanceof XCheckBox ) {
             XCheckBox xcb = (XCheckBox) editor;
@@ -155,7 +163,15 @@ public final class TableUtil {
             
         } else if ( editor instanceof XLookupField ) {
             XLookupField xlf = (XLookupField) editor;
-            xlf.setHandler( col.getHandler() );
+            
+            if( col.getHandler() instanceof String )
+                xlf.setHandler( (String) col.getHandler() );
+            else
+                xlf.setHandlerObject( col.getHandler() );
+            
+            if( col.getExpression() != null )
+                xlf.setExpression( col.getExpression() );
+            
             xlf.setTranserFocusOnSelect(false);
             
         } else if ( editor instanceof XDateField ) {
@@ -185,14 +201,21 @@ public final class TableUtil {
         
         if ( editor instanceof XComboBox ) {
             XComboBox cbox = (XComboBox) editor;
+            cbox.setImmediate(true);
             if ( col.getItems() != null ) {
-                cbox.setItems( col.getItems() );
+                if( col.getItems() instanceof String )
+                    cbox.setItems( (String) col.getItems() );
+                else
+                    cbox.setItemsObject( cbox.getItems() );
             }
             if ( col.isRequired() ) {
                 cbox.setAllowNull(false);
             }
             if ( col.getFieldType() != null ) {
                 cbox.setFieldType( col.getFieldType() );
+            }
+            if ( col.getExpression() != null ) {
+                cbox.setExpression( col.getExpression() );
             }
             
         } else {
@@ -265,12 +288,12 @@ public final class TableUtil {
 //                StyleRule[] styles = xtable.getBinding().getStyleRules();
 //                if( styles != null && styles.length > 0) {
 //                    comp.setOpaque(true);
-//                    
+//
 //                    ListItem listItem = lm.getSelectedItem();
 //                    if( listItem == null ) {
 //                        listItem = lm.getItemList().get(0);
 //                    }
-//                    
+//
 //                    Map bean = new HashMap();
 //                    bean.put("row", listItem.getRownum());
 //                    bean.put("column", column);
@@ -282,7 +305,7 @@ public final class TableUtil {
 //                    applyStyle( xtable.getName(), bean, comp, styles, exprRes );
 //                }
 //            } catch(Exception e){;}
-
+            
             
             String errmsg = lm.getErrorMessage(row);
             if (errmsg != null) {
@@ -357,6 +380,16 @@ public final class TableUtil {
         public void refresh(JTable table, Object value, boolean selected, boolean focus, int row, int column) {
             TableControl tc = (TableControl) table;
             Column c = ((TableControlModel) tc.getModel()).getColumn(column);
+            
+            if( c.getExpression() != null ) {
+                ExpressionResolver er = ClientContext.getCurrentContext().getExpressionResolver();
+                try {
+                    value = er.evaluate(value, c.getExpression());
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
             String format = c.getFormat();
             String type = c.getType();
             if ( "decimal".equals(type) || "double".equals(type) || value instanceof BigDecimal || value instanceof Double ) {

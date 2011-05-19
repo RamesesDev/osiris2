@@ -14,7 +14,10 @@ import com.rameses.rcp.util.ActionMessage;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Insets;
 import javax.swing.JTextArea;
 
@@ -36,6 +39,9 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
     private TextDocument textDocument = new TextDocument();
     private TrimSpaceOption trimSpaceOption = TrimSpaceOption.NONE;
     
+    private String hint;
+    private boolean showHint;
+    
     
     public XTextArea() {
         super();
@@ -44,8 +50,29 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
         //default font
         Font f = ThemeUI.getFont("XTextArea.font");
         if ( f != null ) setFont( f );
+        
+        //set default margin
+        setMargin(new Insets(2,2,2,2));
     }
     
+    
+    public void paint(Graphics origGraphics) {
+        super.paint(origGraphics);
+        
+        if( showHint && getDocument().getLength() == 0 ) {
+            Graphics g = origGraphics.create();
+            Font f = getFont();
+            FontMetrics fm = g.getFontMetrics(f);
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont( f );
+            
+            Insets margin = getInsets();
+            int x = margin.left;
+            int y = margin.top + fm.getAscent();
+            g.drawString(" " + getHint(), x, y);
+            g.dispose();
+        }
+    }
     
     public void refresh() {
         try {
@@ -233,5 +260,14 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
         return false;
     }
     //</editor-fold>
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
+        showHint = !ValueUtil.isEmpty(hint);
+    }
     
 }

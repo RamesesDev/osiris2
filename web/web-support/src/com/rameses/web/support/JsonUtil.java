@@ -9,6 +9,8 @@
 
 package com.rameses.web.support;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,8 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
+import net.sf.json.util.JSONStringer;
 import net.sf.json.util.PropertyFilter;
 
 /**
@@ -70,7 +74,7 @@ public final class JsonUtil {
         JSONObject jo = JSONObject.fromObject( s );
         return toMap( jo );
     }
-
+    
     public static Map toMap(JSONObject jo) {
         JsonConfig conf = new JsonConfig();
         conf.setJavaPropertyFilter(new JsonFilter());
@@ -108,14 +112,22 @@ public final class JsonUtil {
             Map map = (Map)object;  //the holder
             if( value == null ) {
                 map.put(field,null);
-            } else if(value instanceof JSONArray ) {
+            } 
+            else if(value instanceof JSONNull) {
+                map.put(field,null);
+            }
+            else if(value instanceof JSONArray ) {
                 List list = toList(  (JSONArray)value );
                 map.put(field,list);
             } else if( value instanceof JSONObject ) {
                 JSONObject o = (JSONObject)value;
                 Map bean = toMap(o);
                 map.put( field, bean );
-            } else {
+            }
+            else if( value instanceof Double ) {
+                map.put( field, new BigDecimal(value+"") );
+            }
+            else {
                 map.put(field, value );
             }
             return true;

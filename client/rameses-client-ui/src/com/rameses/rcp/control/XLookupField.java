@@ -28,6 +28,7 @@ import java.util.Map;
 public class XLookupField extends AbstractIconedTextField implements LookupSelector {
     
     private String handler;
+    private Object handlerObject;
     private LookupModel lookupModel;
     private Object selectedValue;
     private UIController lookupController;
@@ -73,13 +74,18 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     public void load() {
         super.load();
         setInputVerifier(null);
-        if ( ValueUtil.isEmpty(handler) ) return;
         
         Object o = null;
-        if ( handler.matches(".+:.+") ) //handler is a module:workunit name
-            o = new Opener(handler);
-        else
-            o = UIControlUtil.getBeanValue(this, handler);
+        if( !ValueUtil.isEmpty(handler) ) {
+            if ( handler.matches(".+:.+") ) //handler is a module:workunit name
+                o = new Opener(handler);
+            else
+                o = UIControlUtil.getBeanValue(this, handler);
+        } else if ( handlerObject != null ) {
+            o = handlerObject;
+        }
+        
+        if( o == null ) return;
         
         if( o instanceof LookupModel ) {
             lookupModel = (LookupModel) o;
@@ -171,12 +177,15 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     }
     
     public void setValue(Object value) {
-        if ( value instanceof KeyEvent ) return;
-        
-        if ( value != null )
-            setText(value.toString());
-        else
-            setText("");
+        if ( value instanceof KeyEvent ) {
+            setText( ((KeyEvent) value).getKeyChar()+"" );
+            support.setDirty(true);
+        } else {
+            if ( value != null )
+                setText(value.toString());
+            else
+                setText("");
+        }
     }
     
     public String getHandler() {
@@ -185,6 +194,14 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     
     public void setHandler(String handler) {
         this.handler = handler;
+    }
+    
+    public Object getHandlerObject() {
+        return handlerObject;
+    }
+    
+    public void setHandlerObject(Object handlerObject) {
+        this.handlerObject = handlerObject;
     }
     
     public String getExpression() {

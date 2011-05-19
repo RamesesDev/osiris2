@@ -73,24 +73,36 @@ public abstract class AbstractListModel {
     }
     
     public final void setSelectedItem(int i) {
-        if(i>=0 && i < items.size() ) {
-            setSelectedItem( items.get(i) );
+        if( items.size() > 0 && i>=0 ) {
+            if( i > items.size()-1 ) {
+                setTopRow( i - items.size() - 1);
+                setSelectedItem( items.get(items.size() - 1) );
+            } else {
+                setSelectedItem( items.get(i) );
+            }
         }
     }
     
     public final void setSelectedItem(Object obj) {
         if( obj == null ) return;
         
-        Column col = getPrimaryColumn();
-        String id = (col != null)? col.getName() : null;
-        PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-        
-        for(ListItem item : items) {
-            if( item.getItem() == null ) continue;
-            if( !ValueUtil.isEqual(item.getItem(), obj, id, resolver) ) continue;
+        if( obj instanceof Number ) {
+            setSelectedItem( new Integer( obj+"" ) );
+        } else if ( obj instanceof ListItem ) {
+            setSelectedItem( (ListItem) obj );
+        } else {
+            Column col = getPrimaryColumn();
+            String id = (col != null)? col.getName() : null;
+            PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
             
-            setSelectedItem( item );
-            break;
+            int idx = -1;
+            for(Object o : getDataList()) {
+                idx++;
+                if( !ValueUtil.isEqual(o, obj, id, resolver) ) continue;
+                
+                setSelectedItem( idx );
+                break;
+            }
         }
     }
     

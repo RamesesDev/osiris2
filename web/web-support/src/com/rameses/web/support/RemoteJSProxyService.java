@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ScriptGeneratorService extends HttpServlet {
+public class RemoteJSProxyService extends HttpServlet {
     
     private ServletConfig config;
     
@@ -44,18 +44,17 @@ public class ScriptGeneratorService extends HttpServlet {
             String svc = np.getService();
             
             ServletContext app = this.config.getServletContext();
-            String host = app.getInitParameter(np.getContext()+".host");
+            String appContext = app.getInitParameter("app.context");
+            String host = app.getInitParameter("app.host");
             
             if(host==null || host.trim().length()==0) host = np.getHost();
-            DynamicHttpInvoker hp = new DynamicHttpInvoker(host,np.getContext());
+            DynamicHttpInvoker hp = new DynamicHttpInvoker(host,appContext);
             byte[] bytes = hp.getService().getScriptInfo( svc );
             GroovyClassLoader loader = new GroovyClassLoader();
             Class clazz = loader.parseClass(new ByteArrayInputStream(bytes));
             Map classMap = ClassDefMap.toMap(clazz);
             classMap.put("name", svc );
-            //String s = JsonUtil.toString( classMap );
-            //w.write(s);
-            writeJs( np.getContext(), classMap, w );
+            writeJs( appContext, classMap, w );
             
         } catch(Exception e) {
             throw new ServletException(e);
@@ -66,7 +65,7 @@ public class ScriptGeneratorService extends HttpServlet {
     
     private void writeJs(String context, Map m, Writer w) throws Exception {
         String name = (String) m.get("name");
-        w.write( "function " + name + "() {\n"  );
+        w.write( "new function() {\n"  );
         w.write( "this.proxy =  new DynamicProxy(\"" + context + "\").create(\""+ name + "\");\n"  );
         
         //write the env variables here...

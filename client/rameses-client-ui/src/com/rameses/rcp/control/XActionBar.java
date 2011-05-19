@@ -128,20 +128,20 @@ public class XActionBar extends JPanel implements UIComposite {
             if (aa != null) actions.addAll(aa);
         }
         
-        if (actions.size() == 0) return;
-        
-        Collections.sort(actions);
-        for (Action action: actions) {
-            //check permission
-            String permission = action.getPermission();
-            if (permission != null && binding.getController().getName() != null)
-                permission = binding.getController().getName() + "." + permission;
-            
-            boolean allowed = ControlSupport.isPermitted(permission);
-            if (!allowed) continue;
-            
-            XButton btn = createButton(action);
-            buttons.add(btn);
+        if (actions.size() > 0) {            
+            Collections.sort(actions);
+            for (Action action: actions) {
+                //check permission
+                String permission = action.getPermission();
+                if (permission != null && binding.getController().getName() != null)
+                    permission = binding.getController().getName() + "." + permission;
+                
+                boolean allowed = ControlSupport.isPermitted(permission);
+                if (!allowed) continue;
+                
+                XButton btn = createButton(action);
+                buttons.add(btn);
+            }
         }
         
         //set dirty flag to true
@@ -188,9 +188,10 @@ public class XActionBar extends JPanel implements UIComposite {
         btn.setBinding(binding);
         
         Map props = new HashMap(action.getProperties());
-        try {
+        
+        if( props.get("shortcut") != null ) {
             btn.setAccelerator(props.remove("shortcut")+"");
-        } catch(Exception ign){;}
+        }
         
         if ( props.get("target") != null ) {
             btn.setTarget(props.remove("target")+"");
@@ -237,6 +238,13 @@ public class XActionBar extends JPanel implements UIComposite {
             if (!ValueUtil.isEmpty(expression)) {
                 Object visible = expResolver.evaluate(binding.getBean(), expression);
                 btn.setVisible( !"false".equals(visible+"") );
+            } else {
+                if( btn.getClientProperty("default.button") != null ) {
+                    if( getRootPane() != null )
+                        getRootPane().setDefaultButton( btn );
+                    else
+                        binding.setDefaultButton( btn );
+                }
             }
             
             if ( dirty ) toolbarComponent.add(btn);
@@ -365,7 +373,7 @@ public class XActionBar extends JPanel implements UIComposite {
     
     public boolean isButtonAsHyperlink()                        { return buttonAsHyperlink; }
     public void setButtonAsHyperlink(boolean buttonAsHyperlink) { this.buttonAsHyperlink = buttonAsHyperlink; }
-
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc=" OuterLayout (Class) ">

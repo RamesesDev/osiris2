@@ -58,6 +58,8 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     protected DefaultComboBoxModel model;
     private boolean updating;
     
+    private Object itemsObject;
+    
     
     public XComboBox() {
         initComponents();
@@ -89,7 +91,6 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             Object value = UIControlUtil.getBeanValue(this);
             setValue(value);
         } catch(Exception e) {
-            setValue(null);
             setEnabled(false);
             setFocusable(false);
         }
@@ -117,34 +118,50 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     //<editor-fold defaultstate="collapsed" desc="  buildList  ">
     private Collection fetchItems() {
-        Object beanItems = UIControlUtil.getBeanValue(this, getItems());
         Collection list = null;
-        Class type = null;
-        if ( beanItems != null ) {
-            type = beanItems.getClass();
-            if ( type.isArray() ) {
-                list = Arrays.asList((Object[]) beanItems);
-            } else if ( beanItems instanceof Collection ) {
-                list = (Collection) beanItems;
-            }
-        } else {
-            if ( fieldType != null )
-                type = fieldType;
-            else
-                type = UIControlUtil.getValueType(this, getName());
-            
-            //if type is null, happens when the source is a Map key and no fieldType supplied
-            //try to use the classtype of the value if it is not null
-            if ( type == null ) {
-                Object value = UIControlUtil.getBeanValue(this);
-                if ( value != null ) {
-                    type = value.getClass();
+        try {
+            Object beanItems = UIControlUtil.getBeanValue(this, getItems());
+            Class type = null;
+            if ( beanItems != null ) {
+                type = beanItems.getClass();
+                if ( type.isArray() ) {
+                    list = Arrays.asList((Object[]) beanItems);
+                } else if ( beanItems instanceof Collection ) {
+                    list = (Collection) beanItems;
+                }
+            } else {
+                if ( fieldType != null )
+                    type = fieldType;
+                else
+                    type = UIControlUtil.getValueType(this, getName());
+                
+                //if type is null, happens when the source is a Map key and no fieldType supplied
+                //try to use the classtype of the value if it is not null
+                if ( type == null ) {
+                    Object value = UIControlUtil.getBeanValue(this);
+                    if ( value != null ) {
+                        type = value.getClass();
+                    }
+                }
+                if ( type != null && type.isEnum()) {
+                    list = Arrays.asList(type.getEnumConstants());
                 }
             }
-            if ( type != null && type.isEnum()) {
-                list = Arrays.asList(type.getEnumConstants());
-            }
+        } catch(Exception e) {;}
+        
+        if( itemsObject != null ) {
+            Collection col = null;
+            if( itemsObject instanceof Collection )
+                col = (Collection) itemsObject;
+            else if ( itemsObject.getClass().isArray() )
+                col = Arrays.asList((Object[]) itemsObject);
+            
+            if( list == null )
+                list = col;
+            else
+                list.addAll( col );
         }
+        
         return list;
     }
     
@@ -428,6 +445,14 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
+    }
+    
+    public Object getItemsObject() {
+        return itemsObject;
+    }
+    
+    public void setItemsObject(Object itemsObject) {
+        this.itemsObject = itemsObject;
     }
     //</editor-fold>
     

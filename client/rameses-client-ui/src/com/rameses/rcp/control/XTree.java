@@ -112,7 +112,6 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener, Tr
             }
         });
         
-        
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0), "openNode");
         getActionMap().put("openNode", new AbstractAction(){
             public void actionPerformed(ActionEvent e) {
@@ -123,7 +122,8 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener, Tr
     
     private void openNode( Node node) {
         Object retVal = null;
-        if( node.isLeaf() ) {
+        if( node == null ); //do nothing
+        else if( node.isLeaf() ) {
             retVal = nodeModel.openLeaf(node);
         } else {
             retVal = nodeModel.openFolder(node);

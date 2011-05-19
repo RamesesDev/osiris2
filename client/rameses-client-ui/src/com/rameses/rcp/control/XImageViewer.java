@@ -3,7 +3,6 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
-import com.rameses.util.ValueUtil;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -129,30 +128,37 @@ public class XImageViewer extends JPanel implements UIControl {
                 value = UIControlUtil.getBeanValue(this);
             } catch(Exception e) {;}
             
-            if( ValueUtil.isEmpty(value) ) {
-                if( emptyImageIcon != null ) {
-                    value = emptyImageIcon;
-                } else if ( !ValueUtil.isEmpty(emptyImage) ) {
-                    try {
-                        value = UIControlUtil.getBeanValue(this, emptyImage);
-                    } catch(Exception e) {;}
+            if( value != null ) 
+            {
+                if(value instanceof String) 
+                {
+                    InputStream is = getClass().getClassLoader().getResourceAsStream((String) value);
+                    image = ImageIO.read(is);
+                } 
+                else if(value instanceof byte[]) 
+                {
+                    image = ImageIO.read(new ByteArrayInputStream((byte[])value));
+                } 
+                else if(value instanceof Image) 
+                {
+                    image = (Image) value;
+                } 
+                else if(value instanceof ImageIcon) 
+                {
+                    image = ((ImageIcon)value).getImage();
+                } 
+                else if(value instanceof InputStream) 
+                {
+                    image = ImageIO.read((InputStream)value);
+                } 
+                else if(value instanceof File) 
+                {
+                    image = new ImageIcon(((File)value).toURL()).getImage();
+                } 
+                else if(value instanceof URL) 
+                {
+                    image = new ImageIcon((URL) value).getImage();
                 }
-            }
-            
-            if(value instanceof String) {
-                image = new ImageIcon().getImage();
-            } else if(value instanceof byte[]) {
-                image = ImageIO.read(new ByteArrayInputStream((byte[])value));
-            } else if(value instanceof Image) {
-                image = (Image) value;
-            } else if(value instanceof ImageIcon) {
-                image = ((ImageIcon)value).getImage();
-            } else if(value instanceof InputStream) {
-                image = ImageIO.read((InputStream)value);
-            } else if(value instanceof File) {
-                image = new ImageIcon(((File)value).toURL()).getImage();
-            } else if(value instanceof URL) {
-                image = new ImageIcon((URL) value).getImage();
             }
         } catch(Exception ex) {
             ex.printStackTrace();
@@ -160,7 +166,7 @@ public class XImageViewer extends JPanel implements UIControl {
         
         return image;
     }
-    
+        
     private void attachAdvancedOptions() {
         if( advanced ) {
             //if ( columnHeader == null ) {
@@ -168,10 +174,10 @@ public class XImageViewer extends JPanel implements UIControl {
             columnHeader.setLayout( new FlowLayout(FlowLayout.LEFT, 1, 1) );
             
             zoomSlider = new JSlider(10,200,100);
-            //sliderBorder = BorderFactory.createTitledBorder("Zoom: " + (int)(zoomLevel * 100) + "%");
-            //zoomSlider.setBorder(sliderBorder);
-            zoomSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e) {
+            zoomSlider.addChangeListener(new ChangeListener() 
+            {
+                public void stateChanged(ChangeEvent e) 
+                {
                     zoomLevel = (zoomSlider.getValue()/100.00);
                     //sliderBorder.setTitle("Zoom: " + (int)(zoomLevel * 100) + "%");
                     lblZoom.setText("Zoom: " + (int)(zoomLevel * 100) + "%");
@@ -256,8 +262,7 @@ public class XImageViewer extends JPanel implements UIControl {
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
     }
-    //</editor-fold>
-    
+        
     public String getEmptyImage() {
         return emptyImage;
     }
@@ -274,6 +279,11 @@ public class XImageViewer extends JPanel implements UIControl {
         this.emptyImageIcon = emptyImageIcon;
     }
     
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+        if( canvas != null ) canvas.setBackground(bg);
+    }
+    //</editor-fold>
     
     
     //<editor-fold defaultstate="collapsed" desc="  ImageCanvas (class)  ">
@@ -281,7 +291,15 @@ public class XImageViewer extends JPanel implements UIControl {
         
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            Image image = getImage();
+            
+            Image image = getImage();            
+            boolean usingEmptyIcon = false;
+            
+            if ( image == null && emptyImageIcon instanceof ImageIcon ) {
+                usingEmptyIcon = true;
+                image = ((ImageIcon) emptyImageIcon).getImage();
+            }
+            
             if ( image == null ) return;
             
             width = (int) (image.getWidth(this) * zoomLevel);
@@ -301,7 +319,7 @@ public class XImageViewer extends JPanel implements UIControl {
                 g.dispose();
             }
             
-            image.flush();
+            if( !usingEmptyIcon ) image.flush();
         }
         
         private void updateSize(final int width, final int height) {
