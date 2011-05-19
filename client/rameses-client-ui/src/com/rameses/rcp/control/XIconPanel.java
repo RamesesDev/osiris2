@@ -8,8 +8,12 @@ import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.AbstractBorder;
 
 /**
  *
@@ -38,8 +43,8 @@ public class XIconPanel extends JPanel implements UIControl {
     private Binding binding;
     private String[] depends;
     private int index;
-    private boolean sBtnBorderPainted;
-    private String sCaptionOrientation = "BOTTOM";
+    private boolean buttonBorderPainted;
+    private String captionOrientation = "BOTTOM";
     
     public XIconPanel() {
         setBorder(BorderFactory.createEtchedBorder());
@@ -86,12 +91,12 @@ public class XIconPanel extends JPanel implements UIControl {
                 categories.add( map.get("category"));
             }
         }
-        InnerPanel innerpanel = new InnerPanel();
+        IconCanvas innerpanel = new IconCanvas();
         innerpanel.setLayout(new GridLayout(categories.size(),1));
         add(innerpanel, BorderLayout.NORTH);
         
         for(Object category : categories) {
-            InnerMostPanel innerMostPanel = new InnerMostPanel(category.toString());
+            CategoryPanel innerMostPanel = new CategoryPanel(category.toString());
             for(Object item : list) {
                 Map map = (HashMap) item;
                 if(map.get("category").equals(category)) {
@@ -121,12 +126,12 @@ public class XIconPanel extends JPanel implements UIControl {
             if(!categories.contains(map.get("category"))) categories.add( map.get("category"));
         }
         
-        InnerPanel innerpanel = new InnerPanel();
-        innerpanel.setLayout(new GridLayout(categories.size(),1));
+        IconCanvas innerpanel = new IconCanvas();
+        innerpanel.setLayout(new GridLayout(categories.size(),1, 0, 5));
         add(innerpanel, BorderLayout.NORTH);
         
         for(Object category : categories) {
-            InnerMostPanel innerMostPanel = new InnerMostPanel(category.toString());
+            CategoryPanel innerMostPanel = new CategoryPanel(category.toString());
             for(Action a : actions) {
                 Map map = a.getProperties();
                 IconButton ibtn;
@@ -136,8 +141,8 @@ public class XIconPanel extends JPanel implements UIControl {
                     ibtn.setName(a.getName());
                     ibtn.setPermission(a.getPermission());
                     ibtn.setParams(a.getParameters());
-                    ibtn.setCaptionOrientation(getSCaptionOrientation());
-                    ibtn.setBtnBorderPainted(getSBtnBorderPainted());
+                    ibtn.setCaptionOrientation(getCaptionOrientation());
+                    ibtn.setBtnBorderPainted(isButtonBorderPainted());
                     ibtn.setToolTipText(a.getTooltip());
                     innerMostPanel.add(ibtn);
                     ibtn.load();
@@ -149,9 +154,6 @@ public class XIconPanel extends JPanel implements UIControl {
     }
     
     //<editor-fold defaultstate="collapsed" desc="setter/getter">
-    public boolean getSBtnBorderPainted() { return sBtnBorderPainted;}
-    public void setSBtnBorderPainted(boolean sBtnBorderPainted) { this.sBtnBorderPainted = sBtnBorderPainted;}
-    
     public String[] getDepends() { return depends; }
     public void setDepends(String[] depends) { this.depends = depends; }
     
@@ -161,24 +163,30 @@ public class XIconPanel extends JPanel implements UIControl {
     public void setBinding(Binding binding) { this.binding = binding; }
     public Binding getBinding() { return binding; }
     
-    public String getSCaptionOrientation() { return sCaptionOrientation; }
-    public void setSCaptionOrientation(String sCaptionOrientation) { this.sCaptionOrientation = sCaptionOrientation; }
+    public boolean isButtonBorderPainted() { return buttonBorderPainted; }
+    public void setButtonBorderPainted(boolean buttonBorderPainted) { this.buttonBorderPainted = buttonBorderPainted; }
+
+    public String getCaptionOrientation() { return captionOrientation; }
+    public void setCaptionOrientation(String captionOrientation) { this.captionOrientation = captionOrientation; }
     
     public int compareTo(Object o) { return UIControlUtil.compare(this, o); }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="InnerPanel(JPanel)">
-    private class InnerPanel extends JPanel {
-        public InnerPanel() {
+    //<editor-fold defaultstate="collapsed" desc="IconCanvas(JPanel)">
+    private class IconCanvas extends JPanel {
+        public IconCanvas() {
             //setBorder(BorderFactory.createLineBorder(Color.YELLOW));
         }
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="InnerMostPanel(JPanel)">
-    private class InnerMostPanel extends JPanel {
-        public InnerMostPanel(String caption) {
-            setBorder(BorderFactory.createTitledBorder(caption));
+    //<editor-fold defaultstate="collapsed" desc="CategoryPanel(JPanel)">
+    private class CategoryPanel extends JPanel {
+        
+        private String caption;
+        
+        public CategoryPanel(String caption) {
+            setBorder(new CategoryBorder(caption));
             setLayout(new FlowLayout(FlowLayout.LEFT));
         }
     }
@@ -191,4 +199,33 @@ public class XIconPanel extends JPanel implements UIControl {
         }
     }
     //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="CategoryBorder(AbstractBorder)">
+    private class CategoryBorder extends AbstractBorder{
+        private String caption;
+        
+        public CategoryBorder(String caption) { 
+            this.caption = caption; 
+        }
+        
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            g.setColor(Color.decode("#657383"));
+            FontMetrics fm = c.getFontMetrics(c.getFont());
+            int fontheight = fm.getHeight();
+            int fontwidth = fm.stringWidth(caption) + 10;
+            int half = (fontheight / 2) + y + 4;
+            
+            g.drawLine(x,half, x + 4,half);
+            g.drawLine(fontwidth, half, width - 1, half);
+            g.setFont(c.getFont());
+            g.setColor(Color.BLACK);
+            g.drawString(caption, x + 8, fontheight + y + 2);
+        }
+
+        public Insets getBorderInsets(Component c) {
+            return new Insets(c.getFontMetrics(c.getFont()).getHeight() + 4, 1, 1, 1);
+        }
+        
+    }
+//</editor-fold>
 }
