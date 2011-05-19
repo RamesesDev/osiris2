@@ -87,7 +87,9 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.addMouseWheelListener(new MouseWheelListener() {
+        
+        //--attach mouse wheel listener to table
+        table.addMouseWheelListener(new MouseWheelListener() {
             public void mouseWheelMoved(MouseWheelEvent e) {
                 int rotation = e.getWheelRotation();
                 if ( rotation == 0 ) return;
@@ -393,6 +395,14 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public String getVarStatus()               { return table.getVarStatus(); }
     public void setVarStatus(String varStatus) { table.setVarStatus(varStatus); }
     
+    public boolean isScrollbarAlwaysVisible() {
+        return scrollBar.isVisibleAlways();
+    }
+
+    public void setScrollbarAlwaysVisible(boolean scrollbarAlwaysVisible) {
+        scrollBar.setVisibleAlways(scrollbarAlwaysVisible);
+    }
+    
     //</editor-fold>
     
     
@@ -424,6 +434,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="  BeanUpdateAction (class)  ">
     private class BeanUpdateAction implements TableDelayedActionMgr.Action {
         
         public void execute() {
@@ -459,5 +470,6 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         }
         
     }
+    //</editor-fold>
     
 }

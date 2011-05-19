@@ -11,12 +11,14 @@ import javax.swing.JScrollBar;
 public class ListScrollBar extends JScrollBar implements AdjustmentListener {
     
     private AbstractListModel listModel;
+    private boolean visibleAlways;
+    
     
     public ListScrollBar() {
         super.setVisibleAmount(0);
         super.setMinimum(0);
         super.setMaximum(0);
-        super.setVisible(false);
+        super.setVisible(visibleAlways);
         
         addMouseWheelListener(new MouseWheelListener() {
             public void mouseWheelMoved(MouseWheelEvent e) {
@@ -44,12 +46,16 @@ public class ListScrollBar extends JScrollBar implements AdjustmentListener {
         super.setMaximum(listModel.getMaxRows());
         super.setMinimum(0);
         super.setVisibleAmount(0);
-        if(rowCount>listModel.getRows()-1) {
-            super.setVisible(true);
-            super.firePropertyChange("visible", false, true);
-        } else {
-            super.setVisible(false);
-            super.firePropertyChange("visible", true, false);
+        
+        if( !visibleAlways ) 
+        {
+            if(rowCount>listModel.getRows()-1) {
+                super.setVisible(true);
+                super.firePropertyChange("visible", false, true);
+            } else {
+                super.setVisible(false);
+                super.firePropertyChange("visible", true, false);
+            }
         }
         
         super.addAdjustmentListener(this);
@@ -57,6 +63,19 @@ public class ListScrollBar extends JScrollBar implements AdjustmentListener {
     
     public void adjustmentValueChanged(AdjustmentEvent e) {
         listModel.setTopRow(e.getValue());
+    }
+
+    public boolean isVisibleAlways() {
+        return visibleAlways;
+    }
+
+    public void setVisibleAlways(boolean visibleAlways) {
+        this.visibleAlways = visibleAlways;
+        
+        boolean oldValue = super.isVisible();
+        super.setVisible( visibleAlways || super.isVisible() );
+        super.firePropertyChange("visible", oldValue, super.isVisible());
+        revalidate();
     }
     
 }
