@@ -20,13 +20,13 @@ import javax.swing.ImageIcon;
  * @author Windhel
  */
 
-public class IconButton extends XButton {
+class IconButton extends XButton {
     
     private static Font BOTTOM_FONT = new Font("Dialog", Font.PLAIN, 9);
     private static Font RIGHT_FONT = new Font("Dialog", Font.PLAIN, 11);
     private static Color ICON_TOP_COLOR = new Color(238, 233, 233);
     private static Color ICON_BOTTOM_COLOR = new Color(197, 205, 211);
-    private static Color ICON_BORDER_CORDER = new Color(132, 130, 132);
+    private static Color ICON_BORDER_CORNER = new Color(132, 130, 132);
     private static Color ICON_HOVER_BORDER_COLOR = new Color(123, 138, 156);
     private static String BOTTOM = "BOTTOM";
     private static String RIGHT = "RIGHT";
@@ -40,7 +40,7 @@ public class IconButton extends XButton {
     private Image image;
     private String caption;
     private String captionOrientation;
-    private Color captionClr;
+    private Color captionClr = Color.BLACK;
     private String imagePath;
     private int btnHeight;
     private int btnWidth;
@@ -51,44 +51,47 @@ public class IconButton extends XButton {
     private int strWidth;
     private int strHeight;
     private GradientPaint gradient;
+    private boolean btnBorderPainted;
     
     public IconButton() {
         setCaptionClr(Color.BLACK);
         setCaptionOrientation("BOTTOM");
     }
     
-    public IconButton(String caption, String path) {
-        this.caption = caption;
-        setImage(path);
-        setCaptionClr(Color.BLACK);
-        setCaptionOrientation("BOTTOM");
+    public IconButton(String caption, String imagepath) {
+        super();
+        setCaption(caption);
+        setImage(imagepath);
+    }
+    
+    public IconButton(String str, boolean isCaption) {
+        super();
+        if(isCaption)
+            setCaption(str);
+        else
+            setImage(str);
     }
     
     //<editor-fold defaultstate="collapsed" desc="  Getter / Setter ">
-    
     public int getStringLineMetric(String str) {
-        return getFontMetrics(BOTTOM_FONT).charsWidth(str.toCharArray(), 0, str.length());
+        return getFontMetrics(getFont()).stringWidth(str);
     }
     
-    public String getCaptionOrientation() {
-        return captionOrientation;
-    }
-    
+    public String getCaptionOrientation() { return captionOrientation; }
     public void setCaptionOrientation(String captionOrientation) {
         this.captionOrientation = captionOrientation;
+        
+        if(captionOrientation.toUpperCase().equals(BOTTOM))
+            setFont(BOTTOM_FONT);
+        
+        if(captionOrientation.toUpperCase().equals(RIGHT));
+        setFont(RIGHT_FONT);
     }
     
-    public String getText() {
-        return "";
-    }
+    public String getText() { return ""; }
     
-    public Image getImage() {
-        return image;
-    }
-    
-    public void setImage(Image image) {
-        this.image = image;
-    }
+    public Image getImage() { return image; }
+    public void setImage(Image image) { this.image = image; }
     
     private URL getImageResource(String path) {
         if ( ValueUtil.isEmpty(path) ) return null;
@@ -110,10 +113,7 @@ public class IconButton extends XButton {
         } catch(Exception ex) { ex.printStackTrace(); }
     }
     
-    public String getCaption() {
-        return caption;
-    }
-    
+    public String getCaption() { return caption; }
     public void setCaption(String caption) {
         if(caption == null)
             this.caption = "";
@@ -122,13 +122,11 @@ public class IconButton extends XButton {
         }
     }
     
-    public Color getCaptionClr() {
-        return captionClr;
-    }
+    public Color getCaptionClr() { return captionClr; }
+    public void setCaptionClr(Color captionClr) { this.captionClr = captionClr; }
     
-    public void setCaptionClr(Color captionClr) {
-        this.captionClr = captionClr;
-    }
+    public boolean getBtnBorderPainted() { return btnBorderPainted; }
+    public void setBtnBorderPainted(boolean btnBorderPainted) { this.btnBorderPainted = btnBorderPainted; }
     //</editor-fold>
     
     public void paintComponent(Graphics g) {
@@ -137,31 +135,38 @@ public class IconButton extends XButton {
         
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setFont(getFont());
-        if(mousePressed && mouseOverImage) {
-            g2.setPaint(null);
-            g2.setColor(Color.LIGHT_GRAY);
-            g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
-        } else {
-            g2.setPaint(gradient);
-            g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
+        
+        
+        if(btnBorderPainted) {
+            if(mousePressed && mouseOverImage) {
+                g2.setPaint(null);
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
+            } else {
+                g2.setPaint(gradient);
+                g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
+            }
         }
         
-        if(image != null && caption != null || caption != "") {
+        if(image != null && caption != null) {
             g2.drawImage(image, imgXPos, imgYPos, imgWidth, imgHeight,null);
+            g2.setPaint(null);
             g2.setColor(captionClr);
             g2.drawString(caption, strWidth, strHeight);
         }
         
-        if(mouseOverImage) {
-            g2.setColor(ICON_HOVER_BORDER_COLOR);
-            g2.drawRect(0,0, btnWidth, btnHeight);
-            g2.drawRect(0,0, btnWidth - 1, btnHeight - 1);
-            g2.drawRect(0,0, btnWidth - 2, btnHeight - 2);
-            g2.drawRect(1,1, btnWidth - 2, btnHeight - 2);
-            g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
-        }else {
-            g2.setColor(ICON_BORDER_CORDER);
-            g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
+        if(btnBorderPainted) {
+            if(mouseOverImage) {
+                g2.setColor(ICON_HOVER_BORDER_COLOR);
+                g2.drawRect(0,0, btnWidth, btnHeight);
+                g2.drawRect(0,0, btnWidth - 1, btnHeight - 1);
+                g2.drawRect(0,0, btnWidth - 2, btnHeight - 2);
+                g2.drawRect(1,1, btnWidth - 2, btnHeight - 2);
+                g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
+            }else {
+                g2.setColor(ICON_BORDER_CORNER);
+                g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
+            }
         }
         
         super.paintComponent(g2);
@@ -177,13 +182,12 @@ public class IconButton extends XButton {
         setCaption(caption);
         if(BOTTOM.equals(getCaptionOrientation()) && image != null) {
             btnWidth = BTNWIDTH;
-            strWidth = (int)((btnWidth - getStringLineMetric(caption)) / 2);
             if(btnWidth < getStringLineMetric(caption)) {
-                btnWidth = btnWidth + (getStringLineMetric(caption) - btnWidth) + BORDER_EXTRA_SPACE;
-                strWidth = strWidth - (getStringLineMetric(caption) - btnWidth);
-                if(strWidth < 0)
-                    strWidth = strWidth - strWidth;
+                btnWidth = getStringLineMetric(caption) + 25;
+                strWidth = (btnWidth - getStringLineMetric(caption))/2;
+                System.out.println("btnWidth is " + btnWidth);
             }
+            
             btnHeight = BTNHEIGHT;
             strHeight = btnHeight - BORDER_EXTRA_SPACE;
             imgXPos = (int)((btnWidth - image.getWidth(null)) / 2);
