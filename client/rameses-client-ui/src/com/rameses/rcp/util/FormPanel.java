@@ -709,7 +709,9 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                 
                 Component[] comps = parent.getComponents();
                 for (int i=0; i<comps.length; i++) {
-                    Component c = comps[i];
+                    Component c = comps[i];                    
+                    if( !c.isVisible() ) continue;
+                    
                     Dimension dim = c.getPreferredSize();
                     
                     //add cellspacing
@@ -743,6 +745,8 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                 
                 for (int i=0; i<comps.length; i++) {
                     Component c = comps[i];
+                    if( !c.isVisible() ) continue;
+                    
                     if (c instanceof ItemPanel) {
                         Dimension dim = c.getPreferredSize();
                         if ( UIConstants.HORIZONTAL.equals(orientation) ) {

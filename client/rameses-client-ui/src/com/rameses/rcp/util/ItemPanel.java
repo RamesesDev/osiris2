@@ -20,6 +20,8 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
@@ -117,6 +119,19 @@ class ItemPanel extends JPanel {
         
         PropertyChangeListener listener = new ActiveControlPropetyListener();
         property.addPropertyChangeListener(listener);
+        
+        editor.addComponentListener(new ComponentListener() {
+            public void componentMoved(ComponentEvent e) {}
+            public void componentResized(ComponentEvent e) {}
+            
+            public void componentHidden(ComponentEvent e) {
+                ItemPanel.this.setVisible(false);
+            }
+            
+            public void componentShown(ComponentEvent e) {
+                ItemPanel.this.setVisible(true);
+            }
+        });
     }
     //</editor-fold>
     
