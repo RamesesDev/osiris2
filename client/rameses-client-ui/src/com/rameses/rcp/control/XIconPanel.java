@@ -126,6 +126,7 @@ public class XIconPanel extends JPanel implements UIControl {
                     xb.setName(a.getName());
                     xb.setPermission(a.getPermission());
                     xb.setParams(a.getParameters());
+                    xb.setFocusPainted(false);
                     //xb.setToolTipText(a.getTooltip());
                     innerMostPanel.add(xb);
                     xb.load();
