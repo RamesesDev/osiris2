@@ -1,19 +1,16 @@
 package com.rameses.rcp.control;
 
-import com.rameses.rcp.framework.ClientContext;
-import com.rameses.util.ValueUtil;
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.Component;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.Beans;
-import java.net.URL;
-import javax.swing.ImageIcon;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.EmptyBorder;
 
 /**
  *
@@ -22,220 +19,137 @@ import javax.swing.ImageIcon;
 
 class IconButton extends XButton {
     
-    private static Font BOTTOM_FONT = new Font("Dialog", Font.PLAIN, 9);
-    private static Font RIGHT_FONT = new Font("Dialog", Font.PLAIN, 11);
-    private static Color ICON_TOP_COLOR = new Color(238, 233, 233);
-    private static Color ICON_BOTTOM_COLOR = new Color(197, 205, 211);
-    private static Color ICON_BORDER_CORNER = new Color(132, 130, 132);
-    private static Color ICON_HOVER_BORDER_COLOR = new Color(123, 138, 156);
-    private static String BOTTOM = "BOTTOM";
-    private static String RIGHT = "RIGHT";
-    private static int BTNHEIGHT = 50;
-    private static int BTNWIDTH = 50;
-    private static int EXTENDED_BUTTON_WIDTH = 150;
-    private static int BORDER_EXTRA_SPACE = 5;
+    private boolean clicked;
+    private boolean entered;
+    private boolean pressed;
+    private Color bgColor = new Color(246,246,241,255);
+    private Color borderColor = Color.LIGHT_GRAY;//new Color(206,206,195,255);
+    private Color pressedColor = new Color(228,227,220,255);
+    private Color pressedShadeColor = Color.LIGHT_GRAY;
+    private Color pressedBorderColor = new Color(157,157,146,255);
+    private Color pressedOffsetColor = Color.WHITE;
+    private Color transparent = new Color(246,246,241,0);
     
-    private boolean mouseOverImage = false;
-    private boolean mousePressed = false;
-    private Image image;
-    private String caption;
-    private String captionOrientation;
-    private Color captionClr = Color.BLACK;
-    private String imagePath;
-    private int btnHeight;
-    private int btnWidth;
-    private int imgXPos;
-    private int imgYPos;
-    private int imgHeight;
-    private int imgWidth;
-    private int strWidth;
-    private int strHeight;
     private GradientPaint gradient;
-    private boolean btnBorderPainted;
+    private GradientPaint rightGradient;
     
     public IconButton() {
-        setCaptionClr(Color.BLACK);
-        setCaptionOrientation("BOTTOM");
+        entered = false;
+        clicked = false;
+        pressed = false;
+        addMouseListener(new MouseSupport());
+        //setBorder(new ButtonBorder());
+        setBorder(new EmptyBorder(0,0,0,0));
     }
     
-    public IconButton(String caption, String imagepath) {
-        super();
-        setCaption(caption);
-        setImage(imagepath);
-    }
-    
-    public IconButton(String str, boolean isCaption) {
-        super();
-        if(isCaption)
-            setCaption(str);
-        else
-            setImage(str);
-    }
-    
-    //<editor-fold defaultstate="collapsed" desc="  Getter / Setter ">
-    public int getStringLineMetric(String str) {
-        return getFontMetrics(getFont()).stringWidth(str);
-    }
-    
-    public String getCaptionOrientation() { return captionOrientation; }
-    public void setCaptionOrientation(String captionOrientation) {
-        this.captionOrientation = captionOrientation;
-        
-        if(captionOrientation.toUpperCase().equals(BOTTOM))
-            setFont(BOTTOM_FONT);
-        
-        if(captionOrientation.toUpperCase().equals(RIGHT));
-        setFont(RIGHT_FONT);
-    }
-    
-    public String getText() { return ""; }
-    
-    public Image getImage() { return image; }
-    public void setImage(Image image) { this.image = image; }
-    
-    private URL getImageResource(String path) {
-        if ( ValueUtil.isEmpty(path) ) return null;
-        
-        ClassLoader cl = ClientContext.getCurrentContext().getClassLoader();
-        return cl.getResource(path);
-    }
-    
-    public void setImage(String imagePath) {
-        try {
-            URL res = getImageResource(imagePath);
-            if ( res == null ) return;
-            
-            ImageIcon imgIcn = new ImageIcon(res);
-            image = imgIcn.getImage();
-            imgHeight = image.getHeight(null);
-            imgWidth = image.getWidth(null);
-            
-        } catch(Exception ex) { ex.printStackTrace(); }
-    }
-    
-    public String getCaption() { return caption; }
-    public void setCaption(String caption) {
-        if(caption == null)
-            this.caption = "";
-        else {
-            this.caption = caption;
-        }
-    }
-    
-    public Color getCaptionClr() { return captionClr; }
-    public void setCaptionClr(Color captionClr) { this.captionClr = captionClr; }
-    
-    public boolean getBtnBorderPainted() { return btnBorderPainted; }
-    public void setBtnBorderPainted(boolean btnBorderPainted) { this.btnBorderPainted = btnBorderPainted; }
-    //</editor-fold>
-    
-    public void paintComponent(Graphics g) {
-        if(Beans.isDesignTime())
-            return;
-        
+    protected void paintComponent(Graphics g) {
+        int width = getSize().width;
+        int height = getSize().height;
+        int x = 0;
+        int y = 0;
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setFont(getFont());
+        g2.setStroke(new BasicStroke(0.5f));
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        
-        if(btnBorderPainted) {
-            if(mousePressed && mouseOverImage) {
-                g2.setPaint(null);
-                g2.setColor(Color.LIGHT_GRAY);
-                g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
-            } else {
-                g2.setPaint(gradient);
-                g2.fillRect(1,1, btnWidth - 3, btnHeight - 3);
-            }
-        }
-        
-        if(image != null && caption != null) {
-            g2.drawImage(image, imgXPos, imgYPos, imgWidth, imgHeight,null);
+        if(entered) {
+            gradient = new GradientPaint(0, height-6,bgColor,0, height-1, borderColor);
+            rightGradient = new GradientPaint(width-4, 0,transparent,width-1, 0, borderColor);
+            
+            g2.setPaint(gradient);
+            g2.fillRoundRect(x,y,width-1,height-1,7,7);
+            g2.setPaint(rightGradient);
+            g2.fillRoundRect(x,y,width-1,height-1,7,7);
             g2.setPaint(null);
-            g2.setColor(captionClr);
-            g2.drawString(caption, strWidth, strHeight);
+            g2.setColor(borderColor);
+            g2.drawRoundRect(x,y,width-1,height-1,7,7);
+        }
+        //pressedOffsetColor
+        if(pressed) {
+            gradient = new GradientPaint(0, 0, pressedShadeColor,0, 4, pressedColor);
+            rightGradient = new GradientPaint(0, 0, pressedShadeColor,4, 0, transparent);
+            
+            g2.setPaint(null);
+            g2.setColor(pressedColor);
+            g2.fillRoundRect(x,y,width-1,height-1,7,7);
+            g2.setPaint(gradient);
+            g2.fillRoundRect(x,y,width-1,height-1,7,7);
+            g2.setPaint(rightGradient);
+            g2.fillRoundRect(x,y,width-1,height-1,7,7);
+            
+            gradient = new GradientPaint(0, height-4,transparent,0, height-1, pressedOffsetColor);
+            rightGradient = new GradientPaint(width-3, 0,transparent,width-1, 0, pressedOffsetColor);
+            g2.setPaint(gradient);
+            g2.fillRoundRect(x,y,width-1,height-1,7,7);
+            g2.setPaint(rightGradient);
+            g2.fillRoundRect(x,y,width-1,height-1,7,7);
+            
+            g2.setStroke(new BasicStroke(1.0f));
+            g2.setColor(pressedBorderColor);
+            g2.drawRoundRect(x,y,width-1,height-1,7,7);
         }
         
-        if(btnBorderPainted) {
-            if(mouseOverImage) {
-                g2.setColor(ICON_HOVER_BORDER_COLOR);
-                g2.drawRect(0,0, btnWidth, btnHeight);
-                g2.drawRect(0,0, btnWidth - 1, btnHeight - 1);
-                g2.drawRect(0,0, btnWidth - 2, btnHeight - 2);
-                g2.drawRect(1,1, btnWidth - 2, btnHeight - 2);
-                g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
-            }else {
-                g2.setColor(ICON_BORDER_CORNER);
-                g2.drawRect(1,1, btnWidth - 3, btnHeight - 3);
-            }
-        }
-        
-        super.paintComponent(g2);
+        super.paintComponent(g);
         g2.dispose();
     }
     
-    public void load() {
-        MouseSupport mouseSupport = new MouseSupport();
-        addMouseListener(mouseSupport);
-        setBorderPainted(false);
-        setContentAreaFilled(false);
-        setOpaque(false);
-        setCaption(caption);
-        if(BOTTOM.equals(getCaptionOrientation()) && image != null) {
-            btnWidth = BTNWIDTH;
-            if(btnWidth < getStringLineMetric(caption)) {
-                btnWidth = getStringLineMetric(caption) + 25;
-                strWidth = (btnWidth - getStringLineMetric(caption))/2;
-                System.out.println("btnWidth is " + btnWidth);
-            }
-            
-            btnHeight = BTNHEIGHT;
-            strHeight = btnHeight - BORDER_EXTRA_SPACE;
-            imgXPos = (int)((btnWidth - image.getWidth(null)) / 2);
-            if(caption == null || caption == "")
-                imgYPos = (int)((btnHeight - image.getHeight(null)) / 2);
-            else
-                imgYPos = (int)((btnHeight - image.getHeight(null)) / 2) - 4;
-        }
-        if(RIGHT.equals(getCaptionOrientation()) && image != null) {
-            btnHeight = BTNHEIGHT;
-            btnWidth = EXTENDED_BUTTON_WIDTH;
-            if(image != null) {
-                imgXPos = 10;
-                imgYPos = (int)((btnHeight - image.getHeight(null)) / 2);
-                strHeight = (int)(btnHeight / 2) + BORDER_EXTRA_SPACE;
-                strWidth = imgXPos + image.getWidth(null) + (BORDER_EXTRA_SPACE * 2);
-            }
-        }
-        
-        gradient = new GradientPaint(0,((int) btnHeight / 2), ICON_TOP_COLOR, 0, btnHeight, ICON_BOTTOM_COLOR);
-        setPreferredSize(new Dimension(btnWidth, btnHeight));
-    }
-    
-    //<editor-fold defaultstate="collapsed" desc="  MouseSupport -- MouseListener ">
+    //<editor-fold defaultstate="collapsed" desc="MouseSupport(MouseListener)">
     private class MouseSupport implements MouseListener {
         public void mouseClicked(MouseEvent e) {
+            clicked = true;
+            repaint();
         }
         
         public void mousePressed(MouseEvent e) {
-            mousePressed = true;
-            IconButton.this.repaint();
+            pressed = true;
+            clicked = false;
+            repaint();
         }
         
         public void mouseReleased(MouseEvent e) {
-            mousePressed = false;
-            IconButton.this.repaint();
+            pressed = false;
+            clicked = false;
+            repaint();
         }
         
         public void mouseEntered(MouseEvent e) {
-            mouseOverImage = true;
-            IconButton.this.repaint();
+            entered = true;
+            repaint();
         }
         
         public void mouseExited(MouseEvent e) {
-            mouseOverImage = false;
-            IconButton.this.repaint();
+            clicked = false;
+            entered = false;
+            repaint();
         }
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="ButtonBorder(AbstractBorder) #not used ">
+    private class ButtonBorder extends AbstractBorder {
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setStroke(new BasicStroke(0.5f));
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            if(entered) {
+                gradient = new GradientPaint(0, height-6,transparent,0, height-1, borderColor);
+                rightGradient = new GradientPaint(width-4, 0,transparent,width-1, 0, borderColor);
+                
+                g2.setPaint(gradient);
+                g2.fillRoundRect(x,y,width-1,height-1,7,7);
+                
+                g2.setPaint(rightGradient);
+                g2.fillRoundRect(x,y,width-1,height-1,7,7);
+                
+                g2.setPaint(null);
+                g2.setColor(borderColor);
+                g2.drawRoundRect(x,y,width-1,height-1,7,7);
+            }
+            
+            g2.dispose();
+            super.paintBorder(c,g,x,y,width,height);
+        }
+        
+    }
+    //</editor-fold>
 }

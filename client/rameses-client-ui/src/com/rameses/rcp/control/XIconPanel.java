@@ -9,6 +9,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -18,9 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.AbstractBorder;
 
@@ -39,23 +41,103 @@ public class XIconPanel extends JPanel implements UIControl {
     Map controller5 = new HashMap();
     List categories = new ArrayList();
     
-    private List<XButton> buttons = new ArrayList();
     private Binding binding;
     private String[] depends;
     private int index;
     private boolean buttonBorderPainted;
+    private boolean buttonContentFilled;
     private String captionOrientation = "BOTTOM";
     
     public XIconPanel() {
-        setBorder(BorderFactory.createEtchedBorder());
+        //setBorder(BorderFactory.createEtchedBorder());
         setLayout(new BorderLayout());
+        buttonBorderPainted = true;
+        buttonContentFilled = true;
         
         init();
     }
     
+    public void refresh() {}
+    
+    public void load() {
+        List<Action> actions = new ArrayList();
+        categories.clear();
+        
+        ActionProvider actionProvider = ClientContext.getCurrentContext().getActionProvider();
+        if (actionProvider != null) {
+            List<Action> aa = actionProvider.getActionsByType(getName(), null);
+            if (aa != null) actions.addAll(aa);
+        }
+        
+        for(Action a : actions) {
+            Map map = a.getProperties();
+            if(categories.size() == 0) categories.add(map.get("category"));
+            if(!categories.contains(map.get("category"))) categories.add( map.get("category"));
+        }
+        
+        IconCanvas innerpanel = new IconCanvas();
+        innerpanel.setOpaque(isOpaque());
+        innerpanel.setLayout(new GridLayout(categories.size(),1, 0, 5));
+        add(innerpanel, BorderLayout.NORTH);
+        
+        for(Object category : categories) {
+            CategoryPanel innerMostPanel = new CategoryPanel(category.toString());
+            innerMostPanel.setOpaque(isOpaque());
+            int height = 50;
+            int width = 50;
+            for(Action a : actions) {
+                Map map = a.getProperties();
+                if(map.get("category").equals(category)) {
+                    IconButton xb = new IconButton();
+                    xb.setHorizontalTextPosition(SwingConstants.TRAILING);
+                    xb.setVerticalAlignment(SwingConstants.CENTER);
+                    ImageIcon img = new ImageIcon(getClass().getResource("/com/rameses/rcp/icons/calendar.png"));
+                    
+                    if(getCaptionOrientation().equals("LEFT")) {
+                        xb.setHorizontalTextPosition(SwingConstants.LEFT);
+                        height = img.getIconHeight() + 25;
+                        width = img.getIconWidth() + getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                    }
+                    if(getCaptionOrientation().equals("RIGHT")) {
+                        xb.setHorizontalTextPosition(SwingConstants.RIGHT);
+                        height = img.getIconHeight() + 25;
+                        width = img.getIconWidth() + getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                    }
+                    if(getCaptionOrientation().equals("BOTTOM")) {
+                        xb.setHorizontalTextPosition(SwingConstants.CENTER);
+                        xb.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        height = img.getIconHeight() + getFontMetrics(getFont()).getHeight() + 25;
+                        width = getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                    }
+                    if(getCaptionOrientation().equals("TOP")) {
+                        xb.setHorizontalTextPosition(SwingConstants.CENTER);
+                        xb.setVerticalTextPosition(SwingConstants.TOP);
+                        height = img.getIconHeight() + getFontMetrics(getFont()).getHeight() + 25;
+                        width = getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                        
+                    }
+                    xb.setPreferredSize(new Dimension(width,height));
+                    xb.setContentAreaFilled(false);
+                    xb.setBorderPainted(isButtonBorderPainted());
+                    xb.setText(a.getCaption());
+                    xb.setCaption(a.getCaption());
+                    xb.setIcon(img);
+                    xb.setBinding(binding);
+                    xb.setName(a.getName());
+                    xb.setPermission(a.getPermission());
+                    xb.setParams(a.getParameters());
+                    //xb.setToolTipText(a.getTooltip());
+                    innerMostPanel.add(xb);
+                    xb.load();
+                }
+            }
+            innerpanel.add(innerMostPanel);
+        }
+        SwingUtilities.updateComponentTreeUI(this);
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="init() #initialize component for Design Time">
     public void init() {
-        setBorder(BorderFactory.createEtchedBorder());
-        setLayout(new BorderLayout());
         controller1.put("category", "group 1");
         controller1.put("invokerType", "home_menu");
         controller1.put("caption", "group 1 item 1");
@@ -84,12 +166,8 @@ public class XIconPanel extends JPanel implements UIControl {
         
         for(Object item : list ) {
             Map map = (HashMap) item;
-            if(categories.size() == 0)
-                categories.add(map.get("category"));
-            
-            if(!categories.contains(map.get("category"))) {
-                categories.add( map.get("category"));
-            }
+            if(categories.size() == 0) categories.add(map.get("category"));
+            if(!categories.contains(map.get("category"))) categories.add( map.get("category"));
         }
         IconCanvas innerpanel = new IconCanvas();
         innerpanel.setLayout(new GridLayout(categories.size(),1));
@@ -99,59 +177,12 @@ public class XIconPanel extends JPanel implements UIControl {
             CategoryPanel innerMostPanel = new CategoryPanel(category.toString());
             for(Object item : list) {
                 Map map = (HashMap) item;
-                if(map.get("category").equals(category)) {
-                    innerMostPanel.add(new Item(map.get("caption").toString()));
-                }
+                if(map.get("category").equals(category)) innerMostPanel.add(new Item(map.get("caption").toString()));
             }
             innerpanel.add(innerMostPanel);
         }
     }
-    
-    public void refresh() {
-    }
-    
-    public void load() {
-        List<Action> actions = new ArrayList();
-        categories.clear();
-        
-        ActionProvider actionProvider = ClientContext.getCurrentContext().getActionProvider();
-        if (actionProvider != null) {
-            List<Action> aa = actionProvider.getActionsByType(getName(), null);
-            if (aa != null) actions.addAll(aa);
-        }
-        
-        for(Action a : actions) {
-            Map map = a.getProperties();
-            if(categories.size() == 0) categories.add(map.get("category"));
-            if(!categories.contains(map.get("category"))) categories.add( map.get("category"));
-        }
-        
-        IconCanvas innerpanel = new IconCanvas();
-        innerpanel.setLayout(new GridLayout(categories.size(),1, 0, 5));
-        add(innerpanel, BorderLayout.NORTH);
-        
-        for(Object category : categories) {
-            CategoryPanel innerMostPanel = new CategoryPanel(category.toString());
-            for(Action a : actions) {
-                Map map = a.getProperties();
-                IconButton ibtn;
-                if(map.get("category").equals(category)) {
-                    ibtn = new IconButton(a.getCaption(), a.getIcon());
-                    ibtn.setBinding(binding);
-                    ibtn.setName(a.getName());
-                    ibtn.setPermission(a.getPermission());
-                    ibtn.setParams(a.getParameters());
-                    ibtn.setCaptionOrientation(getCaptionOrientation());
-                    ibtn.setBtnBorderPainted(isButtonBorderPainted());
-                    ibtn.setToolTipText(a.getTooltip());
-                    innerMostPanel.add(ibtn);
-                    ibtn.load();
-                }
-            }
-            innerpanel.add(innerMostPanel);
-        }
-        SwingUtilities.updateComponentTreeUI(this);
-    }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="setter/getter">
     public String[] getDepends() { return depends; }
@@ -165,7 +196,10 @@ public class XIconPanel extends JPanel implements UIControl {
     
     public boolean isButtonBorderPainted() { return buttonBorderPainted; }
     public void setButtonBorderPainted(boolean buttonBorderPainted) { this.buttonBorderPainted = buttonBorderPainted; }
-
+    
+    public boolean isButtonContentFilled() { return buttonContentFilled; }
+    public void setButtonContentFilled(boolean buttonContentFilled) { this.buttonContentFilled = buttonContentFilled; }
+    
     public String getCaptionOrientation() { return captionOrientation; }
     public void setCaptionOrientation(String captionOrientation) { this.captionOrientation = captionOrientation; }
     
@@ -204,8 +238,8 @@ public class XIconPanel extends JPanel implements UIControl {
     private class CategoryBorder extends AbstractBorder{
         private String caption;
         
-        public CategoryBorder(String caption) { 
-            this.caption = caption; 
+        public CategoryBorder(String caption) {
+            this.caption = caption;
         }
         
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
@@ -221,11 +255,12 @@ public class XIconPanel extends JPanel implements UIControl {
             g.setColor(Color.BLACK);
             g.drawString(caption, x + 8, fontheight + y + 2);
         }
-
+        
         public Insets getBorderInsets(Component c) {
             return new Insets(c.getFontMetrics(c.getFont()).getHeight() + 4, 1, 1, 1);
         }
         
     }
-//</editor-fold>
+    //</editor-fold>
+    
 }
