@@ -24,17 +24,23 @@ public class TableDelayedActionMgr implements Runnable {
         this.action = action;
     }
     
-    public void run() {
-        while( running && counter < MAX_COUNT ) {
-            counter += 100;
+    public void run() 
+    {
+        while( running && counter < MAX_COUNT ) 
+        {
+            counter += 10;
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
+                Thread.sleep(10);
+            } 
+            catch (InterruptedException ex) {
                 break;
             }
-            if( counter >= MAX_COUNT ) {
-                if( action != null ) {
-                    EventQueue.invokeLater(new Runnable() {
+            if( counter >= MAX_COUNT ) 
+            {
+                if( action != null ) 
+                {
+                    EventQueue.invokeLater(new Runnable() 
+                    {
                         public void run() {
                             action.execute();
                         }

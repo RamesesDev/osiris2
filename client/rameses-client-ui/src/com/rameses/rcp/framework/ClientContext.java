@@ -41,6 +41,8 @@ public abstract class ClientContext {
     private Map headers = new HashMap();
     private Map properties = new HashMap();
     
+    private boolean debugMode;
+    
     
     //<editor-fold defaultstate="collapsed" desc="  abstract properties  ">
     public abstract ValueResolver getValueResolver();
@@ -143,6 +145,15 @@ public abstract class ClientContext {
         this.appEnv = appEnv;
     }
     
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+    
+    
     //<editor-fold defaultstate="collapsed" desc="  ControllerProviderWrapper (class)  ">
     private class ControllerProviderWrapper implements ControllerProvider {
         
@@ -183,5 +194,5 @@ public abstract class ClientContext {
         
     }
     //</editor-fold>
-    
+
 }

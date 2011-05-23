@@ -427,23 +427,32 @@ public class XTable extends JPanel implements UIInput, TableListener, Validatabl
     private class BeanUpdateAction implements TableDelayedActionMgr.Action {
         
         public void execute() {
-            String name = getName();
-            if ( !ValueUtil.isEmpty(name) ) {
-                PropertyResolver resolver = ClientContext.getCurrentContext().getPropertyResolver();
-                ListItem oldValue = (ListItem) resolver.getProperty(binding.getBean(), name);
-                ListItem newValue = listModel.getSelectedItem();
-                if( oldValue == null || newValue == null || !ValueUtil.isEqual(oldValue.getItem(), newValue.getItem()) ) {
-                    if( newValue == null )
-                        resolver.setProperty(binding.getBean(), name, null);
-                    else
-                        resolver.setProperty(binding.getBean(), name, newValue.clone());
-                    
-                    binding.notifyDepends(XTable.this);
+            ClientContext ctx = ClientContext.getCurrentContext();
+            try 
+            {
+                String name = getName();
+                if ( !ValueUtil.isEmpty(name) ) {
+                    PropertyResolver resolver = ctx.getPropertyResolver();
+                    ListItem oldValue = (ListItem) resolver.getProperty(binding.getBean(), name);
+                    ListItem newValue = listModel.getSelectedItem();
+                    if( oldValue == null || newValue == null || !ValueUtil.isEqual(oldValue.getItem(), newValue.getItem()) ) {
+                        if( newValue == null )
+                            resolver.setProperty(binding.getBean(), name, null);
+                        else
+                            resolver.setProperty(binding.getBean(), name, newValue.clone());
+
+                        binding.notifyDepends(XTable.this);
+                    }
+                }
+
+                if ( rowHeaderView != null )
+                    rowHeaderView.clearEditing();
+            }
+            catch(Exception e) {
+                if( ctx.isDebugMode() ) {
+                    e.printStackTrace();
                 }
             }
-            
-            if ( rowHeaderView != null )
-                rowHeaderView.clearEditing();
         }
         
     }
