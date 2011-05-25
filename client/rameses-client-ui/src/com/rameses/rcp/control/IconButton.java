@@ -52,7 +52,7 @@ class IconButton extends XButton {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         if(entered) {
-            gradient = new GradientPaint(0, height-6,bgColor,0, height-1, borderColor);
+            gradient = new GradientPaint(0, height-5,bgColor,0, height-1, borderColor);
             rightGradient = new GradientPaint(width-4, 0,transparent,width-1, 0, borderColor);
             
             g2.setPaint(gradient);

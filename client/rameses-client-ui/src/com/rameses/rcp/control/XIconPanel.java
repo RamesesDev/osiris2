@@ -1,9 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.Action;
-import com.rameses.rcp.framework.ActionProvider;
 import com.rameses.rcp.framework.Binding;
-import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import java.awt.BorderLayout;
@@ -16,6 +14,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,10 +62,11 @@ public class XIconPanel extends JPanel implements UIControl {
         List<Action> actions = new ArrayList();
         categories.clear();
         
-        ActionProvider actionProvider = ClientContext.getCurrentContext().getActionProvider();
-        if (actionProvider != null) {
-            List<Action> aa = actionProvider.getActionsByType(getName(), null);
-            if (aa != null) actions.addAll(aa);
+        Object beanValue = UIControlUtil.getBeanValue(this);
+        if(beanValue instanceof Collection) {
+            for(Object o : (Collection) beanValue) {
+                if(o instanceof Action) actions.add((Action)o);
+            }
         }
         
         for(Action a : actions) {
@@ -85,51 +85,56 @@ public class XIconPanel extends JPanel implements UIControl {
             innerMostPanel.setOpaque(isOpaque());
             int height = 50;
             int width = 50;
-            for(Action a : actions) {
-                Map map = a.getProperties();
+            for(Action action : actions) {
+                Map map = action.getProperties();
                 if(map.get("category").equals(category)) {
-                    IconButton xb = new IconButton();
-                    xb.setHorizontalTextPosition(SwingConstants.TRAILING);
-                    xb.setVerticalAlignment(SwingConstants.CENTER);
+                    IconButton ibtn = new IconButton();
+                    ibtn.setHorizontalTextPosition(SwingConstants.TRAILING);
+                    ibtn.setVerticalAlignment(SwingConstants.CENTER);
                     ImageIcon img = new ImageIcon(getClass().getResource("/com/rameses/rcp/icons/calendar.png"));
                     
                     if(getCaptionOrientation().equals("LEFT")) {
-                        xb.setHorizontalTextPosition(SwingConstants.LEFT);
+                        ibtn.setHorizontalTextPosition(SwingConstants.LEFT);
                         height = img.getIconHeight() + 25;
-                        width = img.getIconWidth() + getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                        width = img.getIconWidth() + getFontMetrics(getFont()).stringWidth(action.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(action.getCaption())/2) + 5;
                     }
                     if(getCaptionOrientation().equals("RIGHT")) {
-                        xb.setHorizontalTextPosition(SwingConstants.RIGHT);
+                        ibtn.setHorizontalTextPosition(SwingConstants.RIGHT);
                         height = img.getIconHeight() + 25;
-                        width = img.getIconWidth() + getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                        width = img.getIconWidth() + getFontMetrics(getFont()).stringWidth(action.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(action.getCaption())/2) + 5;
                     }
                     if(getCaptionOrientation().equals("BOTTOM")) {
-                        xb.setHorizontalTextPosition(SwingConstants.CENTER);
-                        xb.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        ibtn.setHorizontalTextPosition(SwingConstants.CENTER);
+                        ibtn.setVerticalTextPosition(SwingConstants.BOTTOM);
                         height = img.getIconHeight() + getFontMetrics(getFont()).getHeight() + 25;
-                        width = getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                        width = getFontMetrics(getFont()).stringWidth(action.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(action.getCaption())/2) + 5;
                     }
                     if(getCaptionOrientation().equals("TOP")) {
-                        xb.setHorizontalTextPosition(SwingConstants.CENTER);
-                        xb.setVerticalTextPosition(SwingConstants.TOP);
+                        ibtn.setHorizontalTextPosition(SwingConstants.CENTER);
+                        ibtn.setVerticalTextPosition(SwingConstants.TOP);
                         height = img.getIconHeight() + getFontMetrics(getFont()).getHeight() + 25;
-                        width = getFontMetrics(getFont()).stringWidth(a.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(a.getCaption())/2) + 5;
+                        width = getFontMetrics(getFont()).stringWidth(action.getCaption()) + (int)(getFontMetrics(getFont()).stringWidth(action.getCaption())/2) + 5;
                         
                     }
-                    xb.setPreferredSize(new Dimension(width,height));
-                    xb.setContentAreaFilled(false);
-                    xb.setBorderPainted(isButtonBorderPainted());
-                    xb.setText(a.getCaption());
-                    xb.setCaption(a.getCaption());
-                    xb.setIcon(img);
-                    xb.setBinding(binding);
-                    xb.setName(a.getName());
-                    xb.setPermission(a.getPermission());
-                    xb.setParams(a.getParameters());
-                    xb.setFocusPainted(false);
-                    //xb.setToolTipText(a.getTooltip());
-                    innerMostPanel.add(xb);
-                    xb.load();
+                    ibtn.setPreferredSize(new Dimension(width,height));
+                    ibtn.setContentAreaFilled(false);
+                    ibtn.setBorderPainted(isButtonBorderPainted());
+                    ibtn.setText(action.getCaption());
+                    ibtn.setCaption(action.getCaption());
+                    ibtn.setIcon(img);
+                    ibtn.setBinding(binding);
+                    ibtn.setName(action.getName());
+                    ibtn.setPermission(action.getPermission());
+                    ibtn.setParams(action.getParameters());
+                    ibtn.setFocusPainted(false);
+                    
+                    if ( !action.getClass().getName().equals(Action.class.getName()) ) {
+                        ibtn.putClientProperty(Action.class.getName(), action);
+                    }
+                    
+                    //ibtn.setToolTipText(action.getTooltip());
+                    innerMostPanel.add(ibtn);
+                    ibtn.load();
                 }
             }
             innerpanel.add(innerMostPanel);
