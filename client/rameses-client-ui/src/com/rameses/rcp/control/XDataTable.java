@@ -250,12 +250,30 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     }
     
     public void rowChanged() {
-        if( actionMgr != null ) {
-            if( immediate )
-                rowChangeAction.execute();
-            else
-                actionMgr.start();
+        ClientContext ctx = ClientContext.getCurrentContext();
+        PropertyResolver resolver = ctx.getPropertyResolver();
+        ListItem item = listModel.getSelectedItem();
+        
+        Object oldValue = (currentItem!=null? currentItem.getItem() : null);
+        Object newValue = (item!=null? item.getItem() : null);
+        
+        //keep the actual state at this time
+        if( item != null )
+            currentItem = item.clone();
+        else
+            currentItem = null;
+        
+        if( !ValueUtil.isEqual(oldValue, newValue) ) {
+            if( actionMgr != null ) {
+                if( immediate )
+                    rowChangeAction.execute();
+                else
+                    actionMgr.start();
+            }
         }
+
+        if ( rowHeaderView != null )
+            rowHeaderView.clearEditing();
     }
     
     public void editCellAt(int rowIndex, int colIndex) {
@@ -446,43 +464,30 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
             ClientContext ctx = ClientContext.getCurrentContext();
             try 
             {
-                String name = getName();
                 PropertyResolver resolver = ctx.getPropertyResolver();
-                ListItem item = listModel.getSelectedItem();
-
-                if( currentItem == null || item == null || !ValueUtil.isEqual(currentItem.getItem(), item.getItem()) ) 
+                String name = getName();
+                
+                if ( !ValueUtil.isEmpty(name) ) 
                 {
-                    if ( !ValueUtil.isEmpty(name) ) 
-                    {
-                        Object value = null;
-                        if( item != null ) value = item.getItem();
+                    Object value = null;
+                    if( currentItem != null ) value = currentItem.getItem();
 
-                        resolver.setProperty(binding.getBean(), name, value);
-                        binding.notifyDepends(XDataTable.this);
-                    }
+                    resolver.setProperty(binding.getBean(), name, value);
+                    binding.notifyDepends(XDataTable.this);
+                }
 
-                    String varStatus = table.getVarStatus();
-                    if ( !ValueUtil.isEmpty(varStatus) ) 
-                    {
-                        try {
-                            resolver.setProperty(binding.getBean(), varStatus, item);
-                        } 
-                        catch(Exception e){
-                            if( ctx.isDebugMode() ) {
-                                e.printStackTrace();
-                            }
+                String varStatus = table.getVarStatus();
+                if ( !ValueUtil.isEmpty(varStatus) ) 
+                {
+                    try {
+                        resolver.setProperty(binding.getBean(), varStatus, currentItem);
+                    } 
+                    catch(Exception e){
+                        if( ctx.isDebugMode() ) {
+                            e.printStackTrace();
                         }
                     }
                 }
-
-                //keep the actual state at this time
-                if( item != null )
-                    currentItem = item.clone();
-                else
-                    currentItem = null;
-
-                if ( rowHeaderView != null )
-                    rowHeaderView.clearEditing();
             }
             catch(Exception e)
             {

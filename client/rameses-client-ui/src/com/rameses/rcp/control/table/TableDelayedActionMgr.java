@@ -28,13 +28,14 @@ public class TableDelayedActionMgr implements Runnable {
     {
         while( running && counter < MAX_COUNT ) 
         {
-            counter += 10;
             try {
-                Thread.sleep(10);
+                Thread.sleep(50);
             } 
             catch (InterruptedException ex) {
                 break;
             }
+            
+            counter += 50;
             if( counter >= MAX_COUNT ) 
             {
                 if( action != null ) 
@@ -57,14 +58,14 @@ public class TableDelayedActionMgr implements Runnable {
         counter = 0;
         if( thread != null && thread.isAlive() ) return;
         
+        running = true;        
         thread = new Thread(this);
         thread.start();
-        
-        running = true;
     }
     
     public void stop() {
         running = false;
+        thread = null;
     }
     
     //--- inner classes

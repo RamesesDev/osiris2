@@ -26,6 +26,7 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -73,6 +74,8 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     
     //<editor-fold defaultstate="collapsed" desc="  initComponents  ">
     private void initComponents() {
+        super.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
         tableModel = new DataTableModel();
         getTableHeader().setReorderingAllowed(false);
         getTableHeader().setDefaultRenderer(TableUtil.getHeaderRenderer());
