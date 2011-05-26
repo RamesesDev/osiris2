@@ -3,6 +3,7 @@ package com.rameses.rcp.control;
 import com.rameses.rcp.constant.TextCase;
 import com.rameses.rcp.constant.TrimSpaceOption;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.support.TextDocument;
 import com.rameses.rcp.support.TextEditorSupport;
 import com.rameses.rcp.support.ThemeUI;
@@ -85,6 +86,10 @@ public class XTextArea extends JTextArea implements UIInput, Validatable, Active
             setText("");
             setEditable(false);
             setFocusable(false);
+            
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
     }
     

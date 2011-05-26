@@ -9,6 +9,7 @@ package com.rameses.rcp.control;
 
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.UIInput;
@@ -86,21 +87,28 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
     //</editor-fold>
     
     public void refresh() {
-        Object value = UIControlUtil.getBeanValue(this);
-        if ( !ValueUtil.isEmpty(baseUrl) && getDocument() instanceof HTMLDocument ) {
-            try {
-                Object url = UIControlUtil.getBeanValue(this, baseUrl);
-                if ( url instanceof URL )
-                    ((HTMLDocument) getDocument()).setBase( (URL) url );
-                else
-                    ((HTMLDocument) getDocument()).setBase(new URL( url.toString() ));
-                
-            } catch (MalformedURLException ex) {
-                ex.printStackTrace();
+        try {
+            Object value = UIControlUtil.getBeanValue(this);
+            if ( !ValueUtil.isEmpty(baseUrl) && getDocument() instanceof HTMLDocument ) {
+                try {
+                    Object url = UIControlUtil.getBeanValue(this, baseUrl);
+                    if ( url instanceof URL )
+                        ((HTMLDocument) getDocument()).setBase( (URL) url );
+                    else
+                        ((HTMLDocument) getDocument()).setBase(new URL( url.toString() ));
+
+                } catch (MalformedURLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            setValue(value);
+            setCaretPosition(0);
+        }
+        catch(Exception e) {
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
             }
         }
-        setValue(value);
-        setCaretPosition(0);
     }
     
     public void load() {

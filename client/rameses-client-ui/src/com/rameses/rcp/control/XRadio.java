@@ -8,6 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.framework.Binding;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.support.ThemeUI;
 import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
@@ -56,7 +57,9 @@ public class XRadio extends JRadioButton implements UIInput, ItemListener, Activ
             setEnabled(false);
             setFocusable(false);
             
-            //e.printStackTrace();
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
     }
     

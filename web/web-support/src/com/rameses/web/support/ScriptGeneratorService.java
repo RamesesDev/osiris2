@@ -44,10 +44,10 @@ public class ScriptGeneratorService extends HttpServlet {
             String svc = np.getService();
             
             ServletContext app = this.config.getServletContext();
-            String host = app.getInitParameter(np.getContext()+".host");
+            String appContext = app.getInitParameter("app.context");
+            String host = app.getInitParameter("app.host");
             
-            if(host==null || host.trim().length()==0) host = np.getHost();
-            DynamicHttpInvoker hp = new DynamicHttpInvoker(host,np.getContext());
+            DynamicHttpInvoker hp = new DynamicHttpInvoker(host,appContext);
             byte[] bytes = hp.getService().getScriptInfo( svc );
             GroovyClassLoader loader = new GroovyClassLoader();
             Class clazz = loader.parseClass(new ByteArrayInputStream(bytes));

@@ -78,6 +78,10 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
             
         } catch(Exception e) {
             super.setText("");
+            
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
     }
     

@@ -93,6 +93,10 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
         } catch(Exception e) {
             setEnabled(false);
             setFocusable(false);
+            
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
     }
     

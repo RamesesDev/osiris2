@@ -117,7 +117,9 @@ public class XList extends JList implements UIControl, ListSelectionListener {
         try {
             value = UIControlUtil.getBeanValue(this);
         } catch(Exception e) {
-            e.printStackTrace();
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
         
         if ( value == null ) return;

@@ -59,6 +59,9 @@ public class OsirisAppLoader implements AppLoader {
                 Map properties = (Map) env.remove("PROPERTIES");
                 ctx.getProperties().putAll( properties );
             }
+            if( env.get("app.debugMode") != null ) {
+                ctx.setDebugMode( "true".equals(env.get("app.debugMode").toString()) );
+            }
             
             //load all loaders
             String loaderType = "loader";

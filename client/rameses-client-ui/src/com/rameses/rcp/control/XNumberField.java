@@ -1,5 +1,6 @@
 package com.rameses.rcp.control;
 
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import java.awt.event.FocusEvent;
@@ -42,6 +43,10 @@ public class XNumberField extends XTextField {
             setText("");
             setEditable(false);
             setFocusable(false);
+            
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
     }
     

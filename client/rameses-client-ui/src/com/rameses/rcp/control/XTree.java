@@ -88,7 +88,7 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener, Tr
     
     public void load() {
         if( ValueUtil.isEmpty(handler) ) {
-            throw new IllegalStateException( "XTree Error: A handler must be provided" );
+            throw new RuntimeException( "XTree Error: A handler must be provided" );
         }
         
         nodeModel = (TreeNodeModel) UIControlUtil.getBeanValue(this, handler);

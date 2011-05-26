@@ -39,12 +39,12 @@ public class JsonInvoker extends HttpServlet {
         res.setContentType("text/javascript");
         try {
             NameParser np = new NameParser(req);
+            
             ServletContext app = this.config.getServletContext();
+            String appContext = app.getInitParameter("app.context");
+            String host = app.getInitParameter("app.host");
             
-            String host = app.getInitParameter(np.getContext()+".host");
-            if(host==null || host.trim().length()==0) host = np.getHost();
-            
-            DynamicHttpInvoker hp = new DynamicHttpInvoker(host,np.getContext());
+            DynamicHttpInvoker hp = new DynamicHttpInvoker(host,appContext);
             DynamicHttpInvoker.Action action = null;
             if( np.getEnv()==null) {
                 action = hp.create( np.getService() );

@@ -37,7 +37,7 @@ public class XActionTextField extends AbstractIconedTextField {
             ControlSupport.fireNavigation(this, outcome);
             
         } catch(Exception ex){
-            MsgBox.err(new IllegalStateException("XActionTextField::actionPerformed", ex));
+            MsgBox.err(new RuntimeException(ex));
         }
     }
 

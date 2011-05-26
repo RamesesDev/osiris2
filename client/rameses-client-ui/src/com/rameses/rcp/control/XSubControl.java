@@ -55,6 +55,10 @@ public class XSubControl extends XSubFormPanel {
         } catch(Exception e) {
             if( subFormItems.size() > 0 )
                 subFormItems.get(0).setVisible(false);
+            
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
         
         super.refresh();

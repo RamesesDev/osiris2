@@ -7,6 +7,7 @@
 
 package com.rameses.rcp.control;
 
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
@@ -101,6 +102,10 @@ public class XFileBrowser extends AbstractIconedTextField {
             //block the input if name is null
             setText("");
             setFocusable(false);
+            
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
     }
     

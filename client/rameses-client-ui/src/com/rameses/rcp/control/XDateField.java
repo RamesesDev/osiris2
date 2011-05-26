@@ -1,6 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.rcp.control.date.DatePickerModel;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
@@ -171,6 +172,10 @@ public class XDateField extends AbstractIconedTextField {
             setText("");
             setEditable(false);
             setFocusable(false);
+            
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
         }
         
     }
