@@ -11,6 +11,7 @@ package com.rameses.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -102,6 +103,7 @@ public abstract class MachineInfo {
             Process p = Runtime.getRuntime().exec( "getmac /fo table /nh" );
             BufferedReader br = new BufferedReader((new InputStreamReader(p.getInputStream())));
             String line;
+            
             //it returns the first macaddress found
             while((line=br.readLine())!=null) {
                 if(line.trim().length()>0) {
@@ -109,37 +111,8 @@ public abstract class MachineInfo {
                     return macAddress;
                 }
             }
-            //String[] result = br.readLine().split("\\s");
-            //macAddress = result[0].trim();
-            //macAddress = br.readLine();
-            //return macAddress;
-            /*
-            String response = getProcessResponse("getmac");
-            StringTokenizer tokenizer = new StringTokenizer(response, "\n");
-  
-            int counter = 1;
-            while(tokenizer.hasMoreTokens()) 
-            {
-                String line = tokenizer.nextToken().trim();
-                if (counter > 3)
-                {
-                   
-                    //if (line.toLowerCase().indexOf("disconnected") < 0)
-                    //{
-                        int idx = line.indexOf(' ');
-                        String macAddressCandidate = line.substring(0, idx).trim();
-                        
-                        // TODO: use a smart regular expression
-                        if ( macAddressCandidate.length() == 17 )  {
-                            macAddress = macAddressCandidate;
-                            return macAddress;
-                        }    
-                    //}
-                }
-                counter++;
-            }
-            */
-           throw new ParseException("cannot read MAC address ", 0);
+            
+            throw new ParseException("cannot read MAC address ", 0);
         }        
     }
     
@@ -154,7 +127,16 @@ public abstract class MachineInfo {
             
             if(macAddress!=null) return macAddress;
             String localHost = getLocalHost();
-            String ipConfigResponse = getProcessResponse("ifconfig");
+            String ipConfigResponse = null;
+            
+            try {
+                ipConfigResponse = getProcessResponse("ifconfig");
+            }
+            //in Red Hat versions, sometimes it is /sbin/ifconfig
+            catch(IOException ioe) {
+                ipConfigResponse = getProcessResponse("/sbin/ifconfig");
+            }
+            
             StringTokenizer tokenizer = new StringTokenizer(ipConfigResponse, "\n");
             String lastMacAddress = null;
             
