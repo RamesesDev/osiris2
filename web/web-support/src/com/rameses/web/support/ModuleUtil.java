@@ -71,21 +71,36 @@ public final class ModuleUtil {
             initModules(ctx,attrName);
             map = (Map)ctx.getAttribute(attrName);
         }
+        
         List list = new ArrayList();
         Iterator iter = map.entrySet().iterator();
+        
         while(iter.hasNext()) {
             Map.Entry me = (Map.Entry)iter.next();
             Map mo = (Map)me.getValue();
             if(mo.containsKey(name)) {
-                Map _comp = new HashMap();
-                _comp.putAll((Map)mo.get(name));
-                _comp.put("_parent", mo);
-                _comp.put("_name", me.getKey());
-                list.add(_comp);
+                Object entry = mo.get(name);
+                if( entry instanceof List ) {
+                    for(Object o : (List) entry ) {
+                        addEntry(list, me.getKey(), mo, (Map) o);
+                    }
+                }
+                else {
+                    addEntry(list, me.getKey(), mo, (Map) entry);
+                }
             }
         }
+        
         Collections.sort(list, DEFAULT_SORTER);
         return list;
+    }
+    
+    private static void addEntry(List list, Object key, Map mo, Map entry) {
+        Map _comp = new HashMap();
+        _comp.putAll( entry );
+        _comp.put("_parent", mo);
+        _comp.put("_name", key);
+        list.add(_comp);
     }
     
     private static class Sorter implements Comparator {
