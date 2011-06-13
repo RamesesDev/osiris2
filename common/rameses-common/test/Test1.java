@@ -1,7 +1,8 @@
-import com.rameses.util.HTMLBuilder;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import junit.framework.*;
 /*
  * Test1.java
@@ -20,17 +21,43 @@ public class Test1 extends TestCase {
         super(testName);
     }
     
-    public void testHello() {
-        Map data = new LinkedHashMap();
-        data.put("First Name", "Jayrome");
-        data.put("Last Name", "Jayrome");
+    public void testHello() throws Exception {
+        String response = getProcessResponse("ipconfig /all");
+        StringTokenizer tokenizer = new StringTokenizer(response, "\n");
         
-        Map addr = new HashMap();
-        addr.put("Address 1", "cebu city");
-        addr.put("Address 2", "negros oriental");
-        data.put("Address", addr);
+        int counter = 1;
+        boolean skipMac = false;
+        Pattern macPattern = Pattern.compile("(?:\\w{2}-){5}\\w{2}");
+        while(tokenizer.hasMoreTokens()) {
+            String line = tokenizer.nextToken().trim();
+            
+            if ( line.toLowerCase().contains("disconnected") ) skipMac = true;
+
+            Matcher m = macPattern.matcher(line);
+            if( m.find() ) {
+                if( !skipMac ) {
+                    System.out.println( m.group() );
+                    //break;
+                }
+                skipMac = false;
+            }
+        }
+    }
+    
+    private static String getProcessResponse(String command) throws Exception
+    {
+        Process p = Runtime.getRuntime().exec(command);
+        InputStream stdoutStream = new BufferedInputStream(p.getInputStream());
+        StringBuffer buffer= new StringBuffer();
+        for (;;) {
+            int c = stdoutStream.read();
+            if (c == -1) break;
+            buffer.append((char)c);
+        }
         
-        //System.out.println( HTMLBuilder.toHhtml(data) );
+        String outputText = buffer.toString();
+        stdoutStream.close();
+        return outputText;
     }
     
 }

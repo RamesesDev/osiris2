@@ -19,6 +19,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * to get system profile in mac = /usr/sbin/system_profiler
@@ -99,16 +101,44 @@ public abstract class MachineInfo {
         
         public String getMacAddress() throws Exception 
         {
-            if(macAddress !=null) return macAddress;
-            Process p = Runtime.getRuntime().exec( "getmac /fo table /nh" );
-            BufferedReader br = new BufferedReader((new InputStreamReader(p.getInputStream())));
-            String line;
+            if(macAddress != null) return macAddress;
             
-            //it returns the first macaddress found
-            while((line=br.readLine())!=null) {
-                if(line.trim().length()>0) {
-                    macAddress = line.split("\\s")[0].trim();
-                    return macAddress;
+            try {
+                Process p = Runtime.getRuntime().exec( "getmac /fo table /nh" );
+                BufferedReader br = new BufferedReader((new InputStreamReader(p.getInputStream())));
+                String line;
+
+                //it returns the first macaddress found
+                while((line=br.readLine())!=null) {
+                    if(line.trim().length()>0) {
+                        macAddress = line.split("\\s")[0].trim();
+                        return macAddress;
+                    }
+                }
+            }
+            //if getmac is not available use the ipconfig /all command on windows
+            catch(IOException ioe) {
+                String response = getProcessResponse("ipconfig /all");
+                StringTokenizer tokenizer = new StringTokenizer(response, "\n");
+
+                int counter = 1;
+                boolean skipMac = false;
+                Pattern macPattern = Pattern.compile("(?:\\w{2}-){5}\\w{2}");
+                
+                //returns the first non-disconnected macaddress
+                while(tokenizer.hasMoreTokens()) {
+                    String line = tokenizer.nextToken().trim();
+
+                    if ( line.toLowerCase().contains("disconnected") ) skipMac = true;
+
+                    Matcher m = macPattern.matcher(line);
+                    if( m.find() ) {
+                        if( !skipMac ) {
+                            macAddress = m.group();
+                            return macAddress;
+                        }
+                        skipMac = false;
+                    }
                 }
             }
             
