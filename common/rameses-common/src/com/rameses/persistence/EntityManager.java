@@ -321,7 +321,7 @@ public class EntityManager {
     }
     
     public Object save( String schemaName, Object data, Map vars) {
-        return save(schemaName, data,true,true,null);
+        return save(schemaName, data,true,true,vars);
     }
     
     public Object save( String schemaName, Object data, boolean create, boolean update ) {

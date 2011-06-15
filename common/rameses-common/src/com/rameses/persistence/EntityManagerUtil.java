@@ -32,7 +32,7 @@ public final class EntityManagerUtil {
                         System.out.println("param->"+s+ "="+ se.getParameterValues().get(i++) );
                     }
                 }
-                if( vars!=null ) se.setParameters(vars);
+                if( vars!=null ) se.setVars(vars);
                 se.execute();
             }
         } catch(Exception e) {
