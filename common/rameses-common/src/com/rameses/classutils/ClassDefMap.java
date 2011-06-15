@@ -24,7 +24,9 @@ public final class ClassDefMap {
     public static Map toMap( Class clazz ) {
         Map map = new HashMap();
         map.put("name", clazz.getSimpleName() );
-        map.put("package", clazz.getPackage().getName());
+        if(clazz.getPackage()!=null) {
+            map.put("package", clazz.getPackage().getName());
+        }
         map.put("fullname", clazz.getName());
         
         
