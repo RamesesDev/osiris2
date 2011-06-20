@@ -1,7 +1,9 @@
 package com.rameses.invoker.client;
 
+import com.rameses.io.StreamUtil;
 import com.rameses.util.CipherUtil;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -22,6 +24,7 @@ public class HttpInvokerClient {
     
     private String[] hosts;
     private int timeout = 10000;
+    private int readTimeout = -1;
     
     public HttpInvokerClient() {
         
@@ -82,6 +85,7 @@ public class HttpInvokerClient {
             HttpURLConnection conn = null;
             ObjectOutputStream out = null;
             ObjectInputStream in = null;
+            InputStream is = null;
             try {
                 Object[] data = filterRequest( params );
                 
@@ -92,23 +96,38 @@ public class HttpInvokerClient {
                 URL url = new URL(urlHost.toString());
                 
                 conn = (HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(timeout);
-                //conn.setReadTimeout(timeout);
+                if( timeout > 0 ) {
+                    conn.setConnectTimeout(timeout);
+                }
+                if( readTimeout > 0 ) {
+                    conn.setReadTimeout(readTimeout);
+                }
+                
                 conn.setDoOutput(true);
                 conn.setUseCaches(false);
                 
                 out = new ObjectOutputStream(conn.getOutputStream());
                 
                 out.writeObject(data);
-                in = new ObjectInputStream(conn.getInputStream());
+                
+                try {
+                    is = conn.getInputStream();
+                }
+                catch(Exception e) {
+                    throw new Exception(StreamUtil.toString( conn.getErrorStream() ));
+                }
+                
+                in = new ObjectInputStream(is);
+
                 retval =  filterResponse(in.readObject());
                 if( (retval instanceof String) && retval.equals("#NULL")  ) {
                     retval = null;
                 }
                 if( retval instanceof Exception )
                     throw (Exception)retval;
-                
+
                 break;
+
             } 
             catch (Exception ex) {
                 if( (ex instanceof UnknownHostException)
@@ -132,6 +151,7 @@ public class HttpInvokerClient {
                 if (out != null) try { out.close(); } catch (Exception ign){;}
                 if (in != null) try { in.close(); } catch (Exception ign){;}
                 if (conn != null) try { conn.disconnect(); } catch (Exception ign){;}
+                if (is != null) try { is.close(); } catch(Exception ign){;}
             }
         }
         return retval;
@@ -186,6 +206,14 @@ public class HttpInvokerClient {
     
     public void setAppContext(String appContext) {
         this.appContext = appContext;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
     }
     
 }

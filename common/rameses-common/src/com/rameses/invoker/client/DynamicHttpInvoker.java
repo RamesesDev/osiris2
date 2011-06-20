@@ -19,6 +19,9 @@ import java.util.Map;
 public final class DynamicHttpInvoker {
     
     private HttpScriptService service;
+    private int readTimeout = -1;
+    private int connectionTimeout = -1;
+    
 
     public DynamicHttpInvoker(String host, String appContext, boolean secured ) {
         HttpInvokerClient client = new HttpInvokerClient();   
@@ -26,6 +29,8 @@ public final class DynamicHttpInvoker {
             throw new RuntimeException("Host is required");
         client.setHost( host );
         client.setHosts(new String[]{host});
+        if( readTimeout > 0 ) client.setReadTimeout(readTimeout);
+        if( connectionTimeout > 0 ) client.setTimeout( connectionTimeout );
         if(appContext!=null) client.setAppContext( appContext );
         client.setSecured( secured );
         service = new HttpScriptService(client);
@@ -46,6 +51,27 @@ public final class DynamicHttpInvoker {
     public Action create(String serviceName, Map env) {
         return new Action(serviceName, service, env);
     }
+    
+    public HttpScriptService getService() {
+        return service;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+    
 
     public final static class Action {
         
@@ -76,11 +102,5 @@ public final class DynamicHttpInvoker {
         }
     }
 
-    public HttpScriptService getService() {
-        return service;
-    }
-    
-    
-    
     
 }
