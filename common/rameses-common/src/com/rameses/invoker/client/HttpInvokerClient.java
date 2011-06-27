@@ -96,10 +96,10 @@ public class HttpInvokerClient {
                 URL url = new URL(urlHost.toString());
                 
                 conn = (HttpURLConnection) url.openConnection();
-                if( timeout > 0 ) {
+                if( timeout >= 0 ) {
                     conn.setConnectTimeout(timeout);
                 }
-                if( readTimeout > 0 ) {
+                if( readTimeout >= 0 ) {
                     conn.setReadTimeout(readTimeout);
                 }
                 
@@ -114,7 +114,11 @@ public class HttpInvokerClient {
                     is = conn.getInputStream();
                 }
                 catch(Exception e) {
-                    throw new Exception(StreamUtil.toString( conn.getErrorStream() ));
+                    InputStream es = conn.getErrorStream();
+                    if( es != null )
+                        throw new Exception(StreamUtil.toString( es ));
+                    else
+                        throw e;
                 }
                 
                 in = new ObjectInputStream(is);

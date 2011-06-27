@@ -114,6 +114,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         setRowMargin(0);
         setShowVerticalLines(true);
         setAutoResize(true);
+        setRowHeight(19);
         
         if ( table.getEvenBackground() == null ) {
             Color bg = (Color) UIManager.get("Table.evenBackground");

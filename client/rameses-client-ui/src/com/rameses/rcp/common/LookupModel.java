@@ -2,6 +2,9 @@ package com.rameses.rcp.common;
 
 import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.framework.UIController;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 //import com.rameses.common.annotations.Controller;
 
@@ -11,24 +14,44 @@ import com.rameses.rcp.framework.UIController;
  *    immediately return a result without popping the lookup
  *    dialog. null null is the default
  */
-public abstract class LookupModel extends PageListModel {
+public class LookupModel extends PageListModel {
     
     @Controller
     protected UIController controller;
     
     private LookupSelector selector;
+    private List emptyList;
     
     
     public LookupModel() {
         super();
     }
     
+    //overridable methods---
+    public Object getSelectedValue() {
+        return ( getSelectedItem().getItem()!=null ) ? 
+               getSelectedItem().getItem() : null;
+    }
+    
+    public List fetchList(Map o) {
+        if( emptyList != null ) return emptyList;
+        
+        emptyList = new ArrayList();
+        return emptyList;
+    }
+    
+    public boolean selectSingleResult() {
+        return false;
+    }
+    
+    public boolean errorOnEmpty() {
+        return false;
+    }
+    
+    //default implementation for select and cancel
     public String select() {
-        if( getSelectedItem().getItem()!=null ) {
-            Object o = getSelectedItem().getItem();
-            if(selector!=null) {
-                selector.select(o);
-            }
+        if(selector!=null) {
+            selector.select( getSelectedValue() );
         }
         return "_close";
     }
@@ -47,15 +70,12 @@ public abstract class LookupModel extends PageListModel {
         return "_close";
     }
     
-    public void setSelector(LookupSelector s) {
-        this.selector = s;
-    }
-    
+    //invoked when the lookup screen is shown
     public boolean show(String t) {
         setSearch(t);
         load();
         
-        if(getDataList().size()==0) {
+        if(errorOnEmpty() && getDataList().size()==0) {
             throw new IllegalStateException("There are no records found");
         }
         
@@ -75,15 +95,19 @@ public abstract class LookupModel extends PageListModel {
         return this;
     }
     
-    //overridable
-    public boolean selectSingleResult() {
-        return false;
-    }
-    
     public void destroy() {
         selector = null;
         super.destroy();
     }
     
+    //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
+    public LookupSelector getSelector() {
+        return selector;
+    }
+    
+    public void setSelector(LookupSelector s) {
+        this.selector = s;
+    }
+    //</editor-fold>
     
 }

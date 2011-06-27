@@ -11,6 +11,7 @@ import com.rameses.common.ExpressionResolver;
 import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.StyleRule;
+import com.rameses.rcp.control.AbstractIconedTextField;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
 import com.rameses.rcp.control.XDateField;
@@ -183,6 +184,12 @@ public final class TableUtil {
             }
         }
         
+        if( editor instanceof AbstractIconedTextField ) {
+            AbstractIconedTextField aitf = (AbstractIconedTextField) editor;
+            if( col.getIcon() != null ) aitf.setIcon( col.getIcon() );
+            if( col.getIconOrientation() != null ) aitf.setOrientation( col.getIconOrientation() );
+        }
+        
         
         editor.setBackground(FOCUS_BG);
         Font font = (Font) UIManager.get("Table.font");
@@ -206,7 +213,7 @@ public final class TableUtil {
                 if( col.getItems() instanceof String )
                     cbox.setItems( (String) col.getItems() );
                 else
-                    cbox.setItemsObject( cbox.getItems() );
+                    cbox.setItemsObject( col.getItems() );
             }
             if ( col.isRequired() ) {
                 cbox.setAllowNull(false);

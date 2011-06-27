@@ -37,7 +37,12 @@ public class Column implements Serializable {
     
     //icon support
     private String iconVisibleWhen;
+    
+    //icon text field support
     private String icon;
+    private String iconOrientation;
+    
+    //tree table support
     private String toggleIcon;
     private String headerIcon;
     
@@ -102,6 +107,19 @@ public class Column implements Serializable {
         col.primary = primary;
         col.htmlDisplay = htmlDisplay;
         col.format = format;
+        col.required = required;
+        col.fieldType = fieldType;
+        col.alignment = alignment;
+        col.vAlignment = vAlignment;
+        col.iconVisibleWhen = iconVisibleWhen;
+        col.icon = icon;
+        col.iconOrientation = iconOrientation;
+        col.toggleIcon = toggleIcon;
+        col.headerIcon = headerIcon;
+        col.expression = expression;
+        col.category = category;
+        col.checkValue = checkValue;
+        col.uncheckValue = uncheckValue;
         return col;
     }
     
@@ -325,7 +343,6 @@ public class Column implements Serializable {
     public void setCategory(String category) {
         this.category = category;
     }
-    //</editor-fold>
 
     public String getToggleIcon() {
         return toggleIcon;
@@ -358,5 +375,13 @@ public class Column implements Serializable {
     public void setCheckValue(Object checkValue) {
         this.checkValue = checkValue;
     }
-    
+    //</editor-fold>
+
+    public String getIconOrientation() {
+        return iconOrientation;
+    }
+
+    public void setIconOrientation(String iconOrientation) {
+        this.iconOrientation = iconOrientation;
+    }
 }

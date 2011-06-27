@@ -32,6 +32,7 @@ import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputVerifier;
 import javax.swing.JComboBox;
+import javax.swing.JComboBox.KeySelectionManager;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -240,7 +241,11 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
     
     public void setValue(Object value) {
         if ( Beans.isDesignTime() ) return;
-        if ( value instanceof KeyEvent ) return;
+        
+        if ( value instanceof KeyEvent ) {
+            processKeyEventValue((KeyEvent)value);
+            return;
+        }
         
         if ( value == null && !allowNull ) {
             ComboItem c = (ComboItem) getItemAt(0);
@@ -254,6 +259,14 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
                     break;
                 }
             }
+        }
+    }
+    
+    private void processKeyEventValue(KeyEvent evt) {
+        KeySelectionManager ksm = getKeySelectionManager();
+        if( ksm != null ) {
+            int idx = ksm.selectionForKey(evt.getKeyChar(), model);
+            if( idx >= 0 ) model.setSelectedItem( model.getElementAt(idx) );
         }
     }
     

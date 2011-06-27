@@ -102,6 +102,8 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
     }
     
     public void setOrientation(String orient) {
+        if( orient != null ) orient = orient.toUpperCase();
+        
         this.orientation = orient;
         Insets insets = super.getMargin();
         Insets actualInsets = null;
@@ -140,7 +142,11 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
                 
                 URL url = loader.getResource(path);                
                 setIcon( new ImageIcon(url) );
-            }catch(Exception ex) {}
+            }catch(Exception ex) {
+                if( ClientContext.getCurrentContext().isDebugMode() ) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
     
