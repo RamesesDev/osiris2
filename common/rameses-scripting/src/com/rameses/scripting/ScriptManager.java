@@ -206,7 +206,10 @@ public abstract class ScriptManager {
                 }
             }
         }
-        
+    }
+
+    public void maintainPool() {
+        if(scriptObjectPool!=null) scriptObjectPool.maintainPoolSize();
     }
     
 }

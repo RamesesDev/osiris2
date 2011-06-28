@@ -11,14 +11,18 @@ package com.rameses.scripting;
 
 import com.rameses.annotations.Param;
 import com.rameses.classutils.ClassDef;
+import com.rameses.util.DateUtil;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -42,10 +46,13 @@ public class ScriptObject {
     private Map<String,Integer> timesAccessed = new HashMap();
     
     private int minPoolSize = 5;
+    private int maxPoolSize = 200;
+    private Date lastPoolDate;
     
     public ScriptObject(String name, ScriptLoader loader) {
         this.name = name;
         this.scriptLoader = loader;
+        this.lastPoolDate = new Date();
     }
     
     public void init() {
@@ -66,6 +73,8 @@ public class ScriptObject {
     }
     
     public void addBackToPool(ScriptObjectPoolItem p) {
+        this.lastPoolDate = new Date();
+        if(pool.size()>maxPoolSize) return;
         pool.add( p );
     }
     
@@ -167,4 +176,31 @@ public class ScriptObject {
     public String getName() {
         return name;
     }
+
+    public void setMinPoolSize(int minPoolSize) {
+        this.minPoolSize = minPoolSize;
+    }
+
+    public int getMaxPoolSize() {
+        return maxPoolSize;
+    }
+
+    public void setMaxPoolSize(int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
+    }
+    
+    //run maintenance only if 1 hour has elapsed from last pooled date
+    public void maintainPoolSize() {
+        Date today = new Date();
+        if(DateUtil.diff(this.lastPoolDate, today,Calendar.HOUR) > 1) {
+            List<ScriptObjectPoolItem> deadPool = new Vector();
+            pool.drainTo(deadPool);
+            //retain only 5 objects
+            for(int i=0; i<minPoolSize; i++) {
+                pool.add(deadPool.get(i));
+            }
+            deadPool.clear();
+        }
+    }
+    
 }

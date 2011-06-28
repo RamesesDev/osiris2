@@ -49,5 +49,10 @@ public class ScriptObjectPool extends HashMap {
         return map.remove(key);
     }
 
+    public void maintainPoolSize() {
+        for(ScriptObject so : map.values()) {
+            so.maintainPoolSize();
+        }
+    }
     
 }
