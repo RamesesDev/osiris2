@@ -19,8 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.rmi.server.UID;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -66,40 +64,30 @@ public class ScriptService implements ScriptServiceLocal {
     
 
     public void pushResponse(String requestId, Object data) {
-        if(data instanceof Exception) {
-            try {
-                StringWriter sw = new StringWriter();
-                ((Exception)data).printStackTrace(new PrintWriter(sw));
-                SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
-                SqlExecutor qe = ctx.createNamedExecutor("scripting:async-error");
-                qe.setParameter(1,"RESP:"+new UID());
-                qe.setParameter(2, requestId );
-                qe.setParameter(3, sw.toString());
-                qe.execute();
+        ObjectOutputStream oos = null;
+        ByteArrayOutputStream bos = null;
+        try {
+            int idx = 0;
+            if((data instanceof String) && ((String)data).equalsIgnoreCase("EOF") ) {
+                idx = 100;
             }
-            catch(Exception ign){;}
+            bos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject( data );
+            SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
+            SqlExecutor qe = ctx.createNamedExecutor("scripting:async-push");
+            qe.setParameter(1,"RESP:"+new UID());
+            qe.setParameter(2, requestId );
+            qe.setParameter(3, bos.toByteArray());
+            qe.setParameter(4, idx);
+            qe.execute();
         }
-        else {
-            ObjectOutputStream oos = null;
-            ByteArrayOutputStream bos = null;
-            try {
-                bos = new ByteArrayOutputStream();
-                oos = new ObjectOutputStream(bos);
-                oos.writeObject( data );
-                SqlContext ctx  = SqlManager.getInstance().createContext(AppContext.getSystemDs());
-                SqlExecutor qe = ctx.createNamedExecutor("scripting:async-push");
-                qe.setParameter(1,"RESP:"+new UID());
-                qe.setParameter(2, requestId );
-                qe.setParameter(3, bos.toByteArray());
-                qe.execute();
-            }
-            catch(Exception e) {
-                throw new EJBException(e);
-            }
-            finally {
-                try {oos.close();} catch(Exception ign){;}
-                try {bos.close();} catch(Exception ign){;}
-            }
+        catch(Exception e) {
+            throw new EJBException(e);
+        }
+        finally {
+            try {oos.close();} catch(Exception ign){;}
+            try {bos.close();} catch(Exception ign){;}
         }
     }
 

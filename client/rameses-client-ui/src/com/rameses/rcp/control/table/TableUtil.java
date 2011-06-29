@@ -12,6 +12,7 @@ import com.rameses.rcp.common.AbstractListModel;
 import com.rameses.rcp.common.Column;
 import com.rameses.rcp.common.StyleRule;
 import com.rameses.rcp.control.AbstractIconedTextField;
+import com.rameses.rcp.control.XActionTextField;
 import com.rameses.rcp.control.XCheckBox;
 import com.rameses.rcp.control.XComboBox;
 import com.rameses.rcp.control.XDateField;
@@ -25,7 +26,10 @@ import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -36,6 +40,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -78,6 +84,7 @@ public final class TableUtil {
         editors.put("integer", XNumberField.class);
         editors.put("decimal", XNumberField.class);
         editors.put("lookup", XLookupField.class);
+        editors.put("actiontext", XActionTextField.class);
         
         //map of renderers
         TableCellRenderer renderer = new StringRenderer();
@@ -88,6 +95,7 @@ public final class TableUtil {
         renderers.put("date", renderer);
         renderers.put("combo", renderer);
         renderers.put("lookup", renderer);
+        renderers.put("actiontext", renderer);
         
         renderer = new BooleanRenderer();
         renderers.put("boolean", renderer);
@@ -135,7 +143,7 @@ public final class TableUtil {
         editor.putClientProperty(JTable.class, true);
         
         //remove all focus listeners (we don't need it in the table)
-        for (FocusListener l: editor.getFocusListeners() ) {
+        for (FocusListener l : editor.getFocusListeners() ) {
             editor.removeFocusListener(l);
         }
         
@@ -182,14 +190,27 @@ public final class TableUtil {
                 xdf.setInputFormat( col.getFormat() );
                 xdf.setOutputFormat( col.getFormat() );
             }
+        } else if ( editor instanceof XActionTextField ) {
+            XActionTextField atf = (XActionTextField) editor;
+            
+            //remove action listeners (we don't need them)
+            //lets just let the user click the icon to fire the action
+            for(ActionListener l : atf.getActionListeners()) atf.removeActionListener(l);
+            
+            if( col.getAction() instanceof String )
+                atf.setActionName( col.getAction()+"" );
+            else
+                atf.setActionObject( col.getAction() );
+            
+            //set default icon
+            atf.setIcon(new DefaultActionTextIcon());
         }
         
         if( editor instanceof AbstractIconedTextField ) {
             AbstractIconedTextField aitf = (AbstractIconedTextField) editor;
             if( col.getIcon() != null ) aitf.setIcon( col.getIcon() );
             if( col.getIconOrientation() != null ) aitf.setOrientation( col.getIconOrientation() );
-        }
-        
+        }        
         
         editor.setBackground(FOCUS_BG);
         Font font = (Font) UIManager.get("Table.font");
@@ -489,6 +510,30 @@ public final class TableUtil {
             
             component.setSelected("true".equals(value+""));
         }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="  DefaultActionTextIcon (class)  ">
+    private static class DefaultActionTextIcon implements Icon {
+            
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            JButton b = new JButton("...");
+            b.setSize(getIconWidth(), getIconHeight());
+
+            Rectangle r = g.getClipBounds();
+            Graphics g2 = g.create(x, y, r.width, r.height);
+            b.paint(g2);
+            g2.dispose();
+        }
+
+        public int getIconWidth() {
+            return 16;
+        }
+
+        public int getIconHeight() {
+            return 16;
+        }
+        
     }
     //</editor-fold>
     

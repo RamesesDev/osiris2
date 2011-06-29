@@ -222,6 +222,8 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
             editors.put(i, editor);
             add(editor);
         }
+        itemBinding.setOwner( binding.getOwner() );
+        itemBinding.setViewContext( binding.getViewContext() );
         itemBinding.init(); //initialize item binding
     }
     

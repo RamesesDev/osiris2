@@ -8,6 +8,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.common.ExpressionResolver;
+import com.rameses.common.MethodResolver;
 import com.rameses.common.PropertyResolver;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
@@ -17,14 +18,20 @@ import com.rameses.util.ValueUtil;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -41,6 +48,7 @@ public class XList extends JList implements UIControl, ListSelectionListener {
     private String items;
     private boolean dynamic;
     private Insets padding = new Insets(1,3,1,3);
+    private String openAction;
     
     private DefaultListModel model;
     
@@ -59,6 +67,13 @@ public class XList extends JList implements UIControl, ListSelectionListener {
                 public int getSize() { return strings.length; }
                 public Object getElementAt(int i) { return strings[i]; }
             });
+        }
+        else {
+            registerKeyboardAction(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    openItem();
+                }
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
         }
     }
     
@@ -174,6 +189,34 @@ public class XList extends JList implements UIControl, ListSelectionListener {
         }
     }
     
+    private void openItem() {
+        try {
+            if( ValueUtil.isEmpty(openAction) ) return;
+            
+            MethodResolver mr = ClientContext.getCurrentContext().getMethodResolver();
+            Object outcome = mr.invoke(binding.getBean(), openAction, null, null);
+            if( outcome == null ) return;
+
+            binding.fireNavigation(outcome);
+        }
+        catch(Exception e) {
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void processMouseEvent(MouseEvent e) {
+        if( e.getClickCount() == 2 && e.getID() == MouseEvent.MOUSE_PRESSED) {
+            openItem();
+            e.consume();
+            return;
+        }
+        
+        super.processMouseEvent(e);
+    }
+    
+    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String[] getDepends() {
         return depends;
@@ -242,7 +285,6 @@ public class XList extends JList implements UIControl, ListSelectionListener {
         if ( padding == null ) padding = new Insets(0,0,0,0);
         this.padding = padding;
     }
-    //</editor-fold>
     
     public int getCellVerticalAlignment() {
         return cellVerticalAlignment;
@@ -260,7 +302,15 @@ public class XList extends JList implements UIControl, ListSelectionListener {
         this.cellHorizontalAlignment = cellHorizontalAlignment;
     }
     
-    
+    public String getOpenAction() {
+        return openAction;
+    }
+
+    public void setOpenAction(String openAction) {
+        this.openAction = openAction;
+    }
+    //</editor-fold>
+
     
     //<editor-fold defaultstate="collapsed" desc="  DefaultCellRenderer (class)  ">
     private class DefaultCellRenderer implements ListCellRenderer {
@@ -312,5 +362,5 @@ public class XList extends JList implements UIControl, ListSelectionListener {
         }
     }
     //</editor-fold>
-    
+
 }

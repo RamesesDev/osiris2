@@ -117,11 +117,15 @@ public class Binding {
     public Binding() {}
     
     public Binding(UIViewPanel owner) {
-        this.owner = owner;
+        setOwner(owner);
     }
     
     public UIViewPanel getOwner() {
         return owner;
+    }
+    
+    public void setOwner(UIViewPanel owner) {
+        this.owner = owner;
     }
     
     public void addValidator(Validator validator) {

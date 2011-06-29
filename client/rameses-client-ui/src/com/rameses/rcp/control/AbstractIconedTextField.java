@@ -15,6 +15,7 @@ import java.awt.event.MouseMotionListener;
 import java.beans.Beans;
 import java.net.URL;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.border.Border;
 
@@ -31,7 +32,7 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
     private static final int XPAD = 4;
     private static final int MARGIN_PAD = 5;
     
-    private ImageIcon icon;
+    private Icon icon;
     private int imgWidth = 0;
     private int imgHeight = 0;
     private String orientation = ICON_ON_RIGHT;
@@ -71,10 +72,17 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
             }
             
             if(imgWidth > 0) {
-                if(orientation.toUpperCase() == "RIGHT")
-                    g2.drawImage( icon.getImage(), this.getWidth() - (imgWidth + XPAD), (this.getHeight() - imgHeight) / 2 , null);
-                else
-                    g2.drawImage( icon.getImage(), XPAD, (this.getHeight() - imgHeight) / 2 , null);
+                int x=0 ,y=0;
+                if(orientation.toUpperCase() == "RIGHT") {
+                    x = this.getWidth() - (imgWidth + XPAD);
+                    y = (this.getHeight() - imgHeight) / 2;
+                }
+                else {
+                    x = XPAD;
+                    y = (this.getHeight() - imgHeight) / 2;
+                }
+                
+                icon.paintIcon(this, g2, x, y);
             }
             g2.dispose();
         }
@@ -116,11 +124,11 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         }
     }
     
-    public ImageIcon getIcon() {
+    public Icon getIcon() {
         return icon;
     }
     
-    public void setIcon(ImageIcon icon) {
+    public void setIcon(Icon icon) {
         this.icon = icon;
         if ( icon != null ) {
             imgWidth = icon.getIconWidth();

@@ -54,6 +54,9 @@ public class Column implements Serializable {
     private Object checkValue;
     private Object uncheckValue;
     
+    //action text support
+    private Object action;
+    
     
     private Map properties = new HashMap();
     
@@ -101,7 +104,7 @@ public class Column implements Serializable {
         col.resizable = resizable;
         col.editable = editable;
         col.visible = visible;
-        col.setProperties(getProperties());
+        col.setProperties(new HashMap(getProperties()));
         col.fieldname = fieldname;
         col.rowheight = rowheight;
         col.primary = primary;
@@ -120,6 +123,7 @@ public class Column implements Serializable {
         col.category = category;
         col.checkValue = checkValue;
         col.uncheckValue = uncheckValue;
+        col.action = action;
         return col;
     }
     
@@ -383,5 +387,13 @@ public class Column implements Serializable {
 
     public void setIconOrientation(String iconOrientation) {
         this.iconOrientation = iconOrientation;
+    }
+
+    public Object getAction() {
+        return action;
+    }
+
+    public void setAction(Object action) {
+        this.action = action;
     }
 }

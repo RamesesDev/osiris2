@@ -17,7 +17,7 @@ public class TestPanel extends javax.swing.JPanel {
     private void initComponents() {
         xActionBar1 = new com.rameses.rcp.control.XActionBar();
 
-        xActionBar1.setBackground(new java.awt.Color(102, 102, 102));
+        xActionBar1.setBackground(new java.awt.Color(204, 0, 0));
         xActionBar1.setPadding(new java.awt.Insets(5, 5, 5, 5));
         xActionBar1.setUseToolBar(false);
 

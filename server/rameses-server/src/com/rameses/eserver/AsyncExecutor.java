@@ -84,6 +84,7 @@ public class AsyncExecutor implements Runnable {
                     }
                 }
             }
+            ScriptServiceDelegate.getScriptService().pushResponse( this.requestId, "EOF" );
         } 
         catch(Exception ex) {
             try {

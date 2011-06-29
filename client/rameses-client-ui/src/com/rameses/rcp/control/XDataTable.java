@@ -196,10 +196,10 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         if ( handler != null ) {
             Object obj = UIControlUtil.getBeanValue(this, handler);
             if ( obj instanceof AbstractListModel ) {
-                listModel = (AbstractListModel) obj;
-                table.setListModel(listModel);
+                listModel = (AbstractListModel) obj;                
                 table.setListener(this);
                 table.setBinding(binding);
+                table.setListModel(listModel);
                 scrollBar.setListModel(listModel);
                 
                 if ( rowHeaderView != null )
@@ -242,7 +242,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                 Object outcome = listModel.openSelectedItem();
                 if ( outcome == null ) return;
                 
-                ControlSupport.fireNavigation(this, outcome);
+                binding.fireNavigation(outcome);
                 
             } catch(Exception ex){
                 MsgBox.err(new IllegalStateException(ex));
