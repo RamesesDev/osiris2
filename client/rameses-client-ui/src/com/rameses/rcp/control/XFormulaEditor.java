@@ -129,7 +129,8 @@ public class XFormulaEditor extends JTextPane implements UIInput {
         document.getKeywords().addAll( list );
         
         if( model != null ) {
-            document.getKeywords().addAll( model.getKeywords() );
+            List<String> items = model.getKeywords();
+            if( items != null ) document.getKeywords().addAll( items );
         }
     }
     
