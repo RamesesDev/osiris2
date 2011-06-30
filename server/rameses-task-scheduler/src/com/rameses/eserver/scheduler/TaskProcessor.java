@@ -97,6 +97,7 @@ public class TaskProcessor implements Runnable {
                     }
                     else {
                         ctx.createNamedExecutor("scheduler:update-next-date").setParameter(1,null).setParameter(2,taskId).execute();
+                        ctx.createNamedExecutor("scheduler:remove-system-task").setParameter(1,taskId).execute();
                     }
                 } catch(Exception e) {
                     e.printStackTrace();

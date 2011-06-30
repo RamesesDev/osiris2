@@ -1,6 +1,6 @@
-import com.rameses.web.support.JsonUtil;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import junit.framework.*;
 /*
  * Test1.java
@@ -16,14 +16,17 @@ public class Test1 extends TestCase {
         super(testName);
     }
     
-    public void testHello() {
-        Map resp = new HashMap();
-        resp.put("objid", "FILE-" + new java.rmi.server.UID());
-        resp.put("filename", "one");
-        
-        String s = JsonUtil.toString( resp );
-        System.out.println( s );
-        
-    }
+    public void testHello() throws Exception {
+        File f = new File("d:/NEW_BUGS_FOUND.txt");
+        FileInputStream fr = new FileInputStream(f);
+        BufferedInputStream b = new BufferedInputStream(fr,1094*8);
+        int j = 0;
+        int counter = 0;
+        while((j=b.read())!=-1) {
+            System.out.println(counter++);
+        }
+        b.close();
+        fr.close();
+    }    
     
 }

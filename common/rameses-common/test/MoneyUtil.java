@@ -1,7 +1,6 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.Date;
 
 public final class MoneyUtil {
     public final static int DEFAULT_SCALE = 2;
@@ -11,7 +10,7 @@ public final class MoneyUtil {
         BigDecimal d = new BigDecimal(amount+"");
         return  d.setScale(2, RoundingMode.HALF_UP).doubleValue() ;
     }
-    
+    /*
     public static double calculateMonthInterest( double amount, double rate, Date fromDate, Date toDate ) {
         double term = (double)DateUtil.getMonthDiff( fromDate, toDate );
         return round(amount * rate * term);
@@ -24,7 +23,7 @@ public final class MoneyUtil {
         return interest;
         
     }
-    
+    */
     public static double qtrValue( double amount, int qtr ) {
         if( qtr == 0 )
             return amount;

@@ -10,6 +10,7 @@
 package com.rameses.web.support;
 
 import com.rameses.classutils.ClassDefMap;
+import com.rameses.common.AsyncHandler;
 import com.rameses.invoker.client.DynamicHttpInvoker;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
@@ -50,6 +51,7 @@ public class RemoteJSProxyService extends HttpServlet {
             if(host==null || host.trim().length()==0) host = np.getHost();
             DynamicHttpInvoker hp = new DynamicHttpInvoker(host,appContext);
             byte[] bytes = hp.getService().getScriptInfo( svc );
+            
             GroovyClassLoader loader = new GroovyClassLoader();
             Class clazz = loader.parseClass(new ByteArrayInputStream(bytes));
             Map classMap = ClassDefMap.toMap(clazz);
@@ -69,26 +71,43 @@ public class RemoteJSProxyService extends HttpServlet {
         w.write( "this.proxy =  new DynamicProxy(\"" + context + "\").create(\""+ name + "\");\n"  );
         
         //write the env variables here...
-        w.write( "this.proxy.env={user:'guest',session_checked:true};\n" );
+        w.write( "this.proxy.env={session_checked:true};\n" );
         
         List<Map> methods = (List)m.get("methods");
         for( Map mth : methods ) {
+            //check first if the method contains an AsyncHandler
+            StringBuffer args = new StringBuffer();
+            StringBuffer parms = new StringBuffer();
+
             String methodName = (String)mth.get("name");
             List params = (List)mth.get("params");
-            w.write("this." + methodName + "= function(");
+            
+            boolean includeMethod = true;
             int i=0;
+            
+            //search each parameter if it has AsyncHandler. do not continue if there is.
             for(i=0;i<params.size();i++) {
-                w.write( "p" + i + ",");
+                String clz = (String)params.get(i);
+                if(clz.equals(AsyncHandler.class.getName())) {
+                    includeMethod = false;
+                    break;
+                }
+                //arguments
+                args.append( "p" + i + ",");
+                
+                //parameters
+                if( i > 0 ) parms.append(", ");
+                parms.append( "p" + i);
             }
+            if(!includeMethod) continue;
+            
+            w.write("this." + methodName + "= function(");
+            w.write(args.toString());
             w.write("handler ) {\n");
             if( !mth.get("returnType").equals("void") ) w.write("return ");
             w.write( "this.proxy.invoke(\"" + methodName + "\"" );
-            w.write( ", [");
-            for(i=0;i<params.size();i++) {
-                if( i > 0 ) w.write(", ");
-                w.write( "p" + i);
-            }
-            w.write( "]");
+            w.write( ",");
+            w.write("["+parms.toString()+"]");
             w.write(", handler ); \n");
             w.write("} \n");
         }

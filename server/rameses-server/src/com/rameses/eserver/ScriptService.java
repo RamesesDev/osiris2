@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.common.AsyncResponse;
 import com.rameses.scripting.ScriptExecutor;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptServiceLocal;
@@ -59,7 +60,10 @@ public class ScriptService implements ScriptServiceLocal {
         String requestId = "ASYNC:"+new UID();
         ExecutorService svc = Executors.newSingleThreadExecutor();
         svc.execute( new AsyncExecutor(requestId, name,method,params, env, asyncInfo) );
-        return requestId;
+        AsyncResponse response = new AsyncResponse();
+        response.put("id", requestId);
+        response.put("classname", response.getClass().getName() );
+        return response;
     }
     
 

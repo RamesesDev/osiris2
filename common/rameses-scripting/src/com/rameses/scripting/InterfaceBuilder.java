@@ -11,6 +11,7 @@ package com.rameses.scripting;
 
 import com.rameses.annotations.Async;
 import com.rameses.annotations.ProxyMethod;
+import com.rameses.common.AsyncHandler;
 import java.lang.reflect.Method;
 
 /**
@@ -34,7 +35,7 @@ public final class InterfaceBuilder {
                     for(int j=0; j<parms.length-1;j++) {
                         parms[j] = m.getParameterTypes()[j];
                     }
-                    parms[parms.length-1] = Object.class;
+                    parms[parms.length-1] = AsyncHandler.class;
                     buildMethodText(m, sbody, parms );
                 }
             }

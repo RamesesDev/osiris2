@@ -7,9 +7,7 @@
 
 package testutils;
 
-import com.rameses.util.ExprUtil;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import junit.framework.*;
 
 /**
@@ -32,10 +30,16 @@ public class PwdTest extends TestCase {
     public void testHello() {
         //System.out.println( Encoder.MD5.encode( "loren", "12345"));
         //"e791b43af91c0523b2095b3841413ece"
-        Map map = new HashMap();
-        map.put("filter", " where lastname like $P{lastname}");
-        String s = "select o from where ${filter} ";
-        System.out.println( ExprUtil.substituteValues( s, map ));
+        //Map map = new HashMap();
+        //map.put("filter", " where lastname like $P{lastname}");
+        //String s = "select o from where ${filter} ";
+        //System.out.println( ExprUtil.substituteValues( s, map ));
+        ArrayBlockingQueue aq = new ArrayBlockingQueue(2);
+        aq.add("test1");
+        aq.add("test2");
+        aq.remove("test2");
+        aq.add("test3");
+        
     }
 
 }

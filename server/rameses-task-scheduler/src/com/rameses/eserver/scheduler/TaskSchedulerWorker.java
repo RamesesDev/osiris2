@@ -57,7 +57,8 @@ public class TaskSchedulerWorker implements Runnable {
                     se.setParameter(1,taskid).setParameter(2,machineid).setParameter(3,host).execute();
                     ctx.createNamedExecutor("scheduler:remove-queue").setParameter(1,taskid).execute();
                     executor.execute(new TaskProcessor(mtask));
-                } catch(Exception ignore) {
+                } 
+                catch(Exception ignore) {
                     if(taskManager.isDebug())System.out.println("ignore sked error " + ignore.getMessage());
                 }
             }
