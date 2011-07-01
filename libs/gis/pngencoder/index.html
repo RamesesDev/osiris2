@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	<title>PNG Encoder</title>
+<style type="text/css">
+.bordered {
+	border: 1px solid black;
+	margin: 0.5em;
+	padding: 0.5em;
+}
+
+@media screen {
+	body {
+		background-color: white;
+		font-family: Helvetica, Arial, sans-serif;
+	}
+}
+
+@media print {
+	body {
+		background-color: white;
+		font-family: Times New Roman, Times, serif;
+	}
+}
+</style>
+</head>
+
+<body>
+<h2>PngEncoder - convert a Java <code>Image</code> to PNG<br />
+PngEncoderB - convert a Java <code>BufferedImage</code> to PNG</h2>
+<p>
+Written by <a href="mailto:david@catcode.com?subject=PNG Encoder">J. David Eisenberg</a>
+(<a href="../index.html">home page</a>)
+</p>
+
+<p>
+version 1.5 (<a href="changelog.txt">see change log</a>)
+</p>
+
+<h3>Purpose</h3>
+<p>
+The <code>PngEncoder</code> class takes a Java <code>Image</code> as its
+input and produces a byte array in PNG format.  This array can be saved in
+a file or sent to a client by a servlet.
+</p>
+
+<p class="bordered">
+This functionality is now included in the
+<code>javax.imageio</code> library that comes with Java 1.4.1,
+but PngEncoder may be useful for those who don&#8217;t want to require the
+latest version of Java.
+</p>
+<p>
+The source <code>Image</code> is presumed to be based on the Java
+<code>DirectColorModel</code>; that is, pixels are four-byte <code>int</code>s
+containing alpha channel, red, green, and blue information.
+Thus, this PNG encoder creates PNGs with a color type of 2 (that is,
+RGB triples) and a bit depth of 8, optionally encoding
+alpha channel information.
+This class does not work with
+an <code>IndexColorModel</code> image.
+</p>
+
+<p>
+Image data may be pre-filtered using the &#8220;sub&#8221; (previous byte)
+and &#8220;up&#8221; (previous row) filters.
+</p>
+
+<p>
+You may also set the compression level (0 through 9) as used
+in java.utils.zip.Deflater
+</p>
+
+<p>
+The <code>PngEncoderB</code> class has been designed to allow encoding
+of images that are based on an indexed color model with a palette.
+<code>PngEncoderB</code> takes a Java <code>BufferedImage</code> as its
+input and produces a corresponding set of PNG bytes. Because it
+uses a <code>BufferedImage</code>, this class requires Java 1.2.
+</p>
+
+<h3>Example for <code>PngEncoder</code></h3>
+<p>
+You may see a <a href="TestEncoder.java">sample program</a> which
+draws an clock face and saves it in an appropriately named file.
+That is, if you use the program at 3:24 PM,  and specify filter
+two with a compression level of 5, it will display a
+clock face and save that same image in a file named
+<code>clock1524_f25.png</code>.
+Its usage is as follows:
+</p>
+
+<blockquote>
+<pre>
+Usage: TestEncoder -alpha -filter <i>n</i> -compress <i>c</i>
+alpha means to use alpha encoding (default none)
+<i>n</i> is filter number 0=none (default), 1=sub, 2=up
+<i>c</i> is compression factor (0-9)
+</pre>
+</blockquote>
+
+<h3>Example for <code>PngEncoderB</code></h3>
+<p>
+This <a href="TestEncoderB.java">sample program</a> also
+draws an clock face and saves it in an appropriately named file.
+The file name is constructed as in the example above, except
+that the name ends in <code>d</code> if the image is 24-bit (direct
+color) and <code>i</code> if 8-bit (indexed color). An example
+file name might be <code>clock1524_f25d.png</code>.
+Its usage is as follows:
+</p>
+
+<blockquote>
+<pre>
+Usage: TestEncoderB -alpha -filter n -compress c -depth d
+-alpha means to use alpha encoding (default none)
+<i>n</i> is filter number 0=none (default), 1=sub, 2=up
+<i>c</i> is compression factor (0-9); 1 default
+<i>d</i> is pixel depth (8 or 24 bit); 24 default
+</pre>
+</blockquote>
+
+<h3>Source</h3>
+<p>
+You may see the
+<a href="com/keypoint/PngEncoder.java">source code for PngEncoder.java</a>
+or
+<a href="com/keypoint/PngEncoderB.java">PngEncoderB.java</a> 
+here. You may also download the entire package
+<a href="pngencoder.tar.gz">as a TAR-gzip
+file</a> or
+<a href="pngencoder.zip"> as a .zip file</a>.
+The <a href="com/keypoint/index.html">API documentation is here</a>.
+</p>
+
+<h3>License</h3>
+<p>
+This program is free software; you can redistribute it and/or
+modify it under the terms of the
+<a href="http://www.gnu.org/copyleft/lesser.html">GNU Lesser
+General Public License</a>
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+</p>
+
+<h3>References/Acknowledgments</h3>
+<p>
+Thanks to Jay Denny of <a href="http://www.keypoint.com">KeyPoint Software</a>,
+who let me develop this on company time.
+</p>
+
+<p>
+Information from <a href="http://www.cdrom.com/pub/png/spec/">the PNG
+Specification</a> was immensely useful in developing this code.
+The specification is also available
+<a href="http://www.cdrom.com/pub/png/pngdocs.html">in many forms
+and from many mirrors</a>.
+</p>
+
+<p>
+<a href="../index.html">Back to Dave Eisenberg's home page</a>
+</p>
+</body>
+</html>
