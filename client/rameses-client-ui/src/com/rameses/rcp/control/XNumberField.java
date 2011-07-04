@@ -173,7 +173,6 @@ public class XNumberField extends XTextField {
     }
     //</editor-fold>
     
-    
     //<editor-fold defaultstate="collapsed" desc="  NumberFieldKeyListener (class)  ">
     private class NumberFieldSupport implements KeyListener, FocusListener {
         

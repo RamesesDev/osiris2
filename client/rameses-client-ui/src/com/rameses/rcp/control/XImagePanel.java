@@ -8,6 +8,7 @@ import com.rameses.util.ValueUtil;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.beans.Beans;
 import java.io.File;
 import java.net.URL;
@@ -134,6 +135,9 @@ public class XImagePanel extends JPanel implements UIControl
             {
                 URL url = getImageResource(value.toString());
                 if (url != null) imageIcon = new ImageIcon(url);
+                
+                if(ValueUtil.isEmpty(imageIcon))
+                    imageIcon = new ImageIcon(new URL(value.toString()));
             } 
             else if (value instanceof byte[]) {
                 imageIcon = new ImageIcon((byte[])value);
@@ -145,6 +149,10 @@ public class XImagePanel extends JPanel implements UIControl
             {
                 File file = (File) value; 
                 imageIcon = new ImageIcon(file.toURL());
+            }
+            else if (value instanceof Image)
+            {
+                imageIcon = new ImageIcon((Image) value);
             }
             
             int iw = imageIcon.getIconWidth();

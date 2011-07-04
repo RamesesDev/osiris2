@@ -1,0 +1,38 @@
+Copyright (c) 1999-2000  J. David Eisenberg
+All rights reserved.
+
+Revision History
+
+  Changes from v1.4 -> 1.5 (19 October 2003)
+     * Added support for USHORT images (Christian @ xpogen.com)
+     * Correct output on EBCDIC systems (Paulo Soares)
+     * Fix bug with calculation of nrows (JDE)
+     * Coding Style changes (D. Gilbert)
+
+  Changes from v1.3 -> 1.4 (11 April 2000)
+     * Changed from GPL to LGPL
+
+  Changes from v1.2 -> 1.3.1: (6 April 2000)
+     * Now using DeflaterOutputStream instead of Deflater
+       from java.util.zip
+       - this fixes a bug with compression level of zero
+     * Added PngEncoderB class to handle buffered images
+       with 8-bit samples and IndexColorModel
+
+  Changes from v1.1 -> 1.2: (25 Nov 1999)
+  
+     * Implemented filtering (SUB and UP filters)
+     * TestEncoder.java now accepts arguments to set
+       alpha, filtering, and compression level
+     * Moved documentation to new directory
+     * Removed old documentation "images" directory
+
+  Changes from v1.0 -> 1.1:
+  
+     * fixed bug in calculation of how many rows to process
+       during scanline compression
+     * took out code for multiple IDAT chunks, as I am either
+       doing it incorrectly, or PhotoShop & Netscape can't
+       handle it properly.
+     * added alpha encoding
+

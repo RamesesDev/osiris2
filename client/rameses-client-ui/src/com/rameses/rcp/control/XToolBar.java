@@ -99,11 +99,11 @@ public class XToolBar extends JPanel implements UIControl{
         flowLayout.setHgap(HGAP);
         setLayout(flowLayout);
         for(Action a : actions) {
-            IconButton ib = new IconButton("", a.getIcon());
+            XButton ib = new XButton();
             ib.setBinding(binding);
             ib.setName(a.getName());
             ib.setPermission(a.getPermission());
-            ib.setCaptionClr(getForeground());
+            
             ib.setPreferredSize(new Dimension(40,40));
             if(a.getTooltip() != null)
                 ib.setToolTipText(a.getCaption());
