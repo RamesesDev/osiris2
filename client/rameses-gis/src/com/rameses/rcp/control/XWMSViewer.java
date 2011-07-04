@@ -1,7 +1,7 @@
 package com.rameses.rcp.control;
 
-import com.rameses.rcp.control.gis.GISDataModel;
-import com.rameses.rcp.control.gis.GISPrintFactory;
+import com.rameses.rcp.common.GISDataModel;
+import com.rameses.rcp.common.GISPrintFactory;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
