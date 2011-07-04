@@ -1,4 +1,4 @@
-package com.rameses.rcp.control.gis;
+package com.rameses.rcp.common;
 
 import com.rameses.util.ValueUtil;
 import java.io.BufferedWriter;
