@@ -28,7 +28,7 @@ public class ValueUtil {
     
     private static final Pattern ESC_STRING = Pattern.compile("[\\\\$\"\n\t\r]");
     private static final SimpleDateFormat DT_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    private static final SimpleDateFormat TS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static final SimpleDateFormat TS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final DecimalFormat DEC_FORMATTER = new DecimalFormat("###0.00");
     
     

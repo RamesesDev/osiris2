@@ -60,6 +60,10 @@ public class XImageViewer extends JPanel implements UIControl {
         if( !Beans.isDesignTime() ) {
             init();
         }
+        
+        if( Beans.isDesignTime() ) {
+            setPreferredSize(new Dimension(40,40));
+        }
     }
     
     private void init() {
