@@ -99,8 +99,6 @@ public class SchemaManagerImpl extends SchemaManager {
     
     public class SchemaMgmtSerializer implements SchemaSerializer, Serializable {
         
-        private ObjectSerializer serializer = new ObjectSerializer();
-        
         public Object read(String s) {
             GroovyShell shell = null;
             try {
@@ -114,7 +112,7 @@ public class SchemaManagerImpl extends SchemaManager {
         }
         
         public String write(Object o) {
-            return serializer.toString( o );
+            return new ObjectSerializer().toString( o );
         }
     }
     
