@@ -19,10 +19,7 @@ import java.util.Map;
  * @description basic implementation of abstract class ObjectSerializer
  */
 public class ObjectSerializer {
-    
-    private ObjectScannerHandler scanHandler = new ScanHandler();
-    private Writer writer;
-    
+        
     private static ObjectSerializer instance;
     
     public static ObjectSerializer getInstance() {
@@ -34,15 +31,14 @@ public class ObjectSerializer {
     public ObjectSerializer() {}
     
     public String toString(Object data) {
-        writer = new StringWriter();
-        stringifyMap(data);
+        Writer writer = new StringWriter();
+        stringifyMap(data, writer);
         return writer.toString();
     }
     
     public void write(Object data, Writer writer) {
         try {
-            this.writer = writer;
-            stringifyMap(data);
+            stringifyMap(data, writer);
             writer.flush();
             
         } catch(Exception e) {
@@ -52,14 +48,15 @@ public class ObjectSerializer {
         }
     }
     
-    private void stringifyMap(Object data) {
+    private void stringifyMap(Object data, Writer writer) {
+        ScanHandler scanHandler = new ScanHandler(writer);
         ObjectScanner scanner = new ObjectScanner(scanHandler);
         scanner.scan(data);
     }
     
     
     private String correctKeyName(String n) {
-        if(n.contains(".") || n.contains("[") || n.contains("]")) {
+        if(n.contains(".") || n.contains("[") || n.contains("]") || n.contains(" ")) {
             return "\"" + n + "\"";
         } else {
             return n;
@@ -67,6 +64,12 @@ public class ObjectSerializer {
     }
     
     private class ScanHandler implements ObjectScannerHandler {
+        
+        private Writer writer;
+        
+        ScanHandler(Writer writer) {
+            this.writer = writer;
+        }
         
         public void startDocument() {}
         
