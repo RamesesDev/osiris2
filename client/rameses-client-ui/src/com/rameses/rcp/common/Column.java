@@ -57,6 +57,8 @@ public class Column implements Serializable {
     //action text support
     private Object action;
     
+    private boolean dynamic;
+    
     
     private Map properties = new HashMap();
     
@@ -395,5 +397,13 @@ public class Column implements Serializable {
 
     public void setAction(Object action) {
         this.action = action;
+    }
+
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
     }
 }
