@@ -113,6 +113,8 @@ public class XCameraPanel extends JPanel implements UIControl{
             }
         });
         
+        popUpPane.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        
         openPopUpPane.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 connectToDevice();
@@ -130,6 +132,7 @@ public class XCameraPanel extends JPanel implements UIControl{
         takeImage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
+                    System.out.println("taking picture......");
                     image = takeScreenShot();
                     //outputImageCanvas.setImage(image);
                     model.setImage(image);
@@ -173,7 +176,6 @@ public class XCameraPanel extends JPanel implements UIControl{
                 popUpPane.remove(cropCanvas);
                 popUpPane.remove(cropControls);
                 player.stop();
-//                    ((CaptureDevice)dataSource).disconnect();
                 dataSource.disconnect();
                 System.out.println("device deactivated");
             }

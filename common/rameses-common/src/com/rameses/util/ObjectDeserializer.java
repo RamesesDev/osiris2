@@ -91,7 +91,7 @@ public class ObjectDeserializer
                     else if( type == StreamTokenizer.TT_WORD ) {
                         buffer.append( tokenizer.sval );
                     }
-                    else if( type == '"' ) {
+                    else if( type == '"' || type == '\'' ) {
                         buffer.append( "\"" + tokenizer.sval + "\"");
                     }
                     else if( type == StreamTokenizer.TT_NUMBER ) {

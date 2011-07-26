@@ -14,6 +14,7 @@ import com.rameses.common.PropertyResolver;
 import com.rameses.schema.SchemaConf;
 import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaSerializer;
+import com.rameses.util.ObjectDeserializer;
 import com.rameses.util.ObjectSerializer;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -100,15 +101,7 @@ public class SchemaManagerImpl extends SchemaManager {
     public class SchemaMgmtSerializer implements SchemaSerializer, Serializable {
         
         public Object read(String s) {
-            GroovyShell shell = null;
-            try {
-                shell = new GroovyShell();
-                return shell.evaluate( s );
-            } catch(Exception e) {
-                throw new RuntimeException(e);
-            } finally {
-                shell = null;
-            }
+            return new ObjectDeserializer().read(s);
         }
         
         public String write(Object o) {
