@@ -22,6 +22,7 @@ public interface TaskSchedulerMgmtMBean {
   
   void startTask(int taskid) throws Exception;
   void suspendTask(int taskid) throws Exception;
+  void cancelTask(int taskid) throws Exception;
   void resumeTask(int taskid) throws Exception;
   void resumeFromError(int taskid) throws Exception;
   

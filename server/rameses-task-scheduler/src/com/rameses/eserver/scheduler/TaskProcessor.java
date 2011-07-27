@@ -17,6 +17,7 @@ import com.rameses.util.DateUtil;
 import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Connection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

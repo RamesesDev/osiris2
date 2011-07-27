@@ -7,11 +7,7 @@
 
 package testutils;
 
-import com.rameses.util.DateUtil;
-import com.rameses.util.TimeUtil;
-import java.security.SecureRandom;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.io.File;
 import junit.framework.*;
 
 /**
@@ -32,6 +28,7 @@ public class DateUtilTest extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
    
+    /*
     public void testUtil() {
         Timestamp tp = Timestamp.valueOf("2000-01-01 00:01:01");
         System.out.println(DateUtil.getFormattedTime(tp, "US"));
@@ -53,7 +50,13 @@ public class DateUtilTest extends TestCase {
         String pattern = "17:00-19:00 MWF";
         assertTrue( TimeUtil.checkSchedule( d, pattern ));
     }
+    */
     
+    public void testFolder() throws Exception {
+       //System.getProperties().list(System.out);
+        File f = new File("D:/");
+        f.mkdirs();
+    }
     
     
 }

@@ -62,7 +62,13 @@ public class TaskSchedulerMgmt implements TaskSchedulerMgmtMBean, Serializable {
         ctx.createNamedExecutor("scheduler:reset-next-date").setParameter(1,taskid).execute();
         ctx.createNamedExecutor("scheduler:add-queue").setParameter(1,taskid).execute();
     }
-    
+
+    public void cancelTask(int taskid) throws Exception {
+        SqlContext ctx = SqlManager.getInstance().createContext(AppContext.getSystemDs());
+        ctx.createNamedExecutor("scheduler:update-next-date").setParameter(1,null).setParameter(2,taskid).execute();
+        ctx.createNamedExecutor("scheduler:remove-queue").setParameter(1,taskid).execute();
+        ctx.createNamedExecutor("scheduler:resume-task").setParameter(1,taskid).execute();
+    }
     
     
 }
