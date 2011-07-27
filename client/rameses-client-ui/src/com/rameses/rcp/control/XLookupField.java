@@ -1,6 +1,7 @@
 package com.rameses.rcp.control;
 
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.rcp.common.LookupHandler;
 import com.rameses.rcp.common.LookupModel;
 import com.rameses.rcp.common.LookupSelector;
 import com.rameses.rcp.common.MsgBox;
@@ -34,6 +35,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     private UIController lookupController;
     private String expression;
     private boolean transerFocusOnSelect = true;
+    private boolean dynamic;
     
     private XLookupSupport support = new XLookupSupport();
     
@@ -75,6 +77,10 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         super.load();
         setInputVerifier(null);
         
+        if( !dynamic ) loadHandler();
+    }
+    
+    private void loadHandler(){
         Object o = null;
         if( !ValueUtil.isEmpty(handler) ) {
             if ( handler.matches(".+:.+") ) //handler is a module:workunit name
@@ -82,7 +88,10 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
             else
                 o = UIControlUtil.getBeanValue(this, handler);
         } else if ( handlerObject != null ) {
-            o = handlerObject;
+            if( handlerObject instanceof LookupHandler )
+                o = ((LookupHandler) handlerObject).getHandler();
+            else
+                o = handlerObject;
         }
         
         if( o == null ) return;
@@ -125,6 +134,8 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     //<editor-fold defaultstate="collapsed" desc="  lookup dialog support  ">
     private void fireLookup() {
         try {
+            if( dynamic ) loadHandler();
+            
             lookupModel.setSelector(this);
             boolean show = lookupModel.show( getText() );
             if( show ) {
@@ -221,6 +232,14 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     }
     //</editor-fold>
     
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+    
     
     //<editor-fold defaultstate="collapsed" desc="  XLookupSupport (class)  ">
     private class XLookupSupport implements FocusListener, KeyListener {
@@ -255,5 +274,5 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
         
     }
     //</editor-fold>
-    
+
 }

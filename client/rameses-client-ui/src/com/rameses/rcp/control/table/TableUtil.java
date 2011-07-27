@@ -176,6 +176,7 @@ public final class TableUtil {
             
         } else if ( editor instanceof XLookupField ) {
             XLookupField xlf = (XLookupField) editor;
+            xlf.setDynamic( col.isDynamic() );
             
             if( col.getHandler() instanceof String )
                 xlf.setHandler( (String) col.getHandler() );
@@ -243,6 +244,7 @@ public final class TableUtil {
         
         if ( editor instanceof XComboBox ) {
             XComboBox cbox = (XComboBox) editor;
+            cbox.setDynamic( col.isDynamic() );
             cbox.setImmediate(true);
             if ( col.getItems() != null ) {
                 if( col.getItems() instanceof String )
