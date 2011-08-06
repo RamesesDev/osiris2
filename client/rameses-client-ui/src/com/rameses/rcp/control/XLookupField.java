@@ -120,7 +120,7 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
             }
             
             if( !(lookupController.getCodeBean() instanceof LookupModel) )
-                throw new IllegalStateException("Lookup Handler code bean must be an instanceof LookupListModel");
+                throw new IllegalStateException("Lookup Handler code bean must be an instanceof LookupModel");
             
             
             lookupController.setTitle( opener.getCaption() );
