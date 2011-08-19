@@ -22,7 +22,7 @@ import java.io.InputStream;
 public final class FileTransfer {
    
     public final void transfer(InputSource in, OutputHandler out ) throws Exception {
-        transfer(in,out);
+        transfer(in,out,null);
     }
     
     public final void transfer(InputSource in, OutputHandler out, TransferListener listener ) throws Exception {

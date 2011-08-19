@@ -81,29 +81,46 @@ public class ValueUtil {
         if ( obj == null)                return true;
         if ( obj instanceof Map )        return ((Map) obj).isEmpty();
         if ( obj instanceof Collection ) return ((Collection) obj).isEmpty();
-        if ( obj.getClass().isArray() )   return ((Object[]) obj).length == 0;
+        if ( obj.getClass().isArray() )  return ((Object[]) obj).length == 0;
         
         return obj.toString().trim().length() == 0;
     }
     
     public static String getValueAsString(Class type, Object value) {
-        if (value == null) {
-            //do nothing
-        } else if (value instanceof String) {
+        if (value == null) {;} //do nothing 
+        else if (value instanceof String) 
+        {
             return escape(value.toString()).insert(0, "\"").append("\"").toString();
         }
-        //if value is double, float or BigDecimal, format it as ###0.00
+        //if value is double or float format it as ###0.00
         else if(type == Double.class || type == double.class ||
-                type == float.class || type == Float.class ||
-                type == BigDecimal.class) {
+                type == Float.class  || type == float.class ) 
+        {
             return DEC_FORMATTER.format( value );
-        } else if(type == long.class || type == Long.class ||
+        }
+        //if value is BigDecimal just use the toString,
+        //but always add .00 if it is a whole number 
+        //to notify the deserializer that is a decimal value
+        else if( type == BigDecimal.class ) 
+        {
+            String str = value.toString();
+            if( str.matches("\\d+\\.\\d+") )
+                return str;
+            else
+                return str + ".00";
+        }
+        else if(type == long.class || type == Long.class ||
                 type == int.class || type == Integer.class ||
-                type == Boolean.class || type == boolean.class ) {
+                type == boolean.class || type == Boolean.class ) 
+        {
             return value+"";
-        } else if (value instanceof Timestamp) {
+        } 
+        else if (value instanceof Timestamp) 
+        {
             return "\"" + TS_FORMATTER.format(value) + "\"";
-        } else if (value instanceof Date) {
+        } 
+        else if (value instanceof Date) 
+        {
             return "\"" + DT_FORMATTER.format(value) + "\"";
         }
         
