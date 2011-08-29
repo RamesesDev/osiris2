@@ -17,6 +17,7 @@ import java.awt.Insets;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.Format;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -34,6 +35,7 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
     private ControlProperty property = new ControlProperty();
     private String expression;
     private Insets padding;
+    private Format format;
     
     private Border origBorder;
     
@@ -70,6 +72,9 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
                 value = UIControlUtil.evaluateExpr(binding.getBean(), expression);
             } else if ( !ValueUtil.isEmpty(getName()) ) {
                 value = UIControlUtil.getBeanValue(this);
+                if( value != null && format != null ) {
+                    value = format.format(value);
+                }
             } else {
                 value = super.getText();
             }
@@ -318,6 +323,14 @@ public class XLabel extends JLabel implements UIOutput, ActiveControl {
         else
             return super.getText();
         
+    }
+    
+    public Format getFormat() {
+        return format;
+    }
+
+    public void setFormat(Format format) {
+        this.format = format;
     }
     //</editor-fold>
     

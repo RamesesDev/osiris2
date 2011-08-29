@@ -91,6 +91,19 @@ public class XSeparator extends JComponent implements UIControl, ActiveControl, 
         g.dispose();
     }
     
+    public String[] getDepends() { return null; }
+    
+    public int getIndex() { return 0; }
+    
+    public void setBinding(Binding binding) {}
+    public Binding getBinding() { return null; }
+    public void refresh() {}
+    public void load() {}
+    
+    public int compareTo(Object o) {
+        return UIControlUtil.compare(this, o);
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public ControlProperty getControlProperty() {
         return property;
@@ -187,18 +200,5 @@ public class XSeparator extends JComponent implements UIControl, ActiveControl, 
         this.lineShadow = lineShadow;
     }
     //</editor-fold>
-    
-    public String[] getDepends() { return null; }
-    
-    public int getIndex() { return 0; }
-    
-    public void setBinding(Binding binding) {}
-    public Binding getBinding() { return null; }
-    public void refresh() {}
-    public void load() {}
-    
-    public int compareTo(Object o) {
-        return UIControlUtil.compare(this, o);
-    }
     
 }
