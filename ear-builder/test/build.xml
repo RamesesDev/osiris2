@@ -33,8 +33,5 @@
 			<replacefilter  token="@@name" value="${app_name}"/>
 		</replace>
 		<move file="${app_name}.ear/template.war" tofile="${app_name}.ear/${web_context}.war" />
-		<!--
-		<rename src="${app_name}.ear/template.war" dest="${app_name}.ear/${web_context}.war" />
-		-->
 	</target>
 </project>

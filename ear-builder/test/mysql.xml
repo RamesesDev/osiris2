@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="init-db" name="Load MySQL">
+	<loadproperties srcfile="build.conf" /> 
+	
+	<property name="sql_tpl" value="templates/sys_template_tmp.sql"/>
+ 
+	<target name="init-db">
+		<echo>Loading MySQL for ${appname} ${basedir}</echo>
+		<copy file="templates/sys_template.sql" tofile="${sql_tpl}"/>
+		<replace file="${sql_tpl}" token="@@name" value="${app_name}"/>
+
+		<!-- the target db must already exist -->
+		<sql userid="${db_user}" password="${db_pass}" 
+		     url="jdbc:mysql://${db_host}/${app_name}" 
+		     driver="com.mysql.jdbc.Driver">
+            <transaction src="${sql_tpl}" />
+        </sql>
+
+		<delete file="${sql_tpl}"/>
+
+	</target>
+ 
+</project>
