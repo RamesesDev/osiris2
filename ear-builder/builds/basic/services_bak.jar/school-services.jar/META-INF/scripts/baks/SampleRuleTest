@@ -1,0 +1,23 @@
+import com.rameses.annotations.*;
+import com.rameses.util.*;
+
+class SampleRuleTest{
+    
+    @Resource("RuleService/local")
+    def ruleService;		
+    
+    @ProxyMethod
+    public def test( def list ) { 
+		print list;
+		def facts = [];
+		def results = [];
+		list.each {
+			def fact = ruleService.createFact( "sample", "sample.Fact" );
+			fact.name = it;
+			facts.add( fact );
+		}
+		ruleService.execute( "sample", facts, [results:results], null );
+		return results;
+   }			
+
+}

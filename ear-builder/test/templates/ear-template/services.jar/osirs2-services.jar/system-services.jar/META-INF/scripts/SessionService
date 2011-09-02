@@ -1,0 +1,55 @@
+import com.rameses.annotations.*;
+
+class SessionService {
+	
+    @PersistenceContext("system")
+    def em;
+    
+	@Resource("CacheService")
+    def cacheService;
+	
+	@Service("DateService")
+	def dateService;
+	
+	@Resource("NotificationServer")
+	def notifier;
+	
+	@Service("SessionNotifier")
+	def sessionNotifier;
+	
+    @ProxyMethod
+	public def create(def info) {
+		print "entering session";
+		info.sessionid = "SESSION" + (new java.rmi.server.UID()).hashCode();
+		info.dtaccessed = dateService.serverDate;
+		info.host = notifier.host;
+		return em.create( "session", info );
+	}
+	
+    @ProxyMethod
+	public def destroy(String sessionid) {
+		def data = [sessionid: sessionid];
+		def retval = em.read( "session", data );
+		sessionNotifier.notifySession( sessionid, [msgtype: "session-expired"] );
+		em.delete( "session", data );
+		return retval;
+	}
+
+	@ProxyMethod
+    public def checkExpired( String sessionid ) {
+		//check if session is still ok.
+			
+	}
+	
+	@ProxyMethod
+    public def getInfo( String sessionid ) {
+		String key = "SESSION:"+sessionid;
+		def c = cacheService.get(key);
+		if(c==null) {
+			c = em.read("session", [sessionid: sessionid] );
+			cacheService.put( key, c, 60000 );
+		}
+		return c;
+    }
+	
+}

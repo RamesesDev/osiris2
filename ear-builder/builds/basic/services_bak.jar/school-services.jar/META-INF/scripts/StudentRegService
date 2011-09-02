@@ -1,0 +1,74 @@
+import com.rameses.annotations.*;
+
+class StudentRegService{
+    
+    @PersistenceContext("main")
+    def em;		
+    
+    @ProxyMethod
+    public def create( def o ) {         
+        o.objid = "STU"+ new java.rmi.server.UID();
+        o.trackingno = ("TRK" + new java.rmi.server.UID()).hashCode();
+        o.dtexpiry = new Date();
+        String id= "REG" + new java.rmi.server.UID();
+        int app=id.hashCode();
+        return em.create("student_reg", o );
+    }			
+
+    @ProxyMethod
+    public def read( def o ) {
+	    return em.read("student_reg", o );
+    }	
+        
+    @ProxyMethod
+    public def update(def o){
+        return em.update("student_reg", o);
+    }
+
+    @ProxyMethod
+    public def getList() {
+	    return em.sqlContext.createQuery("select * from student_reg").resultList; 
+    }	
+    
+    @ProxyMethod
+    public def getProgramList( def o ) {
+        if(o.code) o.code='%'+o.code+"%"; 
+	    return em.sqlContext.createQuery('select * from program where name like $P{code}').setParameters(o).setMaxResults(5).resultList*.name; 
+    }	
+    
+    @ProxyMethod
+    public def getNationalityList( def o ) {
+    	if(o.code) o.code='%'+o.code+"%"; 
+	    return em.sqlContext.createQuery('select * from nationality where name like $P{code}').setParameters(o).setMaxResults(5).resultList*.name; 
+    }	
+    
+    @ProxyMethod
+    public def getReligionList( def o ) {
+    	if(o.code) o.code='%'+o.code+"%"; 
+	    return em.sqlContext.createQuery('select * from religion where name like $P{code}').setParameters(o).setMaxResults(5).resultList*.name; 
+    }
+
+    @ProxyMethod
+    public void setNationalityList( def o ) {
+    	if(o.code && em.sqlContext.createQuery('select * from nationality where name = $P{code}').setParameters(o).resultList*.name.length==0) {
+    		em.sqlContext.createQuery('insert into nationality(name) values($P{code})').setParameters(o);
+    	}
+    }	
+    
+    @ProxyMethod
+    public def setReligionList( def o ) {
+    	if(o.code && em.sqlContext.createQuery('select * from religion where name = $P{code}').setParameters(o).resultList*.name.length==0) {
+    		em.sqlContext.createQuery('insert into religion(name) values($P{code})').setParameters(o);
+    	} 
+    }
+    
+    /*@ProxyMethod
+    public void extractWorksheet (filename) {
+    	def worksheet= new Worksheet ();
+    	worksheet.addField ();
+    	def map= worksheet.extracttoMap (filename);
+    	create (map)
+    
+    }*/
+
+}

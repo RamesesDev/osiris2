@@ -1,0 +1,6 @@
+<schema>
+    <element tablename="permissionset">
+        <field name="name" primary="true" />
+        <complex name="permissions" serializer="default" type="list"/>
+    </element>
+</schema>

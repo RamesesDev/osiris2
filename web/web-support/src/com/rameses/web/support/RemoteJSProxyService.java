@@ -70,9 +70,6 @@ public class RemoteJSProxyService extends HttpServlet {
         w.write( "new function() {\n"  );
         w.write( "this.proxy =  new DynamicProxy(\"" + context + "\").create(\""+ name + "\");\n"  );
         
-        //write the env variables here...
-        w.write( "this.proxy.env={session_checked:true};\n" );
-        
         List<Map> methods = (List)m.get("methods");
         for( Map mth : methods ) {
             //check first if the method contains an AsyncHandler

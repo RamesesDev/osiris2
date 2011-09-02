@@ -7,7 +7,6 @@
 
 package test;
 
-import com.rameses.common.AsyncHandler;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JOptionPane;
@@ -50,14 +49,15 @@ public class NewEmptyJUnitTest extends TestCase {
         env.put( "session_checked", true );
         TestProxy p = new TestProxy(env);
         Object o = p.create("TestService");
-        System.out.println( MethodUtils.invokeMethod( o, "testAsync", new Object[]{"elmo", new MyHandler()} ) );
+        //System.out.println( MethodUtils.invokeMethod( o, "testAsync", new Object[]{"elmo", new MyHandler()} ) );
         JOptionPane.showMessageDialog(null, "pause");
     }
 
+    /*
     public class MyHandler implements AsyncHandler {
         public void onMessage(Object o) {
             System.out.println("receiving message ->" + o );
         }
     }
-    
+     */
 }

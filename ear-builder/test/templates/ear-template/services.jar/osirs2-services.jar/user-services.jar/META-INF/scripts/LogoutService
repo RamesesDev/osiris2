@@ -1,0 +1,14 @@
+import com.rameses.annotations.*;
+
+class LogoutService {
+	
+	@Service("SessionService")
+    def sessionService;
+
+	@ProxyMethod
+    public def logout(o) {
+		def sessionid = o.sessionid;
+		return sessionService.destroy(sessionid);
+    }
+
+}

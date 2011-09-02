@@ -1,0 +1,16 @@
+import com.rameses.annotations.*;
+
+class SMSService {
+
+	@Resource("AsyncMessagingService")
+	def notifier;
+
+	@PersistenceContext("system")
+	def em;
+	
+	@ProxyMethod
+	public void send(def param){
+		notifier.sendMessage( em.serializer.write( param ) );
+	}
+	
+}

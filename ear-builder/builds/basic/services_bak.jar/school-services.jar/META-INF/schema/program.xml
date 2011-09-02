@@ -1,0 +1,10 @@
+<schema>
+	<element name="program" tablename="program">
+		<field name="objid" primary="true"/>
+		<field name="code"/>
+		<field name="title"/>
+		<field name="revyear"/>
+		<field name="numyears"/>
+	</element>	
+</schema>
+

@@ -1,0 +1,81 @@
+package enrollment;
+
+global java.util.List errs;
+
+import java.util.*;
+import java.sql.*;
+import com.rameses.util.*;
+
+declare Schedule 
+	id: String
+	code: String
+	day: String
+	timein: java.sql.Timestamp
+	timeout: java.sql.Timestamp
+	room: String
+end
+
+declare SubjectTaken
+	code : String
+end
+
+declare Prerequisite
+	requiredSubject: String
+	subject: String
+end
+
+declare Corequisite
+	requiredSubject: String
+	subject: String
+end
+
+function boolean checkDiff( java.sql.Timestamp t1, java.sql.Timestamp t2, int diff ) {
+	return DateUtil.diff(t1,t2,Calendar.MINUTE) < diff;
+}
+
+rule "check-duplicate-subject"
+	when
+		Schedule( $id1:id, $code: code )
+		Schedule( $id2:id!=$id1, code == $code )
+	then
+		errs.add( "duplicate " + $id1 + " " + $id2 );
+end
+
+rule "check-prerequisites"
+	when
+		Prerequisite( $subject:subject, $requiredSubject: requiredSubject )
+		not SubjectTaken( code == $requiredSubject )
+	then
+		errs.add( "prerequisite for " + $subject  + ". Must need to take " + $requiredSubject );
+end
+
+rule "check-corequisites"
+	when
+		Corequisite( $subject:subject, $requiredSubject: requiredSubject )
+		not SubjectTaken( code == $requiredSubject )
+		not Schedule( code == $requiredSubject )
+	then
+		errs.add( "corequisite for " + $subject  + ". Must need to take " + $requiredSubject );
+end
+
+rule "check-conflict-schedule"
+	when
+		Schedule( $id:id, $code1: code, $day: day, $t1: timein, $t2:timeout )
+		(
+			Schedule( id!=$id, $code2: code, day == $day, timein <= $t1, timeout > $t1 ) or
+			Schedule( id!=$id, $code2: code, day == $day, timein < $t2, timeout >= $t2 )
+		)	
+	then
+		errs.add( "conflict sked " + $code1 + " " + $code2 );
+end
+
+
+rule "check-no-two-schedules-must-follow-by-90-minutes"
+	when
+		s1: Schedule( $id1: id, $day: day, $t1: timeout, $room: room  )
+		s2: Schedule( $id2: id!=$id1, day == $day, $t2:timein >= $t1, $tt1:timeout  )
+		s3: Schedule( $id3: id!=$id1, id!=$id2, day == $day, $tt2:timein >= $tt1  )
+		(eval( checkDiff( $t1, $t2 , 90)) and  eval(checkDiff( $tt1, $tt2, 90)) )
+	then
+		errs.add( "no 3 subjects must follow each other: " + $id1 + " and " + $id2 + " and " + $id3 );
+end

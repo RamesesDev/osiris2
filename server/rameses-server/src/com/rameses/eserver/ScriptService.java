@@ -57,6 +57,7 @@ public class ScriptService implements ScriptServiceLocal {
     }
     
     public Object invokeAsync(String name, String method, Object[] params, Map env, Map asyncInfo ) {
+        System.out.println("invoking async now...");
         String requestId = "ASYNC:"+new UID();
         ExecutorService svc = Executors.newSingleThreadExecutor();
         svc.execute( new AsyncExecutor(requestId, name,method,params, env, asyncInfo) );

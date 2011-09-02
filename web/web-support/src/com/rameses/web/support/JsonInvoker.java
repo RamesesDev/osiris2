@@ -13,6 +13,8 @@ import com.rameses.invoker.client.DynamicHttpInvoker;
 import com.rameses.util.ExceptionManager;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
@@ -39,19 +41,18 @@ public class JsonInvoker extends HttpServlet {
         res.setContentType("text/javascript");
         try {
             NameParser np = new NameParser(req);
+            Map env = new HashMap();
+            if(np.getEnv()!=null) {
+                env.putAll(np.getEnv());
+            }
             
             ServletContext app = this.config.getServletContext();
             String appContext = app.getInitParameter("app.context");
             String host = app.getInitParameter("app.host");
             
             DynamicHttpInvoker hp = new DynamicHttpInvoker(host,appContext);
-            DynamicHttpInvoker.Action action = null;
-            if( np.getEnv()==null) {
-                action = hp.create( np.getService() );
-            }
-            else {
-                action = hp.create( np.getService(), np.getEnv());
-            }
+            DynamicHttpInvoker.Action action = hp.create( np.getService(), env );
+            
             Object response = null;
             if( np.getArgs()!=null) {
                 response = action.invoke(np.getAction(), np.getArgs());
@@ -59,9 +60,11 @@ public class JsonInvoker extends HttpServlet {
             else {
                 response = action.invoke( np.getAction() );
             }
+            
             String s = JsonUtil.toString( response );
             w.write(s);
         } catch(Exception e) {
+            //e.printStackTrace();
             res.setStatus(res.SC_INTERNAL_SERVER_ERROR );
             w.write( ExceptionManager.getOriginal(e).getMessage()  );
             //res.sendError( res.SC_INTERNAL_SERVER_ERROR, ExceptionManager.getOriginal(e).getMessage() );

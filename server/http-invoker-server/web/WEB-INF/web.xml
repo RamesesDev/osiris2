@@ -8,10 +8,31 @@
         <servlet-name>SecuredWebInvoker</servlet-name>
         <servlet-class>com.rameses.invoker.server.SecuredHttpInvoker</servlet-class>
     </servlet>
+    
     <servlet>
         <servlet-name>JsonScriptInvoker</servlet-name>
         <servlet-class>com.rameses.invoker.server.JsonScriptInvoker</servlet-class>
     </servlet>
+    
+    <!--simple script service-->
+    <servlet>
+        <servlet-name>SimpleScriptServiceServlet</servlet-name>
+        <servlet-class>com.rameses.invoker.server.SimpleScriptServiceServlet</servlet-class>
+    </servlet>
+    
+    <!--notifiers-->
+    <servlet>
+        <servlet-name>NotifierServlet</servlet-name>
+        <servlet-class>com.rameses.invoker.server.NotifierServlet</servlet-class>
+    </servlet>
+     <servlet>
+        <servlet-name>PollServlet</servlet-name>
+        <servlet-class>com.rameses.invoker.server.PollServlet</servlet-class>
+    </servlet>
+    
+    
+    
+   
     <servlet-mapping>
         <servlet-name>WebInvoker</servlet-name>
         <url-pattern>/invoke/*</url-pattern>
@@ -20,12 +41,26 @@
         <servlet-name>SecuredWebInvoker</servlet-name>
         <url-pattern>/invoke/secured/*</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>JsonScriptInvoker</servlet-name>
         <url-pattern>/json/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>NotifierServlet</servlet-name>
+        <url-pattern>/notifier</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>PollServlet</servlet-name>
+        <url-pattern>/poll</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>SimpleScriptServiceServlet</servlet-name>
+        <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
+    
     <session-config>
         <session-timeout>
             30

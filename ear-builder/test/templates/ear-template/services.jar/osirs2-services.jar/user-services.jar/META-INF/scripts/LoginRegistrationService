@@ -1,0 +1,20 @@
+import com.rameses.annotations.*;
+
+class LoginRegistrationService {
+
+    @PersistenceContext("main")
+    def em;
+    
+    @Service("LoginService")
+    def loginSvc;
+	
+	@ProxyMethod
+    public def login(o){
+		def u = em.read("login", [objid:o.objid] );
+		return loginSvc.login( [username:u.uid, password: u.password] );
+    }
+
+	
+	
+}
+

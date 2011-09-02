@@ -30,10 +30,11 @@ public class MessagingTest extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testSend() throws Exception {
-        SimpleHttpClient s = new SimpleHttpClient("http://localhost:8080/messaging-server");
+        SimpleHttpClient s = new SimpleHttpClient("http://localhost:8080/upcebu");
         Map map = new HashMap();
-        map.put("message", "name=Ban&age=30");
-        System.out.println("result ->" + s.post("send", map) );
+        map.put("id", "guest");
+        System.out.println("starting...");
+        System.out.println("result ->" + s.post("messaging/listen", map) );
     }
 
 }

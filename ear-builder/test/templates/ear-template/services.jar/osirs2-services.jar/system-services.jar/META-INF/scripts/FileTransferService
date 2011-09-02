@@ -1,0 +1,40 @@
+import com.rameses.annotations.*;
+import java.io.*;
+import com.rameses.io.FileTransfer;
+
+class FileTransferService {
+
+	@ProxyMethod(local=true)
+	public void upload(def o) {
+		Date start = new Date();
+		def file = new File( System.getProperty("jboss.server.home.dir") + "/apps/schools/upcebu.ear/webapp.war/uploads/" + o.filename );
+		if( o._batch == 0 ) {
+			file.delete();
+		}
+		def fo = new FileTransfer.FileOutputHandler(file);
+		fo.write( o._data );
+		fo.close();
+		Date end = new Date();
+		print " "+ o._batch;	
+	}
+
+	@ProxyMethod
+	public def download(def o) {
+		def file = new File( System.getProperty("jboss.server.home.dir") + "/apps/schools/upcebu.ear/webapp.war/uploads/"  + o.filename );
+		int start = o._start;
+		int size = o._size;
+		def fi = null;
+		try {
+			fi = new FileTransfer.FileInputSource(file, size);
+			fi.setPosition( start );
+			return fi.read();
+		}
+		catch(e) {
+			throw e;
+		}
+		finally {
+			try {fi.close()} catch(ign){;}
+		}
+	}
+
+}

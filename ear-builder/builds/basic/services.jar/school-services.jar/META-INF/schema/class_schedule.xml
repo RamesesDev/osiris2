@@ -1,0 +1,13 @@
+<schema>
+	<element tablename="class_schedule">
+		<field name="objid" primary="true"/>
+		<field name="groupid"/>
+		<field name="courseid"/>
+		<field name="classcode"/>
+		<field name="maxseat"/>
+		<field name="taken"/>
+		<field name="waitlisted"/>
+		<complex name="schedules" serializer="default"/>
+	</element>	
+</schema>
+

@@ -1,0 +1,15 @@
+import com.rameses.annotations.*;
+
+class StudentService{
+    
+    @PersistenceContext("main")
+    def em;		
+    
+    @ProxyMethod
+    public def getList( def o ) {         
+		return em.sqlContext.createQuery( "select objid, studentno, concat(lastname, ' ' ,firstname) as name, 'enrolled' as type from student").resultList;
+    }			
+
+
+
+}

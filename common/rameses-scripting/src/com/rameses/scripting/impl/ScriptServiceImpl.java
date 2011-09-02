@@ -39,8 +39,8 @@ public class ScriptServiceImpl implements ScriptServiceLocal {
     }
 
     public Object invokeAsync(Map data, String destination) {
-        System.out.println("invoking async " + destination);
-        System.out.println(data);
+        //System.out.println("invoking async " + destination);
+        //System.out.println(data);
         return "async";
     }
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SOAP example" default="main" basedir=".">
+    <property environment="env"/>
+    <property name="celsius" value="0"/>
+    <target name="main">
+        <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy">
+            <classpath>
+                <fileset dir="${env.GROOVY_HOME}" includes="embeddable/groovy-all-*.jar,lib/ivy*.jar"/>
+            </classpath>
+        </taskdef>
+        <groovy>
+            @Grab('org.codehaus.groovy.modules:groovyws:0.5.1')
+            import groovyx.net.ws.WSClient
+            def url = 'http://www.w3schools.com/webservices/tempconvert.asmx?WSDL'
+            def proxy = new WSClient(url, this.class.classLoader)
+            proxy.initialize()
+            ant.echo "I'm freezing at ${properties.celsius} degrees Celsius"
+            properties.result = proxy.CelsiusToFahrenheit(properties.celsius)
+        </groovy>
+        <antcall target="results"/>
+    </target>
+    <target name="results">
+        <echo message="I'm freezing at ${result} degrees Fahrenheit"/>
+    </target>
+</project>

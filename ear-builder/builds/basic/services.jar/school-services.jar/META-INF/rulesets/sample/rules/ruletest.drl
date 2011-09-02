@@ -1,0 +1,20 @@
+package sample;
+
+global java.util.List results;
+
+import java.util.*;
+import java.sql.*;
+import com.rameses.util.*;
+
+declare Fact 
+	name : String
+end
+
+rule "rule1"
+   when
+	  Fact( $name1: name )
+	  Fact( $name2: name, name != $name1 )
+   then  
+	  results.add( $name1 + $name2 );
+end
+

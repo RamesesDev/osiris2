@@ -1,0 +1,100 @@
+package test;
+
+global java.util.List results;
+import java.util.*;
+import java.sql.*;
+import com.rameses.util.*;
+
+declare Block
+	id: String
+	codes : java.util.List
+	schedules: java.util.List
+	count: int
+	title: String
+	idset: java.util.Set
+end
+
+declare Schedule
+	id: String
+	code : String
+	schedule : String
+end
+
+declare PossibleBlock
+	id: String
+end
+
+
+function boolean isTimeConflict( TimeUtil.ScheduleBean b1,  TimeUtil.ScheduleBean b2 ) {
+	if(b1.getFromTime().hashCode() >= b2.getFromTime().hashCode() && b1.getFromTime().hashCode() < b2.getToTime().hashCode() ) return true;
+	if(b1.getToTime().hashCode() > b2.getFromTime().hashCode() && b1.getToTime().hashCode() <= b2.getToTime().hashCode() ) return true;
+	if(b1.getFromTime().hashCode() <= b2.getFromTime().hashCode() && b1.getToTime().hashCode() >= b2.getToTime().hashCode() ) return true;
+	return false;
+}
+
+function boolean canAddInBlock( test.Block block, test.Schedule s ) {
+	TimeUtil.ScheduleBean s1 = new TimeUtil.ScheduleBean( s.getSchedule() );
+	TimeUtil.ScheduleBean s2 = null;
+	Iterator iter = block.getSchedules().iterator();
+	while(iter.hasNext()) {
+		s2 = (TimeUtil.ScheduleBean)iter.next();
+		if( s1.isMon() && s2.isMon() && isTimeConflict(s1,s2) ) return false;
+		else if( s1.isTue() && s2.isTue() && isTimeConflict(s1,s2) ) return false;
+		else if( s1.isWed() && s2.isWed() && isTimeConflict(s1,s2) ) return false;
+		else if( s1.isThu() && s2.isThu() && isTimeConflict(s1,s2) ) return false;
+		else if( s1.isFri() && s2.isFri() && isTimeConflict(s1,s2) ) return false;
+		else if( s1.isSat() && s2.isSat() && isTimeConflict(s1,s2) ) return false;
+		else if( s1.isSun() && s2.isSun() && isTimeConflict(s1,s2) ) return false;
+	}
+    return true;
+}
+
+function Block createBlock( Block block, Schedule s ) {
+	List list = new ArrayList();
+	TimeUtil.ScheduleBean s2 = null;
+	Iterator iter = block.getSchedules().iterator();
+	while(iter.hasNext()) {
+		s2 = (TimeUtil.ScheduleBean)iter.next();
+		list.add( s2 );
+	}
+	list.add( new TimeUtil.ScheduleBean( s.getSchedule() ) );
+	List codes = new ArrayList();
+	codes.add( s.getCode() );
+	
+	Set set = new HashSet();
+	if( block.getIdset()!=null ) set.addAll( block.getIdset() ); 
+	set.add( s.getId() );
+	
+	Block b = new Block();
+	b.setSchedules( list );
+	b.setCodes( codes );
+	b.setCount(  block.getCount() + 1 );
+	b.setTitle( block.getTitle() + ";" + s.getCode() + "=" + s.getSchedule() );
+	b.setIdset( set );
+	b.setId( set.toString() );
+	return b; 
+}
+
+
+rule "rule1"
+    when
+		$sked: Schedule( $code: code )
+		$block: Block( codes not contains $code )
+		eval( canAddInBlock($block, $sked) )
+	then	
+		insert( createBlock($block, $sked));
+end
+
+rule "rule2"
+    when
+		$block: Block( count >= 3, $id: id )
+		not PossibleBlock( id == $id )
+	then
+		PossibleBlock pb = new PossibleBlock();
+		pb.setId( $id );
+		insert( pb );
+		Map map = new HashMap();
+		map.put( "id", $block.getId());
+		map.put( "title", $block.getTitle());
+		results.add( map );
+end

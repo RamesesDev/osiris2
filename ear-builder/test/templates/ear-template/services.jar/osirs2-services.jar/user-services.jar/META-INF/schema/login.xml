@@ -1,0 +1,8 @@
+<schema>
+    <element name="login" tablename="login">
+        <field name="objid" primary="true" />
+        <field name="uid" />
+        <field name="password" />
+        <field name="usertype" />
+    </element>
+</schema>

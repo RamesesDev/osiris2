@@ -1,0 +1,12 @@
+<schema>
+	<element name="course" tablename="course">
+		<field name="objid" primary="true"/>
+		<field name="programid"/>
+		<field name="code"/>
+		<field name="title"/>
+		<field name="totalunits"/>
+		<field name="year"/>
+		<field name="term"/>
+	</element>	
+</schema>
+

@@ -75,7 +75,7 @@ public final class InvokerHelper {
                 reqPath.append(req.getServletPath());
             }
             String[] pathInfos = reqPath.toString().split("\\.");
-            String appContext = "";
+            //String appContext = "";
             if( req.getContextPath() != null && req.getContextPath().trim().length()>0 && !req.getContextPath().equals("/") ) {
                 context = req.getContextPath().substring(1);
             }

@@ -23,11 +23,13 @@ import java.util.List;
  */
 public class ScriptDeployer implements ScriptDeployerMBean {
     
+    private List<String> deployers = new ArrayList();
+    
     public void start() throws Exception {
-        System.out.println("      Initiating Script Deployers");
+        System.out.println("STARTING SCRIPT DEPLOYERS");
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Enumeration<URL> e = loader.getResources("META-INF/deployers.conf");
-        final List<String> deployers = new ArrayList();
+        deployers.clear();
         while(e.hasMoreElements()) {
             URL u = e.nextElement();
             InputStream is = null;
@@ -45,12 +47,19 @@ public class ScriptDeployer implements ScriptDeployerMBean {
                 try {is.close();}catch(Exception ign){;}
             }
         }
+
+        String svc = null;
+        String method = null; 
         for(String s : deployers) {
-            String svc = null;
-            String method = null; 
             try {
-                svc = s.substring(0, s.indexOf("."));
-                method = s.substring( s.indexOf(".")+1 );
+                if( s.indexOf(".")>0) {
+                    svc = s.substring(0, s.indexOf("."));
+                    method = s.substring( s.indexOf(".")+1 );
+                }
+                else {
+                    svc = s;
+                    method = "start";
+                }
                 ScriptServiceDelegate.getScriptService().invoke(svc,method,new Object[]{},new HashMap());
             }
             catch(Exception ex) {
@@ -60,7 +69,21 @@ public class ScriptDeployer implements ScriptDeployerMBean {
     }
 
     public void stop() throws Exception {
-        System.out.println("      Stopping Script Deployers");
+        String svc = null;
+        String method = null; 
+        for(String s : deployers) {
+            try {
+                if( s.indexOf(".")<=0) {
+                    svc = s;
+                    method = "end";
+                }
+                ScriptServiceDelegate.getScriptService().invoke(svc,method,new Object[]{},new HashMap());
+            }
+            catch(Exception ex) {
+                System.out.println("..... failed end deployer for " + svc + "." + method + ". "  + ex.getMessage() );
+            }
+        }
+        System.out.println("STOPPING SCRIPT DEPLOYERS");
     }
     
 }

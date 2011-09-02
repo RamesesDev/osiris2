@@ -1,0 +1,13 @@
+<project default="build-app">
+	<target name="build-app">
+		<echo>Directory is ${basedir}</echo>
+		<echo>Start building ${appname}</echo>
+		<copy todir="${appname}.ear">
+			<fileset dir="templates/ear-template"/>
+		</copy>
+		<replace file="${appname}.ear/META-INF/application.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/META-INF/jboss-app.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/META-INF/app-service.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/META-INF/app-ds.xml" token="@@name" value="${appname}"/>
+	</target>
+</project>

@@ -1,0 +1,9 @@
+<schema>
+    <element tablename="role">
+        <field name="role" primary="true" />
+        <field name="master" />
+        <field name="permissionset" serializer="default"/>
+        <field name="disallowed" serializer="default"/>
+		<field name="grouptype"/>
+    </element>
+</schema>

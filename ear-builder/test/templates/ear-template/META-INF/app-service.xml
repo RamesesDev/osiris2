@@ -1,0 +1,45 @@
+<server>
+  
+  <mbean code="com.rameses.eserver.ServerMgmt" name="rameses:@@name=ServerMgmt">
+	<depends>jboss.jdbc:datasource=@@name_system,service=metadata</depends>
+  </mbean>
+  
+  <mbean code="com.rameses.eserver.TemplateService" name="rameses:@@name=TemplateService">
+	<depends>jboss.jdbc:datasource=@@name_system,service=metadata</depends>
+  </mbean>
+
+  <mbean code="com.rameses.eserver.NotificationServer" name="rameses:@@name=NotificationServer">
+	<depends>jboss.jdbc:datasource=@@name_system,service=metadata</depends>
+  </mbean>
+  
+  <mbean code="com.rameses.eserver.CacheService" name="rameses:@@name=CacheService">
+	<depends>rameses:@@name=NotificationServer</depends>
+  </mbean>
+  
+  <mbean code="com.rameses.eserver.ScriptDeployer" name="rameses:@@name=ScriptDeployer">
+	<depends>jboss.j2ee:ear=@@name.ear,jar=rameses-server.jar,name=ScriptService,service=EJB3</depends>
+	<depends>rameses:@@name=CacheService</depends>
+	<depends>jboss.jdbc:datasource=@@name_system,service=metadata</depends>
+  </mbean>
+  
+  <!--
+  <mbean code="org.jboss.mail.MailService" name="jboss:@@name=Mail">
+    <attribute name="JNDIName">@@name/Mail</attribute>
+    <attribute name="User">@@emailuser</attribute>
+    <attribute name="Password">@@emailpwd</attribute>
+    <attribute name="Configuration">
+      <configuration>
+		<property name="mail.smtp.starttls.enable" value="true"/>  
+        <property name="mail.transport.protocol" value="smtp"/>
+        <property name="mail.smtp.host" value="smtp.gmail.com"/>
+        <property name="mail.smtp.port" value="587"/>
+        <property name="mail.from" value="@emailaccount.com"/>
+        <property name="mail.smtp.auth" value="true"/>  
+        <property name="mail.debug" value="true"/>
+      </configuration>
+    </attribute>
+    <depends>jboss:service=Naming</depends>
+  </mbean>
+  -->
+  
+</server>

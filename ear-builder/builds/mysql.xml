@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="init-db" name="Load MySQL">
+ 
+  <property name="db.username" value="root"/>
+  <property name="db.password" value="1234"/>
+  <property name="db.name" value="${appname}_db"/>
+  <property name="mysql" value="d:/Applications/mysql50/bin/mysql"/>
+  <property name="mysqladmin" value="d:/Applications/mysql50/bin/mysqladmin"/>
+  <property name="dump" value="d:/${appname}.sql"/>
+  
+ 
+  <target name="init-db">
+    <echo>Loading MySQL for ${appname} ${basedir}</echo>
+	<copy file="templates/db/gazeebu.sql" tofile="${dump}"/>
+	<replace file="${dump}" token="@@dbname" value="${db.name}"/>
+		
+	<!-- we must force create the db so it can be restored properly -->
+	<exec executable="${mysqladmin}">
+      <arg value="--user=${db.username}"/>
+      <arg value="--password=${db.password}"/>
+      <arg value="--force"/>
+      <arg value="create"/>
+      <arg value="${db.name}"/>
+    </exec>
+	
+	<!-- the target db must already exist -->
+	<exec executable="cmd">
+	  <arg value="/c"/>
+	  <arg value="restore-mysql.bat"/>
+	  <arg value="${db.username}"/>
+	  <arg value="${db.password}"/>
+	  <arg value="${db.name}"/>
+	  <arg value="${dump}" />
+	</exec>
+
+	<delete file="${dump}"/>
+	
+  </target>
+ 
+</project>

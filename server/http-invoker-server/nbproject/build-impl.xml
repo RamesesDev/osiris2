@@ -278,9 +278,13 @@
             -->
     <target name="deps-module-jar" depends="init" if="no.dist.ear.dir" unless="no.deps">
         <ant target="jar" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
+        <ant target="jar" inheritall="false" antfile="${project.rameses-scripting}/build.xml"/>
+        <ant target="jar" inheritall="false" antfile="${project.rameses-server}/build.xml"/>
     </target>
     <target name="deps-ear-jar" depends="init" if="dist.ear.dir" unless="no.deps">
         <ant target="jar" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
+        <ant target="jar" inheritall="false" antfile="${project.rameses-scripting}/build.xml"/>
+        <ant target="jar" inheritall="false" antfile="${project.rameses-server}/build.xml"/>
     </target>
     <target name="deps-jar" depends="init, deps-module-jar, deps-ear-jar" unless="no.deps"/>
     <target name="-pre-pre-compile" depends="init,deps-jar">
@@ -398,13 +402,17 @@
     </target>
     <target name="do-dist" depends="init,compile,compile-jsps,-pre-dist,-do-dist-with-manifest,-do-dist-without-manifest"/>
     <target name="library-inclusion-in-manifest" depends="init" if="dist.ear.dir">
+        <basename property="included.lib.reference.rameses-scripting.jar" file="${reference.rameses-scripting.jar}"/>
+        <copy-ear-war file="${reference.rameses-scripting.jar}" propname="included.lib.reference.rameses-scripting.jar.X"/>
         <mkdir dir="${build.web.dir.real}/META-INF"/>
         <manifest file="${build.web.dir.real}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value=""/>
+            <attribute name="Class-Path" value="${included.lib.reference.rameses-scripting.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
-    <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir"/>
+    <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir">
+        <copy file="${reference.rameses-scripting.jar}" todir="${build.web.dir.real}/WEB-INF/lib"/>
+    </target>
     <target name="do-ear-dist" depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest">
         <dirname property="dist.jar.dir" file="${dist.ear.war}"/>
         <mkdir dir="${dist.jar.dir}"/>
@@ -672,6 +680,8 @@
             -->
     <target name="deps-clean" depends="init" if="no.dist.ear.dir" unless="no.deps">
         <ant target="clean" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
+        <ant target="clean" inheritall="false" antfile="${project.rameses-scripting}/build.xml"/>
+        <ant target="clean" inheritall="false" antfile="${project.rameses-server}/build.xml"/>
     </target>
     <target name="do-clean" depends="init">
         <condition value="${build.web.dir.real}" property="build.dir.to.clean">

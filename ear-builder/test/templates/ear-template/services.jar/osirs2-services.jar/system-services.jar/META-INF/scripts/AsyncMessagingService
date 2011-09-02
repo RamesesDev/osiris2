@@ -1,0 +1,13 @@
+import com.rameses.annotations.*;
+
+class AsyncMessagingService {
+
+	@PersistenceContext("system")
+	def em;
+
+	@ProxyMethod
+	public void execute(def param){
+		print "logging message " + em.serializer.read(param);
+	}
+	
+}

@@ -6,18 +6,23 @@
             <name>http-invoker-server</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
-                <library>
+                <library files="1">
                     <file>${reference.rameses-common.jar}</file>
                 </library>
                 <library files="4">
                     <file>${libs.Apache_Bean_Utils.classpath}</file>
                 </library>
-                <library>
+                <library files="1">
                     <file>${file.reference.ezmorph-1.0.6.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
-                <library>
-                    <file>${file.reference.json-lib-2.2.3-MODIFIED-jdk15.jar}</file>
+                <library files="1">
+                    <file>${file.reference.json-lib-2.3-jdk15.jar}</file>
+                </library>
+                <library files="1">
+                    <file>${reference.rameses-server.jar}</file>
+                </library>
+                <library files="1">
+                    <file>${reference.rameses-scripting.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
@@ -32,6 +37,22 @@
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
                 <foreign-project>rameses-common</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>rameses-scripting</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>rameses-server</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

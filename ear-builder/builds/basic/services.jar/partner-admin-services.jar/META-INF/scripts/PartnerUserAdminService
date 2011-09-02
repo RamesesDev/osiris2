@@ -1,0 +1,97 @@
+import com.rameses.annotations.*;
+
+class PartnerUserAdminService {
+	
+    @PersistenceContext("main")
+    def em;
+    
+	@Env
+	def env;
+	
+    @ProxyMethod
+    public def getList(param) {
+		def adminlevel = env.PROFILE?.adminlevel;
+		if(adminlevel==null) adminlevel = 100;
+		param.adminlevel = adminlevel;
+		def s = 'select * from user where adminlevel > $P{adminlevel} and userdomain=$P{userdomain}';
+    	return em.sqlContext.createQuery(s).setFirstResult(param._start).setMaxResults(param._limit).setParameters(param).resultList;
+    }
+    
+
+    @ProxyMethod
+    public def create(o) {
+        o.objid="USER"+new java.rmi.server.UID();
+		def adminlevel = env.PROFILE?.adminlevel;
+		if(adminlevel==null) adminlevel = 100;
+		o.adminlevel = adminlevel + 1;
+        return em.create("user", o);
+    }    
+	
+	@ProxyMethod
+    public def read(o) {
+        def entity = em.read("user", o);
+		def loginacct = em.read("login", o);
+		if(loginacct) entity.loginaccount = loginacct;
+		entity.partner = [objid:entity.userdomain,name:entity.userdomain];
+		entity.roles = em.sqlContext.createQuery('SELECT * FROM userrole WHERE userid=?').setParameter(1, entity.objid).resultList;
+		entity.roles.each {
+			if(it.disallowed) it.disallowed = em.serializer.read( it.disallowed );
+		}
+		return entity;
+    }
+    
+    @ProxyMethod
+    public def update(o) {
+        return em.update("user", o);
+    }
+    
+    @ProxyMethod
+    public def remove(o) {
+        return em.delete("user", o);
+    }
+    
+    // *********************
+    // login account methods
+    // *********************
+    @ProxyMethod
+    public def createLogin( o ) {
+		o.usertype = "user";
+    	return em.create("login", o);
+    }
+    
+    @ProxyMethod
+    public def updateLogin( o ) {
+        return em.update("login", o);
+    }
+	
+	@ProxyMethod
+    public def removeLogin( o ) {
+        return em.delete("login", o);
+    }
+    
+    // *************************
+    // user role account methods
+    // *************************
+    @ProxyMethod
+    public def addUserRole( o ) {
+        o.objid = "UR" + new java.rmi.server.UID();
+        return em.create( "userrole", o );
+    }
+    
+    @ProxyMethod
+    public def updateUserRole( o ) {
+        return em.update( "userrole", o );
+    }
+    
+    @ProxyMethod
+    public def removeUserRole( o ) {
+    	em.delete('userrole', o);
+    }
+    
+    @ProxyMethod
+    public def searchSuggest( param ) {
+    	param.type += '%';
+    	return em.sqlContext.createQuery('select * from user where username like $P{type}').setMaxResults(5).setParameters(param).resultList*.username;
+    }
+}
+

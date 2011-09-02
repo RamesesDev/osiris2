@@ -91,6 +91,7 @@ public abstract class TemplateProvider implements Serializable {
         }
         
         public void clear(String name) {
+            
             String ext = name.substring( name.lastIndexOf(".")+1 );
             TemplateProvider t = getProvider(ext);
             t.clear( name );

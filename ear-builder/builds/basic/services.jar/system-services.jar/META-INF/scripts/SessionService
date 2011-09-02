@@ -1,0 +1,61 @@
+import com.rameses.annotations.*;
+
+class SessionService {
+	
+    @PersistenceContext("main")
+    def em;
+    
+    @ProxyMethod
+    public def login( def o ) {
+		def login = em.sqlContext.createQuery('select * from login where uid=$P{username}').setParameters(o).singleResult;
+		if(!login) {
+			throw new Exception("Invalid username and password");
+		}
+        if(login.password != o.password) {
+            throw new Exception("Invalid username and password");
+		}
+		//retrieve the associated entity for this login
+		def profile = em.read( login.usertype, [objid: login.objid] );
+		if(!profile) profile = [:];
+		//test first adding the roles.
+		profile.sessionid = ("SESSION" + new java.rmi.server.UID()).hashCode();
+		profile.username = login.uid;	
+		profile.usertype = login.usertype;
+		
+		//load the role permissions
+		/*
+		def session = evt.result;
+		session.roles = em.sqlContext.createQuery('''
+			SELECT 
+				ur.objid as objid, r.objid AS role, r.name AS rolename,
+				ug.objid AS groupid, ug.code AS groupcode, ug.name AS groupname,
+				ps.permissions, r.disallowed AS roledisallowed, ur.disallowed AS userdisallowed
+			FROM userrole ur 
+			INNER JOIN usergroup ug ON ur.usergroup=ug.objid
+			INNER JOIN role r ON r.objid=ur.role
+			INNER JOIN permissionset ps ON ps.name=r.permissionset
+			WHERE ur.userid = $P{userid}
+			''').setParameters(session).resultList.each {
+				it.permissions = em.serializer.read( it.permissions )*.action;
+				def roledisallowed = (it.roledisallowed) ? em.serializer.read( it.roledisallowed ) : [];
+				def userdisallowed = (it.userdisallowed) ? em.serializer.read( it.userdisallowed ) : [];
+				it.permissions = it.permissions - roledisallowed - userdisallowed;
+				it.remove( "roledisallowed" );
+				it.remove( "userdisallowed" );	
+				it.title = it.rolename + "-" + it.groupname;			
+			}		
+		*/
+		
+		return em.create( "usersession", profile );
+    }     
+
+    @ProxyMethod
+    public def getUserProfile( String sessionid ) {
+		return em.read("usersession", [sessionid: sessionid] );
+    }
+
+	@ProxyMethod
+    public def logout(o) {
+    	em.delete( "usersession", o );
+    }
+}

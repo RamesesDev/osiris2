@@ -1,0 +1,9 @@
+<schema>
+	<element tablename="schedule_group">
+		<field name="objid" primary="true"/>
+		<field name="programid"/>
+		<field name="name"/>
+		<field name="section"/>
+	</element>	
+</schema>
+

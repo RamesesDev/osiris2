@@ -1,0 +1,42 @@
+import com.rameses.annotations.*;
+
+class SessionNotifier {
+	
+	@Resource("NotificationServer")
+	def notifier;
+	
+	@PersistenceContext("system")
+	def em;
+
+	private def buildJson(data) {
+		StringBuffer sb = new StringBuffer();
+		sb.append( "{" );
+		boolean f = false;
+		for(n in data) {
+			if(f==false) {
+				f = true;
+			}
+			else {
+				sb.append(",");
+			}	
+			sb.append( '"'+ n.key + '":"' + n.value + '"' );
+		}
+		sb.append( "}");
+		return sb.toString();
+	}
+	
+    @ProxyMethod
+    public def notifyUser( String userid, def data ) {
+		def msg = buildJson( data );
+		def list = em.sqlContext.createQuery('select sessionid from sys_session where userid=?').setParameter(1,userid).resultList*.sessionid;
+		list.each {
+			notifier.signal( it, msg );
+		}
+    }
+	
+	@ProxyMethod
+    public def notifySession( String sessionId, def data ) {
+		notifier.signal( sessionId, buildJson(data) );
+    }
+	
+}

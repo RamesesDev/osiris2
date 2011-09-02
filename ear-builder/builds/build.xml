@@ -1,0 +1,21 @@
+<project default="build-app">
+	<import file="mysql.xml"/>
+
+	<target name="build-app">
+		<echo>Start Initializing App</echo>
+		<antcall target="init-db"/>
+
+		<echo message="Start building app ${appname}" />
+		<copy todir="${appname}.ear">
+			<fileset dir="templates/basic"/>
+		</copy>
+		<replace file="${appname}.ear/webapp.war/WEB-INF/web.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/async-impl.jar/META-INF/ejb-jar.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/META-INF/application.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/META-INF/jboss-app.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/META-INF/app-service.xml" token="@@name" value="${appname}"/>
+		<replace file="${appname}.ear/META-INF/app-ds.xml" token="@@name" value="${appname}"/>
+		
+		<move file="${appname}.ear" tofile="${rootpath}/schools/${appname}.ear" />
+	</target>
+</project>

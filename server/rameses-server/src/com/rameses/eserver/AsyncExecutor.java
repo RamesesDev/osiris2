@@ -61,7 +61,7 @@ public class AsyncExecutor implements Runnable {
             ae.put("loop", 0);
             ae.put("requestId", requestId);
             env.put("async-event", ae);
-
+            
             //execute the result;
             if(!looping) {
                 Object result = ScriptServiceDelegate.getScriptService().invoke( "~" +script,method,params,env );
@@ -84,7 +84,10 @@ public class AsyncExecutor implements Runnable {
                     }
                 }
             }
-            ScriptServiceDelegate.getScriptService().pushResponse( this.requestId, "EOF" );
+            
+            if(hasReturnType) {
+                ScriptServiceDelegate.getScriptService().pushResponse( this.requestId, "EOF" );
+            }
         } 
         catch(Exception ex) {
             try {

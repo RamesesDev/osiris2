@@ -1,0 +1,10 @@
+<schema>
+    <element name="session" tablename="sys_session">
+        <field name="sessionid" primary="true"/>
+		<field name="username"/>
+		<field name="userid"/>
+		<field name="dtaccessed"/>
+		<field name="dtexpiry"/>
+        <complex name="info" serializer="default" merge="true"/>
+    </element>
+</schema>

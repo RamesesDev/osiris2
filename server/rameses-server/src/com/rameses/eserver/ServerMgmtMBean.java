@@ -25,9 +25,6 @@ public interface ServerMgmtMBean {
     void reloadSchema();
     void reloadSchema(String name);
     
-    void reloadTemplates();
-    void reloadTemplate(String name);
-    
     String showAppProperties();
     String showScriptInfo(String name);
     

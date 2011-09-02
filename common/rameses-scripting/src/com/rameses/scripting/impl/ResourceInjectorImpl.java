@@ -34,7 +34,7 @@ public class ResourceInjectorImpl extends ResourceInjector {
         }
         public Object getResource(Annotation a) {
             String resname = ExprUtil.substituteValues(((com.rameses.annotations.Resource)a).value(), new SysMap());
-            System.out.println("looking up " + resname );
+            //System.out.println("looking up " + resname );
             return resname;
             //InitialContext ctx = new InitialContext();
             //return ctx.lookup(resname);

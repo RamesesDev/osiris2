@@ -1,0 +1,64 @@
+import com.rameses.annotations.*;
+import java.io.*;
+import com.rameses.io.FileTransfer;
+import java.util.concurrent.*;
+
+class NotifierService {
+
+	private static def queue = new ArrayBlockingQueue(100);
+	private static def df = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	@PersistenceContext("system")
+	def em;
+	
+	@Env
+	def env;
+	
+	@ProxyMethod
+	public def checkMessages(def o) {
+		int counter = 0;
+		String receiverid = env.USER;
+		int delay = 2000;
+		def results = null;
+		if(!o.date) o.date = df.format( new Date() );
+		def map = [receiverid: env.web_sessionid, currdate: o.date];
+		while(true) {
+			print "fetching messages " + counter;
+			results = em.sqlContext.createQuery('select message from sys_inbox where receiverid=$P{receiverid} and msgdate > $P{currdate}').setParameters(map).resultList;	
+			if(!results) {
+				print "start blocking";
+				//check first if it is in queue. sleep then continue until counter is max
+				if( queue.contains( receiverid ) ) {
+					counter++;
+					if(counter > 5) {
+						queue.remove( receiverid );
+						print "released";
+						break;
+					}
+					else {
+						Thread.sleep(delay);
+					}
+				}	
+				else {
+					//attempt to place in queue
+					print "attempt to add in queue";
+					try {
+						queue.add( receiverid );
+						counter = 0;
+						Thread.sleep(delay);
+					}
+					catch(e) {
+						break;
+					}	
+				}
+			}
+			else {
+				break;
+			}
+		}	
+		
+		return [results: results, date: df.format(new Date()) ]; 
+	}
+	
+	
+}

@@ -1,0 +1,47 @@
+import com.rameses.annotations.*;
+import com.rameses.util.*;
+
+class RuleTestService{
+    
+    @Resource("RuleService/local")
+    def ruleService;		
+    
+    @ProxyMethod
+    public def execute() { 
+		def results = [];
+	
+		def block = ruleService.createFact("test", "test.Block" );
+		block.codes = [];
+		block.title = "";
+		block.schedules = [];
+		
+		def sked1 = ruleService.createFact("test", "test.Schedule" );
+		sked1.code = "CHEM1";
+		sked1.schedule = "07:30-08:30 MWF";
+		sked1.id = "X1";
+		
+		def sked2 = ruleService.createFact("test", "test.Schedule" );
+		sked2.code = "MATH101";
+		sked2.schedule = "09:45-11:45 TS";
+		sked2.id = "X2";
+		
+		def sked3 = ruleService.createFact("test", "test.Schedule" );
+		sked3.code = "ECON";
+		sked3.schedule = "09:45-11:45 MWF";
+		sked3.id = "X3";
+		
+		def sked4 = ruleService.createFact("test", "test.Schedule" );
+		sked4.code = "MATH106";
+		sked4.schedule = "09:45-11:45 MWF";
+		sked4.id = "X4";
+		
+		ruleService.execute( "test", [block,sked1,sked2,sked3,sked4], [results: results], null );
+		results.each {
+			println " **********" + it.id + " ***********";
+			it.title.split(";").each { xx->
+				println xx;
+			}
+		}
+    }			
+
+}

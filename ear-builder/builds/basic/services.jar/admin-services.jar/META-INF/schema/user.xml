@@ -1,0 +1,13 @@
+<schema>
+    <element name="user" tablename="user">
+        <field name="objid" primary="true" />
+		 <field name="userdomain" />
+        <field name="username" />
+        <field name="lastname" />
+        <field name="firstname" />
+        <field name="middlename" />
+        <field name="email" />
+		<field name="adminlevel" />
+        <complex name="info" serializer="default" merge="true"/>
+    </element>
+</schema>

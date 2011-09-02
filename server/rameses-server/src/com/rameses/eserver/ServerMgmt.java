@@ -14,7 +14,6 @@ import com.rameses.schema.SchemaManager;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptObject;
 import com.rameses.sql.SqlManager;
-import com.rameses.util.TemplateProvider;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,9 +30,6 @@ public class ServerMgmt implements ServerMgmtMBean, Serializable {
         AppContext.load();
         
         System.out.println("STARTING SERVER MGMT:" + AppContext.getName() );
-        
-        System.out.println("      Initializing Template Manager");
-        TemplateProvider.setInstance(new TemplateProviderImpl());
         
         System.out.println("      Initializing Schema Manager");
         SchemaManager.setInstance( new SchemaManagerImpl() );
@@ -64,8 +60,7 @@ public class ServerMgmt implements ServerMgmtMBean, Serializable {
         System.out.println("      Unloading Schema Manager");
         SchemaManager.setInstance( null );
         
-        System.out.println("      Unloading Template Provider");
-        TemplateProvider.setInstance( null );
+        
 
         InitialContext ctx = new InitialContext();
         JndiUtil.unbind( ctx, AppContext.getPath()+ ServerMgmt.class.getSimpleName() );
@@ -105,14 +100,6 @@ public class ServerMgmt implements ServerMgmtMBean, Serializable {
             for(String s: list) map.remove(s);
         }
         
-    }
-    
-    public void reloadTemplates() {
-        TemplateProvider.getInstance().clear(null);
-    }
-    
-    public void reloadTemplate(String name) {
-        TemplateProvider.getInstance().clear(name);
     }
     
     public String showAppProperties() {

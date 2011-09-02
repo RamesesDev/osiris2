@@ -14,6 +14,7 @@ import com.rameses.util.ExprUtil;
 import com.rameses.util.SysMap;
 import com.rameses.util.URLUtil;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Map;
@@ -70,6 +71,15 @@ public final class AppContext {
     private static void loadHost() {
         host = System.getProperty("jboss.bind.address");
         if(host==null) host = System.getProperty( name + ".host" );
+        //try the best guess for an IP address but this will not be guaranteed
+        if(host.equals("0.0.0.0")) {
+            try {
+                host = InetAddress.getLocalHost().getHostAddress();
+            }
+            catch(Exception ign) {
+                System.out.println("AppContext. loadHost error " + ign.getMessage());
+            }
+        }
     }
 
     private static void loadProperties() {
