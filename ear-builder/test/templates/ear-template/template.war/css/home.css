@@ -1,0 +1,59 @@
+#useraccountmenu {
+	padding-right:20px;
+	color:white;
+	text-decoration:none; 
+	font-size:12px;
+	font-family:arial;
+	font-weight:bold;
+}
+
+
+.menutitle {
+	font-size:13px;
+	color:blue;
+	font-weight:bold;
+	padding-top:2px;
+	padding-bottom:5px;
+	border-top: 1px solid lightgrey;
+}
+
+.menudivider {
+	padding-top:5px;
+}
+
+.addclass {
+	font-size: 10px;
+	text-decoration: none;
+}
+
+.menu .menuitem {
+	padding-left: 10px;
+}
+
+.menu .menuitem a {
+	font-size:11px;
+	font-family: arial;
+	text-decoration: none;
+}
+
+.menu .class#selected  a{
+	color: red;
+	font-weight: bolder;
+}
+
+.menu  .people {
+	font-size: 10px;
+	text-decoration: none;
+}
+
+#online {
+	padding-left:10px;
+	background-image: url('img/online.png');
+	background-repeat:no-repeat;
+}
+
+#offline {
+	padding-left:10px;
+	background-image: url('img/offline.png');
+	background-repeat:no-repeat;
+}

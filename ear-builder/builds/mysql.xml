@@ -4,9 +4,9 @@
   <property name="db.username" value="root"/>
   <property name="db.password" value="1234"/>
   <property name="db.name" value="${appname}_db"/>
-  <property name="mysql" value="d:/Applications/mysql50/bin/mysql"/>
-  <property name="mysqladmin" value="d:/Applications/mysql50/bin/mysqladmin"/>
-  <property name="dump" value="d:/${appname}.sql"/>
+  <property name="mysql" value="mysql"/>
+  <property name="mysqladmin" value="mysqladmin"/>
+  <property name="dump" value="${appname}.sql"/>
   
  
   <target name="init-db">

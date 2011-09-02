@@ -1,0 +1,25 @@
+body {
+	font-family:arial;
+	font-size: 11px;
+	margin: 0;
+	background-color:#eee;
+}
+.header {
+	padding-top:1px;
+	background-color: rgb(54,160,205);
+}
+.footer {
+	padding-top:10px;
+	font-family:arial;
+	font-size:10px;
+}
+.shadowbox {
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px; 
+	background:white; 
+	border:1px solid lightgrey;
+	-moz-box-shadow: 5px 5px 5px #ccc;
+	-webkit-box-shadow: 5px 5px 5px #ccc;
+	box-shadow: 5px 5px 5px #ccc;
+	padding:10px;
+}

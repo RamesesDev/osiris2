@@ -1,13 +1,40 @@
 <project default="build-app">
+	<loadproperties srcfile="build.conf" />
+	
 	<target name="build-app">
 		<echo>Directory is ${basedir}</echo>
-		<echo>Start building ${appname}</echo>
-		<copy todir="${appname}.ear">
+		<echo>Start building ${app_name}</echo>
+		<copy todir="${app_name}.ear">
 			<fileset dir="templates/ear-template"/>
 		</copy>
-		<replace file="${appname}.ear/META-INF/application.xml" token="@@name" value="${appname}"/>
-		<replace file="${appname}.ear/META-INF/jboss-app.xml" token="@@name" value="${appname}"/>
-		<replace file="${appname}.ear/META-INF/app-service.xml" token="@@name" value="${appname}"/>
-		<replace file="${appname}.ear/META-INF/app-ds.xml" token="@@name" value="${appname}"/>
+		
+		<replace file="${app_name}.ear/META-INF/application.xml">
+			<replacefilter token="@@name" value="${app_name}" />
+			<replacefilter token="@@title" value="${app_title}" />
+		</replace>
+		<replace file="${app_name}.ear/META-INF/jboss-app.xml" token="@@name" value="${app_name}"/>
+		<replace file="${app_name}.ear/META-INF/app-service.xml" token="@@name" value="${app_name}"/>
+		<replace file="${app_name}.ear/META-INF/app-ds.xml">
+			<replacefilter  token="@@host" value="${db_host}"/>
+			<replacefilter  token="@@user" value="${db_user}"/>
+			<replacefilter  token="@@pass" value="${db_pass}"/>
+			<replacefilter  token="@@name" value="${app_name}"/>
+		</replace>
+		<replace file="${app_name}.ear/META-INF/app-ds.xml">
+			<replacefilter  token="@@host" value="${db_host}"/>
+			<replacefilter  token="@@user" value="${db_user}"/>
+			<replacefilter  token="@@pass" value="${db_pass}"/>
+			<replacefilter  token="@@name" value="${app_name}"/>
+		</replace>
+		
+		<!-- war settings -->
+		<replace file="${app_name}.ear/template.war/WEB-INF/web.xml">
+			<replacefilter  token="@@host" value="${app_host}"/>
+			<replacefilter  token="@@name" value="${app_name}"/>
+		</replace>
+		<move file="${app_name}.ear/template.war" tofile="${app_name}.ear/${web_context}.war" />
+		<!--
+		<rename src="${app_name}.ear/template.war" dest="${app_name}.ear/${web_context}.war" />
+		-->
 	</target>
 </project>

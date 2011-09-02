@@ -1,0 +1,113 @@
+body {
+	font-family: arial, verdana, tahoma;
+	margin:0;
+	background-color: rgb(204,255,255);
+}
+.head {
+	padding-top:10px;
+	background-color: rgb(54,142,205);
+}
+.middle {
+	background-color: rgb(153,204,255);
+}
+.tabmenu {
+	padding:8px;
+	background-color: rgb(71,184,184);
+}
+.tabmenu a{
+	color:white;
+	font-size: 15px;
+	font-family: arial;
+	color:lightgrey;
+	text-decoration:none;
+}
+.tabmenu-space {
+	padding:2px;
+}
+.tabmenu-selected {
+	padding:8px;
+	background-color: rgb(153,204,255);
+	color:rgb(0,128,128);
+	font-weight:bolder;
+	font-size: 15px;
+	font-family: arial;
+}
+.tabmenu-selected a{
+	color:rgb(0,128,128);
+	font-weight:bolder;
+	font-size: 15px;
+	font-family: arial;
+	text-decoration:none;
+}
+
+#footdeco {
+	background-image: url('img/footdeco.jpg');
+	background-repeat: repeat-x;
+}
+
+.shadowbox {
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px; 
+	background:white; 
+	border:1px solid lightgrey;
+	-moz-box-shadow: 5px 5px 5px #ccc;
+	-webkit-box-shadow: 5px 5px 5px #ccc;
+	box-shadow: 5px 5px 5px #ccc;
+	padding:10px;
+}
+
+#subtitle {
+	font-size:30px; color:green;font-family:tahoma; font-weight:bolder;
+}
+#description {
+	padding-top:20px;
+	padding-left: 20px;
+	font-size: 20px; color:darkslateblue; 
+	font-family:arial, tahoma;
+	width:350px;
+}
+#features {
+	font-size: 16px;
+	font-family: arial, verdana;
+	color:darkslateblue;
+}
+
+#learnmore {
+	padding-top: 20px;
+	font-size: 30px;
+	padding-right: 80px;
+	text-align: right;
+	font-family: arial;
+	color:brown;
+	font-weight: bolder;
+}
+
+#footmenu {
+	font-family: arial;
+	font-size: 14px;
+}
+
+
+#logininput {
+	font-size:11px; 
+	font-family:tahoma;	
+	width:150px;
+	height:22px;
+}
+.loginform .hint {
+	font-size:11px; 
+	font-family:tahoma;	
+	color: gray;
+}
+.loginbutton {
+	font-size:11px; 
+	font-family:tahoma;	
+	height:20px;
+	width:50px;
+	border:1px solid lightgrey;
+}
+.loginaid {
+	font-size:11px; font-family:tahoma;	color:white;
+}
+
+
