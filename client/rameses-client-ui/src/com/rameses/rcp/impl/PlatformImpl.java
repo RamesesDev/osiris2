@@ -2,6 +2,7 @@ package com.rameses.rcp.impl;
 
 import com.rameses.platform.interfaces.MainWindow;
 import com.rameses.platform.interfaces.Platform;
+import com.rameses.platform.interfaces.SubWindow;
 import com.rameses.rcp.util.ErrorDialog;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
@@ -25,7 +26,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 public class PlatformImpl implements Platform {
     
     private MainDialog mainWindow = new MainDialog(); //default impl
-    private Map windows = new HashMap();
+    
+    Map windows = new HashMap();
+    
     
     public PlatformImpl() {
     }
@@ -37,7 +40,9 @@ public class PlatformImpl implements Platform {
         
         if ( windows.containsKey(id) ) return;
         
-        mainWindow.setComponent(comp, MainWindow.CONTENT);
+        PlatformTabWindow tab = new PlatformTabWindow(id, comp, this, false);
+        tab.setTitle( (String) properties.get("title") );
+        mainWindow.setComponent(tab, MainWindow.CONTENT);
         windows.put(id, mainWindow);
     }
     
@@ -54,26 +59,13 @@ public class PlatformImpl implements Platform {
         String canClose = (String) properties.remove("canclose");
         String modal = properties.remove("modal")+"";
         
-        JFrame parent = mainWindow.getComponent();
-        final PopupDialog d = new PopupDialog(parent);
+        PlatformTabWindow t = new PlatformTabWindow(id, comp, this);
+                
+        t.setTitle(title);
+        t.setCanClose( !"false".equals(canClose) );
         
-        if( properties.size() > 0 ) setProperties(d, properties);
-        
-        d.setTitle(title);
-        d.setContentPane(comp);
-        d.setCanClose( !"false".equals(canClose) );
-        d.setId( id );
-        d.setPlatformImpl(this);
-        d.setModal(false);
-        d.pack();
-        d.setLocationRelativeTo(parent);
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                d.setVisible(true);
-            }
-        });
-        
-        windows.put(id, d);
+        mainWindow.setComponent(t, MainWindow.CONTENT);
+        windows.put(id, t);
     }
     
     public void showPopup(JComponent actionSource, JComponent comp, Map properties) {
@@ -156,15 +148,18 @@ public class PlatformImpl implements Platform {
     
     public void closeWindow(String id) {
         if ( windows.containsKey(id) ) {
-            PopupDialog d = (PopupDialog) windows.get(id);
+            SubWindow d = (SubWindow) windows.get(id);
             d.closeWindow();
         }
     }
     
     public void activateWindow(String id) {
         if ( windows.containsKey(id) ) {
-            JDialog d = (JDialog) windows.get(id);
-            d.requestFocus();
+            SubWindow w = (SubWindow) windows.get(id);
+            if( w instanceof JDialog )
+                ((JDialog)w).requestFocus();
+            else if ( w instanceof PlatformTabWindow )
+                ((PlatformTabWindow)w).activate();
         }
     }
     

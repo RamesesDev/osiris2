@@ -36,6 +36,7 @@ public class MainDialog implements MainWindow {
     private MainWindowListener listener;
     private Component toolbar;
     private Component statusbar;
+    private ExtTabbedPane tabbedPane;
     
     
     public MainDialog() {
@@ -100,7 +101,14 @@ public class MainDialog implements MainWindow {
             comp.setBorder(new ToolbarBorder());
             dialog.add(comp, BorderLayout.NORTH, 1);
         } else if ( constraint.equals(MainWindow.CONTENT) ) {
-            dialog.add(comp, BorderLayout.CENTER);
+            if( comp instanceof PlatformTabWindow ) {
+                PlatformTabWindow tab = (PlatformTabWindow) comp;
+                if( tabbedPane == null ) {
+                    tabbedPane = new ExtTabbedPane();
+                    dialog.add(tabbedPane, BorderLayout.CENTER);
+                }
+                tabbedPane.addTab(tab.getTitle(), tab);
+            }
         } else if ( constraint.endsWith(MainWindow.STATUSBAR)) {
             if( statusbar != null )
                 dialog.remove(statusbar);
