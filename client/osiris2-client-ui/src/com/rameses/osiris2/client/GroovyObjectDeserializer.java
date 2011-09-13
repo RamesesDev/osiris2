@@ -12,6 +12,14 @@ import groovy.lang.GroovyShell;
 import java.io.InputStream;
 
 
+/**
+ * This class has been deprecated due to class creation problem
+ * when using GroovyShell
+ *
+ * Use the ObjectDeserializer class of com.rameses.util package instead
+ * of this class
+ */
+@Deprecated
 public class GroovyObjectDeserializer {
     
     private static GroovyObjectDeserializer instance;

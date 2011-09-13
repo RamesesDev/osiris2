@@ -26,7 +26,9 @@ public final class OsirisTestPlatform {
     
     public static void runTest(Map map) throws Exception {
         if ( map == null ) map = new HashMap();
-        map.put("app.title", "Osiris Test Platform");
+        
+        if( map.get("app.title") == null )
+            map.put("app.title", "Osiris Test Platform");
         
         OsirisAppLoader loader = new OsirisAppLoader();
         Platform platform = ClientContext.getCurrentContext().getPlatform();

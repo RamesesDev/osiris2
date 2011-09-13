@@ -39,7 +39,7 @@ public class Osiris2MainWindowListener implements MainWindowListener {
         
         //stop taskmanager only if all listeners allow the platform to be closed
         try {
-            ClientContext.getCurrentContext().getTaskManager().stop();
+            ClientContext.getCurrentContext().shutdown();
         } catch(Exception e) {
             e.printStackTrace();
         }

@@ -552,6 +552,12 @@ public class TableComponent extends JTable implements ListModelListener, TableCo
 //        buildColumns();
         setListModel( listModel );
     }
+        
+    public void fetchStart() {
+    }
+
+    public void fetchEnd() {
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  row movements support  ">

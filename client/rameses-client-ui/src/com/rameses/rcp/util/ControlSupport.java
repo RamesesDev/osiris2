@@ -23,8 +23,7 @@ public final class ControlSupport {
         for(Object o : props.entrySet()) {
             try {
                 Map.Entry me = (Map.Entry)o;
-                resolver.setProperty(component, me.getKey()+"", me.getValue() );
-                
+                resolver.setProperty(component, me.getKey()+"", me.getValue() );                
             } catch(Exception ign) {;}
         }
     }
@@ -112,16 +111,10 @@ public final class ControlSupport {
             if( opener.getId() != null )
                 caller.setId( opener.getId() );
             
-        } else if ( opener.getController() == null ) {
-            //this checking should not be here
-            if ( opener.getName().indexOf(":") < 0 && caller != null ) {
-                String name = caller.getName();
-                String mod = name.substring(0, name.indexOf(":"));
-                opener.setName( mod + ":" + opener.getName() );
-            }
-            
+        } 
+        else if ( opener.getController() == null ) {
             ControllerProvider provider = ClientContext.getCurrentContext().getControllerProvider();
-            UIController controller = provider.getController(opener.getName());
+            UIController controller = provider.getController(opener.getName(), caller);
             controller.setId( opener.getId() );
             controller.setName( opener.getName() );
             controller.setTitle( opener.getCaption() );

@@ -156,13 +156,15 @@ public class ObjectDeserializer
         }
         
         private Object getValue(String text) {
-            if( text.startsWith("\"") && text.endsWith("\""))
+            if( text.startsWith("\"") && text.endsWith("\""))   //string
                 return text.substring(1, text.length()-1);
-            if( text.matches("\\d+") )
+            if( text.matches("\\d+") )                          //integer
                 return new Integer(text);
-            if( text.matches("\\d+\\.\\d+") )
+            if( text.matches("\\d+\\.\\d+") )                   //decimal
                 return new BigDecimal(text);
-            if( "null".equals(text) )
+            if( text.matches("true|false") )                    //boolean
+                return new Boolean(text);
+            if( "null".equals(text) )                           //null
                 return null;
             
             return new EmptyValue();

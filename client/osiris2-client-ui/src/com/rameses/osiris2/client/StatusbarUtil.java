@@ -47,7 +47,7 @@ public final class StatusbarUtil
     public static Component getViewComponent(Invoker inv) 
     {
         ControllerProvider cp = ClientContext.getCurrentContext().getControllerProvider();
-        UIController c = cp.getController(inv.getWorkunitid());
+        UIController c = cp.getController(inv.getWorkunitid(), null);
         UIControllerContext uic = new UIControllerContext(c);
         
         String action = inv.getAction();

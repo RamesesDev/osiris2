@@ -10,7 +10,6 @@
 package com.rameses.rcp.framework;
 
 import com.rameses.platform.interfaces.Platform;
-import com.rameses.rcp.annotations.Controller;
 import com.rameses.rcp.impl.ClientContextImpl;
 import com.rameses.rcp.impl.ControllerProviderImpl;
 import com.rameses.rcp.impl.NavigationHandlerImpl;
@@ -19,11 +18,14 @@ import com.rameses.common.MethodResolver;
 import com.rameses.common.PropertyResolver;
 import com.rameses.common.ValueResolver;
 import com.sun.jmx.remote.util.Service;
-import java.lang.reflect.Field;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author jaycverg
@@ -42,6 +44,8 @@ public abstract class ClientContext {
     private Map properties = new HashMap();
     
     private boolean debugMode;
+    
+    private List<WeakReference<ExecutorService>> executors = new Vector();
     
     
     //<editor-fold defaultstate="collapsed" desc="  abstract properties  ">
@@ -72,7 +76,6 @@ public abstract class ClientContext {
             } else {
                 controllerProvider = new ControllerProviderImpl();
             }
-            controllerProvider = new ControllerProviderWrapper( controllerProvider );
         }
         return controllerProvider;
     }
@@ -153,46 +156,32 @@ public abstract class ClientContext {
         this.debugMode = debugMode;
     }
     
-    
-    //<editor-fold defaultstate="collapsed" desc="  ControllerProviderWrapper (class)  ">
-    private class ControllerProviderWrapper implements ControllerProvider {
-        
-        private ControllerProvider orig;
-        
-        ControllerProviderWrapper(ControllerProvider orig) {
-            this.orig = orig;
+    public void registerExecutor(ExecutorService svc) {
+        if( !executors.contains(svc) ) {
+            executors.add(new WeakReference(svc));
         }
-        
-        public UIController getController(String name) {
-            UIController controller = orig.getController(name);
-            Object bean = controller.getCodeBean();
-            injectController( bean, bean.getClass(), controller );
-            
-            return controller;
-        }
-        
-        private void injectController( Object o, Class clazz, UIController u ) {
-            if( o == null) return;
-            for( Field f: clazz.getDeclaredFields() ) {
-                //inject Controller
-                if( f.isAnnotationPresent( Controller.class )) {
-                    boolean accessible = f.isAccessible();
-                    f.setAccessible(true);
-                    try {
-                        f.set(o, u );
-                    } catch(Exception ex) {
-                        System.out.println("ERROR injecting @Controller "  + ex.getMessage() );
-                    }
-                    f.setAccessible(accessible);
-                    return;
-                }
-            }
-            if( clazz.getSuperclass() != null ) {
-                injectController( o, clazz.getSuperclass(), u );
-            }
-        }
-        
     }
-    //</editor-fold>
+    
+    public void unregisterExecutor(ExecutorService svc) {
+        executors.remove(svc);
+    }
+    
+    public void shutdown() {
+        getTaskManager().stop();
+        for(WeakReference wr : executors) {
+            try {
+                ExecutorService svc = (ExecutorService) wr.get();
+                if( svc == null ) continue;
+                
+                if( isDebugMode() ) 
+                    System.out.println("shutting down executor service: " + svc);
+                                
+                svc.shutdownNow();
+            }
+            catch(Exception e) {
+                if( isDebugMode() ) e.printStackTrace();
+            }
+        }
+    }
 
 }

@@ -17,18 +17,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
  * @author elmo
  */
-public abstract class AbstractListModel {
+public abstract class AbstractListModel implements Runnable {
     
     protected ListItem selectedItem;
     protected String selectedColumn;
     protected ListModelListener listener;
     private int rows = 10;
     
+    //used to asynchronously fetch items
+    private ExecutorService fetchExecSvc;
+    //processing flag
+    private boolean processing;
     
     //This is the real list needed by the grid. Not overridable
     protected List<ListItem> items = new ArrayList<ListItem>();
@@ -46,6 +52,24 @@ public abstract class AbstractListModel {
      */
     protected Set checkedItems = new HashSet();
     
+    
+    //-- free resources when garbage collected
+    public void finalize() {
+        boolean debugMode = ClientContext.getCurrentContext().isDebugMode();
+        if( debugMode )
+            System.out.println("Finalizing abstract list model " + this);
+        
+        try {
+            ClientContext.getCurrentContext().unregisterExecutor(fetchExecSvc);
+            if( fetchExecSvc != null )
+                fetchExecSvc.shutdownNow();
+        }catch(Exception e) {
+            if( debugMode ) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     /**
      * Override this if you want a more customized ListItem.
      * One may need to customize if it contains ListItem additional
@@ -54,7 +78,6 @@ public abstract class AbstractListModel {
     public ListItem createListItem() {
         return new ListItem();
     }
-    
     
     // <editor-fold defaultstate="collapsed" desc="GETTER/SETTER">
     public final ListItem getSelectedItem() {
@@ -163,14 +186,56 @@ public abstract class AbstractListModel {
     }
     
     /**
-     * this method is contrary to the load method, does not reset the list
+     * This method is contrary to the load method, does not reset the list
      */
     public void refresh() {
-        fetch();
-        if(listener!=null) {
-            listener.refreshList();
-            listener.refreshSelectedItem();
+        if( fetchExecSvc == null ) {
+            fetchExecSvc = Executors.newFixedThreadPool(1);
+            ClientContext.getCurrentContext().registerExecutor(fetchExecSvc);
+            fillListItems(new ArrayList(), getRows());
         }
+        fetchExecSvc.submit(this);
+    }
+    
+    /**
+     * Implementation of Runnable's run method
+     * This method do the actual fetching
+     */
+    public void run() {        
+        try {
+            processing = true;
+            if( listener != null ) listener.fetchStart();
+            onFetchStart();
+        
+            fetch();
+        }
+        catch(Exception e) {
+            throw (e instanceof RuntimeException)?
+                (RuntimeException) e :
+                new RuntimeException(e);
+        }
+        finally {
+            try {
+                if(listener!=null) {
+                    listener.fetchEnd();
+                    listener.refreshList();
+                    listener.refreshSelectedItem();
+                }
+            }
+            catch(Exception e) {
+                throw (e instanceof RuntimeException)?
+                    (RuntimeException) e :
+                    new RuntimeException(e);
+            }
+            finally {
+                processing = false;
+                onFetchEnd();
+            }
+        }
+    }
+    
+    public boolean isProcessing() {
+        return processing;
     }
     
     /**
@@ -347,6 +412,16 @@ public abstract class AbstractListModel {
     public void onReplaceItem( Object oldValue, Object o ) {
         //throw new IllegalStateException("Error ListItem.setItem. onReplaceItem(Object oldItem,Object newItem) must be implemented.");
     }
+    
+    /**
+     * called on before the fetch is executed
+     */
+    public void onFetchStart() {}
+    
+    /**
+     * called on after the fetch is executed
+     */
+    public void onFetchEnd() {}
     
     /**
      * this must be implemented by the developers.

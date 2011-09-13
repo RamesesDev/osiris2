@@ -75,7 +75,7 @@ public class UILoaderStack extends Stack {
                 }
                 
                 ControllerProvider cp = ctx.getControllerProvider();
-                UIController c = cp.getController( i.getWorkunitid() );
+                UIController c = cp.getController( i.getWorkunitid(), null );
                 
                 if( target!=null && target.matches(".*process")) {
                     try {

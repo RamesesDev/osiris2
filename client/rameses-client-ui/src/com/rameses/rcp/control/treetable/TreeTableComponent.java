@@ -246,6 +246,12 @@ public class TreeTableComponent extends JTable implements ListModelListener, Tab
         setModel(tableModel);
         buildColumns();
     }
+        
+    public void fetchStart() {
+    }
+
+    public void fetchEnd() {
+    }
     
     public void movePrevRecord() {
         if ( getSelectedRow() == 0 ) {

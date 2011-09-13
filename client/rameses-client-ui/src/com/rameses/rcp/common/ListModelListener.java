@@ -23,4 +23,11 @@ public interface ListModelListener
      */
     void rebuildColumns();
     
+    /**
+     * These methods are used as fetch callback handlers
+     * when the fetch method is called asynchronously
+     */
+    void fetchStart();
+    void fetchEnd();
+    
 }

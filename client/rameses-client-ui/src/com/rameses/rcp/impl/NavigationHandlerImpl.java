@@ -32,8 +32,8 @@ public class NavigationHandlerImpl implements NavigationHandler {
             curController.getCurrentView().refresh();
             
         }
-        //-- process Opener outcome
         else {
+            //-- process Opener outcome
             if( outcome instanceof Opener )  {
                 Opener opener = (Opener) outcome;
                 opener = ControlSupport.initOpener( opener, curController.getController() );
@@ -102,7 +102,7 @@ public class NavigationHandlerImpl implements NavigationHandler {
                 }
                 
             }
-            //-- process String(expected) outcome
+            //-- process String outcome
             else {
                 String out = outcome+"";
                 if ( out.startsWith("_close") ) {

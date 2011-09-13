@@ -20,7 +20,7 @@ public final class MainWindowUtil {
         ControllerProvider cp = ctx.getControllerProvider();
         for(Object o: InvokerUtil.lookup("mainform_.*",null)) {
             Invoker i = (Invoker)o;
-            UIController c = cp.getController( i.getWorkunitid() );
+            UIController c = cp.getController( i.getWorkunitid(), null );
             
             String action = i.getAction();
             String page = null;

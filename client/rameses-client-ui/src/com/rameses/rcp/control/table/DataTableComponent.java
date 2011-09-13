@@ -16,6 +16,7 @@ import com.rameses.rcp.ui.*;
 import com.rameses.rcp.util.ActionMessage;
 import com.rameses.util.ValueUtil;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.*;
@@ -32,8 +33,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JRootPane;
-
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 public class DataTableComponent extends JTable implements ListModelListener, TableControl {
     
@@ -66,6 +69,8 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     private Color errorForeground = Color.BLACK;
     
     private Binding binding;
+    
+    private JLabel processingLbl;
     
     
     public DataTableComponent() {
@@ -246,6 +251,25 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  JTable properties  ">
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if( listModel != null && listModel.isProcessing() ) {
+            if( processingLbl == null ) {
+                processingLbl = new JLabel("<html><h1>Loading...</h1></html>");
+                processingLbl.setForeground(Color.GRAY);
+                processingLbl.setVerticalAlignment(SwingUtilities.TOP);
+                processingLbl.setBorder(new EmptyBorder(5,10,10,10));
+            }
+            Rectangle rec = getVisibleRect();
+            Graphics g2 = g.create();
+            g2.translate(rec.x, rec.y);
+            processingLbl.setSize(rec.width, rec.height);
+            processingLbl.paint(g2);
+            g2.dispose();
+        }
+    }
+    
     public void setTableHeader(JTableHeader tableHeader) {
         super.setTableHeader(tableHeader);
         tableHeader.addMouseMotionListener(new MouseMotionAdapter() {
@@ -361,6 +385,22 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
         tableModel.setListModel(listModel);
         setModel(tableModel);
         buildColumns();
+    }
+    
+    public boolean isProcessing() { return listModel.isProcessing(); }
+        
+    public void fetchStart() {
+        firePropertyChange("busy", false, true);
+        if( processingLbl != null ) {
+            repaint();
+        }
+    }
+
+    public void fetchEnd() {
+        firePropertyChange("busy", true, false);
+        if( processingLbl != null ) {
+            repaint();
+        }
     }
     //</editor-fold>
     

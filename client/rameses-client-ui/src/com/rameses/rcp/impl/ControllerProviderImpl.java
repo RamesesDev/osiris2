@@ -8,9 +8,9 @@ import com.rameses.rcp.framework.UIController;
  *
  * @author jaycverg
  */
-public class ControllerProviderImpl implements ControllerProvider {
+public class ControllerProviderImpl extends ControllerProvider {
     
-    public UIController getController(String name) {
+    protected UIController provide(String name, UIController caller) {
         ClassLoader loader = ClientContext.getCurrentContext().getClassLoader();
         try {
             return (UIController) loader.loadClass(name).newInstance();

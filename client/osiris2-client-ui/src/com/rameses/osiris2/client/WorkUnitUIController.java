@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class WorkUnitUIController extends UIController {
+public class WorkUnitUIController extends UIController 
+{
     
     private WorkUnitInstance workunit;
     private String id;

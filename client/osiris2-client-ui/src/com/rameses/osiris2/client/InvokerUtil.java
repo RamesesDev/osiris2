@@ -53,7 +53,7 @@ public final class InvokerUtil {
             String wuId = invoker.getWorkunitid();
             
             ControllerProvider cp = ctx.getControllerProvider();
-            UIController u = cp.getController( wuId );
+            UIController u = cp.getController( wuId, (UIController) caller);
             
             if ( caller != null ) {
                 Object callee = u.getCodeBean();

@@ -170,6 +170,23 @@ public class Binding {
         }
     }
     
+    public void unregister( UIControl control ) {
+        controls.remove( control );
+        if( control instanceof Validatable ) {
+            validatables.remove( (Validatable)control );
+        }
+        if( !ValueUtil.isEmpty(control.getName()) ) {
+            controlsIndex.remove(control.getName());
+        }
+        
+        //for control event management support
+        if ( control instanceof Component ) {
+            Component c = (Component) control;
+            c.removeMouseListener(support);
+            c.removeKeyListener(support);
+        }
+    }
+    
     public void init() {
         if ( _initialized ) return;
         

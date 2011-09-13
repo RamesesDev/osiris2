@@ -59,7 +59,7 @@ public final class ToolbarUtil {
     
     public static Component getViewComponent(Invoker inv) {
         ControllerProvider cp = ClientContext.getCurrentContext().getControllerProvider();
-        UIController c = cp.getController( inv.getWorkunitid() );
+        UIController c = cp.getController( inv.getWorkunitid(), null );
         String action = inv.getAction();
         UIControllerContext uic = new UIControllerContext( c );
         if(action!=null) {

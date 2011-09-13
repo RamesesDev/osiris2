@@ -27,6 +27,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener 
 {
@@ -78,6 +79,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         table.removeKeyListener(l);
     }
     
+    
     //<editor-fold defaultstate="collapsed" desc="  initialize table  ">
     private void init() {
         table = new DataTableComponent();
@@ -92,6 +94,8 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         //--attach mouse wheel listener to table
         table.addMouseWheelListener(new MouseWheelListener() {
             public void mouseWheelMoved(MouseWheelEvent e) {
+                if( table.isProcessing() ) return;
+                
                 int rotation = e.getWheelRotation();
                 if ( rotation == 0 ) return;
                 
@@ -99,6 +103,16 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
                     listModel.moveBackRecord();
                 else
                     listModel.moveNextRecord();
+            }
+        });
+        
+        //--attach property change listener
+        table.addPropertyChangeListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                String propname = evt.getPropertyName();
+                if( "busy".equals(propname) ) {
+                    scrollBar.setEnabled(!(Boolean)evt.getNewValue());
+                }
             }
         });
         
@@ -407,7 +421,11 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
     public void setGridColor(Color color) { table.setGridColor(color); }
     
     public boolean isEnabled()        { return table.isEnabled(); }
-    public void setEnabled(boolean e) { table.setEnabled(e); }
+    public void setEnabled(boolean e) { 
+        table.setEnabled(e); 
+        scrollBar.setEnabled(e);
+        scrollPane.setEnabled(e);
+    }
     
     public int getRowHeight()       { return table.getRowHeight(); }
     public void setRowHeight(int h) { table.setRowHeight(h); }

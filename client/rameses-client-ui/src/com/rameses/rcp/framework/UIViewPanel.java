@@ -74,6 +74,7 @@ public class UIViewPanel extends JPanel implements ContainerListener {
         if( comp instanceof UIControl ) {
             UIControl c = (UIControl)comp;
             c.setBinding(null);
+            binding.unregister(c);
         }
     }
     

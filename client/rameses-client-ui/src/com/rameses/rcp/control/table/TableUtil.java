@@ -20,6 +20,7 @@ import com.rameses.rcp.control.XLookupField;
 import com.rameses.rcp.control.XNumberField;
 import com.rameses.rcp.control.XTextField;
 import com.rameses.rcp.framework.ClientContext;
+import com.rameses.rcp.support.ColorUtil;
 import com.rameses.rcp.ui.Validatable;
 import com.rameses.rcp.util.ControlSupport;
 import com.rameses.util.ValueUtil;
@@ -358,6 +359,13 @@ public final class TableUtil {
                     comp.setForeground( xtable.getErrorForeground() );
                     comp.setOpaque(true);
                 }
+            }
+            
+            if( !table.isEnabled() ) {
+                Color c = comp.getBackground();
+                comp.setBackground(ColorUtil.brighter(c, 5));
+                c = comp.getForeground();
+                comp.setForeground(ColorUtil.brighter(c, 5));
             }
             
             //border support
