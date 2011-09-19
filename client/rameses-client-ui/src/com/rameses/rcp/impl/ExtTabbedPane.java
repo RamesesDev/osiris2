@@ -49,9 +49,12 @@ public class ExtTabbedPane extends JTabbedPane {
         Component comp = getSelectedComponent();
         if( comp instanceof PlatformTabWindow && !((PlatformTabWindow)comp).isCanClose() ) return;
         
+        int idx = getSelectedIndex();
+        if( idx < 0 ) return;
+        Rectangle rec = getBoundsAt( idx );
+        
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Rectangle rec = getBoundsAt( getSelectedIndex() );
         int w = closeIconBounds.width;
         int h = closeIconBounds.height;
         int x = rec.x + rec.width - w - 8;
@@ -96,7 +99,7 @@ public class ExtTabbedPane extends JTabbedPane {
     
     public void remove(Component component) {
         int idx = indexOfComponent(component);
-        if( idx > 0 ) {
+        if( idx >= 0 ) {
             String title = getTitleAt(idx);
             tabIndex.remove(title);
         }

@@ -17,13 +17,17 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -63,12 +67,15 @@ public class XPanel extends JPanel implements UIControl, ControlContainer {
         
         //temporary solution. to support parent whose layout is a CardLayout.
         //There is a limitation to this solution. The XPanel's Card name must be the
-        //name of the component. i.e. edit Card name and name msut be the same
+        //name of the component. i.e. edit Card name and name must be the same
         if( "true".equals(res+"") ) {
-            LayoutManager lm = super.getParent().getLayout();
-            if(lm instanceof CardLayout) {
-                CardLayout cl = (CardLayout)lm;
-                cl.show( super.getParent(), this.getName() );
+            Container p = super.getParent();
+            if( p != null ) {
+                LayoutManager lm = p.getLayout();
+                if(lm instanceof CardLayout) {
+                    CardLayout cl = (CardLayout)lm;
+                    cl.show( super.getParent(), this.getName() );
+                }
             }
         }
     }
@@ -79,6 +86,38 @@ public class XPanel extends JPanel implements UIControl, ControlContainer {
         } else {
             for(Component c : getComponents()) c.setVisible(visible);
             repaint();
+        }
+        
+        Container parent = getParent();
+        if( parent == null ) parent = (Container) getClientProperty("PARENT");
+        
+        if( parent instanceof JTabbedPane ) {
+            final JTabbedPane p = (JTabbedPane) parent;
+            final boolean shown = visible;
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    if( shown ) {
+                        Integer idx = (Integer) getClientProperty("TAB_INDEX");
+                        String title = (String) getClientProperty("TAB_TITLE");
+                        Icon icon = (Icon) getClientProperty("TAB_ICON");
+                        String tip = (String) getClientProperty("TAB_TIP");
+                        if( idx != null ) {
+                            p.insertTab(title, icon, XPanel.this, tip, idx);
+                        }
+                    }
+                    else {
+                        Integer idx = p.indexOfComponent(XPanel.this);
+                        if( idx >= 0 ) {
+                            putClientProperty("PARENT", p);
+                            putClientProperty("TAB_INDEX", idx);
+                            putClientProperty("TAB_TITLE", p.getTitleAt(idx));
+                            putClientProperty("TAB_ICON", p.getIconAt(idx));
+                            putClientProperty("TAB_TIP", p.getToolTipTextAt(idx));
+                            p.removeTabAt(idx);
+                        }
+                    }
+                }
+            });
         }
         contentVisible = visible;
     }

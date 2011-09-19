@@ -38,13 +38,15 @@ public class MainDialog implements MainWindow {
     private Component statusbar;
     private ExtTabbedPane tabbedPane;
     
+    private Component defaultContentPane;
+    
     
     public MainDialog() {
         dialog = new JFrame();
         dialog.setTitle("Main Dialog");
         dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.add(new TestPlatformContentPane(), BorderLayout.CENTER);
+        dialog.add((defaultContentPane = new TestPlatformContentPane()), BorderLayout.CENTER);
         
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -104,6 +106,9 @@ public class MainDialog implements MainWindow {
             if( comp instanceof PlatformTabWindow ) {
                 PlatformTabWindow tab = (PlatformTabWindow) comp;
                 if( tabbedPane == null ) {
+                    if( defaultContentPane != null )
+                        dialog.remove(defaultContentPane);
+                    
                     tabbedPane = new ExtTabbedPane();
                     dialog.add(tabbedPane, BorderLayout.CENTER);
                 }
