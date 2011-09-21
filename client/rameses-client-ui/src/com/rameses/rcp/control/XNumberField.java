@@ -66,11 +66,7 @@ public class XNumberField extends XTextField {
         String fieldText = getText().replace(",", "");
         
         if( fieldText.trim().length() == 0 ) {
-            if ( fType.isPrimitive() ) {
-                return 0;
-            } else {
-                return null;
-            }
+             return (fType != null && fType.isPrimitive()) ? 0 : null;
         }
         
         try {
@@ -89,8 +85,9 @@ public class XNumberField extends XTextField {
             } else if(fType == double.class) {
                 return Double.parseDouble(fieldText);
             }
-        } catch(NumberFormatException nfe) {
-            return UIControlUtil.getBeanValue(this);
+        } 
+        catch(NumberFormatException nfe) {
+            return (fType != null && fType.isPrimitive()) ? 0 : null;
         }
         
         return fieldText;
@@ -193,6 +190,7 @@ public class XNumberField extends XTextField {
                 case '9':
                 case '0':
                 case '.':
+                case '-':
                     acceptable = true;
             }
             if( !acceptable )
