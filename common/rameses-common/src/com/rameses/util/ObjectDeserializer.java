@@ -164,6 +164,23 @@ public class ObjectDeserializer
                 return new BigDecimal(text);
             if( text.matches("true|false") )                    //boolean
                 return new Boolean(text);
+            if( text.endsWith(".class") ) {                     //class type
+                text = text.replaceAll("\\.class$", "");
+                
+                if( "int".equals(text) )     return int.class;
+                if( "long".equals(text) )    return long.class;
+                if( "short".equals(text) )   return  short.class;
+                if( "float".equals(text) )   return float.class;
+                if( "double".equals(text) )  return double.class;
+                if( "boolean".equals(text) ) return boolean.class;
+                
+                try {
+                    return getClass().getClassLoader().loadClass(text);
+                } catch (ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            }
             if( "null".equals(text) )                           //null
                 return null;
             
