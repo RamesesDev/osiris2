@@ -9,54 +9,37 @@
 
 package com.rameses.util;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  *
  * @author ms
+ *
+ * This utility acts like bean utils but used exclusively for Map.
+ *
  */
 public final class MapBeanUtils {
     
-    public static void setProperty( Object bean, String name, Object value ) {
-        if(bean instanceof Map) {
-            Map mbean = (Map)bean;
-            if( !name.contains(".") || name.contains("[")) {
-                mbean.put( name, value );
-            } 
-            else if( name.startsWith("[")) {
-                
-            } 
-            else {
-                String contextName = name.substring(0, name.indexOf("."));
-                String propName = name.substring( name.indexOf(".") + 1 );
-                Object b = mbean.get( contextName );
-                setProperty( b, propName, value );
+    public static void setProperty( Map target, String name, Object value ) {
+        if( name.indexOf(".")>0) {
+            String fldname = name.substring(0, name.indexOf("."));
+            String remainder = name.substring( name.indexOf(".")+1 );
+            Object m = target.get(fldname);
+            if(m==null) {
+                Map child = new HashMap();
+                target.put(fldname,child);
+                setProperty(child, remainder, value);
+            } else if(m instanceof Map) {
+                setProperty((Map)m, remainder, value);
+            } else {
+                System.out.println("cannot set property on object type " + name + " for:" + m.getClass());
             }
+        } else {
+            target.put(name, value);
         }
-        else if(bean instanceof List) {
-            
-        }
-        
-        /*
-            if(name.contains(".")) {
-                //split the names. get the parent
-                String arr[] = name.substring(0, name.lastIndexOf(".")).split("\\.");
-                name = name.substring(name.lastIndexOf(".")+1);
-                //we should get the last name
-                for(String s: arr ) {
-                    if(s.contains("[")) {
-                        String xname = s.substring(0, s.indexOf("["));
-                        int idx = Integer.valueOf( s.substring(s.indexOf("[")+1,s.indexOf("]"))).intValue();
-                        List list = (List)context.get(xname);
-                        context = (Map)list.get(idx);
-                    } else {
-                        context = (Map)context.get(s);
-                    }
-                }
-            }
-         */
-        
     }
+    
+    
     
 }

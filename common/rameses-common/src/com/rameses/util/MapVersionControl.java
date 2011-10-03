@@ -155,6 +155,12 @@ public final class MapVersionControl {
         return copy;
     }
     
+    /**
+     * This method apply changes to the model using the difference map. 
+     * After running this method, the first parameter (model) is changed. 
+     * @param model the target map passed by reference
+     * @param diff the difference result from running the diff method  
+     */
     public void applyChanges( Map model, Map diff ) {
         for(Object o: diff.entrySet()) {
             Map.Entry me = (Map.Entry)o;
@@ -275,6 +281,13 @@ public final class MapVersionControl {
             return conflict;
     }
     
-    
+    /**
+     * This method checks the difference bewteen two maps. This difference is
+     * applied to create a new merged map. 
+     */
+    public Map compareAndMerge(Map oldMap, Map newMap)  {
+        Map diff = diff(oldMap, newMap);
+        return merge( oldMap, diff);
+    }
     
 }

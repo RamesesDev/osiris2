@@ -45,7 +45,7 @@ public class DefaultInterceptorLoader implements InterceptorLoader {
     public void buildInterceptorList(final List interceptorNames) {
         try {
             String fileName = "META-INF/interceptors.conf";
-            Enumeration<URL> e = Thread.currentThread().getContextClassLoader().getResources(fileName);
+            Enumeration<URL> e = ScriptManager.class.getClassLoader().getResources(fileName);
             LineReader lr = new LineReader();
             LineReader.Handler h = new LineReader.Handler() {
                 public void read(String name) {

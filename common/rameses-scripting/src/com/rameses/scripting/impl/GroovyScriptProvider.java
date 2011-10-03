@@ -9,6 +9,7 @@
 
 package com.rameses.scripting.impl;
 
+import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptProvider;
 import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
@@ -22,7 +23,7 @@ public class GroovyScriptProvider implements ScriptProvider {
     private GroovyClassLoader classLoader;
     
     public GroovyScriptProvider() {
-        classLoader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader());
+        classLoader = new GroovyClassLoader(ScriptManager.class.getClassLoader());
     }
 
     public Class parseClass(String code) {

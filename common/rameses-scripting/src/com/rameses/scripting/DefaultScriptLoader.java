@@ -15,7 +15,7 @@ public class DefaultScriptLoader implements ScriptLoader {
     public InputStream findResource(String name) {
         try {
             String fileName = "META-INF/scripts/" + name;
-            URL u = Thread.currentThread().getContextClassLoader().getResource( fileName );
+            URL u = ScriptManager.class.getClassLoader().getResource( fileName );
             return u.openStream();
         } 
         catch(Exception ign) {
