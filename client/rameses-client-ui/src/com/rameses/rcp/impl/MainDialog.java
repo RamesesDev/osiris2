@@ -18,6 +18,8 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -45,6 +47,13 @@ public class MainDialog implements MainWindow {
         dialog = new JFrame();
         dialog.setTitle("Main Dialog");
         dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        try {
+            URL ico = getClass().getResource("/com/rameses/rcp/icons/os2-icon.png");
+            dialog.setIconImage(new ImageIcon(ico).getImage());
+        }
+        catch(Exception e){}
+        
         dialog.getContentPane().setLayout(new BorderLayout());
         dialog.add((defaultContentPane = new TestPlatformContentPane()), BorderLayout.CENTER);
         

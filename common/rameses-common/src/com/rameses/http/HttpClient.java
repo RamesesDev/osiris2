@@ -175,7 +175,7 @@ public class HttpClient implements Serializable {
             if(_asObject) {
                 conn.setRequestProperty( "CONTENT-TYPE",HttpConstants.APP_CONTENT_TYPE);
                 out = new ObjectOutputStream(conn.getOutputStream());
-                if(encrypted) {
+                if(encrypted && !(parms instanceof SealedMessage)) {
                     parms = new SealedMessage(parms);
                 }
                 if(parms!=null) out.writeObject( parms );

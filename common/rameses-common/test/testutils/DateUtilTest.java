@@ -7,7 +7,9 @@
 
 package testutils;
 
-import java.io.File;
+import com.rameses.service.ScriptServiceContext;
+import java.util.HashMap;
+import java.util.Map;
 import junit.framework.*;
 
 /**
@@ -53,9 +55,21 @@ public class DateUtilTest extends TestCase {
     */
     
     public void testFolder() throws Exception {
-       //System.getProperties().list(System.out);
-        File f = new File("D:/");
-        f.mkdirs();
+        //System.getProperties().list(System.out);
+        //File f = new File("D:/");
+        //f.mkdirs();
+        Map map = new HashMap();
+        map.put("app.host", "10.0.0.1:8080;localhost:8080");
+        map.put("app.context", "gazeebu-classroom");
+        ScriptServiceContext sc = new ScriptServiceContext(map);
+        MyEchoService p = sc.create( "EchoService", MyEchoService.class );
+        Map c = new HashMap();
+        c.put("name","jay");
+        System.out.println("result is->"+p.test(c));
+    }
+    
+    private interface MyEchoService {
+        String test(Map m);
     }
     
     

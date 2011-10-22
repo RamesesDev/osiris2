@@ -242,7 +242,13 @@ public class ReportSheetTable extends JTable implements ListModelListener {
         setModel(tableModel);
         buildColumns();
     }
-    
+
+    public void fetchStart() {
+    }
+
+    public void fetchEnd() {
+    }
+      
     public void movePrevRecord() {
         if ( getSelectedRow() == 0 ) {
             listModel.moveBackRecord();
@@ -264,7 +270,7 @@ public class ReportSheetTable extends JTable implements ListModelListener {
         listModel.setSelectedColumnIndex(columnIndex);
         super.changeSelection(rowIndex, columnIndex, toggle, extend);
     }
-    
+
     
     //<editor-fold defaultstate="collapsed" desc="  SheetSelectionListener (class)  ">
     private class SheetSelectionListener implements ListSelectionListener {
