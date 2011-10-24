@@ -9,11 +9,11 @@
 
 package com.rameses.invoker.server;
 
+import com.rameses.web.common.RequestNameParser;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.InitialContext;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.MethodUtils;
 
 /**
@@ -22,9 +22,14 @@ import org.apache.commons.beanutils.MethodUtils;
  */
 public final class InvokerHelper {
     
-    public static Object invoke( NameParser np, Object[] values ) throws Exception {
+    public static Object invoke( RequestNameParser np, Object[] values ) throws Exception {
         InitialContext ctx = new InitialContext();
-        Object bean = ctx.lookup(np.getLocalServiceName());
+        
+        StringBuffer sb = new StringBuffer();
+        if(np.getContext()!=null) sb.append( np.getContext() + "/");
+        sb.append(np.getService()+"/local");
+        Object bean = ctx.lookup(sb.toString());
+        
         Method[] methods = InvokerHelper.getMethodByName(bean, np.getAction(), values.length);
         boolean methodFound = false;
         Object response = null;
@@ -40,7 +45,8 @@ public final class InvokerHelper {
         
         return response;    
     } 
-            
+           
+   
     
     /***
      * this will locate all methods that matches the name, with the same arg count.
@@ -55,13 +61,7 @@ public final class InvokerHelper {
         }
         return (Method[]) list.toArray(new Method[]{});
     }
-    
-    public static NameParser createNameParser(HttpServletRequest req) {
-        return new NameParser( req );
-    }
-    
-    
-    
+    /*
     public static class NameParser {
         private String context;
         private String service;
@@ -114,6 +114,6 @@ public final class InvokerHelper {
             context = c;
         }
     }
-    
+     */
     
 }

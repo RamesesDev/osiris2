@@ -11,6 +11,8 @@ package com.rameses.eserver;
 
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptProxyInvocationHandler;
+import com.rameses.server.common.AppContext;
+import com.rameses.eserver.ScriptServiceDelegate;
 import com.rameses.util.ExprUtil;
 import java.util.Map;
 

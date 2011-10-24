@@ -9,8 +9,8 @@
 
 package com.rameses.eserver.scheduler;
 
-import com.rameses.eserver.AppContext;
-import com.rameses.eserver.JndiUtil;
+import com.rameses.server.common.AppContext;
+import com.rameses.server.common.JndiUtil;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import java.io.Serializable;

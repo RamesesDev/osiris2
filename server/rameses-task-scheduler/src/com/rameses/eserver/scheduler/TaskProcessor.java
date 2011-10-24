@@ -9,15 +9,16 @@
 
 package com.rameses.eserver.scheduler;
 
-import com.rameses.eserver.AppContext;
-import com.rameses.eserver.ScriptServiceDelegate;
+
+
+import com.rameses.server.common.AppContext;
+import com.rameses.server.common.ScriptServiceDelegate;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.util.DateUtil;
 import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

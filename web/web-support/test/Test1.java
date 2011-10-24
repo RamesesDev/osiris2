@@ -1,7 +1,6 @@
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import com.rameses.util.MachineInfo;
 import junit.framework.*;
+
 /*
  * Test1.java
  * JUnit based test
@@ -17,16 +16,7 @@ public class Test1 extends TestCase {
     }
     
     public void testHello() throws Exception {
-        File f = new File("d:/NEW_BUGS_FOUND.txt");
-        FileInputStream fr = new FileInputStream(f);
-        BufferedInputStream b = new BufferedInputStream(fr,1094*8);
-        int j = 0;
-        int counter = 0;
-        while((j=b.read())!=-1) {
-            System.out.println(counter++);
-        }
-        b.close();
-        fr.close();
+      System.out.println( MachineInfo.getInstance().getMacAddress() );
     }    
     
 }

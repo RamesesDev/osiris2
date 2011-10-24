@@ -1,6 +1,8 @@
 package com.rameses.invoker.server;
 
-import com.rameses.invoker.server.InvokerHelper.NameParser;
+
+import com.rameses.server.common.JsonUtil;
+import com.rameses.web.common.RequestNameParser;
 import java.io.*;
 import java.util.HashMap;
 import javax.servlet.*;
@@ -18,7 +20,7 @@ public class JsonScriptInvoker extends HttpServlet {
                     throw new Exception("args must be enclosed with []");
                 args = JsonUtil.toObjectArray( parm );
             }
-            NameParser np = InvokerHelper.createNameParser(req);
+            RequestNameParser np = new RequestNameParser(req);
             //replace parsed name with the proper ScriptService
             Object[] p = new Object[4];
             p[0] = np.getService();

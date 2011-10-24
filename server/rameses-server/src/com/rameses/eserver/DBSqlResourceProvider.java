@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlQuery;

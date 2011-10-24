@@ -9,67 +9,63 @@
 
 package com.rameses.web.support;
 
-import com.rameses.invoker.client.DynamicHttpInvoker;
+import com.rameses.server.common.JsonUtil;
+
+import com.rameses.service.ScriptServiceContext;
+import com.rameses.service.ServiceProxy;
 import com.rameses.util.ExceptionManager;
+import com.rameses.web.common.RequestParser;
+import com.rameses.web.common.ServletUtils;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author jzamss
+ * This is the main invoker for the rameses-proxy.js script
  */
-public class JsonInvoker extends HttpServlet {
-    
-    private ServletConfig config;
-    
-    public void init(ServletConfig config) throws ServletException {
-        this.config = config;
-        super.init(config);
-    }
+public class JsonInvoker extends AbstractScriptService {
     
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        Writer w = res.getWriter();
-        res.setContentType("text/javascript");
+        Object result = null;
+        String action = null;
         try {
-            NameParser np = new NameParser(req);
+            RequestParser np = new RequestParser(req);
+            Map conf = super.getConf();
+            
+            //extract the parameters
+            String _args = req.getParameter("args");
+            Object[] args = null;
+            if(_args!=null && _args.length()>0) {
+                if(!_args.startsWith("["))
+                    throw new RuntimeException("args must be enclosed with []");
+                args = JsonUtil.toObjectArray( _args );
+            }
+            
+            //extract the environment variables
+            String _env = req.getParameter("env");
+            
             Map env = new HashMap();
-            if(np.getEnv()!=null) {
-                env.putAll(np.getEnv());
+            if(_env!=null && _env.length()>0 ) {
+                if( !_env.startsWith("{"))
+                    throw new RuntimeException("env must be enclosed with {}");
+                env = JsonUtil.toMap( _env );
             }
-            
-            ServletContext app = this.config.getServletContext();
-            String appContext = app.getInitParameter("app.context");
-            String host = app.getInitParameter("app.host");
-            
-            DynamicHttpInvoker hp = new DynamicHttpInvoker(host,appContext);
-            DynamicHttpInvoker.Action action = hp.create( np.getService(), env );
-            
-            Object response = null;
-            if( np.getArgs()!=null) {
-                response = action.invoke(np.getAction(), np.getArgs());
-            }
-            else {
-                response = action.invoke( np.getAction() );
-            }
-            
-            String s = JsonUtil.toString( response );
-            w.write(s);
-        } catch(Exception e) {
-            //e.printStackTrace();
-            res.setStatus(res.SC_INTERNAL_SERVER_ERROR );
-            w.write( ExceptionManager.getOriginal(e).getMessage()  );
-            //res.sendError( res.SC_INTERNAL_SERVER_ERROR, ExceptionManager.getOriginal(e).getMessage() );
-        } finally {
-            try { w.close(); } catch (Exception ex) {;}
+            ScriptServiceContext sv = new ScriptServiceContext(conf);
+            ServiceProxy proxy = sv.create(np.getService(),env);
+            result = proxy.invoke( np.getAction(), args );
+            action = np.getService() + "." + np.getAction();
+            String n = JsonUtil.toString( result );
+            ServletUtils.writeText(res, n);
+        } 
+        catch(Exception e) {
+            System.out.println("result is " + action + result.toString());
+            e.printStackTrace();
+            res.sendError(res.SC_INTERNAL_SERVER_ERROR, ExceptionManager.getOriginal(e).getMessage() );
         }
     }
     

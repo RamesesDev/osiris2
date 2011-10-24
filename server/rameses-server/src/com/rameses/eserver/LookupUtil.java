@@ -14,6 +14,7 @@ import com.rameses.schema.SchemaManager;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptProxyInvocationHandler;
 import com.rameses.scripting.ScriptServiceLocal;
+import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.util.ExprUtil;

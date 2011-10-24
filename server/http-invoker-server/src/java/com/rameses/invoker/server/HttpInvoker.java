@@ -1,6 +1,8 @@
 package com.rameses.invoker.server;
 
-import com.rameses.invoker.server.InvokerHelper.NameParser;
+
+import com.rameses.server.common.AppContext;
+import com.rameses.web.common.RequestNameParser;
 import com.rameses.util.ExceptionManager;
 import java.io.*;
 
@@ -21,9 +23,14 @@ public class HttpInvoker extends HttpServlet {
         ObjectOutputStream out = null;
         ObjectInputStream in = null;
         try {
-            NameParser np = InvokerHelper.createNameParser(req);
+            //NameParser np = InvokerHelper.createNameParser(req);
+            
+            RequestNameParser np = new RequestNameParser(req);
+            np.setContext(AppContext.getName());
+            //NameParser np = new InvokerHelper.NameParser(req);
             in = new ObjectInputStream(req.getInputStream());
             Object[] values = filterInput( in.readObject() );
+
             Object response = InvokerHelper.invoke(np, values );
             if (response == null) {
                 response = "#NULL";
@@ -33,7 +40,9 @@ public class HttpInvoker extends HttpServlet {
             out.writeObject(filterOutput(response));
         } 
         catch (Exception ex) {
+            ex.printStackTrace();
             try {
+                
                 Exception ne = ExceptionManager.getOriginal(ex);
                 out = new ObjectOutputStream(res.getOutputStream());
                 out.writeObject(filterOutput(ne));

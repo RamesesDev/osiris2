@@ -2,6 +2,7 @@ package com.rameses.eserver;
 
 
 import com.rameses.invoker.client.HttpScriptService;
+import com.rameses.eserver.ScriptServiceDelegate;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ejb.EJBException;

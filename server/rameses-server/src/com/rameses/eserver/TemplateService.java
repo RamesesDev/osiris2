@@ -9,6 +9,8 @@
 
 package com.rameses.eserver;
 
+import com.rameses.server.common.AppContext;
+import com.rameses.server.common.JndiUtil;
 import com.rameses.util.TemplateProvider;
 import java.io.InputStream;
 import java.io.OutputStream;

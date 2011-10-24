@@ -14,25 +14,24 @@
         <servlet-class>com.rameses.invoker.server.JsonScriptInvoker</servlet-class>
     </servlet>
     
-    <!--simple script service-->
+    <!-- new services-->
     <servlet>
-        <servlet-name>SimpleScriptServiceServlet</servlet-name>
-        <servlet-class>com.rameses.invoker.server.SimpleScriptServiceServlet</servlet-class>
+        <servlet-name>EJBServlet</servlet-name>
+        <servlet-class>com.rameses.invoker.server.EJBServlet</servlet-class>
     </servlet>
-    
-    <!--notifiers-->
     <servlet>
-        <servlet-name>NotifierServlet</servlet-name>
-        <servlet-class>com.rameses.invoker.server.NotifierServlet</servlet-class>
+        <servlet-name>ScriptServlet</servlet-name>
+        <servlet-class>com.rameses.invoker.server.ScriptServlet</servlet-class>
     </servlet>
-     <servlet>
+    <servlet>
         <servlet-name>PollServlet</servlet-name>
         <servlet-class>com.rameses.invoker.server.PollServlet</servlet-class>
     </servlet>
+    <filter>
+        <filter-name>JsonFilter</filter-name>
+        <filter-class>com.rameses.invoker.server.JsonFilter</filter-class>
+    </filter>
     
-    
-    
-   
     <servlet-mapping>
         <servlet-name>WebInvoker</servlet-name>
         <url-pattern>/invoke/*</url-pattern>
@@ -45,11 +44,6 @@
         <servlet-name>JsonScriptInvoker</servlet-name>
         <url-pattern>/json/*</url-pattern>
     </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>NotifierServlet</servlet-name>
-        <url-pattern>/notifier</url-pattern>
-    </servlet-mapping>
     
     <servlet-mapping>
         <servlet-name>PollServlet</servlet-name>
@@ -57,9 +51,17 @@
     </servlet-mapping>
     
     <servlet-mapping>
-        <servlet-name>SimpleScriptServiceServlet</servlet-name>
+        <servlet-name>EJBServlet</servlet-name>
+        <url-pattern>/ejb/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ScriptServlet</servlet-name>
         <url-pattern>/service/*</url-pattern>
     </servlet-mapping>
+    <filter-mapping>
+        <filter-name>JsonFilter</filter-name>
+        <url-pattern>/service/json/*</url-pattern>
+    </filter-mapping>
     
     <session-config>
         <session-timeout>

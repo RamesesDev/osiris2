@@ -11,6 +11,7 @@ package com.rameses.web.support;
 
 import com.rameses.classutils.ClassDefMap;
 import com.rameses.invoker.client.DynamicHttpInvoker;
+import com.rameses.web.common.RequestNameParser;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class ScriptGeneratorService extends HttpServlet {
         res.setContentType("text/javascript");
         Writer w = res.getWriter();
         try {
-            NameParser np = new NameParser(req);
+            RequestNameParser np = new RequestNameParser(req);
             String svc = np.getService();
             
             ServletContext app = this.config.getServletContext();

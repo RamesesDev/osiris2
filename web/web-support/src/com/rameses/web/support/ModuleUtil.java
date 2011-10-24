@@ -10,6 +10,7 @@
 package com.rameses.web.support;
 
 import com.rameses.io.StreamUtil;
+import com.rameses.server.common.JsonUtil;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,19 +26,23 @@ public final class ModuleUtil {
     public static String MODULE_PATH = "/modules";
     public static String DEFAULT_ATTR_NAME = "modules";
     
+    public static void clearModules(ServletContext ctx, String attrName) {
+        ctx.removeAttribute(attrName);
+    }
     
     //builds the modules and stores it in the servlet context
     public static void initModules(ServletContext ctx) {
-        initModules(ctx,DEFAULT_ATTR_NAME,"META-INF/module.conf");
+        initModules(ctx,DEFAULT_ATTR_NAME,MODULE_PATH,"META-INF/module.conf");
     }
     
     public static void initModules(ServletContext ctx, String attrName) {
-        initModules(ctx,attrName,"META-INF/module.conf");
+        initModules(ctx,attrName,MODULE_PATH,"META-INF/module.conf");
     }
     
-    public static void initModules(ServletContext ctx, String attrName,String confPath) {
+    public static void initModules(ServletContext ctx, String attrName,String appPath,String confPath) {
         Map map = new HashMap();
-        Iterator iter=ctx.getResourcePaths(MODULE_PATH).iterator();
+        if(!appPath.startsWith("/")) appPath = "/" + appPath;
+        Iterator iter=ctx.getResourcePaths(appPath).iterator();
         InputStream is = null;
         while(iter.hasNext() ) {
             String s = (String)iter.next();
@@ -60,15 +65,22 @@ public final class ModuleUtil {
     }
     
     public static List getEntries( ServletContext ctx, String name ) {
-        return getEntries(ctx,name,DEFAULT_ATTR_NAME);
+        return getEntries(ctx,name,DEFAULT_ATTR_NAME,null,null);
     }
     
+    public static List getEntries( ServletContext ctx,String name, String attrName, String appPath ) {
+        return getEntries(ctx,name,attrName,appPath,null);
+    }
+
     private static Sorter DEFAULT_SORTER = new Sorter();
-    
-    public static List getEntries( ServletContext ctx, String name, String attrName ) {
+     
+    public static List getEntries( ServletContext ctx, String name, String attrName, String appPath, String confPath ) {
+        if(appPath==null) appPath = MODULE_PATH;
+        if(confPath==null) confPath = "META-INF/module.conf";
+        
         Map map = (Map)ctx.getAttribute(attrName);
         if(map==null) {
-            initModules(ctx,attrName);
+            initModules(ctx,attrName,appPath,confPath);
             map = (Map)ctx.getAttribute(attrName);
         }
         
@@ -104,7 +116,6 @@ public final class ModuleUtil {
     }
     
     private static class Sorter implements Comparator {
-        
         public int compare(Object o1, Object o2) {
             if(!(o1 instanceof Map)) return 0;
             if(!(o2 instanceof Map)) return 0;
@@ -116,7 +127,6 @@ public final class ModuleUtil {
             if(m2.containsKey("index")) i2 = new Integer(m2.get("index")+"");
             return i1.compareTo(i2);
         }
-        
     }
     
     

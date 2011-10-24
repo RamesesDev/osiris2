@@ -10,6 +10,7 @@
 package com.rameses.eserver;
 
 import com.rameses.io.LineReader;
+import com.rameses.scripting.ScriptManager;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class ScriptDeployer implements ScriptDeployerMBean {
     
     public void start() throws Exception {
         System.out.println("STARTING SCRIPT DEPLOYERS");
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        ClassLoader loader = ScriptManager.class.getClassLoader();
         Enumeration<URL> e = loader.getResources("META-INF/deployers.conf");
         deployers.clear();
         while(e.hasMoreElements()) {

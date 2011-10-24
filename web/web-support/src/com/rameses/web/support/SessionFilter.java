@@ -55,7 +55,6 @@ public class SessionFilter implements javax.servlet.Filter {
                     }
                 }
             }
-            
             if(sessionId==null) sessionId = req.getParameter("sessionid");
             if(sessionId==null) sessionId = req.getParameter("SESSIONID");
             

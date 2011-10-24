@@ -10,6 +10,7 @@
 package com.rameses.eserver;
 
 
+import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlQuery;
 import com.rameses.util.TemplateProvider;

@@ -6,17 +6,17 @@
  * www.ramesesinc.com
  *
  */
-
 package com.rameses.web.support;
 
-import com.rameses.invoker.client.SimpleHttpClient;
+import com.rameses.client.session.SessionConstant;
+import com.rameses.server.common.JsonUtil;
+import com.rameses.service.EJBServiceContext;
+import com.rameses.web.common.ServletUtils;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,56 +35,55 @@ public class PollerServlet extends HttpServlet {
         super.init(config);
     }
     
+    private interface SessionPoller {
+        Object poll(String sessionid, String tokenid);
+    }
+    
+    private static String SESSION_SERVICE = "SessionService";
+    
+    private void poll( Map conf, String sessionid, String tokenid, HttpServletResponse response ) throws Exception {
+        //add a long read
+        conf.put("readTimeout", "-1");
+        
+        EJBServiceContext ctx = new EJBServiceContext(conf);
+        SessionPoller poller = ctx.create( SESSION_SERVICE, SessionPoller.class );
+        Object result = poller.poll(sessionid,tokenid);
+        if(result == null) {
+            ServletUtils.writeText( response, "");
+        }
+        else if(result instanceof String) {
+            ServletUtils.writeText(response, (String) result);
+        }
+        else if(result instanceof Exception) {
+            throw (Exception)result;
+        }
+        else if( (result instanceof Map) && ((Map)result).containsKey(SessionConstant.SESSION_REDIRECT)) {
+            //redirect polling to another server
+            poll( (Map)result, sessionid, tokenid, response );
+        }
+        else {
+            String txt = JsonUtil.toString(result);
+            ServletUtils.writeText(response, txt);
+        }
+    }
+    
     public void service(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext app = this.config.getServletContext();
-        String appContext = app.getInitParameter("app.context");
-        String host = app.getInitParameter("app.host");
-        
-        boolean debug = false;
-        String sdebug = app.getInitParameter("debug");
-        if(sdebug!=null) {
-            try {
-                debug = Boolean.parseBoolean(sdebug);
-            }
-            catch(Exception ign){;}
-        }
-        
-        if(host==null || host.trim().length()==0) {
-            host = "localhost:8080";
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append( "http://" + host + "/"+appContext );
-        SimpleHttpClient client = new SimpleHttpClient(sb.toString());
-        
-        String sessionid = req.getParameter("sessionid");
-        String tokenid = req.getParameter("tokenid");
-        String thost = req.getParameter("host");
-        if(thost!=null) host = thost;
-        
-        if(debug) {
-            System.out.println("polling host from front servlet:" + host + " sessiond:"+sessionid + " tokenid:"+tokenid);
-        }
-        
         try {
-            if(sessionid!=null && sessionid.trim().length()>0) {
-                Map map = new HashMap();
-                map.put("sessionid", sessionid);
-                if(tokenid!=null) map.put("tokenid", tokenid);
-                String result = client.post("poll", map );
-                if(result!=null && result.trim().length()>0) {
-                    PrintWriter out = response.getWriter();
-                    out = response.getWriter();
-                    response.setContentType("text/html;charset=UTF-8");
-                    out.print(result);
-                    out.flush();
-                    out.close();
-                }
-            }
+            ServletContext app = this.config.getServletContext();
+            String sessionHost = app.getInitParameter("session.host");
+            String sessionContext = app.getInitParameter("session.context");
+            Map conf = new HashMap();
+            if(sessionHost!=null)conf.put( "app.host", sessionHost );
+            conf.put( "app.context", sessionContext );
+            String sessionid = req.getParameter("sessionid");
+            String tokenid = req.getParameter("tokenid");
+            //System.out.println("sessionid:" + sessionid + " tokenid:"+tokenid);
+            poll( conf, sessionid, tokenid, response );
         } 
-        catch(Exception ex) {
-            throw new ServletException(ex);
+        catch(Exception e) {
+            e.printStackTrace();
+             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        
     }
     
     

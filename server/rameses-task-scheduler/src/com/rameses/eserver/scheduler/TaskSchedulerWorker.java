@@ -9,7 +9,8 @@
 
 package com.rameses.eserver.scheduler;
 
-import com.rameses.eserver.AppContext;
+
+import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;

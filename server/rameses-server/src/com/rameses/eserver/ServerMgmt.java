@@ -13,6 +13,10 @@ package com.rameses.eserver;
 import com.rameses.schema.SchemaManager;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptObject;
+import com.rameses.server.common.AppContext;
+import com.rameses.server.common.HtmlMap;
+import com.rameses.server.common.JndiUtil;
+
 import com.rameses.sql.SqlManager;
 import java.io.Serializable;
 import java.util.ArrayList;
