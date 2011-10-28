@@ -34,12 +34,15 @@ public final class FileTransfer {
                 out.write(b);
                 if(listener!=null) listener.process(in.getPosition());
             }
-            if(listener!=null) listener.end(in.getPosition()); 
         } catch(Exception ex){
             throw ex;
         } finally {
             in.close();
             out.close();
+            
+            //invoke the listener's end method after the source has been closed
+            //the end method might delete something that is still opened by the input source
+            if(listener!=null) listener.end(in.getPosition()); 
         }
     }
     
