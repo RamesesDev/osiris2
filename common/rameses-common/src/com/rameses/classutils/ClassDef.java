@@ -10,9 +10,8 @@ public final class ClassDef {
     
     private Class clazz;
     
-    //this is package level
-    List<AnnotationField> annotatedFields;
-    List<AnnotationMethod> annotatedMethods;
+    private List<AnnotationField> annotatedFields;
+    private List<AnnotationMethod> annotatedMethods;
     
     private List<Method> methods;
     private AnnotationFieldHandler handler;
@@ -123,6 +122,14 @@ public final class ClassDef {
     
     public Class getSource() {
         return clazz;
+    }
+
+    public List<AnnotationField> getAnnotatedFields() {
+        return annotatedFields;
+    }
+
+    public List<AnnotationMethod> getAnnotatedMethods() {
+        return annotatedMethods;
     }
     
     

@@ -124,7 +124,52 @@ public final class DateUtil {
     }
     
     public static long diff(Date d1, Date d2) {
-        return diff(d1,d2,Calendar.DATE);
+        //return diff(d1,d2,Calendar.DATE);
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTime(d1);
+        Calendar endDate = Calendar.getInstance();
+        endDate.setTime(d2);
+        
+        Calendar sDate = (Calendar) startDate.clone();
+        long daysBetween = 0;
+        
+        int y1 = sDate.get(Calendar.YEAR);
+        int y2 = endDate.get(Calendar.YEAR);
+        int m1 = sDate.get(Calendar.MONTH);
+        int m2 = endDate.get(Calendar.MONTH);
+        
+        //**year optimization**
+        while (((y2 - y1) * 12 + (m2 - m1)) > 12) {
+            
+            //move to Jan 01
+            if ( sDate.get(Calendar.MONTH) == Calendar.JANUARY
+                    && sDate.get(Calendar.DAY_OF_MONTH) == sDate.getActualMinimum(Calendar.DAY_OF_MONTH)) {
+                
+                daysBetween += sDate.getActualMaximum(Calendar.DAY_OF_YEAR);
+                sDate.add(Calendar.YEAR, 1);
+            } else {
+                int diff = 1 + sDate.getActualMaximum(Calendar.DAY_OF_YEAR) - sDate.get(Calendar.DAY_OF_YEAR);
+                sDate.add(Calendar.DAY_OF_YEAR, diff);
+                daysBetween += diff;
+            }
+            y1 = sDate.get(Calendar.YEAR);
+        }
+        
+        //** optimize for month **
+        //while the difference is more than a month, add a month to start month
+        while ((m2 - m1) % 12 > 1) {
+            daysBetween += sDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+            sDate.add(Calendar.MONTH, 1);
+            m1 = sDate.get(Calendar.MONTH);
+        }
+        
+        // process remainder date
+        while (sDate.before(endDate)) {
+            sDate.add(Calendar.DAY_OF_MONTH, 1);
+            daysBetween++;
+        }
+        
+        return daysBetween;
     }
     
     public static  long diff(Date dfrom, Date dto, int type) {
@@ -137,17 +182,13 @@ public final class DateUtil {
         long diff = milliseconds2 - milliseconds1;
         if( type == Calendar.DATE ) {
             return diff / (24 * 60 * 60 * 1000);
-        }
-        else if( type == Calendar.HOUR) {
+        } else if( type == Calendar.HOUR) {
             return diff / (60 * 60 * 1000);
-        }
-        else if( type == Calendar.MINUTE) {
+        } else if( type == Calendar.MINUTE) {
             return diff / (60 * 1000);
-        }
-        else if( type == Calendar.SECOND ) {
+        } else if( type == Calendar.SECOND ) {
             return diff / 1000;
-        }
-        else {
+        } else {
             return diff;
         }
     }

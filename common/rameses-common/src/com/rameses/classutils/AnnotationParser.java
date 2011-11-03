@@ -35,13 +35,13 @@ public class AnnotationParser {
     }
     
     public void parseFields( AnnotationHandler handler ) {
-        for( AnnotationField f: classDef.annotatedFields) {
+        for( AnnotationField f: classDef.getAnnotatedFields()) {
             handler.handle(f.getField(), f.getAnnotation());
         }
     }
     
     public void parseMethods( AnnotationHandler handler ) {
-        for( AnnotationMethod m: classDef.annotatedMethods) {
+        for( AnnotationMethod m: classDef.getAnnotatedMethods()) {
             handler.handle(m.getMethod(), m.getAnnotation());
         }
     }

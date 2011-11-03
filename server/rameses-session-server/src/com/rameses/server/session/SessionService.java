@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -43,6 +44,8 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
     private int hostNameLength = 6;
     private DataSource dataSource;
     
+    private int sessionTimeout = 120000; //two minutes is the default timeout
+    private int pollTimeout = 30000;
     
     public void start() throws Exception {
         hostName = clusterService.getCurrentHostName();
@@ -141,7 +144,7 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
         while(iter.hasNext()) {
             String key = iter.next();
             Session s = sessions.get(key);
-            if(s.canRemove()) {
+            if(s.isExpired()) {
                 System.out.println("session expired " + key);
                 this.removeSession( key, SessionConstant.SESSION_EXPIRED );
             } else {
@@ -150,9 +153,11 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
         }
     }
     
-    
-    //returns a token id if successful
     public String register(String username, Object info) {
+        return register(username, info, this.sessionTimeout);
+    }
+    //returns a token id if successful
+    public String register(String username, Object info, int timeout) {
         try {
             String sessionid = hostName + ":" + new UID();
             Map map = new HashMap();
@@ -164,7 +169,7 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
             map.put("dtexpiry", null);
             SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
             ctx.createNamedExecutor("session:add-session").setParameters(map).execute();
-            Session session = new Session(sessionid, username, info);
+            Session session = new Session(sessionid, username, info, timeout, this.pollTimeout);
             sessions.put( sessionid, session );
             return sessionid;
         } catch(Exception e) {
@@ -222,6 +227,37 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
         this.clusterService = cluster;
     }
     
+    public void setTimeout(String s) {
+        try {
+            this.sessionTimeout = Integer.parseInt(s);
+        }
+        catch(Exception ign){;}
+    }
     
+    public void  setPollTimeout(String s) {
+        try {
+            this.pollTimeout = Integer.parseInt(s);
+        }
+        catch(Exception ign){;}
+    }
+    
+    //the only purpose of this method is for debugging
+    public Map getSessionInfo(String sessionid) {
+        Session s = sessions.get(sessionid);
+        Map m = new HashMap();
+        m.put("sessionid", s.getId());
+        m.put("expiry", s.getExpirydate());
+        m.put("info", s.getInfo());
+        return m;
+    }
+
+    public void notifyUser(String username, Object msg) throws Exception {
+        SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+        List<Map> list = ctx.createNamedQuery("session:list-session-byuser").setParameter("username", username).getResultList();       
+        for(Map m: list ) {
+            String sessionId = (String)m.get("sessionid");
+            push(sessionId, null, msg);
+        }
+    }
     
 }

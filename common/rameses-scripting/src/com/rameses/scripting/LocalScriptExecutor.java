@@ -21,19 +21,23 @@ public class LocalScriptExecutor implements ScriptExecutor {
     
     private String name;
     private String methodName;
-    private Object target;
+    
     private Method actionMethod;
     private List<String> beforeInterceptors;
     private List<String> afterInterceptors;
     
+    private ScriptObjectPoolItem pooledItem;
+    private ResourceInjector injector;
     
-    public LocalScriptExecutor(String serviceName, String methodName, Object target, Method actionMethod, List<String> before, List<String>after) {
+    
+    public LocalScriptExecutor(String serviceName, String methodName, ScriptObjectPoolItem poolItem, Method actionMethod, ResourceInjector injector, List<String> before, List<String>after) {
         this.name = serviceName;
         this.methodName = methodName;
         this.actionMethod = actionMethod;
-        this.target = target;
+        this.pooledItem = poolItem;
         this.beforeInterceptors = before;
         this.afterInterceptors = after;
+        this.injector = injector;
     }
     
     public Object execute(ScriptServiceLocal scriptService, Object[] params, Map env) throws Exception {
@@ -41,6 +45,12 @@ public class LocalScriptExecutor implements ScriptExecutor {
         ActionEvent ae = null;
         ScriptEval se = null;
         try {
+            Object target = pooledItem.getInstance();
+            
+            if(injector!=null) {
+                pooledItem.getClassDef().injectFields( target, injector );
+            }
+            
             ae = new ActionEvent( name, actionMethod.getName(), params, env);
             se = new ScriptEval(ae);
             for(String b: beforeInterceptors) {
@@ -51,20 +61,19 @@ public class LocalScriptExecutor implements ScriptExecutor {
             //do not proceed with other interceptors if the return value is an exception
             if( retval instanceof Exception )
                 return retval;
-
+            
             ae.setResult(retval);
             for(String b: afterInterceptors ) {
                 Object test = executeInterceptor(b, ae, se, scriptService, env);
                 if(test!=null && (test instanceof Exception )) return test;
             }
             return retval;
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             throw ex;
-        }
-        finally {
+        } finally {
             if(se!=null) se.destroy();
             if(ae!=null) ae.destroy();
+            pooledItem.close();
         }
     }
     

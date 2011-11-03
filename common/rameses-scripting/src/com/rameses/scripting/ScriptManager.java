@@ -121,7 +121,7 @@ public abstract class ScriptManager {
             }
             ScriptObject sm = getScriptObject(serviceName);
             so = sm.getPooledObject();
-            Object target = so.getTargetClass().newInstance();
+            
             ClassDef classDef = so.getClassDef();
             Method actionMethod = classDef.findMethodByName( methodName );
             
@@ -129,7 +129,6 @@ public abstract class ScriptManager {
             if(params!=null) {
                 checkParameters(sm, so, methodName, params );
             }
-            
             //this is so we can monitor this object.
             sm.registerMethodsAccessed(methodName);
             
@@ -142,16 +141,11 @@ public abstract class ScriptManager {
                     ProxyMethod pm = actionMethod.getAnnotation(ProxyMethod.class);
                     if(!pm.local()) applyInterceptors = true;
                 }
-                
-                //inject the resources here.
-                if(injector!=null) {
-                    classDef.injectFields( target, injector );
-                }
                 //build the interceptors first
                 if(applyInterceptors) getInterceptorManager().injectInterceptors(sm, methodName);
                 List<String> beforeInterceptors = sm.findBeforeInterceptors(methodName);
                 List<String> afterInterceptors = sm.findAfterInterceptors(methodName);
-                return new LocalScriptExecutor(serviceName, methodName, target, actionMethod, beforeInterceptors,afterInterceptors);
+                return new LocalScriptExecutor(serviceName, methodName, so, actionMethod, injector, beforeInterceptors,afterInterceptors);
             } else {
                 Map asyncInfo = new HashMap();
                 Async asc = (Async) actionMethod.getAnnotation(Async.class);
@@ -166,8 +160,6 @@ public abstract class ScriptManager {
             }
         } catch(Exception ee) {
             throw ee;
-        } finally {
-            try {so.close();}catch(Exception e){;}
         }
     }
     
@@ -207,7 +199,7 @@ public abstract class ScriptManager {
             }
         }
     }
-
+    
     public void maintainPool() {
         if(scriptObjectPool!=null) scriptObjectPool.maintainPoolSize();
     }
