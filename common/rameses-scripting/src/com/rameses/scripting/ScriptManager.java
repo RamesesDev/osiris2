@@ -22,12 +22,23 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class ScriptManager {
     
     public static ScriptManager instance;
     private boolean loaded;
     private int version;
+    private ScriptLoader scriptLoader;
+    private InterceptorLoader interceptorLoader;
+    private ScriptObjectPool scriptObjectPool;
+    //we have to build the interfaces on the fly
+    private Map<String, Class> proxyInterfaces = Collections.synchronizedMap(new Hashtable());
+    private InterceptorManager interceptorManager = new InterceptorManager();
+    
+    private ScheduledExecutorService poolCleaner;
     
     public static ScriptManager getInstance() {
         if(instance==null) {
@@ -43,12 +54,7 @@ public abstract class ScriptManager {
     
     public abstract ScriptProvider getScriptProvider();
     
-    private ScriptLoader scriptLoader;
-    private InterceptorLoader interceptorLoader;
-    private ScriptObjectPool scriptObjectPool;
-    //we have to build the interfaces on the fly
-    private Map<String, Class> proxyInterfaces = Collections.synchronizedMap(new Hashtable());
-    private InterceptorManager interceptorManager = new InterceptorManager();
+    
     
     public ScriptLoader getScriptLoader() {
         if(scriptLoader==null) scriptLoader = new DefaultScriptLoader(this);
@@ -75,6 +81,10 @@ public abstract class ScriptManager {
         interceptorManager.setLoader( getInterceptorLoader() );
         interceptorManager.load();
         proxyInterfaces.clear();
+        if(poolCleaner!=null) poolCleaner.shutdown();
+        poolCleaner = Executors.newScheduledThreadPool(1);
+        //clean up every 10 seconds
+        poolCleaner.scheduleWithFixedDelay(new PoolCleaner(), 10, 10, TimeUnit.SECONDS);
     }
     
     public final void reload(String name) {
@@ -184,6 +194,10 @@ public abstract class ScriptManager {
         }
     }
     
+    public void close() {
+        if(poolCleaner!=null) poolCleaner.shutdown();
+    }
+    
     public void checkParameters( ScriptObject sm, ScriptObjectPoolItem obj, String method, Object[] args ) throws Exception {
         CheckedParameter[] checkedParams = sm.getCheckedParameters(method, obj.getClassDef());
         for( CheckedParameter p : checkedParams ) {
@@ -200,8 +214,9 @@ public abstract class ScriptManager {
         }
     }
     
-    public void maintainPool() {
-        if(scriptObjectPool!=null) scriptObjectPool.maintainPoolSize();
+    private class PoolCleaner implements Runnable {
+        public void run() {
+            if(scriptObjectPool!=null) scriptObjectPool.maintainPoolSize();
+        }
     }
-    
 }

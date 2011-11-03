@@ -9,16 +9,14 @@
 
 package com.rameses.scripting;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-
+import java.util.concurrent.ConcurrentHashMap;
 /**
  *
  * @author ms
  */
-public class ScriptObjectPool extends HashMap {
+public class ScriptObjectPool {
     
-    private Hashtable<String, ScriptObject> map = new Hashtable();
+    private ConcurrentHashMap<String, ScriptObject> map = new ConcurrentHashMap();
     private ScriptLoader scriptLoader;
     
     public ScriptObjectPool(ScriptLoader loader) {
@@ -27,17 +25,12 @@ public class ScriptObjectPool extends HashMap {
 
     public Object get(Object key) {
         String name = (String)key;
-        ScriptObject m = map.get(name);
-        if( m!=null) return m;
-        
         //we need to synchronize as only one script object poolmanager must be created.
-        synchronized(map) {
-            if(!map.containsKey(name)) {
-                ScriptObject poolManager = new ScriptObject(name,scriptLoader);
-                poolManager.init();
-                map.put(name, poolManager );
-            }    
-        }
+        if(!map.containsKey(name)) {
+            ScriptObject poolManager = new ScriptObject(name,scriptLoader);
+            poolManager.init();
+            map.put(name, poolManager );
+        }    
         return map.get(name);
     }
 

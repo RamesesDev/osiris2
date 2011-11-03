@@ -56,6 +56,7 @@ public class ServerMgmt implements ServerMgmtMBean, Serializable {
         
         
         System.out.println("      Unloading ScriptManager");
+        ScriptManager.getInstance().close();
         ScriptManager.setInstance(null);
         
         System.out.println("      Unloading DataSources");

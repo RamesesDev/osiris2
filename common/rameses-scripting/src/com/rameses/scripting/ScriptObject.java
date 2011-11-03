@@ -151,7 +151,7 @@ public class ScriptObject {
         sb.append( "<b>" + this.name + "</b><br>");
         sb.append( "Est. Active Pool Size : " +  getEstimatedActivePoolSize() +"<br>" );
         sb.append( "Min Pool Size : " +  getMinPoolSize() + "<br>");
-        
+        sb.append( "Last Accessed : " +  this.lastPoolDate + "<br>");
         sb.append( "Methods Accessed: <br>");
         if(methodsAccessed.size()==0) sb.append( "No methods Accessed<br>");
         for( String m: methodsAccessed ) {
@@ -192,7 +192,7 @@ public class ScriptObject {
     //run maintenance only if 1 hour has elapsed from last pooled date
     public void maintainPoolSize() {
         Date today = new Date();
-        if(DateUtil.diff(this.lastPoolDate, today,Calendar.HOUR) > 1) {
+        if(DateUtil.diff(this.lastPoolDate, today,Calendar.MINUTE) > 30) {
             List<ScriptObjectPoolItem> deadPool = new Vector();
             pool.drainTo(deadPool);
             //retain only 5 objects
