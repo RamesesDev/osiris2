@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
@@ -23,7 +23,7 @@ public class Session implements Serializable {
     private String username;
     private Date expirydate;
     
-    private Map<String, ArrayBlockingQueue> tokens = new HashMap();
+    private Map<String, LinkedBlockingQueue> tokens = new HashMap();
     private Map<String, Date> expiryDates = new HashMap();
     private int timeout; 
     private int pollTimeout; //hold on to the poll for only 30 seconds;
@@ -55,20 +55,20 @@ public class Session implements Serializable {
             //if there is no token id yet, create one. and make sure to flush out all pending connections
             if (tokenid==null || tokenid.trim().length()==0) {
                 tokenid = "TOKEN-" + (new UID()).hashCode();
-                tokens.put( tokenid, new ArrayBlockingQueue(200) );
+                tokens.put( tokenid, new LinkedBlockingQueue() );
                 //push("");
                 updateTokenTimeout(tokenid);
                 return tokenid;
             } 
             else if(!tokens.containsKey(tokenid)) {
-                tokens.put( tokenid, new ArrayBlockingQueue(200) );
+                tokens.put( tokenid, new LinkedBlockingQueue() );
                 updateTokenTimeout(tokenid);
                 return tokenid;
             }
             
             //update the expiry time of the session everytime it is polled to keep it alive always
             updateTokenTimeout(tokenid);
-            ArrayBlockingQueue q = tokens.get(tokenid);
+            LinkedBlockingQueue q = tokens.get(tokenid);
             //set the next expiry date to check that if there is no response within this time,
             //the token queue should be removed.
             return q.poll( pollTimeout, TimeUnit.MILLISECONDS );

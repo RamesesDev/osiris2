@@ -91,8 +91,8 @@ public class RemoteJSProxyService extends AbstractScriptService {
             w.write("this." + methodName + "= function(");
             w.write(args.toString());
             w.write("handler ) {\n");
-            if( !mth.get("returnType").equals("void") ) w.write("return ");
-            w.write( "this.proxy.invoke(\"" + methodName + "\"" );
+            //if( !mth.get("returnType").equals("void") ) w.write("return ");
+            w.write( "return this.proxy.invoke(\"" + methodName + "\"" );
             w.write( ",");
             w.write("["+parms.toString()+"]");
             w.write(", handler ); \n");

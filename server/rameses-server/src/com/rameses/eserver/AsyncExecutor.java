@@ -9,7 +9,6 @@
 
 package com.rameses.eserver;
 
-import com.rameses.eserver.ScriptServiceDelegate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,11 +55,10 @@ public class AsyncExecutor implements Runnable {
     }
     
     public void run() {
-        String requestId = null;
         try {
             Map ae = new HashMap();
             ae.put("loop", 0);
-            ae.put("requestId", requestId);
+            ae.put("requestId", this.requestId);
             env.put("async-event", ae);
             
             //execute the result;
