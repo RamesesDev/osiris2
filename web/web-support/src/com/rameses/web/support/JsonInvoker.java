@@ -17,6 +17,7 @@ import com.rameses.util.ExceptionManager;
 import com.rameses.web.common.RequestParser;
 import com.rameses.web.common.ServletUtils;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,9 +64,12 @@ public class JsonInvoker extends AbstractScriptService {
             ServletUtils.writeText(res, n);
         } 
         catch(Exception e) {
-            System.out.println("result is " + action + result.toString());
+            e = ExceptionManager.getOriginal(e);
             e.printStackTrace();
-            res.sendError(res.SC_INTERNAL_SERVER_ERROR, ExceptionManager.getOriginal(e).getMessage() );
+            Writer w = res.getWriter();
+            w.write(e.getMessage());
+            res.setStatus(res.SC_INTERNAL_SERVER_ERROR);
+            //res.sendError(res.SC_INTERNAL_SERVER_ERROR, e.getMessage() );
         }
     }
     
