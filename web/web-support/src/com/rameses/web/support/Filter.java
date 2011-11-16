@@ -28,7 +28,10 @@ public class Filter implements javax.servlet.Filter {
     
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
-    }    
+    }
+    
+    public void destroy() {
+    }
     
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException 
     {
@@ -61,7 +64,7 @@ public class Filter implements javax.servlet.Filter {
         {
             String ae = req.getHeader("accept-encoding");
             if (ae != null && ae.indexOf("gzip") != -1) {
-                resp = new GZIPResponseWrapper(resp);
+                resp = new ResponseWrapper(resp);
             }
             
             boolean isMultipart = ServletFileUpload.isMultipartContent(req);
@@ -72,6 +75,11 @@ public class Filter implements javax.servlet.Filter {
                 req.setAttribute("FILE", file);
             }
             
+            if( isCacheable(req, resp) ) {
+                resp.addHeader("Cache-Control", "max-age=86400");
+                resp.addHeader("Cache-Control", "public");
+            }
+
             chain.doFilter(req, resp);
             
             if( isMultipart ) {
@@ -81,13 +89,22 @@ public class Filter implements javax.servlet.Filter {
                 }
             }
             
-            if ( resp instanceof GZIPResponseWrapper ) {
-                ((GZIPResponseWrapper) resp).finishResponse();
+            if ( resp instanceof ResponseWrapper ) {
+                ((ResponseWrapper) resp).finishResponse();
             }
         }
     }
     
-    public void destroy() {
+    private boolean isCacheable(HttpServletRequest req, HttpServletResponse resp) 
+    {
+        String path = req.getRequestURI();
+        if( path.toLowerCase().matches(".*\\.(jpg|jpeg|gif|png|css|js|bmp)$") ) return true;
+        
+        String mime = resp.getContentType();
+        if( mime != null ) {
+            if( mime.contains("image") || mime.contains("javascript") || mime.contains("css") ) return true;
+        }
+        
+        return false;
     }
-    
 }

@@ -1,23 +1,35 @@
 package com.rameses.web.support;
 
 import java.io.*;
-import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-public class GZIPResponseWrapper extends HttpServletResponseWrapper {
+public class ResponseWrapper extends HttpServletResponseWrapper {
     
     protected HttpServletResponse origResponse = null;
     protected ServletOutputStream stream = null;
     protected PrintWriter writer = null;
     
-    public GZIPResponseWrapper(HttpServletResponse response) {
+    public ResponseWrapper(HttpServletResponse response) {
         super(response);
         origResponse = response;
     }
     
     public ServletOutputStream createOutputStream() throws IOException {
-        return (new GZIPResponseStream(origResponse));
+        if( (origResponse.getContentType()+"").contains("text"))
+            return (new GZIPResponseStream(origResponse));
+        else
+            return origResponse.getOutputStream();
+    }
+    
+    public PrintWriter createWriter() throws IOException {
+        if( (origResponse.getContentType()+"").contains("text") ) {
+            OutputStream s = createOutputStream();
+            return new PrintWriter(new OutputStreamWriter(s, "UTF-8"));
+        }
+        else {
+            return origResponse.getWriter();
+        }
     }
     
     public void finishResponse() {
@@ -43,9 +55,9 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
         
         if (stream == null)
             stream = createOutputStream();
-        return (stream);
+        return stream;
     }
-    
+
     public PrintWriter getWriter() throws IOException {
         if (writer != null) {
             return (writer);
@@ -55,9 +67,9 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
             throw new IllegalStateException("getOutputStream() has already been called!");
         }
         
-        stream = createOutputStream();
-        writer = new PrintWriter(new OutputStreamWriter(stream, "UTF-8"));
-        return (writer);
+        writer = createWriter();
+        
+        return writer;
     }
     
     public void setContentLength(int length) {}
