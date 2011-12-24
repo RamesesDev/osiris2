@@ -12,7 +12,9 @@ package com.rameses.sql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -201,6 +203,73 @@ public class SqlQuery extends AbstractSqlTxn {
     public SqlQuery setVars( Map map ) {
         _setVars(map);
         return this;
+    }
+    
+    
+    private List<Map> metaData;
+    
+    public List<Map> getMetaData() throws Exception {
+        if( metaData == null ) {
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+            try {
+                if(connection!=null)
+                    conn = connection;
+                else
+                    conn = sqlContext.getConnection();
+                
+                if(fetchHandler==null)
+                    fetchHandler = new MapFetchHandler();
+                
+                if(parameterHandler==null)
+                    parameterHandler = new BasicParameterHandler();
+                
+                //get the results
+                ps = conn.prepareStatement( getFixedSqlStatement() );
+                fillParameters(ps);
+                
+                //do paging here.
+                rs = ps.executeQuery();
+
+                ResultSetMetaData meta = rs.getMetaData();
+                metaData = new ArrayList();
+                for(int i=1; i<=meta.getColumnCount(); ++i) {
+                    Map m = new HashMap();
+                    m.put("columnName", meta.getColumnName(i));
+                    m.put("columnClassName", meta.getColumnClassName(i));
+                    m.put("columnDisplaySize", meta.getColumnDisplaySize(i));
+                    m.put("columnLabel", meta.getColumnLabel(i));
+                    m.put("columnType", meta.getColumnType(i));
+                    m.put("columnTypeName", meta.getColumnTypeName(i));
+                    m.put("precision", meta.getPrecision(i));
+                    m.put("scale", meta.getScale(i));
+                    m.put("schemaName", meta.getSchemaName(i));
+                    m.put("tableName", meta.getTableName(i));
+                    metaData.add(m);
+                }
+                
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                throw new RuntimeException(ex.getMessage());
+            } finally {
+                try {rs.close();} catch(Exception ign){;}
+                try {ps.close();} catch(Exception ign){;}
+                try {
+                    //close if connection is not manually injected.
+                    if(connection==null) {
+                        conn.close();
+                    }
+                } catch(Exception ign){;}
+                clear();
+            }
+        }
+        
+        return metaData;
+    }
+    
+    public void resetMetaData() {
+        metaData = null;
     }
     
     

@@ -25,7 +25,11 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
     public PrintWriter createWriter() throws IOException {
         if( (origResponse.getContentType()+"").contains("text") ) {
             OutputStream s = createOutputStream();
-            return new PrintWriter(new OutputStreamWriter(s, "UTF-8"));
+            
+            //i used ISO-8859-1 charset to support latin characters
+            //return new PrintWriter(new OutputStreamWriter(s, "ISO-8859-1"));
+            
+            return new PrintWriter(s); //use the default charset
         }
         else {
             return origResponse.getWriter();

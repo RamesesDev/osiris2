@@ -18,7 +18,7 @@ where ta.host=$P{host}
 
 
 [add-task]
-insert into gazeebu_classroom.sys_task 
+insert into sys_task 
 (id, service, servicetype, method, startdate, enddate, nextdate, interval, parameters, host, appcontext)
 values
 ($P{id}, $P{service}, $P{servicetype}, $P{method}, $P{startdate}, $P{enddate}, $P{nextdate},

@@ -1,4 +1,4 @@
-import com.rameses.util.MachineInfo;
+import com.rameses.util.KeyGen;
 import junit.framework.*;
 
 /*
@@ -16,7 +16,7 @@ public class Test1 extends TestCase {
     }
     
     public void testHello() throws Exception {
-      System.out.println( MachineInfo.getInstance().getMacAddress() );
+        System.out.println( KeyGen.generateAlphanumKey("", 10));
     }    
     
 }

@@ -7,10 +7,10 @@
 package com.rameses.util;
 
 import java.io.Serializable;
-import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ChangeQueue implements Runnable,Serializable {
     
-    private Queue queue = new LinkedBlockingQueue();
+    private LinkedBlockingQueue queue = new LinkedBlockingQueue();
     private AtomicBoolean updating = new AtomicBoolean(false);
     private ExecutorService thread = Executors.newFixedThreadPool(1);
     private Handler handler;
@@ -45,9 +45,12 @@ public class ChangeQueue implements Runnable,Serializable {
     
     public void run() {
         Object v = null;
-        while((v=queue.poll())!=null) {
-             handler.update(v);
-        }
+        try {
+            while((v=queue.poll(1,TimeUnit.SECONDS))!=null) {
+                handler.update(v);
+            }
+        } catch(Exception e){;}
+        
         handler.onAfterUpdate();
         updating.set(false);
     }

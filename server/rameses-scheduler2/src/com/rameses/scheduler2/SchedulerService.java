@@ -116,23 +116,29 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     }
     
     public void restart(String id) throws Exception {
-        SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
-        Map map = new HashMap();
-        map.put("host", this.clusterService.getCurrentHostName());
-        map.put("id", id);
-        sqlc.createNamedExecutor("scheduler:load-single-task").setParameters(map).execute();
-        Map m = (Map)sqlc.createNamedQuery("scheduler:get-single-task").setParameters(map).getSingleResult();
-        if(m.size()>0) {
-            TaskBean tb = new TaskBean(m);
-            if( m.get("suspended")!=null && (m.get("suspended")+"").equals("1") ) {
-                this.scheduleManager.getSuspendedTasks().getSuspended().put(tb.getId(),tb);
-            } else if(m.get("error")!=null && (m.get("error")+"").equals("1")) {
-                this.scheduleManager.getErrorTasks().getTasks().put(tb.getId(), tb);
+        try {
+            SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+            Map map = new HashMap();
+            map.put("host", this.clusterService.getCurrentHostName());
+            map.put("id", id);
+            sqlc.createNamedExecutor("scheduler:load-single-task").setParameters(map).execute();
+            Map m = (Map)sqlc.createNamedQuery("scheduler:get-single-task").setParameters(map).getSingleResult();
+            if(m.size()>0) {
+                TaskBean tb = new TaskBean(m);
+                if( m.get("suspended")!=null && (m.get("suspended")+"").equals("1") ) {
+                    this.scheduleManager.getSuspendedTasks().getSuspended().put(tb.getId(),tb);
+                } else if(m.get("error")!=null && (m.get("error")+"").equals("1")) {
+                    this.scheduleManager.getErrorTasks().getTasks().put(tb.getId(), tb);
+                } else {
+                    this.scheduleManager.getPendingTasks().push(tb);
+                }
             } else {
-                this.scheduleManager.getPendingTasks().push(tb);
+                throw new Exception("No tasks found. Please check current date");
             }
-        } else {
-            throw new Exception("No tasks found. Please check current date");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
     
@@ -142,16 +148,16 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     
     public void addTask(Map task) throws Exception {
         try {
-        SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
-        SqlExecutor sqe = sqlc.createNamedExecutor("scheduler:add-task");
-        sqe.setParameters(task).execute();
-        
-        String id = (String)task.get("id");
-        String suspended = (String)task.get("suspended");
-        if("true".equals(suspended)) {
-            suspend(id);
-        }
-        restart(id);
+            SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+            SqlExecutor sqe = sqlc.createNamedExecutor("scheduler:add-task");
+            sqe.setParameters(task).execute();
+
+            String id = (String)task.get("id");
+            String suspended = (String)task.get("suspended");
+            if("true".equals(suspended)) {
+                suspend(id);
+            }
+            restart(id);
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -163,5 +169,44 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     public void updateTask(Map task)  throws Exception {
         SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
         sqlc.createNamedExecutor("scheduler:update-task").setParameters(task).execute();
+
+        try {
+            Map map = new HashMap();
+            map.put("host", this.clusterService.getCurrentHostName());
+            map.put("id", task.get("id"));
+            Map m = (Map)sqlc.createNamedQuery("scheduler:get-single-task").setParameters(map).getSingleResult();
+            if(m.size()>0) {
+                TaskBean tb = new TaskBean(m);
+                if( m.get("suspended")!=null && (m.get("suspended")+"").equals("1") ) {
+                    this.scheduleManager.getSuspendedTasks().getSuspended().put(tb.getId(),tb);
+                } else if(m.get("error")!=null && (m.get("error")+"").equals("1")) {
+                    this.scheduleManager.getErrorTasks().getTasks().put(tb.getId(), tb);
+                } else {
+                    this.scheduleManager.getPendingTasks().push(tb);
+                }
+            } else {
+                throw new Exception("No tasks found. Please check current date");
+            }
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    
+    public void remove(String id) throws Exception {
+        try {
+            SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+            sqlc.createNamedExecutor("scheduler:remove-active").setParameter(1, id).execute(); //removes active record
+            sqlc.createNamedExecutor("scheduler:resume").setParameter(1, id).execute();        //removes suspended record
+            sqlc.createNamedExecutor("scheduler:remove-task").setParameter(1, id).execute();   //removes task record
+
+            this.scheduleManager.getSuspendedTasks().getSuspended().remove(id);
+            this.scheduleManager.getErrorTasks().getTasks().remove(id);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

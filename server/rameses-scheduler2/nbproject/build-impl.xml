@@ -235,7 +235,6 @@ is divided into following sections:
     -->
     <target name="deps-jar" depends="init" unless="no.deps">
         <ant target="jar" inheritall="false" antfile="${project.rameses-cluster}/build.xml"/>
-        <ant target="jar" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.rameses-server-common}/build.xml"/>
         <ant target="jar" inheritall="false" antfile="${project.rameses-session-server}/build.xml"/>
     </target>
@@ -535,7 +534,6 @@ is divided into following sections:
     -->
     <target name="deps-clean" depends="init" unless="no.deps">
         <ant target="clean" inheritall="false" antfile="${project.rameses-cluster}/build.xml"/>
-        <ant target="clean" inheritall="false" antfile="${project.rameses-common}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.rameses-server-common}/build.xml"/>
         <ant target="clean" inheritall="false" antfile="${project.rameses-session-server}/build.xml"/>
     </target>

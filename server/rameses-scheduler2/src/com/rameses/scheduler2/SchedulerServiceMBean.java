@@ -27,6 +27,7 @@ public interface SchedulerServiceMBean {
     
     void resumeError(String id) throws Exception;
     void restart(String id) throws Exception;
+    void remove(String id) throws Exception;
     
     void setCluster(ClusterServiceMBean cluster);
     void setSession(SessionServiceMBean session);
