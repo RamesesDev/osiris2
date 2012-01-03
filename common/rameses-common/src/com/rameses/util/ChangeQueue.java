@@ -49,8 +49,7 @@ public class ChangeQueue implements Runnable,Serializable {
             while((v=queue.poll(1,TimeUnit.SECONDS))!=null) {
                 handler.update(v);
             }
-        } catch(Exception e){;}
-        
+        } catch(Exception ign){;}
         handler.onAfterUpdate();
         updating.set(false);
     }

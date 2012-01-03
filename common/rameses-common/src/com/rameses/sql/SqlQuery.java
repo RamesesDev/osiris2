@@ -205,72 +205,76 @@ public class SqlQuery extends AbstractSqlTxn {
         return this;
     }
     
-    
     private List<Map> metaData;
-    
-    public List<Map> getMetaData() throws Exception {
-        if( metaData == null ) {
-            Connection conn = null;
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            try {
-                if(connection!=null)
-                    conn = connection;
-                else
-                    conn = sqlContext.getConnection();
-                
-                if(fetchHandler==null)
-                    fetchHandler = new MapFetchHandler();
-                
-                if(parameterHandler==null)
-                    parameterHandler = new BasicParameterHandler();
-                
-                //get the results
-                ps = conn.prepareStatement( getFixedSqlStatement() );
-                fillParameters(ps);
-                
-                //do paging here.
-                rs = ps.executeQuery();
-
-                ResultSetMetaData meta = rs.getMetaData();
-                metaData = new ArrayList();
-                for(int i=1; i<=meta.getColumnCount(); ++i) {
-                    Map m = new HashMap();
-                    m.put("columnName", meta.getColumnName(i));
-                    m.put("columnClassName", meta.getColumnClassName(i));
-                    m.put("columnDisplaySize", meta.getColumnDisplaySize(i));
-                    m.put("columnLabel", meta.getColumnLabel(i));
-                    m.put("columnType", meta.getColumnType(i));
-                    m.put("columnTypeName", meta.getColumnTypeName(i));
-                    m.put("precision", meta.getPrecision(i));
-                    m.put("scale", meta.getScale(i));
-                    m.put("schemaName", meta.getSchemaName(i));
-                    m.put("tableName", meta.getTableName(i));
-                    metaData.add(m);
-                }
-                
-            } catch(Exception ex) {
-                ex.printStackTrace();
-                throw new RuntimeException(ex.getMessage());
-            } finally {
-                try {rs.close();} catch(Exception ign){;}
-                try {ps.close();} catch(Exception ign){;}
-                try {
-                    //close if connection is not manually injected.
-                    if(connection==null) {
-                        conn.close();
-                    }
-                } catch(Exception ign){;}
-                clear();
-            }
-        }
-        
-        return metaData;
-    }
     
     public void resetMetaData() {
         metaData = null;
     }
     
+    public List<Map> getMetaData() {
+        if(metaData!=null) return metaData;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            if(connection!=null)
+                conn = connection;
+            else
+                conn = sqlContext.getConnection();
+            
+            if(parameterHandler==null)
+                parameterHandler = new BasicParameterHandler();
+            
+            //get the results
+            ps = conn.prepareStatement( getFixedSqlStatement() );
+            fillParameters(ps);
+            
+            //do paging here.
+            rs = ps.executeQuery();
+            metaData = new ArrayList();
+            
+            ResultSetMetaData rsm = rs.getMetaData();
+            for(int i=1; i<=rsm.getColumnCount(); i++) {
+                Map m = new HashMap();
+                m.put("catalogName", rsm.getCatalogName(i));
+                m.put("columnClassName", rsm.getColumnClassName(i));
+                m.put("columnDisplaySize", rsm.getColumnDisplaySize(i));
+                m.put("columnLabel", rsm.getColumnLabel(i));
+                m.put("columnName", rsm.getColumnName(i));
+                m.put("columnType", rsm.getColumnType(i));
+                m.put("columnTypeName", rsm.getColumnTypeName(i));
+                m.put("precision", rsm.getPrecision(i));
+                m.put("scale", rsm.getScale(i));
+                m.put("schemaName", rsm.getSchemaName(i));
+                m.put("tableName", rsm.getTableName(i));
+                //other flags
+                m.put("autoIncrement", rsm.isAutoIncrement(i));
+                m.put("caseSensitive", rsm.isCaseSensitive(i));
+                m.put("currency", rsm.isCurrency(i));
+                m.put("definitelyWritable", rsm.isDefinitelyWritable(i));
+                m.put("nullable", rsm.isNullable(i));
+                m.put("readOnly", rsm.isReadOnly(i));
+                m.put("searchable", rsm.isSearchable(i));
+                m.put("signed", rsm.isSigned(i));
+                m.put("writable", rsm.isWritable(i));
+                metaData.add(m);
+            }
+            return metaData;
+            
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex.getMessage());
+        } finally {
+            try {rs.close();} catch(Exception ign){;}
+            try {ps.close();} catch(Exception ign){;}
+            try {
+                //close if connection is not manually injected.
+                if(connection==null) {
+                    conn.close();
+                }
+            } catch(Exception ign){;}
+            clear();
+        }
+    }
     
 }

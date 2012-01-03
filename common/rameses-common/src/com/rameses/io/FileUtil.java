@@ -105,7 +105,7 @@ public final class FileUtil {
             bos.flush();
         }
         catch(Exception e) {
-            
+            e.printStackTrace();
         }
         finally {
             try { bos.close(); } catch(Exception e){;}
