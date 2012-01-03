@@ -100,7 +100,7 @@ public class ValueUtil {
         }
         //if value is BigDecimal just use the toString,
         //but always add .00 if it is a whole number 
-        //to notify the deserializer that is a decimal value
+        //to notify the deserializer that it is a decimal value
         else if( type == BigDecimal.class ) 
         {
             String str = value.toString();

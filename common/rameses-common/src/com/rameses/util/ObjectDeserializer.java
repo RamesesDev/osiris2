@@ -159,7 +159,13 @@ public class ObjectDeserializer
             if( text.startsWith("\"") && text.endsWith("\""))   //string
                 return text.substring(1, text.length()-1);
             if( text.matches("\\d+") )                          //integer
-                return new Integer(text);
+                try {
+                    return new Integer(text);
+                }
+                //this might throw an error if value exceeds Integer.MAX_VALUE
+                catch(Exception e) {
+                    return new Long(text);
+                }
             if( text.matches("\\d+\\.\\d+") )                   //decimal
                 return new BigDecimal(text);
             if( text.matches("true|false") )                    //boolean

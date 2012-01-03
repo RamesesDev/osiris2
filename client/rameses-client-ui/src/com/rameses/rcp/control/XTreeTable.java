@@ -16,6 +16,7 @@ import com.rameses.rcp.control.treetable.TreeTableUtil;
 import com.rameses.rcp.common.TreeTableModel;
 import com.rameses.rcp.control.table.ListScrollBar;
 import com.rameses.rcp.control.table.RowHeader;
+import com.rameses.rcp.control.treetable.TableScrollPane;
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.ui.*;
@@ -42,7 +43,7 @@ public class XTreeTable extends JPanel implements UIOutput, TreeTableListener, F
     private TreeTableComponent table;
     private ListScrollBar scrollBar;
     private RowHeaderView rowHeaderView;
-    private JScrollPane scrollPane;
+    private TableScrollPane scrollPane;
     
     private TreeTableModel listModel;
     private String[] depends;
@@ -64,9 +65,9 @@ public class XTreeTable extends JPanel implements UIOutput, TreeTableListener, F
         scrollBar = new ListScrollBar();
         
         //--create and decorate scrollpane for the JTable
-        scrollPane = new SheetScrollPane(table);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane = new TableScrollPane(table);
+        scrollPane.setVerticalScrollBarPolicy(TableScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane.setHorizontalScrollBarPolicy(TableScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         
         super.setLayout(new BorderLayout());
@@ -179,6 +180,7 @@ public class XTreeTable extends JPanel implements UIOutput, TreeTableListener, F
                 table.setListener(this);
                 table.setBinding(binding);
                 scrollBar.setListModel(listModel);
+                scrollPane.setListModel(listModel);
                 
                 if ( rowHeaderView != null )
                     rowHeaderView.setRowCount( listModel.getRows() );
@@ -299,11 +301,11 @@ public class XTreeTable extends JPanel implements UIOutput, TreeTableListener, F
         
         if ( showRowHeader ) {
             Color gridColor = table.getGridColor();
-            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, TreeTableUtil.getTableCornerComponent(gridColor));
+            scrollPane.setCorner(TableScrollPane.UPPER_LEFT_CORNER, TreeTableUtil.getTableCornerComponent(gridColor));
             scrollPane.setRowHeaderView( (rowHeaderView = new RowHeaderView()) );
             rowHeaderView.setRowCount( table.getRowCount() );
         } else {
-            scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, null);
+            scrollPane.setCorner(TableScrollPane.UPPER_LEFT_CORNER, null);
             scrollPane.setRowHeaderView( (rowHeaderView = null) );
         }
     }
@@ -333,30 +335,6 @@ public class XTreeTable extends JPanel implements UIOutput, TreeTableListener, F
     
     
     //--- inner classess
-    
-    
-    //<editor-fold defaultstate="collapsed" desc="  SheetScrollPane (class)  ">
-    private class SheetScrollPane extends JScrollPane {
-        
-        SheetScrollPane(Component view) {
-            super(view);
-        }
-        
-        
-        
-        protected void processMouseWheelEvent(MouseWheelEvent e) {
-            int rotation = e.getWheelRotation();
-            if ( rotation == 0 ) return;
-            
-            if ( rotation < 0 ) {
-                listModel.moveBackRecord();
-            } else {
-                listModel.moveNextRecord();
-            }
-        }
-        
-    }
-    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  TableBorder (class)  ">
     private static class TableBorder extends AbstractBorder {
