@@ -104,7 +104,7 @@ public class ValueUtil {
         else if( type == BigDecimal.class ) 
         {
             String str = value.toString();
-            if( str.matches("\\d+\\.\\d+") )
+            if( str.matches("\\d+\\.\\d+") || str.indexOf(".") > 0 || str.indexOf('E') > 0)
                 return str;
             else
                 return str + ".00";
