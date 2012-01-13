@@ -1,5 +1,5 @@
 
-package com.rameses.rcp.barcode;
+package com.rameses.rcp.control.barcode;
 
 import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIControl;

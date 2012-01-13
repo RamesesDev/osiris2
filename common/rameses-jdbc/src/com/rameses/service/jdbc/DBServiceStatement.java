@@ -222,7 +222,8 @@ public class DBServiceStatement implements PreparedStatement {
     }
     
     public ResultSet executeQuery(String sql) throws SQLException {
-        throw new SQLException("Method not supported. executeQuery");
+        this.statement = sql;
+        return executeQuery();
     }
     
     public int executeUpdate(String sql) throws SQLException {

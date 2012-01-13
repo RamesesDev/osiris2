@@ -10,7 +10,7 @@ package com.rameses.rcp.ui;
 import java.util.List;
 
 
-public interface UIComposite extends UICompositeFocusable {
+public interface UIComposite extends UIFocusableContainer {
     
     List<? extends UIControl> getControls();
     boolean isDynamic();

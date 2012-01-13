@@ -9,24 +9,29 @@
 
 package com.rameses.osiris2.client;
 
-import com.rameses.invoker.client.AbstractScriptServiceProxy;
 import com.rameses.invoker.client.ResponseHandler;
 import com.rameses.rcp.common.ScheduledTask;
 import com.rameses.rcp.framework.ClientContext;
-import com.rameses.invoker.client.ScriptInterfaceProvider;
 import com.rameses.rcp.common.MsgBox;
+import com.rameses.service.EJBServiceContext;
 import com.rameses.util.BreakException;
 import com.rameses.util.ExceptionManager;
 import groovy.lang.GroovyClassLoader;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.Map;
 
-public class InvokerProxy extends AbstractScriptServiceProxy {
+public class InvokerProxy  {
     
     private GroovyClassLoader classLoader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
-    private ScriptInterfaceProvider scriptProvider = new GroovyScriptInterfaceProvider();
+    
     
     private static InvokerProxy instance;
+    private Map env;
+    
+    public InvokerProxy() {
+    }
     
     public synchronized static InvokerProxy getInstance() {
         if ( instance == null ) {
@@ -35,22 +40,13 @@ public class InvokerProxy extends AbstractScriptServiceProxy {
         return instance;
     }
     
+    public Map getAppEnv() {
+        return OsirisContext.getSession().getEnv();
+    }
     
-    public InvokerProxy() {
-        super(OsirisContext.getSession().getEnv());
-    }
-
-    public Map getEnv() {
-        return OsirisContext.getEnv();
-    }
-   
     public synchronized void reset() {
         classLoader = new GroovyClassLoader(ClientContext.getCurrentContext().getClassLoader());
         instance = null;
-    }
-    
-    protected ScriptInterfaceProvider getScriptInterfaceProvider() {
-        return scriptProvider;
     }
     
     public void invokeLater(ResponseHandler handler) {
@@ -77,8 +73,7 @@ public class InvokerProxy extends AbstractScriptServiceProxy {
             try {
                 if ( handler.isCancelled() ) {
                     counter = 10;
-                }
-                else if ( handler.execute() ) {
+                } else if ( handler.execute() ) {
                     counter = 0;
                 } else {
                     counter++;
@@ -106,15 +101,30 @@ public class InvokerProxy extends AbstractScriptServiceProxy {
     }
     
     
-    private class GroovyScriptInterfaceProvider extends ScriptInterfaceProvider {
-        
-        protected Class parseClass(byte[] bytes) {
-            return classLoader.parseClass( new ByteArrayInputStream(bytes));
-        }
-        
-        public ClassLoader getProxyClassLoader() {
-            return classLoader;
-        }
+    private interface ScriptInterfaceService {
+        byte[] getScriptInfo(String name);
     }
     
+    private Map<String,Class> interfaces = new HashMap();
+    public synchronized Object create(String name) {
+        try {
+            Class cls = interfaces.get(name);
+            if(cls==null) {
+                if( !interfaces.containsKey(name) ) {
+                    EJBServiceContext ect = new EJBServiceContext(getAppEnv());
+                    ScriptInterfaceService s = ect.create( "ScriptService/local", ScriptInterfaceService.class );
+                    byte[] bytes = s.getScriptInfo( name );
+                    cls = classLoader.parseClass( new ByteArrayInputStream(bytes));
+                    interfaces.put( name, cls );
+                }
+            }
+            return Proxy.newProxyInstance(classLoader, new Class[]{cls}, new OsirisInvokerHandler( name, getAppEnv()));
+            
+        } catch(Exception e) {
+            if( ClientContext.getCurrentContext().isDebugMode() ) {
+                e.printStackTrace();
+            }
+            throw new RuntimeException(e);
+        }
+    }
 }

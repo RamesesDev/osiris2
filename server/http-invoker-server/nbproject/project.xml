@@ -6,11 +6,11 @@
             <name>http-invoker-server</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
-                <library files="1">
-                    <file>${reference.rameses-common.jar}</file>
-                </library>
-                <library files="4">
+                <library files="3">
                     <file>${libs.Apache_Bean_Utils.classpath}</file>
+                </library>
+                <library files="1">
+                    <file>${libs.rameses-common.classpath}</file>
                 </library>
                 <library files="1">
                     <file>${file.reference.ezmorph-1.0.6.jar}</file>
@@ -19,7 +19,7 @@
                     <file>${file.reference.json-lib-2.3-jdk15.jar}</file>
                 </library>
                 <library files="1">
-                    <file>${reference.rameses-server-common.jar}</file>
+                    <file>${libs.rameses-server-common.classpath}</file>
                 </library>
             </web-module-libraries>
             <web-module-additional-libraries/>
@@ -30,23 +30,6 @@
                 <root id="test.src.dir"/>
             </test-roots>
         </data>
-        <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
-            <reference>
-                <foreign-project>rameses-common</foreign-project>
-                <artifact-type>jar</artifact-type>
-                <script>build.xml</script>
-                <target>jar</target>
-                <clean-target>clean</clean-target>
-                <id>jar</id>
-            </reference>
-            <reference>
-                <foreign-project>rameses-server-common</foreign-project>
-                <artifact-type>jar</artifact-type>
-                <script>build.xml</script>
-                <target>jar</target>
-                <clean-target>clean</clean-target>
-                <id>jar</id>
-            </reference>
-        </references>
+        <references xmlns="http://www.netbeans.org/ns/ant-project-references/1"/>
     </configuration>
 </project>

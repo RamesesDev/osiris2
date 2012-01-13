@@ -22,13 +22,18 @@ public class ResponseError extends Exception {
         super(msg);
         this.errno = errno;
     }
+    
+    public ResponseError(int errno, String msg, Exception orig) {
+        super(msg, orig);
+        this.errno = errno;
+    }
 
     public int getErrno() {
         return errno;
     }
 
     public String toString() {
-        return super.getMessage() + " [Error:"+errno+"]";
+        return super.getMessage() + " [HTTP Response Code:"+errno+"]";
     }
     
 

@@ -68,16 +68,19 @@ public class InvokerActionProvider implements ActionProvider {
         if ( controller != null ) {
             context = controller.getCodeBean();
         }
+        
         List<Invoker> invList = InvokerUtil.lookup(type, context);
         List<Action> actions = new ArrayList();
+
         for(Invoker inv: invList) {
             if ( controller instanceof WorkUnitUIController ) {
-                String wuId = controller.getName();
-                if ( !wuId.equals(inv.getWorkunitid()) ) {
-                    continue;
+                WorkUnitUIController wuc = (WorkUnitUIController) controller;
+                String wucid = wuc.getWorkunit().getId();
+                
+                if ( wucid.equals(inv.getWorkunitid()) ) {
+                    actions.add(createAction(inv, context));
                 }
             }
-            actions.add(createAction(inv, context));
         }
         return actions;
     }

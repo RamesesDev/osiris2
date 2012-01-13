@@ -70,6 +70,8 @@ public class TreeTableComponent extends JTable implements ListModelListener, Tab
         KeyStroke shiftEnter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 1);
         getInputMap(cond).put(shiftEnter, "selectPreviousColumnCell");
         
+        KeyStroke ps = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,0);
+        
         setMultiselect(true);
     }
     //</editor-fold>
@@ -247,11 +249,8 @@ public class TreeTableComponent extends JTable implements ListModelListener, Tab
         buildColumns();
     }
         
-    public void fetchStart() {
-    }
-
-    public void fetchEnd() {
-    }
+    public void fetchStart() {}
+    public void fetchEnd() {}
     
     public void movePrevRecord() {
         if ( getSelectedRow() == 0 ) {

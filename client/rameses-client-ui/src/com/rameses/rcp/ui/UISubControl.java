@@ -7,7 +7,7 @@
 
 package com.rameses.rcp.ui;
 
-public interface UISubControl extends UICompositeFocusable {
+public interface UISubControl extends UIFocusableContainer {
  
     String getCaption();
     Object getHandlerObject();

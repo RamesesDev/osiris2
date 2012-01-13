@@ -18,7 +18,7 @@ import com.rameses.platform.interfaces.ViewContext;
 import com.rameses.rcp.annotations.Close;
 import com.rameses.rcp.common.Validator;
 import com.rameses.rcp.common.ValidatorEvent;
-import com.rameses.rcp.ui.UICompositeFocusable;
+import com.rameses.rcp.ui.UIFocusableContainer;
 import com.rameses.util.BusinessException;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
@@ -66,9 +66,15 @@ public class Binding {
     private Map<String, UIControl> controlsIndex = new Hashtable();
     
     /**
-     * 1. reference of all controls that can aquire default focus
-     *    when the window is shown or during page navigation
-     * 2. this reference contains UIInput and UICompositeFocusable only
+     * index of all controls in this binding which names duplicate (i.e) radio button controls
+     * this is used when finding controls by name
+     */
+    private Map<String, List> controlsListIndex = new Hashtable();
+    
+    /**
+     * - reference of all controls that can aquire default focus
+     *   when the window is shown or during page navigation
+     * - this reference contains UIInput and UIFocusableContainer only
      */
     private List<UIControl> focusableControls = new ArrayList();
     
@@ -159,7 +165,17 @@ public class Binding {
                 defaultButton = btn;
         }
         if( !ValueUtil.isEmpty(control.getName()) ) {
-            controlsIndex.put(control.getName(), control);
+            String cname =  control.getName();
+            if( controlsIndex.containsKey(cname) ) {
+                List list = controlsListIndex.get(cname);
+                if( list == null ) {
+                    list = new ArrayList();
+                    list.add(controlsIndex.get(cname));
+                    controlsListIndex.put(cname, list);
+                }
+                list.add(control);
+            }
+            controlsIndex.put(cname, control);
         }
         
         //for control event management support
@@ -176,7 +192,13 @@ public class Binding {
             validatables.remove( (Validatable)control );
         }
         if( !ValueUtil.isEmpty(control.getName()) ) {
-            controlsIndex.remove(control.getName());
+            String cname = control.getName();
+            controlsIndex.remove(cname);
+            if( controlsListIndex.containsKey(cname) ) {
+                List list = controlsListIndex.get(cname);
+                list.remove(control);
+                if( list.size() == 0 ) controlsListIndex.remove(cname);
+            }
         }
         
         //for control event management support
@@ -195,7 +217,7 @@ public class Binding {
         Collections.sort( validatables );
         for( UIControl u : controls ) {
             //index all default focusable controls
-            if ( u instanceof UIInput || u instanceof UICompositeFocusable ) {
+            if ( u instanceof UIInput || u instanceof UIFocusableContainer ) {
                 focusableControls.add( u );
             }
             
@@ -460,8 +482,8 @@ public class Binding {
     public boolean focusFirstInput() {
         //focus first UIInput that is not disabled/readonly
         for (UIControl u: focusableControls ) {
-            if ( u instanceof UICompositeFocusable ) {
-                UICompositeFocusable uis = (UICompositeFocusable) u;
+            if ( u instanceof UIFocusableContainer ) {
+                UIFocusableContainer uis = (UIFocusableContainer) u;
                 if ( uis.focusFirstInput() ) return true;
                 
             } else if ( u instanceof UIInput ) {
@@ -516,6 +538,19 @@ public class Binding {
         if ( name == null ) return null;
         
         return controlsIndex.get(name);
+    }
+    
+    /**
+     * returns the List of UIControls w/ the same name as specified
+     */
+    public List<UIControl> findList(String name) {
+        List list = controlsListIndex.get(name);
+        if( list != null ) return list;
+                
+        list = new ArrayList();
+        UIControl u = controlsIndex.get(name);
+        if( u != null ) list.add(u);
+        return list;
     }
     
     /**

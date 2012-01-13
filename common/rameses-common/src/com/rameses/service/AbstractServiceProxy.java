@@ -40,6 +40,15 @@ public abstract class AbstractServiceProxy {
             client.setReadTimeout( rt );
         }
         
+        String _connectionTimeout = (String)conf.get("connectionTimeout");
+        if(_connectionTimeout!=null) {
+            int ct = 0;
+            try {
+                ct = Integer.parseInt(_connectionTimeout);
+            }catch(Exception e){;}
+            client.setConnectionTimeout(ct);
+        }
+        
     }
     
 }

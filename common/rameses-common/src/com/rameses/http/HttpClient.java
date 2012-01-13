@@ -193,7 +193,12 @@ public class HttpClient implements Serializable {
             } catch(Exception e) {
                 InputStream es = conn.getErrorStream();
                 if( es != null ) {
-                    throw new ResponseError(conn.getResponseCode(), conn.getResponseMessage());
+                    String errMsg = conn.getHeaderField("Error-Message");
+                    Exception orig = null;
+                    if( errMsg != null ) {
+                        orig = new Exception(errMsg);
+                    }
+                    throw new ResponseError(conn.getResponseCode(), conn.getResponseMessage(), orig);
                 }    
                 else
                     throw e;
@@ -269,9 +274,5 @@ public class HttpClient implements Serializable {
         this.encrypted = encrypted;
     }
     
-    
-    
-    
-    
-    
+
 }

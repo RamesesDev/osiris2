@@ -10,6 +10,7 @@
 package com.rameses.invoker.server;
 
 import com.rameses.server.common.JsonUtil;
+import com.rameses.util.ExceptionManager;
 import com.rameses.util.SealedMessage;
 import com.rameses.web.common.RequestParser;
 import com.rameses.web.common.RequestParameterFilter;
@@ -73,7 +74,9 @@ public class JsonFilter implements Filter {
                 }
             }
         } catch(Exception e) {
-            hres.sendError(500, e.getMessage());
+            Exception orig = ExceptionManager.getOriginal(e);
+            hres.setHeader("Error-Message", orig.getMessage());
+            hres.sendError(500, orig.getMessage());
         } finally {
             try {bos.close();}catch(Exception ign){;}
             try {pw.close();}catch(Exception ign){;}

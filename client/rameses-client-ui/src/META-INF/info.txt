@@ -1,0 +1,5 @@
+author=jaycverg <jaycverg@gmail.com>
+version=1.1
+lastupdated=2012-01-05
+
+comment=see git repository history for update details

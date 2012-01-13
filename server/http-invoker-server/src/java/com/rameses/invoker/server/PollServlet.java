@@ -13,6 +13,7 @@ import com.rameses.client.session.NotificationServiceProvider;
 import com.rameses.client.session.SessionConstant;
 import com.rameses.server.common.AppContext;
 import com.rameses.service.EJBServiceContext;
+import com.rameses.util.ExceptionManager;
 import com.rameses.web.common.ServletUtils;
 import java.io.IOException;
 import java.util.HashMap;
@@ -74,7 +75,9 @@ public class PollServlet extends HttpServlet {
             poll( conf, sessionid, tokenid, response );
         } catch(Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            Exception orig = ExceptionManager.getOriginal(e);
+            response.setHeader("Error-Message", orig.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, orig.getMessage());
         }
     }
     

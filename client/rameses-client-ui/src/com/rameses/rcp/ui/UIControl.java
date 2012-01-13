@@ -21,7 +21,8 @@ public interface UIControl extends Comparable {
     int getIndex();
     
     /**
-     * happens the control is added to a UIViewPanel occurs one time only per page
+     * happens when the control is added to a UIViewPanel
+     * occurs one time only per page
      */
     void setBinding(Binding binding);
     Binding getBinding();
@@ -32,7 +33,7 @@ public interface UIControl extends Comparable {
     void refresh();
     
     /**
-     * fires when binding changes the bean
+     * fires after Binding's code bean has been set
      */
     void load();
     

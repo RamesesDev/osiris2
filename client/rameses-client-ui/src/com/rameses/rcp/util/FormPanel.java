@@ -16,7 +16,7 @@ import com.rameses.rcp.ui.ActiveControl;
 import com.rameses.rcp.ui.ControlProperty;
 import com.rameses.rcp.ui.ControlContainer;
 import com.rameses.rcp.ui.UIComposite;
-import com.rameses.rcp.ui.UICompositeFocusable;
+import com.rameses.rcp.ui.UIFocusableContainer;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.ui.UIInput;
 import com.rameses.rcp.ui.Validatable;
@@ -233,8 +233,8 @@ public class FormPanel extends JPanel implements UIComposite, ControlContainer, 
                         ((Component) v).requestFocus();
                         return true;
                     }
-                } else if ( c instanceof UICompositeFocusable ) {
-                    UICompositeFocusable uis = (UICompositeFocusable) c;
+                } else if ( c instanceof UIFocusableContainer ) {
+                    UIFocusableContainer uis = (UIFocusableContainer) c;
                     if ( uis.focusFirstInput() ) return true;
                     
                 } else if ( c instanceof UIInput ) {

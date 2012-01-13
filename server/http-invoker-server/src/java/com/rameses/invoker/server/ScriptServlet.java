@@ -2,6 +2,7 @@ package com.rameses.invoker.server;
 
 
 import com.rameses.server.common.LocalScriptServiceProxy;
+import com.rameses.util.ExceptionManager;
 import com.rameses.web.common.RequestParser;
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,7 +41,9 @@ public class ScriptServlet extends HttpServlet {
             Object result = loc.invoke(p.getAction(),p.getArgs());
             ResultWriter.print( resp, result, p.isEncrypted(), req.getContentType() );
         } catch(Exception e) {
-            resp.sendError(resp.SC_INTERNAL_SERVER_ERROR,e.getMessage());
+            Exception orig = ExceptionManager.getOriginal(e);
+            resp.setHeader("Error-Message", orig.getMessage());
+            resp.sendError(resp.SC_INTERNAL_SERVER_ERROR,orig.getMessage());
         }
     }
     

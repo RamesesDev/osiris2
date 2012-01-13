@@ -71,6 +71,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     private Binding binding;
     
     private JLabel processingLbl;
+    private boolean fetching;
     
     
     public DataTableComponent() {
@@ -254,7 +255,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if( listModel != null && listModel.isProcessing() ) {
+        if( listModel != null && fetching ) {
             if( processingLbl == null ) {
                 processingLbl = new JLabel("<html><h1>Loading...</h1></html>");
                 processingLbl.setForeground(Color.GRAY);
@@ -391,6 +392,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
         
     public void fetchStart() {
         firePropertyChange("busy", false, true);
+        fetching = true;
         if( processingLbl != null ) {
             repaint();
         }
@@ -398,6 +400,7 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
 
     public void fetchEnd() {
         firePropertyChange("busy", true, false);
+        fetching = false;
         if( processingLbl != null ) {
             repaint();
         }

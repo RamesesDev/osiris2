@@ -17,6 +17,7 @@ import com.rameses.rcp.util.ControlSupport;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.beans.Beans;
@@ -76,8 +77,18 @@ public class XEditorPane extends JEditorPane implements UIInput, ActiveControl {
                         if ( aa.length > 1 ) param = new Object[]{ aa[1] };
                     }
                     
-                    Object outcome = ControlSupport.invoke(binding.getBean(), method, param);
-                    ControlSupport.fireNavigation(this, outcome);
+                    final Object outcome = ControlSupport.invoke(binding.getBean(), method, param);
+                    if( outcome == null );
+                    else if( outcome instanceof Boolean && ((Boolean)outcome) == false )
+                        return;
+                    else if( outcome.getClass() == boolean.class && ((Boolean)outcome) == false)
+                        return;
+                    
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            ControlSupport.fireNavigation(XEditorPane.this, outcome);
+                        }
+                    });
                 }
             } catch(Exception ex){
                 MsgBox.err(new IllegalStateException(ex));
