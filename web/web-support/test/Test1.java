@@ -1,4 +1,4 @@
-import com.rameses.util.KeyGen;
+import javax.servlet.http.HttpServletRequest;
 import junit.framework.*;
 
 /*
@@ -16,7 +16,7 @@ public class Test1 extends TestCase {
     }
     
     public void testHello() throws Exception {
-        System.out.println( KeyGen.generateAlphanumKey("", 10));
+        HttpServletRequest req;
     }    
     
 }

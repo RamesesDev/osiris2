@@ -83,7 +83,7 @@ public class Invoker implements Serializable, Comparable {
     }
 
     public String getCaption() {
-        if( caption == null || caption.length()==0)
+        if( caption == null )
             if( name !=null)
                 return name;
             else
@@ -115,24 +115,10 @@ public class Invoker implements Serializable, Comparable {
     public int compareTo(Object o ) {
         if( o == null || !(o instanceof Invoker) ) return 0;
         Invoker i = (Invoker)o;
-        if( getIndex()==null && i.getIndex()==null ) {
-            return 0;
-        }
-        else if( getIndex()!=null && i.getIndex()==null ) {
-            return 1;
-        }
-        else if( getIndex()==null && i.getIndex()!=null ) {
-            return -1;
-        }
-        else if( getIndex().intValue() < i.getIndex().intValue() ) {
-            return -1;
-        }
-        else if( getIndex().intValue() > i.getIndex().intValue() ) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
+        int aidx = getIndex() == null? 0 : getIndex();
+        int bidx = i.getIndex() == null? 0 : i.getIndex();
+        
+        return aidx - bidx;
     }
 
     public String getAction() {

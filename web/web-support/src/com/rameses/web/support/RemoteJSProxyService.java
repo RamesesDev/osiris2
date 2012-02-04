@@ -88,7 +88,7 @@ public class RemoteJSProxyService extends AbstractScriptService {
             }
             if(!includeMethod) continue;
             
-            w.write("this." + methodName + "= function(");
+            w.write("this." + escapeMethodName(methodName) + "= function(");
             w.write(args.toString());
             w.write("handler ) {\n");
             //if( !mth.get("returnType").equals("void") ) w.write("return ");
@@ -102,6 +102,23 @@ public class RemoteJSProxyService extends AbstractScriptService {
         w.write( "}" );
     }
     
-    
+    private String escapeMethodName(String name) {
+        if("delete".equals(name)) {
+            return "_" + name;
+        }
+        else if("export".equals(name)) {
+            return "_" + name;
+        }
+        else if("function".equals(name)) {
+            return "_" + name;
+        }
+        else if("var".equals(name)) {
+            return "_" + name;
+        }
+        else if("yield".equals(name)) {
+            return "_" + name;
+        }
+        return name;
+    }
     
 }

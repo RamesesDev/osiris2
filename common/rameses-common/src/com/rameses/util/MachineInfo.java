@@ -99,15 +99,24 @@ public abstract class MachineInfo {
     public static class WindowsMachineInfo extends MachineInfo {
         private String macAddress;
         
-        public String getMacAddress() throws Exception 
-        {
+        public String getMacAddress() throws Exception {
             if(macAddress != null) return macAddress;
-            
+            // modified : jzamora
+            // date     : 2011-12-02
+            // prioritize IPConfig result
+            try {
+                macAddress = getMacFromIPConfig();
+                if( macAddress != null ) return macAddress;
+            }
+            catch( Exception e ) {
+                // ignore, try getting macaddress using getmac
+            }
+                    
             try {
                 Process p = Runtime.getRuntime().exec( "getmac /fo table /nh" );
                 BufferedReader br = new BufferedReader((new InputStreamReader(p.getInputStream())));
                 String line;
-
+                
                 //it returns the first macaddress found
                 while((line=br.readLine())!=null) {
                     if(line.trim().length()>0) {
@@ -117,14 +126,23 @@ public abstract class MachineInfo {
                 }
             }
             //if getmac is not available use the ipconfig /all command on windows
-            catch(IOException ioe) {
+            catch(Exception ioe) {
+                //
+            }
+            
+            throw new ParseException("cannot read MAC address ", 0);
+        }
+        
+        private String getMacFromIPConfig() {
+            try {
                 String response = getProcessResponse("ipconfig /all");
+                System.out.println("Response -> " + response);
                 StringTokenizer tokenizer = new StringTokenizer(response, "\n");
 
                 int counter = 1;
                 boolean skipMac = false;
                 Pattern macPattern = Pattern.compile("(?:\\w{2}-){5}\\w{2}");
-                
+
                 //returns the first non-disconnected macaddress
                 while(tokenizer.hasMoreTokens()) {
                     String line = tokenizer.nextToken().trim();
@@ -141,9 +159,11 @@ public abstract class MachineInfo {
                     }
                 }
             }
-            
-            throw new ParseException("cannot read MAC address ", 0);
-        }        
+            catch( Exception e ) {
+                //
+            }
+            return null;
+        }
     }
     
     

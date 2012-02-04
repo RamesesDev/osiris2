@@ -57,8 +57,9 @@ public class ObjectDeserializer
                 tokenizer.ordinaryChar('.');
                 tokenizer.ordinaryChars('0', '9');
 
+                int type = 0;
                 while( tokenizer.nextToken() != StreamTokenizer.TT_EOF ) {
-                    int type = tokenizer.ttype;
+                    type = tokenizer.ttype;
                     if( type == '[' ) {
                         nodes.push(new ObjectNode());
                         if( root == null ) {
@@ -166,7 +167,7 @@ public class ObjectDeserializer
                 catch(Exception e) {
                     return new Long(text);
                 }
-            if( text.matches("\\d+\\.\\d+") )                   //decimal
+            if( text.matches("\\d+\\.\\d+.*") )                 //decimal
                 return new BigDecimal(text);
             if( text.matches("true|false") )                    //boolean
                 return new Boolean(text);

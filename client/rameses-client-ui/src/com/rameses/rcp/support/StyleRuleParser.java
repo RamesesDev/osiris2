@@ -45,8 +45,10 @@ public class StyleRuleParser {
         tokenizer.ordinaryChars('0', '9');
         tokenizer.slashSlashComments(true);
         tokenizer.slashStarComments(true);
+        
+        int ttype = 0;
         while(tokenizer.nextToken() != tokenizer.TT_EOF ) {
-            int ttype = tokenizer.ttype;
+            ttype = tokenizer.ttype;
             if( ttype == '"' ) {
                 if( !startStyle ) {
                     startStyle = true;

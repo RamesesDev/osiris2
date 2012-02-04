@@ -31,6 +31,9 @@ public class OsirisAppLoader implements AppLoader {
             }
             
             OsirisAppContext dac = new OsirisAppContext(loader);
+            if(env.get("readTimeout")==null) {
+                env.put("readTimeout","20000");
+            }
             dac.setEnvMap( env );
             dac.load();
             

@@ -220,28 +220,28 @@ is divided into following sections:
         <!-- You can override this target in the ../build.xml file. -->
     </target>
     <target name="library-inclusion-in-archive" depends="compile">
-        <copy file="${file.reference.iText-2.1.0.jar}" todir="${build.classes.dir}"/>
-        <copy file="${file.reference.jasperreports-3.5.3.jar}" todir="${build.classes.dir}"/>
-        <copy file="${file.reference.jdt-compiler-3.1.1.jar}" todir="${build.classes.dir}"/>
-        <copy file="${file.reference.png-encoder-1.5.jar}" todir="${build.classes.dir}"/>
-        <copy file="${file.reference.poi-3.2-FINAL-20081019.jar}" todir="${build.classes.dir}"/>
-        <copy file="${file.reference.commons-beanutils-1.8.0.jar}" todir="${build.classes.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.6}" todir="${build.classes.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.5}" todir="${build.classes.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.4}" todir="${build.classes.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.3}" todir="${build.classes.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.2}" todir="${build.classes.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.1}" todir="${build.classes.dir}"/>
     </target>
     <target name="library-inclusion-in-manifest" depends="compile">
-        <basename property="included.lib.file.reference.iText-2.1.0.jar" file="${file.reference.iText-2.1.0.jar}"/>
-        <copy file="${file.reference.iText-2.1.0.jar}" todir="${dist.ear.dir}"/>
-        <basename property="included.lib.file.reference.jasperreports-3.5.3.jar" file="${file.reference.jasperreports-3.5.3.jar}"/>
-        <copy file="${file.reference.jasperreports-3.5.3.jar}" todir="${dist.ear.dir}"/>
-        <basename property="included.lib.file.reference.jdt-compiler-3.1.1.jar" file="${file.reference.jdt-compiler-3.1.1.jar}"/>
-        <copy file="${file.reference.jdt-compiler-3.1.1.jar}" todir="${dist.ear.dir}"/>
-        <basename property="included.lib.file.reference.png-encoder-1.5.jar" file="${file.reference.png-encoder-1.5.jar}"/>
-        <copy file="${file.reference.png-encoder-1.5.jar}" todir="${dist.ear.dir}"/>
-        <basename property="included.lib.file.reference.poi-3.2-FINAL-20081019.jar" file="${file.reference.poi-3.2-FINAL-20081019.jar}"/>
-        <copy file="${file.reference.poi-3.2-FINAL-20081019.jar}" todir="${dist.ear.dir}"/>
-        <basename property="included.lib.file.reference.commons-beanutils-1.8.0.jar" file="${file.reference.commons-beanutils-1.8.0.jar}"/>
-        <copy file="${file.reference.commons-beanutils-1.8.0.jar}" todir="${dist.ear.dir}"/>
+        <basename property="included.lib.libs.jasper-report-3.1.1-lib.classpath.6" file="${libs.jasper-report-3.1.1-lib.classpath.libfile.6}"/>
+        <basename property="included.lib.libs.jasper-report-3.1.1-lib.classpath.5" file="${libs.jasper-report-3.1.1-lib.classpath.libfile.5}"/>
+        <basename property="included.lib.libs.jasper-report-3.1.1-lib.classpath.4" file="${libs.jasper-report-3.1.1-lib.classpath.libfile.4}"/>
+        <basename property="included.lib.libs.jasper-report-3.1.1-lib.classpath.3" file="${libs.jasper-report-3.1.1-lib.classpath.libfile.3}"/>
+        <basename property="included.lib.libs.jasper-report-3.1.1-lib.classpath.2" file="${libs.jasper-report-3.1.1-lib.classpath.libfile.2}"/>
+        <basename property="included.lib.libs.jasper-report-3.1.1-lib.classpath.1" file="${libs.jasper-report-3.1.1-lib.classpath.libfile.1}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.6}" todir="${dist.ear.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.5}" todir="${dist.ear.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.4}" todir="${dist.ear.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.3}" todir="${dist.ear.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.2}" todir="${dist.ear.dir}"/>
+        <copy file="${libs.jasper-report-3.1.1-lib.classpath.libfile.1}" todir="${dist.ear.dir}"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.file.reference.iText-2.1.0.jar} ${included.lib.file.reference.jasperreports-3.5.3.jar} ${included.lib.file.reference.jdt-compiler-3.1.1.jar} ${included.lib.file.reference.png-encoder-1.5.jar} ${included.lib.file.reference.poi-3.2-FINAL-20081019.jar} ${included.lib.file.reference.commons-beanutils-1.8.0.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.libs.jasper-report-3.1.1-lib.classpath.1} ${included.lib.libs.jasper-report-3.1.1-lib.classpath.2} ${included.lib.libs.jasper-report-3.1.1-lib.classpath.3} ${included.lib.libs.jasper-report-3.1.1-lib.classpath.4} ${included.lib.libs.jasper-report-3.1.1-lib.classpath.5} ${included.lib.libs.jasper-report-3.1.1-lib.classpath.6} "/>
         </manifest>
     </target>
     <target name="-copy-meta-inf">

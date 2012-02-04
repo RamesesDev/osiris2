@@ -5,12 +5,7 @@
         <data xmlns="http://www.netbeans.org/ns/j2ee-ejbjarproject/3">
             <name>jasper-report-service</name>
             <minimum-ant-version>1.6</minimum-ant-version>
-            <included-library files="1">file.reference.iText-2.1.0.jar</included-library>
-            <included-library files="1">file.reference.jasperreports-3.5.3.jar</included-library>
-            <included-library files="1">file.reference.jdt-compiler-3.1.1.jar</included-library>
-            <included-library files="1">file.reference.png-encoder-1.5.jar</included-library>
-            <included-library files="1">file.reference.poi-3.2-FINAL-20081019.jar</included-library>
-            <included-library files="1">file.reference.commons-beanutils-1.8.0.jar</included-library>
+            <included-library files="6">libs.jasper-report-3.1.1-lib.classpath</included-library>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>

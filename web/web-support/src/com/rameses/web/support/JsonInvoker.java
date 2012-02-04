@@ -64,8 +64,8 @@ public class JsonInvoker extends AbstractScriptService {
             ServletUtils.writeText(res, n);
         } 
         catch(Exception e) {
-            e = ExceptionManager.getOriginal(e);
             e.printStackTrace();
+            e = ExceptionManager.getOriginal(e);
             Writer w = res.getWriter();
             w.write(e.getMessage());
             res.setStatus(res.SC_INTERNAL_SERVER_ERROR);

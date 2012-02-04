@@ -10,12 +10,16 @@
 package com.rameses.server.common;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
@@ -32,6 +36,9 @@ public final class JsonUtil {
         if( o== null ) {
             return "null";
         }
+        
+        parseDateToString(o);
+        
         if( o instanceof Map ) {
             return JSONObject.fromObject(o).toString();
         } else if(o instanceof List) {
@@ -42,6 +49,34 @@ public final class JsonUtil {
             return o.toString();
         }
         
+    }
+    
+    private static final Format tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final Format df  = new SimpleDateFormat("yyyy-MM-dd");
+    
+    private static void parseDateToString(Object obj) {
+        if(obj instanceof List) {
+            for(Object o : (List)obj) parseDateToString(o);
+        }
+        else if(obj instanceof Map) {
+            Map m = (Map)obj;
+            Object value = null;
+            for(Map.Entry me : (Set<Map.Entry>)m.entrySet()) {
+                value = me.getValue();
+                if(value instanceof List) {
+                    parseDateToString(value);
+                }
+                else if(value instanceof Map) {
+                    parseDateToString(value);
+                }
+                else if(value instanceof Timestamp) {
+                    m.put(me.getKey(), tsf.format(value));
+                }
+                else if(value instanceof Date) {
+                    m.put(me.getKey(), df.format(value));
+                }
+            }
+        }
     }
     
     public static Object toObject(String s) {

@@ -13,7 +13,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 
@@ -98,6 +103,33 @@ public class JasperReportManager {
     public Map getReport(String name) {
         return getReport(name, null);
     }
+    
+    public Object getPDF(String name, Map parameters, Object data) {
+        try {
+            Map reportConf = getReport(name);
+            
+            //clone the original because this is passed by reference value
+            //anything we do with the original will affect the cache
+            Map conf = new HashMap(reportConf);
+            JasperReport report = (JasperReport) conf.remove("main");
+            
+            JRDataSource ds = null;
+            if( data == null )
+                ds = new JREmptyDataSource();
+            else
+                ds = new ReportDataSource(data);
+            
+            if( parameters != null )
+                conf.putAll(parameters);
+            
+            JasperPrint jprint = JasperFillManager.fillReport(report, conf, ds);
+            return JasperExportManager.exportReportToPdf(jprint);
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
     private boolean clientIsUpToDate(Double clientVersion, Map report) {
@@ -229,11 +261,11 @@ public class JasperReportManager {
     }
     
     private InputStream getReportResource(String name) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream( REPORT_DIR + name );
+        return this.getClass().getClassLoader().getResourceAsStream( REPORT_DIR + name );
     }
     
     private URL getReportResourceURL(String name) {
-        return Thread.currentThread().getContextClassLoader().getResource( REPORT_DIR + name );
+        return this.getClass().getClassLoader().getResource( REPORT_DIR + name );
     }
     //</editor-fold>
     
