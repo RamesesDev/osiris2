@@ -138,10 +138,13 @@ public final class AppContext {
         return true;
     }
     
-    public static final DataSource lookupDs(String dname) {
+    public static final DataSource lookupDs(String dname, Map env) {
         try {
             if(dname.startsWith("java:")) dname = dname.substring(5);
-            if(hasAppName() && !dname.startsWith(getName())) dname = getName() + "_" + dname;
+            if(env!=null && env.get("ds.prefix")!=null) 
+                dname = env.get("ds.prefix") + "_" + dname;
+            if(hasAppName() && !dname.startsWith(getName())) 
+                dname = getName() + "_" + dname;
             
             InitialContext ctx = new InitialContext();
             return (DataSource)ctx.lookup("java:" + dname);

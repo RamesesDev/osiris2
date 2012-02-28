@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+  <tlib-version>1.0</tlib-version>
+  <short-name>rameses-web</short-name>
+  <uri>http://ramesesinc.com/jsp/tags</uri>
+  
+  <tag>
+      <display-name>Groovy Script Tag</display-name>
+      <name>groovy</name>
+      <tag-class>com.rameses.web.tags.GroovyScriptTagHandler</tag-class>
+      <body-content>jsp</body-content>
+  </tag>
+  
+  <tag>
+      <display-name>Secured Tag</display-name>
+      <name>secured</name>
+      <tag-class>com.rameses.web.tags.SecuredTagHandler</tag-class>
+      <body-content>jsp</body-content>
+      <attribute>
+          <name>key</name>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+  </tag>
+</taglib>

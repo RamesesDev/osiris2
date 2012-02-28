@@ -58,21 +58,29 @@ public final class LookupUtil {
     }
     
     public static Object lookupSqlContext(String name) throws Exception {
+        return lookupSqlContext(name, null);
+    }
+    
+    public static Object lookupSqlContext(String name, Map env) throws Exception {
         Map m = AppContext.getSysMap();
         String dsName =ExprUtil.substituteValues(name, m);
         if(dsName!=null && dsName.trim().length()>0) {
-            return SqlManager.getInstance().createContext( AppContext.lookupDs(dsName) );
+            return SqlManager.getInstance().createContext( AppContext.lookupDs(dsName, env) );
         } else {
             return SqlManager.getInstance().createContext();
         }
     }
     
     public static Object lookupPersistenceContext(String name) throws Exception {
+        return lookupPersistenceContext(name, null);
+    }
+    
+    public static Object lookupPersistenceContext(String name, Map env) throws Exception {
         Map m = AppContext.getSysMap();
         String dsName = ExprUtil.substituteValues(name, m);
         SqlContext sqlContext = null;
         if(dsName!=null && dsName.trim().length()>0) {
-            sqlContext = SqlManager.getInstance().createContext( AppContext.lookupDs(dsName) );
+            sqlContext = SqlManager.getInstance().createContext( AppContext.lookupDs(dsName, env) );
         } else {
             sqlContext = SqlManager.getInstance().createContext();
         }
@@ -104,13 +112,13 @@ public final class LookupUtil {
     
     public static class SqlContextUtil {
         public Object create(String name) throws Exception {
-            return lookupSqlContext(name);
+            return lookupSqlContext(name, null);
         }
     }
     
     public static class PersistenceUtil {
         public Object create(String name) throws Exception {
-            return lookupPersistenceContext(name);
+            return lookupPersistenceContext(name, null);
         }
     }
     

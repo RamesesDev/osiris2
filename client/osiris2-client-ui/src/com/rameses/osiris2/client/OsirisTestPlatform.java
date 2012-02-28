@@ -29,6 +29,8 @@ public final class OsirisTestPlatform {
         
         if( map.get("app.title") == null )
             map.put("app.title", "Osiris Test Platform");
+        if( map.get("app.debugMode") == null )
+            map.put("app.debugMode", true);
         
         OsirisAppLoader loader = new OsirisAppLoader();
         Platform platform = ClientContext.getCurrentContext().getPlatform();

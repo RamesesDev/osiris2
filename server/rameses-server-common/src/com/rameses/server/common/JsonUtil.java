@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,7 +106,7 @@ public final class JsonUtil {
     public static Map toMap(JSONObject jo) {
         JsonConfig conf = new JsonConfig();
         conf.setJavaPropertyFilter(new JsonFilter());
-        return (Map)JSONObject.toBean(jo,new HashMap(),conf);
+        return (Map)JSONObject.toBean(jo,new LinkedHashMap(),conf);
     }
     
     public static List toList( String s ) {

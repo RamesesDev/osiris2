@@ -52,8 +52,8 @@ public final class ModuleUtil {
                 is = ctx.getResourceAsStream(s+confPath);
                 if(is!=null) {
                     String stream = StreamUtil.toString(is);
-                    Object ox = JsonUtil.toObject(stream);
-                    map.put(_name, ox);
+                    Object conf = JsonUtil.toObject(stream);
+                    map.put(_name, conf);
                 }
             } catch(Exception ex) {
                 //do nothing

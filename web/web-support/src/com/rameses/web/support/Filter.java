@@ -4,6 +4,7 @@ import com.rameses.web.fileupload.MultipartRequest;
 import com.rameses.web.fileupload.ProgressStatus;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.regex.Pattern;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.RequestDispatcher;
@@ -95,10 +96,14 @@ public class Filter implements javax.servlet.Filter {
         }
     }
     
+    
+    private static final Pattern CACHEABLE_PATTERN = Pattern.compile(".*\\.(jpg|jpeg|gif|png|css|js|bmp)$");
+    
     private boolean isCacheable(HttpServletRequest req, HttpServletResponse resp) 
     {
         String path = req.getRequestURI();
-        if( path.toLowerCase().matches(".*\\.(jpg|jpeg|gif|png|css|js|bmp)$") ) return true;
+        if( CACHEABLE_PATTERN.matcher(path.toLowerCase()).matches() ) 
+            return true;
         
         String mime = resp.getContentType();
         if( mime != null ) {

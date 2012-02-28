@@ -121,7 +121,7 @@ public class CustomResourceInjector extends ResourceInjector {
         public Object getResource(Annotation a) {
             String name = ((com.rameses.annotations.SqlContext)a).value();
             try {
-                return LookupUtil.lookupSqlContext( name );
+                return LookupUtil.lookupSqlContext( name, env );
             }
             catch(Exception ex){
                 System.out.println("error looking up service " + name + ". " + ex.getMessage() );
@@ -147,7 +147,7 @@ public class CustomResourceInjector extends ResourceInjector {
         public Object getResource(Annotation a) {
             String name = ((com.rameses.annotations.PersistenceContext)a).value();
              try {
-                return LookupUtil.lookupPersistenceContext( name );
+                return LookupUtil.lookupPersistenceContext( name, env );
             }
             catch(Exception ex){
                 System.out.println("error looking up persistence context " + name + ". " + ex.getMessage() );

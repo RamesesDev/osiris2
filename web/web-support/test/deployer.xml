@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="mlglobal-services-deployer" basedir=".">
+<project name="project-deployer" basedir="." default="deploy">
+    <property name="module" value="web-support.jar"/>
+    <property name="src" value="../dist"/>
+    <property name="targetdir" value="D:\Applications\jboss-4.0.5.GA\server\gazeebu\apps\classroom.war"/>
     
     <target name="deploy">
-        <property name="module" value="web-support.jar"/>
-        <property name="src" value="../dist"/>
-        <property name="ear" value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/clfc/apps/gazeebu.ear"/>
-        <property name="dest" value="${ear}/gazeebu.war/WEB-INF/lib"/>
-        
+        <property name="dest" value="${targetdir}/WEB-INF/lib"/>
         <delete dir="${dest}/${module}" verbose="true"/>
         <copy todir="${dest}" 
               overwrite="true" 
@@ -16,10 +15,8 @@
         <antcall target="touch-server" />
     </target>
     
-    <target name="touch-server">
-        <property name="ear" value="/home/rameses/RAMESES_DEV/servers/jboss-4.0.5.GA/server/clfc/apps/gazeebu.ear"/>
-        
-        <touch file="${ear}/META-INF/application.xml" />
+    <target name="touch-server">        
+        <touch file="${targetdir}/WEB-INF/web.xml" />
     </target>
     
 </project>
