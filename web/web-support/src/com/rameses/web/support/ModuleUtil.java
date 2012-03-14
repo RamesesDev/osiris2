@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.ServletContext;
 
 public final class ModuleUtil {
@@ -42,8 +43,13 @@ public final class ModuleUtil {
     public static void initModules(ServletContext ctx, String attrName,String appPath,String confPath) {
         Map map = new HashMap();
         if(!appPath.startsWith("/")) appPath = "/" + appPath;
-        Iterator iter=ctx.getResourcePaths(appPath).iterator();
+        
+        Set pathSet = ctx.getResourcePaths(appPath);
+        if( pathSet == null ) return;
+        
+        Iterator iter=pathSet.iterator();
         InputStream is = null;
+        
         while(iter.hasNext() ) {
             String s = (String)iter.next();
             String _name = s.substring(0, s.lastIndexOf("/") );

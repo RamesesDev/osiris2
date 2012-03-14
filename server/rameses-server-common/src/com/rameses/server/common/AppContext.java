@@ -140,7 +140,12 @@ public final class AppContext {
     
     public static final DataSource lookupDs(String dname, Map env) {
         try {
-            if(dname.startsWith("java:")) dname = dname.substring(5);
+            if(dname.startsWith("java:")) 
+                dname = dname.substring(5);
+            
+            if("system".equals(dname))
+                return getSystemDs();
+            
             if(env!=null && env.get("ds.prefix")!=null) 
                 dname = env.get("ds.prefix") + "_" + dname;
             if(hasAppName() && !dname.startsWith(getName())) 

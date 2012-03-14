@@ -10,9 +10,12 @@
 package com.rameses.invoker.server;
 
 import com.rameses.server.common.LocalEJBServiceProxy;
+import com.rameses.util.BusinessException;
 import com.rameses.util.ExceptionManager;
+import com.rameses.util.Warning;
 import com.rameses.web.common.RequestParser;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -33,7 +36,17 @@ public class EJBServlet extends HttpServlet {
             Map conf = new HashMap();
             conf.put("app.context", p.getAppContext());
             LocalEJBServiceProxy loc = new LocalEJBServiceProxy(p.getService(),conf );
-            Object result = loc.invoke(p.getAction(),p.getArgs());
+            Object result = null;
+            try {
+                result = loc.invoke(p.getAction(),p.getArgs());
+            }
+            catch(InvocationTargetException ite) {
+                Exception e = ExceptionManager.getOriginal(ite);
+                if( e instanceof Warning || e instanceof BusinessException )
+                    result = e;
+                else
+                    throw ite;
+            }
             ResultWriter.print( resp, result, p.isEncrypted(), req.getContentType() );
         } 
         catch(Exception e) {

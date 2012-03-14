@@ -22,6 +22,7 @@ import com.rameses.rcp.ui.UIFocusableContainer;
 import com.rameses.util.BusinessException;
 import com.rameses.util.ValueUtil;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -238,7 +239,15 @@ public class Binding {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="  control update/refresh  ">
-    public void notifyDepends( UIControl u ) {
+    public void notifyDepends( final UIControl u ) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                doNotifyDepends(u);
+            }
+        });
+    }
+    
+    private void doNotifyDepends( UIControl u ) {
         Set<UIControl> refreshed = new HashSet();
         if ( !ValueUtil.isEmpty(u.getName()) && depends.containsKey(u.getName()) ) {
             for( UIControl uu : depends.get(u.getName() ) ) {

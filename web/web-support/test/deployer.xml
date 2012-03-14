@@ -2,7 +2,7 @@
 <project name="project-deployer" basedir="." default="deploy">
     <property name="module" value="web-support.jar"/>
     <property name="src" value="../dist"/>
-    <property name="targetdir" value="D:\Applications\jboss-4.0.5.GA\server\gazeebu\apps\classroom.war"/>
+    <property name="targetdir" value="D:\Applications\jboss-4.0.5.GA\server\etracs2_admin\apps\admin.war"/>
     
     <target name="deploy">
         <property name="dest" value="${targetdir}/WEB-INF/lib"/>
@@ -17,6 +17,5 @@
     
     <target name="touch-server">        
         <touch file="${targetdir}/WEB-INF/web.xml" />
-    </target>
-    
+    </target>    
 </project>
