@@ -4,10 +4,14 @@ import com.rameses.web.fileupload.MultipartRequest;
 import com.rameses.web.fileupload.ProgressStatus;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -38,6 +42,22 @@ public class Filter implements javax.servlet.Filter {
     {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
+        
+        Map conf = (Map) req.getAttribute("APP_CONF");
+        if( conf == null ) {
+            conf = new HashMap();
+            req.setAttribute("APP_CONF", conf);
+        }
+        
+        //load ServletContext's parameters to APP_CONF
+        ServletContext sctx = filterConfig.getServletContext();
+        Enumeration<String> en = sctx.getInitParameterNames();
+        while( en.hasMoreElements() ) {
+            String key = en.nextElement();
+            if( conf.get(key)==null ) {
+                conf.put(key, sctx.getInitParameter(key));
+            }
+        }
         
         String path = req.getServletPath();
                         
