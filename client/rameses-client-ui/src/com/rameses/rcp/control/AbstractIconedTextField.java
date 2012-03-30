@@ -4,6 +4,7 @@ import com.rameses.rcp.framework.ClientContext;
 import com.rameses.util.ValueUtil;
 import java.awt.AlphaComposite;
 import java.awt.Cursor;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -169,11 +170,21 @@ public abstract class AbstractIconedTextField extends XTextField implements Acti
         
         public void mouseClicked(MouseEvent e) {
             if(orientation.toUpperCase() == "RIGHT") {
-                if(e.getX() >= (AbstractIconedTextField.this.getWidth() - (imgWidth + XPAD)))
-                    actionPerformed(null);
+                if(e.getX() >= (AbstractIconedTextField.this.getWidth() - (imgWidth + XPAD))) {
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            actionPerformed(null);
+                        }
+                    });
+                }
             } else {
-                if(e.getX() > 0 && e.getX() < (XPAD + imgWidth))
-                    actionPerformed(null);
+                if(e.getX() > 0 && e.getX() < (XPAD + imgWidth)) {
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            actionPerformed(null);
+                        }
+                    });
+                }
             }
         }
         

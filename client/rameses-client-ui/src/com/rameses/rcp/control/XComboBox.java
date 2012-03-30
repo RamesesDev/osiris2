@@ -21,6 +21,7 @@ import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.rcp.util.UIInputUtil;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.util.ValueUtil;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
@@ -87,10 +88,31 @@ public class XComboBox extends JComboBox implements UIInput, ItemListener, Valid
             if( !isReadonly() && !isFocusable() ) setReadonly(false);
             
             if ( dynamic ) {
-                buildList();
+                EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        try {
+                            buildList();
+                        }
+                        catch(Exception e) {
+                            if(ClientContext.getCurrentContext().isDebugMode()) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
             }
-            Object value = UIControlUtil.getBeanValue(this);
-            setValue(value);
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    try {
+                        Object value = UIControlUtil.getBeanValue(XComboBox.this);
+                        setValue(value);
+                    } catch(Exception e) {
+                        if(ClientContext.getCurrentContext().isDebugMode()) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });            
         } catch(Exception e) {
             setEnabled(false);
             setFocusable(false);

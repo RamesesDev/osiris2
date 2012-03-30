@@ -215,8 +215,8 @@ public final class TableUtil {
             
             if( col.getAction() instanceof String )
                 atf.setActionName( col.getAction()+"" );
-            else
-                atf.setActionObject( col.getAction() );
+//            else
+//                atf.setActionObject( col.getAction() );
             
             //set default icon
             atf.setIcon(new DefaultActionTextIcon());

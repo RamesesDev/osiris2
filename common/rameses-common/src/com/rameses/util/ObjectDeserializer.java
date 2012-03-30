@@ -159,7 +159,7 @@ public class ObjectDeserializer
         private Object getValue(String text) {
             if( text.startsWith("\"") && text.endsWith("\""))   //string
                 return text.substring(1, text.length()-1);
-            if( text.matches("\\d+") )                          //integer
+            if( text.matches("-?\\d+") )                          //integer
                 try {
                     return new Integer(text);
                 }
@@ -167,7 +167,7 @@ public class ObjectDeserializer
                 catch(Exception e) {
                     return new Long(text);
                 }
-            if( text.matches("\\d+\\.\\d+.*") )                 //decimal
+            if( text.matches("-?\\d+\\.\\d+.*") || text.matches("-?\\d+\\.?E.*") ) //decimal
                 return new BigDecimal(text);
             if( text.matches("true|false") )                    //boolean
                 return new Boolean(text);

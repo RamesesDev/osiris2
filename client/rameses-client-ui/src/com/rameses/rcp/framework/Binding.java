@@ -242,7 +242,14 @@ public class Binding {
     public void notifyDepends( final UIControl u ) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                doNotifyDepends(u);
+                try {
+                    doNotifyDepends(u);
+                }
+                catch(Exception e) {
+                    if(ClientContext.getCurrentContext().isDebugMode()) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
     }
