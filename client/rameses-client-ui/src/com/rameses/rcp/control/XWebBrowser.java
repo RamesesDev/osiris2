@@ -14,6 +14,7 @@ import com.rameses.rcp.framework.Binding;
 import com.rameses.rcp.ui.UIControl;
 import com.rameses.rcp.util.UIControlUtil;
 import com.rameses.util.ValueUtil;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -103,7 +104,11 @@ public class XWebBrowser extends JEditorPane implements UIControl {
         //refresh only on the first display
         //next refresh can be done in the model (model.refresh())
         if( !refreshed ) {
-            refreshContent();
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    refreshContent();
+                }
+            });
         }
     }
     
