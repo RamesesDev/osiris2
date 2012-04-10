@@ -9,7 +9,10 @@
 
 package com.rameses.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,6 +43,43 @@ public final class MapBeanUtils {
         }
     }
     
+    /*******
+     * copying the properties
+     */
+    private static void scanCopy( Map src, Map target) {
+        for(Object o : src.entrySet() ) {
+            Map.Entry me = (Map.Entry)o;
+            Object value = me.getValue();
+            Object newValue = null;
+            if( value instanceof Map ) {
+                Map _map = new HashMap();
+                scanCopy( (Map)value, _map );
+                newValue = _map;
+            } else if( value instanceof List ) {
+                List _lst = new ArrayList();
+                Iterator iter = ((List)value).iterator();
+                while(iter.hasNext()) {
+                    Object x = iter.next();
+                    if( x instanceof Map ) {
+                        Map _smap = new HashMap();
+                        scanCopy( (Map)x, _smap );
+                        _lst.add( _smap );
+                    } else {
+                        _lst.add( x );
+                    }
+                }
+                newValue = _lst;
+            } else {
+                newValue = value;
+            }
+            target.put( me.getKey(), newValue );
+        }
+    }
     
+    public static Map copy(Map m ) {
+        Map newMap = new HashMap();
+        scanCopy( m, newMap );
+        return newMap;
+    }
     
 }

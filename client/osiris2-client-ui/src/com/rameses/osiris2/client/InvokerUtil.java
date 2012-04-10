@@ -23,6 +23,7 @@ import com.rameses.rcp.framework.UIControllerPanel;
 import com.rameses.common.ExpressionResolver;
 import com.rameses.rcp.common.Action;
 import com.rameses.rcp.common.Opener;
+import com.rameses.rcp.common.Opener.OpenerLoader;
 import com.rameses.util.ExceptionManager;
 import com.rameses.util.ValueUtil;
 import java.util.ArrayList;
@@ -371,6 +372,13 @@ public final class InvokerUtil {
         
         if( inv.getProperties().size() > 0 )
             opener.getProperties().putAll( inv.getProperties() );
+        
+        //set this as loader so it can automatically load the handler
+        opener.setLoader( new OpenerLoader() {
+            public void load(Opener o) {
+                InvokerUtil.invokeOpener( o );
+            }
+        });
         
         return opener;
     }

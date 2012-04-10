@@ -26,7 +26,7 @@ public class Opener {
     private UIController caller;
     
     private Map properties = new HashMap();
-    
+    private OpenerLoader loader;
     
     public Opener() {
     }
@@ -111,9 +111,11 @@ public class Opener {
      *  Returns null if the controller is null.
      */
     public Object getHandle() {
-        if ( controller == null ) return null;
-        
-        return controller.getCodeBean();
+       if( controller == null && loader!=null) {
+            loader.load(this);
+       }
+       if ( controller == null ) return null;
+       return controller.getCodeBean();
     }
     
     public UIController getCaller() {
@@ -143,5 +145,19 @@ public class Opener {
     public Map getProperties() {
         return properties;
     }
+    
+    public OpenerLoader getLoader() {
+        return loader;
+    }
+
+    public void setLoader(OpenerLoader loader) {
+        this.loader = loader;
+    }
+    
+    public static interface OpenerLoader {
+        void load( Opener o );
+    }
+
+   
     
 }

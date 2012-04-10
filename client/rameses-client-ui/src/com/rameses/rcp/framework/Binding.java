@@ -522,7 +522,15 @@ public class Binding {
         fireNavigation(outcome, "parent");
     }
     
-    public void fireNavigation(Object outcome, String target) {
+    public void fireNavigation(final Object outcome, final String target) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                doFireNavigation(outcome, target);
+            }
+        });
+    }
+    
+    private void doFireNavigation(Object outcome, String target) {
         try {
             ClientContext ctx = ClientContext.getCurrentContext();
             NavigationHandler handler = ctx.getNavigationHandler();

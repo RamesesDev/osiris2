@@ -1,6 +1,7 @@
 package com.rameses.rcp.impl;
 
 import com.rameses.common.PropertyResolver;
+import com.rameses.rcp.framework.ClientContext;
 import com.rameses.util.ValueUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -14,7 +15,9 @@ public class PropertyResolverImpl implements PropertyResolver  {
         try {
             PropertyUtils.setNestedProperty(bean, propertyName, value);
         } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            if(ClientContext.getCurrentContext().isDebugMode()) {
+                ex.printStackTrace();
+            }
         }
     }
     
@@ -22,7 +25,10 @@ public class PropertyResolverImpl implements PropertyResolver  {
         try {
             return PropertyUtils.getPropertyType(bean, propertyName);
         } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            if(ClientContext.getCurrentContext().isDebugMode()) {
+                ex.printStackTrace();
+            }
+            return null;
         }
     }
     
@@ -31,7 +37,10 @@ public class PropertyResolverImpl implements PropertyResolver  {
         try {
             return PropertyUtils.getNestedProperty(bean, propertyName);
         } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            if(ClientContext.getCurrentContext().isDebugMode()) {
+                ex.printStackTrace();
+            }
+            return null;
         }
     }
     

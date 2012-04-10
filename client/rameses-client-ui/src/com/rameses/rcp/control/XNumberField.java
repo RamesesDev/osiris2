@@ -56,7 +56,7 @@ public class XNumberField extends XTextField {
         else
             fieldSupport.setUpdateOnKeyRelease(true);
         
-        //calculate field type not specified
+        //calculate field type if not specified
         getFieldType();
     }
     
