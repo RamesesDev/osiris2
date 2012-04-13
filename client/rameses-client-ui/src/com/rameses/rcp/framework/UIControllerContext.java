@@ -93,25 +93,9 @@ public class UIControllerContext {
             viewPanel = new UIViewPanel();
             Binding binding = viewPanel.getBinding();
             
-            Class pageClass = panel.getClass();
-            JPanel master = null;
-            if( pageClass.isAnnotationPresent(Template.class) ) {
-                Template t = (Template)pageClass.getAnnotation(Template.class);
-                Class mClass = (Class) t.value()[0];
-                master = (JPanel) mClass.newInstance();
-                if(master instanceof UIViewPanel)
-                    throw new Exception("Master template " + mClass.getName() + " must not extend a UIViewPanel" );
-                
-                loadStyleRules(mClass, binding);
-            }
-            
-            loadStyleRules(pageClass, binding);
-            
-            if ( master != null ) {
-                master.add(panel);
-                viewPanel.add(master);
-            } else {
-                viewPanel.add(panel);
+            JComponent pagePanel = initPagePanel(panel, binding);
+            if( pagePanel != null ) {
+                viewPanel.add(pagePanel);
             }
             
             binding.init();
@@ -122,6 +106,29 @@ public class UIControllerContext {
         }
         
         return viewPanel;
+    }
+    
+    private JComponent initPagePanel(JComponent panel, Binding binding) throws Exception {
+        Class pageClass = panel.getClass();
+        JComponent master = null;
+        if( pageClass.isAnnotationPresent(Template.class) ) {
+            Template t = (Template)pageClass.getAnnotation(Template.class);
+            Class mClass = (Class) t.value()[0];
+            master = (JPanel) mClass.newInstance();
+            if(master instanceof UIViewPanel)
+                throw new Exception("Master template " + mClass.getName() + " must not extend a UIViewPanel" );
+            
+            JComponent smaster = initPagePanel(master, binding);
+            master.add(panel);       
+            if( smaster != master ) {
+                smaster.add(master);
+                master = smaster;
+            }
+        }
+        
+        loadStyleRules(pageClass, binding);
+        
+        return (master!=null) ? master : panel;
     }
     
     private void loadStyleRules(Class pageClass, Binding binding) {
