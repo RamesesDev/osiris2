@@ -21,6 +21,7 @@ import java.util.Map;
  */
 public abstract class AbstractSqlTxn {
     
+    private String catalog;
     protected SqlContext sqlContext;
     protected String statement;
     protected List<String> parameterNames = new ArrayList();
@@ -201,6 +202,16 @@ public abstract class AbstractSqlTxn {
     public final List getParameterValues() {
         return parameterValues;
     }
+
+    public final String getCatalog() {
+        return catalog;
+    }
+
+    public final AbstractSqlTxn setCatalog(String dbName) {
+        this.catalog = dbName;
+        return this;
+    }
+    
     
    
     

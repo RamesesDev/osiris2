@@ -10,14 +10,23 @@
 package com.rameses.ruleserver;
 
 import com.rameses.sql.SqlContext;
+import com.rameses.sql.SqlExecutor;
+import com.rameses.sql.SqlQuery;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.drools.KnowledgeBase;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
 import org.drools.definition.KnowledgePackage;
+import org.drools.io.ResourceFactory;
 
 /**
  *
@@ -52,6 +61,58 @@ public final class KnowledgeSet implements Serializable {
         kbase = builder.newKnowledgeBase();
     }
     
+    public void deployPackage(String packageName, Object o, SqlContext ctx) throws Exception {
+        String content = o.toString();
+        //insert the ruleset if not yet exists
+        SqlExecutor se = ctx.createNamedExecutor("ruleserver:add-rule-set");
+        se.setParameter("ruleset", name);
+        se.setParameter("rulegroup", rulegroup);
+        se.execute();
+        
+        //insert the rule package
+        se = ctx.createNamedExecutor("ruleserver:add-rule-package");
+        se.setParameter("ruleset", name);
+        se.setParameter("rulegroup", rulegroup);
+        se.setParameter("packagename", packageName);
+        se.setParameter("content", content);
+        se.execute();
+        
+        //retrieve the facts
+        Map params = new HashMap();
+        params.put("ruleset", name );
+        params.put( "rulegroup", rulegroup );
+        params.put("packagename", packageName);
+        SqlQuery qry = ctx.createNamedQuery("ruleserver:get-facts");
+        List<Map> result = qry.setParameters( params ).getResultList();
+        
+        //compile the package. Must add the fact rules first.
+        KnowledgeBuilder builder = createKnowledgeBuilder();
+        for( Map m : result) {
+            String _fact = (String)m.get("content");
+            builder.add( ResourceFactory.newByteArrayResource(  _fact.getBytes() ), ResourceType.DRL);
+        }
+        builder.add( ResourceFactory.newByteArrayResource(  content.getBytes() ), ResourceType.DRL);
+
+        //find the last package and add it to the current knowledge base.
+        Iterator<KnowledgePackage> iter =  builder.getKnowledgePackages().iterator();
+        KnowledgePackage kp = null;
+        while( iter.hasNext() ) {kp=iter.next();}
+        Collection<KnowledgePackage> list = new ArrayList();
+        list.add( kp );
+        kbase.addKnowledgePackages( list );
+    }
+    
+    public void undeployPackage(String packageName, SqlContext ctx) throws Exception {
+        //removes package to the database and remove from current knowledge base.
+        //adds package to the database
+        SqlExecutor se = ctx.createNamedExecutor("ruleserver:remove-rule-package");
+        se.setParameter("ruleset", name);
+        se.setParameter("rulegroup", rulegroup);
+        se.setParameter("packagename", packageName);
+        se.execute();
+        kbase.removeKnowledgePackage( packageName );
+    }
+    
     private KnowledgeBuilder createKnowledgeBuilder() {
         final Properties properties = new Properties();
         properties.setProperty( "drools.dialect.java.compiler", "JANINO" );
@@ -84,7 +145,7 @@ public final class KnowledgeSet implements Serializable {
         if(ks==null) return false;
         return hashCode() == ks.hashCode();
     }
-
+    
     public String getRulegroup() {
         return rulegroup;
     }

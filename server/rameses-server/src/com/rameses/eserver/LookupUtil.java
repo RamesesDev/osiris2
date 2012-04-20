@@ -27,6 +27,8 @@ import javax.naming.InitialContext;
  */
 public final class LookupUtil {
     
+    private static String DS_CATALOG = "ds.catalog";
+    
     public static Object lookupResource(String name) throws Exception {
         Map m = AppContext.getSysMap();
         String resname = ExprUtil.substituteValues(name,m);
@@ -64,11 +66,17 @@ public final class LookupUtil {
     public static Object lookupSqlContext(String name, Map env) throws Exception {
         Map m = AppContext.getSysMap();
         String dsName =ExprUtil.substituteValues(name, m);
+        SqlContext sctx = null;
         if(dsName!=null && dsName.trim().length()>0) {
-            return SqlManager.getInstance().createContext( AppContext.lookupDs(dsName, env) );
+            sctx = SqlManager.getInstance().createContext( AppContext.lookupDs(dsName, env) );
         } else {
-            return SqlManager.getInstance().createContext();
+            sctx = SqlManager.getInstance().createContext();
         }
+        if( env.containsKey(DS_CATALOG)) {
+            sctx.setCatalog( (String)env.get(DS_CATALOG)  );    
+        }
+        
+        return sctx;
     }
     
     public static Object lookupPersistenceContext(String name) throws Exception {
@@ -83,6 +91,9 @@ public final class LookupUtil {
             sqlContext = SqlManager.getInstance().createContext( AppContext.lookupDs(dsName, env) );
         } else {
             sqlContext = SqlManager.getInstance().createContext();
+        }
+        if( env.containsKey(DS_CATALOG)) {
+            sqlContext.setCatalog( (String)env.get(DS_CATALOG)  );    
         }
         return new EntityManager( SchemaManager.getInstance(),sqlContext);
     }

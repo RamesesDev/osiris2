@@ -12,23 +12,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-public class BasicMultitenantFilter implements javax.servlet.Filter {
-    private FilterConfig config;
-    
-    public void init(FilterConfig filterConfig) throws ServletException {
-        this.config = filterConfig;
-    }
+/****
+ * Multitenant Filter should execute before normal filters because this determines the
+ * application's context. 
+ */
+
+public class BasicMultitenantFilter extends com.rameses.web.support.Filter {
     
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException 
     {
-        String domainName = config.getInitParameter("domain-name");
+        String domainName = this.filterConfig.getInitParameter("domain-name");
         
         HttpServletRequest hreq = (HttpServletRequest) req;
         String serverName = hreq.getServerName();
@@ -46,7 +45,7 @@ public class BasicMultitenantFilter implements javax.servlet.Filter {
         
         if( tenantName!=null ) {
             try {
-                ServletContext app = this.config.getServletContext();
+                ServletContext app = this.filterConfig.getServletContext();
                 String appHost = app.getInitParameter("app.host");
                 String appContext = app.getInitParameter("app.context");
                 Map conf = new HashMap();
@@ -55,22 +54,18 @@ public class BasicMultitenantFilter implements javax.servlet.Filter {
                 ScriptServiceContext svc = new ScriptServiceContext(conf);
                 MultitenantConfService msvc = svc.create("MultitenantConfService", MultitenantConfService.class );
                 Map mconf = msvc.getConf( tenantName );
-                hreq.setAttribute("APP_CONF", mconf);
+                hreq.setAttribute(Filter.APP_CONF, mconf);
             } 
             catch(Exception e) {
                 e.printStackTrace();
             }
         }
         
-        chain.doFilter(req, resp);
+        super.doFilter( req, resp, chain );
     }
     
     private interface MultitenantConfService {
         Map getConf(String name);
-    }
-    
-    public void destroy() {
-        this.config = null;
     }
     
 }

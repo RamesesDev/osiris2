@@ -25,10 +25,12 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class Filter implements javax.servlet.Filter {
     
+    public static final String APP_CONF = "APP_CONF";
+    
     private static final String UPLOAD_STATUS = "fileupload.status";
     private static final String MOD_DIR = "/modules";
     
-    private FilterConfig filterConfig;
+    protected FilterConfig filterConfig;
     
     
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -43,10 +45,10 @@ public class Filter implements javax.servlet.Filter {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
         
-        Map conf = (Map) req.getAttribute("APP_CONF");
+        Map conf = (Map) req.getAttribute(APP_CONF);
         if( conf == null ) {
             conf = new HashMap();
-            req.setAttribute("APP_CONF", conf);
+            req.setAttribute(APP_CONF, conf);
         }
         
         //load ServletContext's parameters to APP_CONF

@@ -32,8 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 public class JsonInvoker extends AbstractScriptService {
     
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        
         Object result = null;
         String action = null;
+        
         try {
             RequestParser np = new RequestParser(req);
             Map conf = super.getConf();
@@ -56,6 +58,20 @@ public class JsonInvoker extends AbstractScriptService {
                     throw new RuntimeException("env must be enclosed with {}");
                 env = JsonUtil.toMap( _env );
             }
+            
+            //include also APP_CONF if any. This is for multi tenant. Extract 
+            //those that starts with ds.
+            Map ext = (Map)req.getAttribute( Filter.APP_CONF );
+            if( ext != null ) {
+                for(Object es : ext.entrySet()) {
+                    Map.Entry me = (Map.Entry)es;
+                    if( me.getKey().toString().startsWith("ds.")) {
+                        env.put( me.getKey(), me.getValue() );
+                    }
+                }
+            }
+            
+            
             ScriptServiceContext sv = new ScriptServiceContext(conf);
             ServiceProxy proxy = sv.create(np.getService(),env);
             result = proxy.invoke( np.getAction(), args );
