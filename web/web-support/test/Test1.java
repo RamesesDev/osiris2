@@ -1,6 +1,4 @@
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.PageContext;
 import junit.framework.*;
 
 /*
@@ -19,8 +17,6 @@ public class Test1 extends TestCase {
     
     public void testHello() throws Exception {
         HttpServletRequest req;
-        HttpServletResponse resp;
-        PageContext pc;
     }    
     
 }

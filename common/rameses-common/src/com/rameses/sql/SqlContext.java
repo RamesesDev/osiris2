@@ -21,6 +21,7 @@ public class SqlContext {
     protected DataSource dataSource;
     private Connection currentConnection;
     private SqlManager sqlManager = SqlManager.getInstance();
+    private String catalog;
     
     /** Creates a new instance of SQLManager */
     SqlContext(DataSource ds) {
@@ -77,25 +78,38 @@ public class SqlContext {
     
     public SqlQuery createQuery(String statement) {
         SqlUnit sq = getSqlCache(statement);
-        return new SqlQuery(this,sq.getStatement(),sq.getParamNames());
+        SqlQuery q = new SqlQuery(this,sq.getStatement(),sq.getParamNames());
+        if( this.catalog !=null ) q.setCatalog(catalog);
+        return q;
     }
     
     public SqlQuery createNamedQuery(String name) {
         SqlUnit sq = getNamedSqlCache(name);
-        return new SqlQuery( this, sq.getStatement(),sq.getParamNames());
+        SqlQuery q = new SqlQuery( this, sq.getStatement(),sq.getParamNames());
+        if( this.catalog !=null ) q.setCatalog(catalog);
+        return q;
+        
     }
 
     public SqlExecutor createExecutor(String statement) {
         SqlUnit sq = getSqlCache(statement);
-        return new SqlExecutor(this,sq.getStatement(),sq.getParamNames());
+        SqlExecutor q = new SqlExecutor(this,sq.getStatement(),sq.getParamNames());
+        if( this.catalog !=null ) q.setCatalog(catalog);
+        return q;
     }
 
     public SqlExecutor createNamedExecutor( String name ) {
         SqlUnit sq = getNamedSqlCache(name);
-        return new SqlExecutor(this,sq.getStatement(),sq.getParamNames());    
+        SqlExecutor q = new SqlExecutor(this,sq.getStatement(),sq.getParamNames());    
+        if( this.catalog !=null ) q.setCatalog(catalog);
+        return q;
     }
     
     public QueryExecutor createQueryExecutor(SqlQuery q, SqlExecutor e) {
+        if( this.catalog !=null ) {
+            q.setCatalog(this.catalog);
+            e.setCatalog(this.catalog);
+        }
         return new QueryExecutor(q,e);
     }
 
@@ -110,6 +124,14 @@ public class SqlContext {
 
     public void setSqlManager(SqlManager sqlUnitFactory) {
         this.sqlManager = sqlUnitFactory;
+    }
+
+    public String getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(String catalog) {
+        this.catalog = catalog;
     }
     
 }

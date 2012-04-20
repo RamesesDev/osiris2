@@ -148,7 +148,8 @@ public final class AppContext {
             
             if(env!=null && env.get("ds.prefix")!=null) 
                 dname = env.get("ds.prefix") + "_" + dname;
-            if(hasAppName() && !dname.startsWith(getName())) 
+            
+            else if(hasAppName() && !dname.startsWith(getName())) 
                 dname = getName() + "_" + dname;
             
             InitialContext ctx = new InitialContext();

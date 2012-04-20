@@ -17,5 +17,6 @@
     
     <target name="touch-server">        
         <touch file="${targetdir}/WEB-INF/web.xml" />
-    </target>    
+    </target>
+    
 </project>

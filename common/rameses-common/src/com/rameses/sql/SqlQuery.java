@@ -50,11 +50,20 @@ public class SqlQuery extends AbstractSqlTxn {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        String oldCatalogName = null;
         try {
             if(connection!=null)
                 conn = connection;
             else
                 conn = sqlContext.getConnection();
+            
+           
+            
+            //use the database if specified
+            if( super.getCatalog()!=null ) {
+                oldCatalogName = conn.getCatalog();
+                conn.setCatalog(super.getCatalog());
+            }
             
             if(fetchHandler==null)
                 fetchHandler = new MapFetchHandler();
@@ -68,7 +77,7 @@ public class SqlQuery extends AbstractSqlTxn {
             
             //do paging here.
             rs = ps.executeQuery();
-
+            
             fetchHandler.start();
             List resultList = new ArrayList();
             if( firstResult != 0 ) {
@@ -99,6 +108,7 @@ public class SqlQuery extends AbstractSqlTxn {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
             try {
+                if(oldCatalogName!=null) conn.setCatalog(oldCatalogName);
                 //close if connection is not manually injected.
                 if(connection==null) {
                     conn.close();
@@ -155,11 +165,18 @@ public class SqlQuery extends AbstractSqlTxn {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        String oldCatalogName = null;
         try {
             if(connection!=null)
                 conn = connection;
             else
                 conn = sqlContext.getConnection();
+            
+            //use the database if specified
+            if( super.getCatalog()!=null ) {
+                oldCatalogName = conn.getCatalog();
+                conn.setCatalog(super.getCatalog());
+            }
             
             if(fetchHandler==null)
                 fetchHandler = new MapFetchHandler();
@@ -175,7 +192,7 @@ public class SqlQuery extends AbstractSqlTxn {
             rs = ps.executeQuery();
             
             fetchHandler.start();
-            if(!rs.next()) 
+            if(!rs.next())
                 return null;
             Object val = fetchHandler.getObject(rs);
             fetchHandler.end();
@@ -188,6 +205,7 @@ public class SqlQuery extends AbstractSqlTxn {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
             try {
+                if(oldCatalogName!=null) conn.setCatalog(oldCatalogName);
                 //close if connection is not manually injected.
                 if(connection==null) {
                     conn.close();
@@ -216,11 +234,17 @@ public class SqlQuery extends AbstractSqlTxn {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        String oldCatalogName = null;
         try {
             if(connection!=null)
                 conn = connection;
             else
                 conn = sqlContext.getConnection();
+            //use the database if specified
+            if( super.getCatalog()!=null ) {
+                oldCatalogName = conn.getCatalog();
+                conn.setCatalog(super.getCatalog());
+            }
             
             if(parameterHandler==null)
                 parameterHandler = new BasicParameterHandler();
@@ -268,6 +292,7 @@ public class SqlQuery extends AbstractSqlTxn {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
             try {
+                if(oldCatalogName!=null) conn.setCatalog(oldCatalogName);    
                 //close if connection is not manually injected.
                 if(connection==null) {
                     conn.close();

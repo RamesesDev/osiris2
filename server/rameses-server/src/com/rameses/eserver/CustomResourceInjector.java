@@ -127,15 +127,6 @@ public class CustomResourceInjector extends ResourceInjector {
                 System.out.println("error looking up service " + name + ". " + ex.getMessage() );
                 return null;
             }
-            /*
-            Map m = AppContext.getSysMap();
-            String dsName =ExprUtil.substituteValues(((com.rameses.annotations.SqlContext)a).value(), m);
-            if(dsName!=null && dsName.trim().length()>0) {
-                return SqlManager.getInstance().createContext( AppContext.lookupDs(dsName) );
-            } else {
-                return SqlManager.getInstance().createContext();
-            }
-             */
         }
     }
      
@@ -153,17 +144,7 @@ public class CustomResourceInjector extends ResourceInjector {
                 System.out.println("error looking up persistence context " + name + ". " + ex.getMessage() );
                 return null;
             }
-            /*
-            Map m = AppContext.getSysMap();
-            String dsName = ExprUtil.substituteValues(((com.rameses.annotations.PersistenceContext)a).value(), m);
-            SqlContext sqlContext = null;
-            if(dsName!=null && dsName.trim().length()>0) {
-                sqlContext = SqlManager.getInstance().createContext( AppContext.lookupDs(dsName) );
-            } else {
-                sqlContext = SqlManager.getInstance().createContext();
-            }
-            return new EntityManager( SchemaManager.getInstance(),sqlContext);
-             */
+           
         }
     }
     

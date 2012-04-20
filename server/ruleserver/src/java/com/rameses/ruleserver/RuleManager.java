@@ -10,7 +10,6 @@
 package com.rameses.ruleserver;
 
 import com.rameses.sql.SqlContext;
-import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +54,9 @@ public final class RuleManager {
     }
     
     public void reload( String ruleName ) {
+        try {
+            loadAll();
+        } catch(Exception e) {;}
     }
     
     public void redeploy(String ruleset, String rulegroup) throws Exception {
@@ -70,6 +72,7 @@ public final class RuleManager {
             old = null;
         }
     }
+    
     
     public DataSource getDataSource() {
         return dataSource;
@@ -106,25 +109,16 @@ public final class RuleManager {
         addRulePackage( ruleset, rulegroup, pkgName, o, true);
     }
     
+    private KnowledgeSet findKnowledgeSet(String ruleset, String rulegroup) {
+        KnowledgeSet newSet = new KnowledgeSet(ruleset,rulegroup, null);
+        return rulesets.get(newSet.getKey());
+    }
+    
     public void addRulePackage(String ruleset, String rulegroup, String packagename, Object o, boolean deploy) throws Exception {
         //adds package to the database
         SqlContext sqlc = SqlManager.getInstance().createContext( dataSource );
-        
-        //force add rule set if it does not yet exist
-        SqlExecutor se = sqlc.createNamedExecutor("ruleserver:add-rule-set");
-        se.setParameter("ruleset", ruleset);
-        se.setParameter("rulegroup", rulegroup);
-        se.execute();
-        
-        se = sqlc.createNamedExecutor("ruleserver:add-rule-package");
-        se.setParameter("ruleset", ruleset);
-        se.setParameter("rulegroup", rulegroup);
-        se.setParameter("packagename", packagename);
-        se.setParameter("content", o);
-        se.execute();
-        if(deploy) {
-            redeploy( ruleset, rulegroup );
-        }
+        KnowledgeSet ks = findKnowledgeSet( ruleset, rulegroup );
+        ks.deployPackage( packagename, o, sqlc );
     }
     
     public void removeRulePackage(String ruleset, String rulegroup, String pkgName) throws Exception {
@@ -132,17 +126,9 @@ public final class RuleManager {
     }
     
     public void removeRulePackage(String ruleset, String rulegroup, String pkgName, boolean deploy) throws Exception {
-        //removes package to the database.
-        //adds package to the database
         SqlContext sqlc = SqlManager.getInstance().createContext( dataSource );
-        SqlExecutor se = sqlc.createNamedExecutor("ruleserver:remove-rule-package");
-        se.setParameter("ruleset", ruleset);
-        se.setParameter("rulegroup", rulegroup);
-        se.setParameter("packagename", pkgName);
-        se.execute();
-        if(deploy) {
-            redeploy( ruleset, rulegroup );
-        }
+        KnowledgeSet ks = findKnowledgeSet( ruleset, rulegroup );
+        ks.undeployPackage( pkgName, sqlc );
     }
     
 }

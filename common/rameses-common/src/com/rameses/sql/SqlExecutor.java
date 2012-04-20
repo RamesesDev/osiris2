@@ -38,11 +38,18 @@ public class SqlExecutor extends AbstractSqlTxn {
     public Object execute() throws Exception {
         Connection conn = null;
         PreparedStatement ps = null;
+        String oldCatalogName = null;
         try {
             if(connection!=null)
                 conn = connection;
             else
                 conn = sqlContext.getConnection();
+            
+            //use database if specified
+            if( super.getCatalog()!=null ) {
+                oldCatalogName = conn.getCatalog();
+                conn.setCatalog(super.getCatalog());
+            }
             
             if(parameterHandler==null)
                 parameterHandler = new BasicParameterHandler();
@@ -71,6 +78,7 @@ public class SqlExecutor extends AbstractSqlTxn {
         } finally {
             try {ps.close();} catch(Exception ign){;}
             try {
+                if(oldCatalogName!=null) conn.setCatalog(oldCatalogName);
                 //close if connection is not manually injected.
                 if(connection==null) {
                     conn.close();
@@ -133,6 +141,7 @@ public class SqlExecutor extends AbstractSqlTxn {
     public void setBatchData(List<List> batchData) {
         this.batchData = batchData;
     }
+    
     
     
 }
