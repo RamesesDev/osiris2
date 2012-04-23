@@ -9,6 +9,7 @@ package com.rameses.eserver;
  */
 
 import com.rameses.util.TemplateProvider;
+import com.rameses.util.TemplateSource;
 import groovy.lang.Writable;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
@@ -31,13 +32,16 @@ public class GroovyTemplateProvider extends TemplateProvider {
         return new String[] { "groovy" };
     }
     
-    public Template getTemplate(String name) {
+    public Template getTemplate(String name, TemplateSource ts) {
         try {
             if( ! cache.containsKey(name)) {
                 //get the inputstream
                 InputStream is = null;
                 try {
-                    is = getResourceStream(name);
+                    if( ts == null ) {
+                        ts = new TemplateProvider.ClassLoaderSourceProvider();
+                    }
+                    is = ts.getSource( name );
                     SimpleTemplateEngine st = new SimpleTemplateEngine();
                     InputStreamReader rd = new InputStreamReader(is);
                     Template t = st.createTemplate(rd);
@@ -57,19 +61,28 @@ public class GroovyTemplateProvider extends TemplateProvider {
     }
     
     public Object getResult(String templateName, Object data) {
+        return getResult(templateName, data, null);
+    }
+    
+
+    public void transform(String templateName, Object data, OutputStream out) {
+        transform(templateName, data, out, null );
+    }
+    
+    public Object getResult(String templateName, Object data, TemplateSource source) {
         Map m = null;
         if(data instanceof Map) {
             m = (Map)data;
         }
-        Template template = getTemplate(templateName);
+        Template template = getTemplate(templateName, source);
         Writable w = template.make(m);
         return w.toString();
     }
     
-    public void transform(String templateName, Object data, OutputStream out) {
+    public void transform(String templateName, Object data, OutputStream out, TemplateSource source) {
         ObjectOutputStream oos = null;
         try {
-            Object result = getResult(templateName, data);
+            Object result = getResult(templateName, data, source );
             oos = new ObjectOutputStream(out);
             oos.writeObject( result );
         } catch(Exception e) {
@@ -85,6 +98,7 @@ public class GroovyTemplateProvider extends TemplateProvider {
         else
             cache.remove( name );
     }
+
     
     
 }

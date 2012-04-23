@@ -1,8 +1,6 @@
 package com.rameses.util;
 
 import com.sun.jmx.remote.util.Service;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -10,16 +8,14 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 public abstract class TemplateProvider implements Serializable {
     
     public abstract String[] getExtensions();
     public abstract Object getResult( String templateName, Object data);
+    public abstract Object getResult( String templateName, Object data, TemplateSource source);
     public abstract void transform( String templateName, Object data, OutputStream out);
+    public abstract void transform( String templateName, Object data, OutputStream out, TemplateSource source);
     
     //when null is passed, it should clear all.
     public abstract void clear(String name);
@@ -29,7 +25,7 @@ public abstract class TemplateProvider implements Serializable {
     public static void setInstance(TemplateProvider  tp ) {
         instance = tp;
     }
-     
+    
     public static TemplateProvider getInstance() {
         if(instance==null) {
             instance = new DefaultTemplateProvider();
@@ -37,20 +33,6 @@ public abstract class TemplateProvider implements Serializable {
         return instance;
     }
     
-    protected InputStream getResourceStream(String name) {
-        InputStream is = null;
-        try {
-            if( name.indexOf("://") < 0 ) {
-                is = getClass().getClassLoader().getResourceAsStream(name);
-            } else {
-                is = (new URL( name )).openStream();
-            }
-            return is;
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
     
     public static class DefaultTemplateProvider extends TemplateProvider {
         
@@ -79,15 +61,26 @@ public abstract class TemplateProvider implements Serializable {
         }
         
         public Object getResult(String name, Object data) {
+            return getResult( name, data, null );
+        }
+        
+        public Object getResult(String name, Object data, TemplateSource source) {
+            if( source == null ) {
+                source = new ClassLoaderSourceProvider();
+            }
             String ext = name.substring( name.lastIndexOf(".")+1 );
             TemplateProvider t = getProvider(ext);
-            return t.getResult( name, data );
+            return t.getResult( name, data, source );
         }
         
         public void transform(String name, Object data, OutputStream out) {
+            transform( name, data, out, null );
+        }
+
+        public void transform(String name, Object data, OutputStream out, TemplateSource source) {
             String ext = name.substring( name.lastIndexOf(".")+1 );
             TemplateProvider t = getProvider(ext);
-            t.transform( name, data, out );
+            t.transform( name, data, out, source );
         }
         
         public void clear(String name) {
@@ -98,83 +91,20 @@ public abstract class TemplateProvider implements Serializable {
         }
     }
     
-    public static class XsltTemplateProvider extends TemplateProvider {
-        
-        private Map<String,Transformer> cache = new Hashtable();
-        
-        public String[] getExtensions() {
-            return new String[]{"xslt", "xsl"};
-        }
-        
-        private Transformer getTransformer(String name) throws Exception {
-            if( ! cache.containsKey(name)) {
-                //get the inputstream
-                InputStream is = null;
-                try {
-                    is = getResourceStream( name );
-                    TransformerFactory tFactory = TransformerFactory.newInstance();
-                    StreamSource source = new StreamSource(is);
-                    Transformer transformer = tFactory.newTransformer(source);
-                    cache.put( name, transformer );
-                    
-                } catch(Exception ex) {
-                    throw ex;
-                } finally {
-                    try { is.close(); } catch(Exception ign ) {;}
-                }
-            }
-            if( !cache.containsKey(name))
-                throw new Exception("Name " + name + " not found");
-            return cache.get(name);
-        }
-        
-        public Object getResult(String templateName, Object data) {
-            ByteArrayOutputStream bos = null;
+    public static class ClassLoaderSourceProvider implements TemplateSource {
+        public InputStream getSource(String name) {
+            InputStream is = null;
             try {
-                bos = new ByteArrayOutputStream();
-                transform(templateName, data, bos );
-                StringBuffer sb = new StringBuffer();
-                for( byte b : bos.toByteArray() ) {
-                    sb.append( (char)b );
+                if( name.indexOf("://") < 0 ) {
+                    is = getClass().getClassLoader().getResourceAsStream(name);
+                } else {
+                    is = (new URL( name )).openStream();
                 }
-                return sb.toString();
-            }
-            catch(Exception ex) {
-                throw new RuntimeException(ex);
+                return is;
+            } catch(Exception e) {
+                throw new RuntimeException(e);
             }
         }
-        
-        public void transform(String templateName, Object data, OutputStream out) {
-            try {
-                Transformer transformer = getTransformer(templateName);
-                if(data==null)
-                    throw new Exception("Xslt Data must not be null");
-
-                StreamSource sourceData = null;
-                if( data instanceof InputStream ) {
-                    sourceData = new StreamSource((InputStream)data);
-                }
-                else if(data instanceof String) {
-                    ByteArrayInputStream bis = new ByteArrayInputStream(data.toString().getBytes());
-                    sourceData = new StreamSource(bis);
-                }
-                else {
-                    throw new Exception("Xslt data must be an Xml document");
-                }
-                transformer.transform(sourceData, new StreamResult(out));
-            }
-            catch(Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }
-
-        public void clear(String name) {
-            if( name !=null ) 
-                cache.clear();
-            else
-                cache.remove( name );
-        }
-        
     }
     
 }

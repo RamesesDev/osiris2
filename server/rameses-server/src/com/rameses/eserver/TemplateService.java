@@ -12,7 +12,8 @@ package com.rameses.eserver;
 import com.rameses.server.common.AppContext;
 import com.rameses.server.common.JndiUtil;
 import com.rameses.util.TemplateProvider;
-import java.io.InputStream;
+import com.rameses.util.TemplateProvider.DefaultTemplateProvider;
+import com.rameses.util.TemplateSource;
 import java.io.OutputStream;
 import java.io.Serializable;
 import javax.naming.InitialContext;
@@ -25,7 +26,7 @@ public class TemplateService implements TemplateServiceMBean,Serializable {
     
     public void start() throws Exception {
         System.out.println("      Initializing Template Manager");
-        TemplateProvider.setInstance(new TemplateProviderImpl());
+        TemplateProvider.setInstance( new DefaultTemplateProvider() );
         InitialContext ctx = new InitialContext();
         JndiUtil.bind( ctx, AppContext.getPath()+ TemplateService.class.getSimpleName(), this );
     }
@@ -48,16 +49,15 @@ public class TemplateService implements TemplateServiceMBean,Serializable {
     public void reload(String name) throws Exception {
         TemplateProvider.getInstance().clear(name);
     }
-    
-    public class TemplateProviderImpl extends  TemplateProvider.DefaultTemplateProvider {
-        public TemplateProviderImpl() {
-            super();
-        }
-        public InputStream getResourceStream(String name) {
-            System.out.println("getting resource " + name + "from db");
-            return super.getResourceStream( name );
-        }
+
+    public Object getResult(String templateName, Object data, TemplateSource tsource) {
+        return TemplateProvider.getInstance().getResult( templateName, data, tsource );
     }
+
+    public void transform(String templateName, Object data, OutputStream out, TemplateSource ts) {
+         TemplateProvider.getInstance().transform( templateName, data, out, ts );
+    }
+    
     
     
 }

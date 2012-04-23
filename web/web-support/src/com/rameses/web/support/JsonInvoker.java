@@ -58,6 +58,11 @@ public class JsonInvoker extends AbstractScriptService {
                     throw new RuntimeException("env must be enclosed with {}");
                 env = JsonUtil.toMap( _env );
             }
+
+            //include session 
+            if(req.getAttribute("SESSIONID")!=null) {
+                env.put("sessionid", req.getAttribute("SESSIONID"));
+            }
             
             //include also APP_CONF if any. This is for multi tenant. Extract 
             //those that starts with ds.

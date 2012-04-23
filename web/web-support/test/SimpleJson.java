@@ -62,6 +62,7 @@ public class SimpleJson extends TestCase {
         //while( (i=is.read())!=-1) {
         //    b.append((char)i);
         //}
+        
     }
     
 }
