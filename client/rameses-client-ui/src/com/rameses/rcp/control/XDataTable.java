@@ -27,7 +27,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
 public class XDataTable extends JPanel implements UIInput, TableListener, Validatable, FocusListener 
 {
@@ -278,7 +277,7 @@ public class XDataTable extends JPanel implements UIInput, TableListener, Valida
         else
             currentItem = null;
         
-        if( !ValueUtil.isEqual(oldValue, newValue) ) {
+        if( oldValue != newValue ) {
             if( actionMgr != null ) {
                 if( immediate )
                     rowChangeAction.execute();

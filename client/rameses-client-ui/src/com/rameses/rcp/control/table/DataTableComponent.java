@@ -338,8 +338,8 @@ public class DataTableComponent extends JTable implements ListModelListener, Tab
         if ( editingMode ) hideEditor(false);
         if ( !rowCommited ) {
             rowCommited = true;
-            rowChanged();
         }
+        rowChanged();
         
         ListItem item = listModel.getSelectedItem();
         int col = getSelectedColumn();
