@@ -22,6 +22,21 @@
       </attribute>
   </tag>
   
+  <tag-file>
+      <name>invoke</name>
+      <path>/META-INF/tags/invoke.tag</path>
+  </tag-file>
+  
+  <tag-file>
+      <name>email</name>
+      <path>/META-INF/tags/email.tag</path>
+  </tag-file>
+  
+  <tag-file>
+      <name>ant-build</name>
+      <path>/META-INF/tags/ant-build.tag</path>
+  </tag-file>
+  
   <function>
       <name>checkPermission</name>
       <function-class>com.rameses.web.tags.WebPermissionFunction</function-class>

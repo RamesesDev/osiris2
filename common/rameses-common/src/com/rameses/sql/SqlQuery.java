@@ -28,6 +28,7 @@ public class SqlQuery extends AbstractSqlTxn {
     private int firstResult;
     private int maxResults;
     private int rowsFetched = 0;
+    private SqlDialect dialect;
     
     /***
      * By default, DataSource is passed by the SqlManager
@@ -57,8 +58,6 @@ public class SqlQuery extends AbstractSqlTxn {
             else
                 conn = sqlContext.getConnection();
             
-           
-            
             //use the database if specified
             if( super.getCatalog()!=null ) {
                 oldCatalogName = conn.getCatalog();
@@ -72,21 +71,27 @@ public class SqlQuery extends AbstractSqlTxn {
                 parameterHandler = new BasicParameterHandler();
             
             //get the results
-            ps = conn.prepareStatement( getFixedSqlStatement() );
+            String _sql = getFixedSqlStatement();
+            if( dialect != null && maxResults > 0 ) {
+                _sql = dialect.getPagingStatement( statement, firstResult, maxResults );
+            }
+            
+            ps = conn.prepareStatement( _sql );
             fillParameters(ps);
             
             //do paging here.
             rs = ps.executeQuery();
-            
-            fetchHandler.start();
             List resultList = new ArrayList();
+            
+            /*
             if( firstResult != 0 ) {
                 rs.absolute(firstResult);
             }
             if( maxResults > 0) {
                 ps.setFetchSize(maxResults);
             }
-            
+             */
+            fetchHandler.start();
             rowsFetched = 0;
             while(rs.next()) {
                 rowsFetched = rowsFetched+1;
@@ -292,7 +297,7 @@ public class SqlQuery extends AbstractSqlTxn {
             try {rs.close();} catch(Exception ign){;}
             try {ps.close();} catch(Exception ign){;}
             try {
-                if(oldCatalogName!=null) conn.setCatalog(oldCatalogName);    
+                if(oldCatalogName!=null) conn.setCatalog(oldCatalogName);
                 //close if connection is not manually injected.
                 if(connection==null) {
                     conn.close();
@@ -300,6 +305,16 @@ public class SqlQuery extends AbstractSqlTxn {
             } catch(Exception ign){;}
             clear();
         }
+    }
+    
+    
+    
+    public SqlDialect getDialect() {
+        return dialect;
+    }
+
+    public void setDialect(SqlDialect dialect) {
+        this.dialect = dialect;
     }
     
 }

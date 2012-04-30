@@ -9,6 +9,7 @@
 
 package com.rameses.eserver;
 
+import com.rameses.util.TemplateSource;
 import java.io.OutputStream;
 
 /**
@@ -21,4 +22,6 @@ public interface TemplateServiceMBean {
     void reload(String name) throws Exception;
     Object getResult(String templateName, Object data);
     void transform(String templateName, Object data, OutputStream out);
+    Object getResult(String templateName, Object data, TemplateSource tsource);
+    void transform(String templateName, Object data, OutputStream out, TemplateSource ts);
 }

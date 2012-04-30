@@ -1,4 +1,4 @@
-package com.rameses.eserver;
+package com.rameses.web.cms;
 /*
  * GroovyTemplateProvider.java
  *
