@@ -1,5 +1,5 @@
 /*
- * MysqlSqlDialect.java
+ * MySqlDialect.java
  *
  * Created on April 30, 2012, 10:34 AM
  *
@@ -15,12 +15,10 @@ import com.rameses.sql.SqlDialect;
  *
  * @author Elmo
  */
-public class MysqlSqlDialect implements SqlDialect {
+public class MySqlDialect implements SqlDialect {
     
     public String getPagingStatement(String sql, int start, int limit) {
-        String s = sql + " LIMIT " + start + "," + limit;
-        System.out.println("statement is " + s);
-        return s;
+        return sql + " LIMIT " + start + "," + limit;
     }
     
     
