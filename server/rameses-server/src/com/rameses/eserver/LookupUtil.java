@@ -72,7 +72,14 @@ public final class LookupUtil {
         } else {
             sctx = SqlManager.getInstance().createContext();
         }
-        if( env.containsKey(DS_CATALOG)) {
+        
+         //LOAD THE DIALECT. 
+        String sqlDialect = System.getProperty( dsName + ".sqldialect" );
+        if( sqlDialect == null ) sqlDialect = System.getProperty( "default.sqldialect" );
+        if( sqlDialect !=null ) sctx.setDialect( sqlDialect );
+        
+        //set catalog only if the ds name is not system
+        if( env.containsKey(DS_CATALOG) && !dsName.endsWith("system")) {
             sctx.setCatalog( (String)env.get(DS_CATALOG)  );    
         }
         
@@ -92,9 +99,15 @@ public final class LookupUtil {
         } else {
             sqlContext = SqlManager.getInstance().createContext();
         }
-        if( env.containsKey(DS_CATALOG)) {
+        //set catalog only if the ds name is not system
+        if( env.containsKey(DS_CATALOG) && !dsName.endsWith("system")) {
             sqlContext.setCatalog( (String)env.get(DS_CATALOG)  );    
         }
+        //LOAD THE DIALECT. 
+        String sqlDialect = System.getProperty( dsName + ".sqldialect" );
+        if( sqlDialect == null ) sqlDialect = System.getProperty( "default.sqldialect" );
+        if( sqlDialect !=null ) sqlContext.setDialect( sqlDialect );
+        
         return new EntityManager( SchemaManager.getInstance(),sqlContext);
     }
     

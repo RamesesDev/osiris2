@@ -35,7 +35,6 @@
 			Iterator iter = ext.entrySet().iterator();
 			while(iter.hasNext()) {
 				Object z = iter.next();
-				System.out.println( z );
 				Map.Entry me = (Map.Entry)z;
 				if( me.getKey().toString().startsWith("ds.")) {
 					_env.put( me.getKey(), me.getValue() );
@@ -63,6 +62,9 @@
 		else if(params instanceof List) {
 			o = ac.invoke(method, ((List) params).toArray() );
 		}
+                else if(params instanceof Object[]) {
+                        o = ac.invoke(method, (Object[]) params );
+                }
 		else {
 			o = ac.invoke(method, new Object[]{params});
 		}

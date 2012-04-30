@@ -33,10 +33,12 @@ public abstract class AbstractSqlTxn {
     
     protected Map vars;
     
+    
+    
     /***
      * By default, DataSource is passed by the SqlManager
      * however connection can be manually overridden by setting
-     * setConnection.
+     * setConnection. Dialect can also be set.
      */
     AbstractSqlTxn(SqlContext sm, String statement, List paramNames) {
         this.origStatement = statement;
@@ -58,17 +60,17 @@ public abstract class AbstractSqlTxn {
         allocate();
     }
     
-     /** 
+    /**
      * allocates the size and clears new values.
      */
     protected final void allocate() {
         this.parameterValues = new ArrayList();
         for(Object o : parameterNames) {
-            this.parameterValues.add(null); 
+            this.parameterValues.add(null);
         }
     }
     
-    /** 
+    /**
      * expands the values size but does not erase existing values
      */
     protected final void reallocate( int len ) {
@@ -109,7 +111,7 @@ public abstract class AbstractSqlTxn {
         throw new RuntimeException("Parameter " + name + " is not found");
     }
     
-  
+    
     
     
     /***
@@ -140,6 +142,7 @@ public abstract class AbstractSqlTxn {
         }
     }
     
+    
     /**
      * used when setting variables to a statement
      */
@@ -147,7 +150,7 @@ public abstract class AbstractSqlTxn {
         this.vars = map;
         this.statement = ExprUtil.substituteValues( this.origStatement, map );
         //reparse the statement after parsing to update the parameter names
-        this.statement = SqlUtil.parseStatement(statement, parameterNames);  
+        this.statement = SqlUtil.parseStatement(statement, parameterNames);
         reallocate( countChar( statement, "?" ));
     }
     
@@ -182,37 +185,37 @@ public abstract class AbstractSqlTxn {
     public final String getStatement() {
         return statement;
     }
-
+    
     public final String getOriginalStatement() {
         return origStatement;
     }
-
+    
     public final Map getVars() {
         return vars;
     }
-
+    
     public final List<String> getParameterNames() {
         return parameterNames;
     }
-
+    
     public final SqlContext getSqlContext() {
         return sqlContext;
     }
-
+    
     public final List getParameterValues() {
         return parameterValues;
     }
-
+    
     public final String getCatalog() {
         return catalog;
     }
-
+    
     public final AbstractSqlTxn setCatalog(String dbName) {
         this.catalog = dbName;
         return this;
     }
     
     
-   
+    
     
 }
