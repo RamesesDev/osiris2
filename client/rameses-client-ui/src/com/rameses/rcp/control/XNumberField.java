@@ -61,9 +61,11 @@ public class XNumberField extends XTextField {
     }
     
     //<editor-fold defaultstate="collapsed" desc="  helper methods  ">
+    private static String NON_NUMBER = "[^\\-\\+\\d.eE]";
+    
     private Object convertValue() {
         Class fType = getFieldType();
-        String fieldText = getText().replace(",", "");
+        String fieldText = getText().replaceAll(NON_NUMBER, "");
         
         if( fieldText.trim().length() == 0 ) {
              return (fType != null && fType.isPrimitive()) ? 0 : null;
@@ -71,26 +73,40 @@ public class XNumberField extends XTextField {
         
         try {
             if(fType == BigDecimal.class) {
-                return new BigDecimal(fieldText);
-            } else if(fType == Integer.class) {
-                return new Integer(fieldText);
-            } else if(fType == Double.class) {
-                return new Double(fieldText);
-            } else if(fType == int.class) {
-                return Integer.parseInt(fieldText);
-            } else if(fType == Long.class) {
-                return new Long(fieldText);
-            } else if(fType == long.class) {
-                return Long.parseLong(fieldText);
-            } else if(fType == double.class) {
-                return Double.parseDouble(fieldText);
+                BigDecimal dc = new BigDecimal(fieldText);
+                if( formatter!=null ) {
+                    String txt = formatter.format(dc);
+                    return new BigDecimal(txt.replaceAll(NON_NUMBER, ""));
+                }
+                return dc;
+            } else if(fType == Integer.class || fType == int.class) {
+                Integer in = new Integer(fieldText);
+                if( formatter != null ) {
+                    String txt = formatter.format(in);
+                    return new Integer(txt.replaceAll(NON_NUMBER, ""));
+                }
+                return in;
+            } else if(fType == Double.class || fType == double.class) {
+                Double d = new Double(fieldText);
+                if( formatter != null ) {
+                    String txt = formatter.format(d);
+                    return new Double(txt.replaceAll(NON_NUMBER, ""));
+                }
+                return d;
+            } else if(fType == Long.class || fType == long.class) {
+                Long l = new Long(fieldText);
+                if( formatter != null ) {
+                    String txt = formatter.format(l);
+                    return new Long(txt.replaceAll(NON_NUMBER, ""));
+                }
+                return l;
             }
         } 
         catch(NumberFormatException nfe) {
             return (fType != null && fType.isPrimitive()) ? 0 : null;
         }
         
-        return fieldText;
+        return null;
     }
     
     private final void showFormattedValue(boolean formatted) {

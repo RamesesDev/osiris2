@@ -18,6 +18,7 @@ import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.util.ExprUtil;
+import java.util.HashMap;
 import java.util.Map;
 import javax.naming.InitialContext;
 
@@ -64,6 +65,7 @@ public final class LookupUtil {
     }
     
     public static Object lookupSqlContext(String name, Map env) throws Exception {
+        if( env == null ) env = new HashMap();
         Map m = AppContext.getSysMap();
         String dsName =ExprUtil.substituteValues(name, m);
         SqlContext sctx = null;
@@ -91,6 +93,7 @@ public final class LookupUtil {
     }
     
     public static Object lookupPersistenceContext(String name, Map env) throws Exception {
+        if( env == null ) env = new HashMap();
         Map m = AppContext.getSysMap();
         String dsName = ExprUtil.substituteValues(name, m);
         SqlContext sqlContext = null;

@@ -11,7 +11,6 @@ package com.rameses.osiris2.reports;
 
 import com.rameses.osiris2.client.OsirisContext;
 import com.rameses.rcp.common.Action;
-import com.rameses.rcp.common.MsgBox;
 import com.rameses.sql.SimpleDataSource;
 import com.rameses.sql.SqlUtil;
 import java.sql.Connection;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -63,6 +61,12 @@ public abstract class DBReportModel {
             if(params!=null) {
                 conf.putAll(params);
             }
+            
+//            for(JRParameter jrp : mainReport.getParameters()) {
+//                if( !jrp.isSystemDefined() ) {
+//                    //this is userdefined
+//                }
+//            }
             
             JRQuery jq = mainReport.getQuery();
             List paramList = new ArrayList();

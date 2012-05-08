@@ -12,6 +12,7 @@ import com.rameses.invoker.client.HttpInvokerClient;
 import com.rameses.invoker.client.HttpScriptService;
 import com.rameses.osiris2.AppContext;
 import com.rameses.osiris2.client.OsirisContext;
+import com.rameses.util.MapBeanUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,6 +35,14 @@ public class ServerReportUtil {
     
     
     private static Map<String, Map> reportIndex = new HashMap();
+    
+    public static synchronized  void clearCache() {
+        reportIndex.clear();
+    }
+    
+    public static synchronized Map getReports() {
+        return MapBeanUtils.copy(reportIndex);
+    }
     
     public static synchronized Map getReportConf(String name) throws Exception {
         Map report = reportIndex.get(name);
