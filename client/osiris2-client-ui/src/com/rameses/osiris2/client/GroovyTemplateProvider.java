@@ -1,5 +1,6 @@
 package com.rameses.osiris2.client;
 import com.rameses.util.TemplateProvider;
+import com.rameses.util.TemplateSource;
 import groovy.lang.Writable;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
@@ -22,14 +23,18 @@ public class GroovyTemplateProvider extends TemplateProvider {
         return new String[] { "gtpl" };
     }
     
-    public Template getTemplate(String name) {
+    public Template getTemplate(String name, TemplateSource provider) {
         try {
             if( ! cache.containsKey(name)) {
                 //get the inputstream
                 InputStream is = null;
                 try {
-                    is = getResourceStream(name);
                     ClassLoader loader = OsirisContext.getClientContext().getClassLoader();
+                    if( provider == null )
+                        is = loader.getResourceAsStream(name);
+                    else
+                        is = provider.getSource(name);
+                    
                     SimpleTemplateEngine st = new SimpleTemplateEngine( loader );
                     InputStreamReader rd = new InputStreamReader(is);
                     Template t = st.createTemplate(rd);
@@ -49,19 +54,27 @@ public class GroovyTemplateProvider extends TemplateProvider {
     }
     
     public Object getResult(String templateName, Object data) {
+        return getResult(templateName, data, null);
+    }
+    
+    public Object getResult(String templateName, Object data, TemplateSource source) {
         Map m = null;
         if(data instanceof Map) {
             m = (Map)data;
         }
-        Template template = getTemplate(templateName);
+        Template template = getTemplate(templateName, source);
         Writable w = template.make(m);
         return w.toString();
     }
     
     public void transform(String templateName, Object data, OutputStream out) {
+        transform(templateName, data, out, null);
+    }
+    
+    public void transform(String templateName, Object data, OutputStream out, TemplateSource source) {
         ObjectOutputStream oos = null;
         try {
-            Object result = getResult(templateName, data);
+            Object result = getResult(templateName, data, source);
             oos = new ObjectOutputStream(out);
             oos.writeObject( result );
         } catch(Exception e) {
@@ -70,13 +83,12 @@ public class GroovyTemplateProvider extends TemplateProvider {
             try {oos.close();}catch(Exception ign){;}
         }
     }
-
+    
     public void clear(String name) {
         if ( name != null )
             cache.remove(name);
         else
             cache.clear();
     }
-    
     
 }

@@ -61,7 +61,8 @@ public abstract class SubListModel extends PageListModel {
         dataList = null;
         refresh();
         //check the selectedItem if 0, then move to previous
-        if(getSelectedItem().getIndex()>0 && getSelectedItem().getState()==0) {
+        ListItem selected = getSelectedItem();
+        if(selected != null && selected.getIndex()>0 && selected.getState()==0) {
             setSelectedItem( items.get(getSelectedItem().getIndex()-1) );
         }
     }

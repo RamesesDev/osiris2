@@ -59,15 +59,16 @@ public class ServerReportUtil {
         
         //if the server returns null it means that
         //local report is up to date
-        if( serverConf == null )
+        if( serverConf == null ) {
+            reportIndex.put(name, localConf); //cache local report
             return localConf;
+        }
         
         //saved updated report
         saveLocalReport(name, serverConf);
         
         //cache updated report
         reportIndex.put(name, serverConf);
-        
         
         return serverConf;
     }
