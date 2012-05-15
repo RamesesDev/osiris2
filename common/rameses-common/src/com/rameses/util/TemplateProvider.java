@@ -76,7 +76,7 @@ public abstract class TemplateProvider implements Serializable {
         public void transform(String name, Object data, OutputStream out) {
             transform( name, data, out, null );
         }
-
+        
         public void transform(String name, Object data, OutputStream out, TemplateSource source) {
             String ext = name.substring( name.lastIndexOf(".")+1 );
             TemplateProvider t = getProvider(ext);
@@ -84,10 +84,22 @@ public abstract class TemplateProvider implements Serializable {
         }
         
         public void clear(String name) {
-            
-            String ext = name.substring( name.lastIndexOf(".")+1 );
-            TemplateProvider t = getProvider(ext);
-            t.clear( name );
+            if( name == null || name.trim().length() == 0 ) {
+                Iterator iter = providers.values().iterator();
+                while(iter.hasNext()) {
+                    try {
+                        TemplateProvider tp = (TemplateProvider)iter.next();
+                        tp.clear(null); 
+                    }
+                    catch(Exception ign){
+                        System.out.println(ign.getMessage());
+                    }
+                }
+            } else {
+                String ext = name.substring( name.lastIndexOf(".")+1 );
+                TemplateProvider t = getProvider(ext);
+                t.clear( name );
+            }
         }
     }
     

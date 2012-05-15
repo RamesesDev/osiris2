@@ -9,9 +9,7 @@
 
 package com.rameses.sql;
 
-import com.sun.jmx.remote.util.Service;
 import java.sql.Connection;
-import java.util.Iterator;
 import javax.sql.DataSource;
 
 /**
@@ -78,22 +76,9 @@ public class SqlContext {
         return sqlManager.getNamedSqlUnit( name );
     }
     
-    private void loadDialect()   {
-        try {
-            Iterator<SqlDialect> iter = Service.providers( SqlDialect.class, getClass().getClassLoader() );
-            while(iter.hasNext()) {
-                this.dialect = iter.next();
-                break;
-            }
-        } catch(Exception ign ) {
-            //ign.printStackTrace();
-        }
-    }
-    
     public SqlQuery createQuery(String statement) {
         SqlUnit sq = getSqlCache(statement);
         SqlQuery q = new SqlQuery(this,sq.getStatement(),sq.getParamNames());
-        this.loadDialect();
         if( dialect !=null) q.setDialect( dialect );
         if( this.catalog !=null ) q.setCatalog(catalog);
         return q;
@@ -102,7 +87,6 @@ public class SqlContext {
     public SqlQuery createNamedQuery(String name) {
         SqlUnit sq = getNamedSqlCache(name);
         SqlQuery q = new SqlQuery( this, sq.getStatement(),sq.getParamNames());
-        this.loadDialect();
         if( dialect !=null) q.setDialect( dialect );
         if( this.catalog !=null ) q.setCatalog(catalog);
         return q;

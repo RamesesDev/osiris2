@@ -17,7 +17,7 @@ import com.rameses.sql.SqlDialect;
  */
 public class MySqlDialect implements SqlDialect {
     
-    public String getPagingStatement(String sql, int start, int limit) {
+    public String getPagingStatement(String sql, int start, int limit, String[] pagingKeys) {
         return sql + " LIMIT " + start + "," + limit;
     }
     

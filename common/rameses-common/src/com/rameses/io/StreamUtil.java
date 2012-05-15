@@ -11,8 +11,10 @@ package com.rameses.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 
 /**
  *
@@ -27,17 +29,28 @@ public final class StreamUtil {
     
     public static String toString( InputStream is ) {
         try {
-            StringBuffer out = new StringBuffer();
+            StringBuilder out = new StringBuilder();
             int i = -1;
             while( (i=is.read())!=-1) {
                 out.append((char)i);
             }
             return  out.toString();
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             throw new RuntimeException(ex);
+        } finally {
+            try { is.close(); } catch(Exception ign){;}
         }
-        finally {
+    }
+    
+    public static void write( InputStream is, StringBuilder out ) {
+        try {
+            int i = -1;
+            while( (i=is.read())!=-1) {
+                out.append((char)i);
+            }
+        } catch(Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
             try { is.close(); } catch(Exception ign){;}
         }
     }
@@ -49,11 +62,9 @@ public final class StreamUtil {
                 dest.write(b);
             }
             dest.flush();
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             throw new RuntimeException(ex);
-        }
-        finally {
+        } finally {
             try { src.close(); }catch(Exception ign){;}
             try { dest.close(); }catch(Exception ign){;}
         }
@@ -71,16 +82,47 @@ public final class StreamUtil {
                 bos.write(buffer, 0, read);
             }
             bos.flush();
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             throw new RuntimeException(ex);
-        }
-        finally {
+        } finally {
             try { bis.close(); }  catch(Exception ign){;}
             try { bos.close(); }  catch(Exception ign){;}
             try { src.close(); }  catch(Exception ign){;}
             try { dest.close(); } catch(Exception ign){;}
         }
     }
-
+    
+    
+    /**
+     * The following is for reading URL input streams via the URL.
+     */
+    
+    public static interface InputStreamHandler {
+        void handle( InputStream is ) throws Exception;
+    }
+    
+    public static void readURLStream( String urlPath, InputStreamHandler handler)  {
+         readURLStream( urlPath, handler, true );
+    }
+     
+    public static void readURLStream( String urlPath, InputStreamHandler handler, boolean ignoreFileNotFound ) {
+        InputStream is = null;
+        try {
+            URL u = new URL( urlPath );
+            is = u.openStream();
+            handler.handle( is );
+        } 
+        catch(Exception ex) {
+            if( (ex instanceof FileNotFoundException) && ignoreFileNotFound ) {
+                //do nothing
+            }
+            else {
+                throw new RuntimeException(ex);    
+            }    
+        } finally {
+            try {is.close();}catch(Exception ign){;}
+        }
+    }
+    
+    
 }
