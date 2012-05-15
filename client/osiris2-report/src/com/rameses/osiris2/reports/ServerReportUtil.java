@@ -10,6 +10,7 @@ package com.rameses.osiris2.reports;
 import com.rameses.invoker.client.HttpClientManager;
 import com.rameses.invoker.client.HttpInvokerClient;
 import com.rameses.invoker.client.HttpScriptService;
+import com.rameses.io.FileUtil;
 import com.rameses.osiris2.AppContext;
 import com.rameses.osiris2.client.OsirisContext;
 import com.rameses.util.MapBeanUtils;
@@ -30,6 +31,7 @@ public class ServerReportUtil {
     private static final String KEY_REPORT_IMAGES = "report.images";
     private static final String SERVER_RES_PREFIX = "server_res:";
     private static final String SERVICE = "jasper/ReportService";
+    private static final String LOCALPATH = System.getProperty("user.dir") + "/reports/";
     
     private static HttpScriptService scriptSvc;
     
@@ -38,6 +40,8 @@ public class ServerReportUtil {
     
     public static synchronized  void clearCache() {
         reportIndex.clear();
+        File f = new File(LOCALPATH);
+        FileUtil.deleteRecursive(f);
     }
     
     public static synchronized Map getReports() {
@@ -76,8 +80,7 @@ public class ServerReportUtil {
     private static Map getLocalReport(String name) {
         ObjectInputStream ois = null;
         try {
-            String localPath = System.getProperty("user.dir") + "/reports/";
-            File f = new File(localPath + name + REPORT_EXT);
+            File f = new File(LOCALPATH + name + REPORT_EXT);
             if( !f.exists() ) return null;
             
             ois = new ObjectInputStream(new FileInputStream(f));
@@ -95,8 +98,7 @@ public class ServerReportUtil {
     private static void saveLocalReport(String name, Map conf) {
         ObjectOutputStream oos = null;
         try {
-            String localPath = System.getProperty("user.dir") + "/reports/";
-            File f = new File(localPath + name + REPORT_EXT);
+            File f = new File(LOCALPATH + name + REPORT_EXT);
             if( !f.getParentFile().exists() ) {
                 f.getParentFile().mkdirs();
             }
@@ -104,7 +106,7 @@ public class ServerReportUtil {
             Map images = (Map) conf.remove(KEY_REPORT_IMAGES);
             if( images != null ) {
                 for(Map.Entry me : (Set<Map.Entry>)images.entrySet()) {
-                    String path = localPath + me.getKey();
+                    String path = LOCALPATH + me.getKey();
                     saveImage(path, (byte[]) me.getValue());
                 }
                 
@@ -114,9 +116,9 @@ public class ServerReportUtil {
                         if( path.startsWith(SERVER_RES_PREFIX) ) {
                             path = path.replace(SERVER_RES_PREFIX, "");
                             if( path.startsWith("/") )
-                                path = localPath + path.substring(1);
+                                path = LOCALPATH + path.substring(1);
                             else
-                                path = localPath + path;
+                                path = LOCALPATH + path;
                             
                             me.setValue(path);
                         }

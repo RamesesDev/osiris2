@@ -62,44 +62,56 @@ public final class KnowledgeSet implements Serializable {
     }
     
     public void deployPackage(String packageName, Object o, SqlContext ctx) throws Exception {
-        String content = o.toString();
-        //insert the ruleset if not yet exists
-        SqlExecutor se = ctx.createNamedExecutor("ruleserver:add-rule-set");
-        se.setParameter("ruleset", name);
-        se.setParameter("rulegroup", rulegroup);
-        se.execute();
-        
-        //insert the rule package
-        se = ctx.createNamedExecutor("ruleserver:add-rule-package");
-        se.setParameter("ruleset", name);
-        se.setParameter("rulegroup", rulegroup);
-        se.setParameter("packagename", packageName);
-        se.setParameter("content", content);
-        se.execute();
-        
-        //retrieve the facts
-        Map params = new HashMap();
-        params.put("ruleset", name );
-        params.put( "rulegroup", rulegroup );
-        params.put("packagename", packageName);
-        SqlQuery qry = ctx.createNamedQuery("ruleserver:get-facts");
-        List<Map> result = qry.setParameters( params ).getResultList();
-        
-        //compile the package. Must add the fact rules first.
-        KnowledgeBuilder builder = createKnowledgeBuilder();
-        for( Map m : result) {
-            String _fact = (String)m.get("content");
-            builder.add( ResourceFactory.newByteArrayResource(  _fact.getBytes() ), ResourceType.DRL);
-        }
-        builder.add( ResourceFactory.newByteArrayResource(  content.getBytes() ), ResourceType.DRL);
+        try {
+            String content = o.toString();
+            //insert the ruleset if not yet exists
+            SqlExecutor se = ctx.createNamedExecutor("ruleserver:add-rule-set");
+            se.setParameter("ruleset", name);
+            se.setParameter("rulegroup", rulegroup);
+            se.execute();
 
-        //find the last package and add it to the current knowledge base.
-        Iterator<KnowledgePackage> iter =  builder.getKnowledgePackages().iterator();
-        KnowledgePackage kp = null;
-        while( iter.hasNext() ) {kp=iter.next();}
-        Collection<KnowledgePackage> list = new ArrayList();
-        list.add( kp );
-        kbase.addKnowledgePackages( list );
+            //insert the rule package
+            se = ctx.createNamedExecutor("ruleserver:add-rule-package");
+            se.setParameter("ruleset", name);
+            se.setParameter("rulegroup", rulegroup);
+            se.setParameter("packagename", packageName);
+            se.setParameter("content", content);
+            se.execute();
+
+            //retrieve the facts
+            Map params = new HashMap();
+            params.put("ruleset", name );
+            params.put( "rulegroup", rulegroup );
+            params.put("packagename", packageName);
+            SqlQuery qry = ctx.createNamedQuery("ruleserver:get-facts");
+            List<Map> result = qry.setParameters( params ).getResultList();
+
+            //compile the package. Must add the fact rules first.
+            KnowledgeBuilder builder = createKnowledgeBuilder();
+            for( Map m : result) {
+                String _fact = (String)m.get("content");
+                builder.add( ResourceFactory.newByteArrayResource(  _fact.getBytes() ), ResourceType.DRL);
+            }
+            builder.add( ResourceFactory.newByteArrayResource(  content.getBytes() ), ResourceType.DRL);
+
+            //find the last package and add it to the current knowledge base.
+            //- update: don't just add the last because sometimes it does not follow the expected order
+            //-         just don't add the package that contains facts on its name            
+            Iterator<KnowledgePackage> iter =  builder.getKnowledgePackages().iterator();
+            Collection<KnowledgePackage> list = new ArrayList();
+            KnowledgePackage kp = null;
+            while( iter.hasNext() ) {
+                kp=iter.next();
+                if( ! (kp.getName()+"").contains("facts") ) {
+                    list.add( kp );
+                }
+            }
+            kbase.addKnowledgePackages( list );
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
     
     public void undeployPackage(String packageName, SqlContext ctx) throws Exception {

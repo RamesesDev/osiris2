@@ -127,7 +127,7 @@ public class NumberToWords {
         String wn 		= convert((long)number);
         
         if (str.indexOf(".") >= 0) {
-            strDec = str.replaceAll( ((long)number) + ".","");
+            strDec = str.replace( ((long)number) + ".","");
             
             if ( Long.parseLong(strDec) > 0)
                 strDec = " AND " + getCents(strDec) + "/100";

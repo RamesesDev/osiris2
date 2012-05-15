@@ -37,6 +37,9 @@ public abstract class ServerReportModel extends ReportModel {
                 reportConf = ServerReportUtil.getReportConf(getReportName());
             }
             
+            if( reportConf == null )
+                throw new Exception("Report "+getReportName()+" not found.");
+            
             Map conf = new HashMap(reportConf);
             if(report==null) {
                 report = (JasperReport) conf.remove("main");
