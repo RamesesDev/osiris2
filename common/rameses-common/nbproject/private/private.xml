@@ -6,4 +6,11 @@
             <line>18</line>
         </file>
     </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/D:/NB%20Projects/osiris2/common/rameses-common/src/com/rameses/http/HttpClient.java</file>
+        <file>file:/D:/NB%20Projects/osiris2/common/rameses-common/src/com/rameses/service/AbstractServiceProxy.java</file>
+        <file>file:/D:/NB%20Projects/osiris2/common/rameses-common/src/com/rameses/service/DefaultEJBServiceProxy.java</file>
+        <file>file:/D:/NB%20Projects/osiris2/common/rameses-common/src/com/rameses/service/EJBServiceContext.java</file>
+        <file>file:/D:/NB%20Projects/osiris2/common/rameses-common/src/com/rameses/service/ServiceContext.java</file>
+    </open-files>
 </project-private>

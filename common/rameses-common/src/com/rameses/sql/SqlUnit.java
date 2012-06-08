@@ -18,17 +18,24 @@ import java.util.List;
  */
 public class SqlUnit implements Serializable {
  
+    private String originalStatement;
     private String statement;
     private List paramNames;
     
     public SqlUnit(String origStatement) {
         paramNames = new ArrayList();
+        this.originalStatement = origStatement;
         this.statement = SqlUtil.parseStatement(origStatement,paramNames);
     }
     
     public SqlUnit(String statement, List paramNames) {
         this.paramNames = paramNames;
         this.statement = statement;
+        this.originalStatement = statement;
+    }
+    
+    public String getOriginalStatement() {
+        return originalStatement;
     }
     
     public String getStatement() {

@@ -10,6 +10,7 @@ package com.rameses.eserver;
 
 import com.rameses.scripting.ResourceInjector;
 import com.rameses.scripting.ScriptServiceLocal;
+import com.rameses.eserver.LookupUtil;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;

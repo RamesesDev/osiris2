@@ -11,6 +11,7 @@ package com.rameses.sql;
 
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import javax.sql.DataSource;
 
@@ -20,7 +21,24 @@ import javax.sql.DataSource;
  */
 public class SqlManager {
     
+    //=== static area ===
+    private static SqlManager instance;
+    
+    public static void setInstance(SqlManager sm) {
+        instance = sm;
+    }
+    
+    public static SqlManager getInstance() {
+        if(instance==null) {
+            instance = new SqlManager(new SqlConf());
+        }
+        return instance;
+    }
+    
+    
+    //=== instance area ===
     private SqlConf conf = new SqlConf();
+    private SqlDialect dialect;
      
     public SqlConf getConf() {
         return conf;
@@ -43,41 +61,29 @@ public class SqlManager {
         return su;    
     }
     
-    
-    
     public SqlUnit getNamedSqlUnit(String name) {
         int extIndex = name.lastIndexOf(".");
-        String unitName = name; 
+        String unitName = name;
         //type is represnted in the extension part.
-        String type = name.substring( extIndex+1);
-
+        String type = name.substring( extIndex+1 );
+        
         SqlUnit su = cache.get(unitName);
         if( su!=null) return su;
         
-         Map<String, SqlUnitProvider> providers = getConf().getSqlUnitProviders();
+        Map<String, SqlUnitProvider> providers = getConf().getSqlUnitProviders();
         //extension represents the type of Sql unit.
-        if(!providers.containsKey(type))
+        if(!providers.containsKey(type)) {
             throw new RuntimeException("Sql unit factory error. There is no Sql Unit provider for type " + type );
-            
-        su = providers.get(type).getSqlUnit(unitName);
-        if(su==null)
-            throw new RuntimeException("Sql unit " + name + " is not found");
-        cache.put(name, su);
-        return su;
-    }
-    
-    
-    private static SqlManager instance;
-    
-    public static void setInstance(SqlManager sm) {
-        instance = sm;
-    }
-    
-    public static SqlManager getInstance() {
-        if(instance==null) {
-            instance = new SqlManager(new SqlConf());
         }
-        return instance;
+
+        su = providers.get(type).getSqlUnit(unitName);
+        if(su==null) {
+            throw new RuntimeException("Sql unit " + name + " is not found");
+        }
+        
+        cache.put(name, su);
+        
+        return su;
     }
     
     public void destroy() {
@@ -99,5 +105,19 @@ public class SqlManager {
 
     public Map<String, SqlUnit> getCache() {
         return cache;
+    }
+
+    public SqlDialect getDialect() {
+        return dialect;
+    }
+
+    public void setDialect(SqlDialect dialect) {
+        if( this.dialect == dialect ) return;
+        
+        this.dialect = dialect;
+        Iterator itr = conf.getSqlUnitProviders().values().iterator();
+        while( itr.hasNext() ) {
+            ((SqlUnitProvider) itr.next()).setDialect(dialect);
+        }
     }
 }

@@ -138,19 +138,25 @@ public final class AppContext {
         return true;
     }
     
+    public static String calculateDSName(String dname, Map env) {
+        if(dname.startsWith("java:"))
+            dname = dname.substring(5);
+        
+        if(!"system".equals(dname) && env!=null && env.get("ds.prefix")!=null)
+            dname = env.get("ds.prefix") + "_" + dname;
+        
+        if(hasAppName() && !dname.startsWith(getName()))
+            dname = getName() + "_" + dname;
+        
+        return dname;
+    }
+    
     public static final DataSource lookupDs(String dname, Map env) {
         try {
-            if(dname.startsWith("java:")) 
-                dname = dname.substring(5);
-            
-            if("system".equals(dname))
+            dname = calculateDSName(dname, env);
+            if( (getName() + "_system").equals(dname) ) {
                 return getSystemDs();
-            
-            if(env!=null && env.get("ds.prefix")!=null) 
-                dname = env.get("ds.prefix") + "_" + dname;
-            
-            else if(hasAppName() && !dname.startsWith(getName())) 
-                dname = getName() + "_" + dname;
+            }
             
             InitialContext ctx = new InitialContext();
             return (DataSource)ctx.lookup("java:" + dname);
@@ -183,6 +189,17 @@ public final class AppContext {
 
     public static String getAppPathDir() {
         return appPathDir;
+    }
+    
+    public static String getDialect(String dsName, Map env) {
+        Map m = AppContext.getSysMap();
+        dsName =ExprUtil.substituteValues(dsName, m);
+        dsName = calculateDSName(dsName, env);
+        String sqlDialect = System.getProperty( dsName + ".sqldialect" );
+        if( sqlDialect != null ) 
+            return sqlDialect;
+        
+        return System.getProperty( "default.sqldialect" );
     }
     
 }

@@ -13,6 +13,7 @@ import com.rameses.util.ExprUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +25,15 @@ public abstract class AbstractSqlTxn {
     private String catalog;
     protected SqlContext sqlContext;
     protected String statement;
-    protected List<String> parameterNames = new ArrayList();
-    protected List parameterValues;
     protected Connection connection;
     protected String origStatement;
+    protected String oldStatement;
     protected List origParamNames;
     protected ParameterHandler parameterHandler;
     
     protected Map vars;
+    protected List parameterNames = new ArrayList();
+    protected Map parameterValues = new HashMap();
     
     
     
@@ -40,8 +42,10 @@ public abstract class AbstractSqlTxn {
      * however connection can be manually overridden by setting
      * setConnection. Dialect can also be set.
      */
-    AbstractSqlTxn(SqlContext sm, String statement, List paramNames) {
-        this.origStatement = statement;
+    AbstractSqlTxn(SqlContext sm, String statement, List paramNames, String origStatement) {
+        this.origStatement = origStatement;
+        this.statement = statement;
+        this.oldStatement = statement;
         this.origParamNames = paramNames;
         this.sqlContext = sm;
         clear();
@@ -49,35 +53,10 @@ public abstract class AbstractSqlTxn {
     
     //this resets the statements
     public final void clear() {
-        this.statement = origStatement;
+        this.statement = oldStatement;
         parameterNames.clear();
-        this.parameterNames.clear();
         if(origParamNames!=null) {
-            for(Object o : origParamNames) {
-                this.parameterNames.add((String)o);
-            }
-        }
-        allocate();
-    }
-    
-    /**
-     * allocates the size and clears new values.
-     */
-    protected final void allocate() {
-        this.parameterValues = new ArrayList();
-        for(Object o : parameterNames) {
-            this.parameterValues.add(null);
-        }
-    }
-    
-    /**
-     * expands the values size but does not erase existing values
-     */
-    protected final void reallocate( int len ) {
-        //int diff = parameterNames.size() - parameterValues.size();
-        int diff = len - parameterValues.size();
-        for(int i=0; i<diff;i++) {
-            parameterValues.add(null);
+            parameterNames.addAll(origParamNames);
         }
     }
     
@@ -89,26 +68,12 @@ public abstract class AbstractSqlTxn {
         this.connection = connection;
     }
     
-    protected final void _setParameter( int idx, Object v ) {
-        if(idx<=0)
-            throw new RuntimeException("Index must be 1 or higher");
-        
-        int diff = idx - parameterValues.size();
-        for(int i=0; i<diff;i++) {
-            parameterValues.add(null);
-        }
-        parameterValues.set(idx-1, v);
+    protected final void _setParameter(int idx, Object v) {
+        parameterValues.put(idx, v);
     }
     
-    protected final void _setParameter(String name, Object v ) {
-        int idx = -1;
-        for(int i=0; i<parameterNames.size();i++) {
-            if(parameterNames.get(i).equals(name)) {
-                parameterValues.set(i, v);
-                return;
-            }
-        }
-        throw new RuntimeException("Parameter " + name + " is not found");
+    protected final void _setParameter(String name, Object v) {
+        parameterValues.put(name, v);
     }
     
     
@@ -116,29 +81,19 @@ public abstract class AbstractSqlTxn {
     
     /***
      * This method allows adding of parameters stored as one map.
-     * It requires parameter names must exist. To do this,
-     * your statement must have the $P{param} named parameter.
      */
     protected final void _setParameters( Map map ) {
         if(map==null) return;
-        if(parameterNames==null)
-            throw new RuntimeException("Parameter Names must not be null. Please indicate $P{paramName} in your statement");
-        int sz = parameterNames.size();
-        for(int i=0;i<sz;i++ ) {
-            parameterValues.set(  i, map.get( parameterNames.get(i)  ));
-        }
+        
+        parameterValues.putAll( map );
     }
     
     
     protected final void _setParameters( List params ) {
         if(params==null) return;
-        if(parameterNames!=null && parameterNames.size()>0){
-            if(parameterNames.size()!=params.size())
-                throw new RuntimeException("Parameter count does not match");
-        }
-        int sz = params.size();
-        for(int i=0;i<sz;i++ ) {
-            parameterValues.set(  i, params.get(i) );
+        
+        for(int i=0; i<params.size(); ++i) {
+            parameterValues.put(i+1, params.get(i));
         }
     }
     
@@ -148,14 +103,6 @@ public abstract class AbstractSqlTxn {
      */
     protected final void _setVars( Map map ) {
         this.vars = map;
-        this.statement = ExprUtil.substituteValues( this.origStatement, map );
-        //reparse the statement after parsing to update the parameter names
-        this.statement = SqlUtil.parseStatement(statement, parameterNames);
-        reallocate( countChar( statement, "?" ));
-    }
-    
-    private int countChar( String s, String schar ){
-        return s.replaceAll("[^" + schar+ "]", "").length();
     }
     
     /***
@@ -166,14 +113,13 @@ public abstract class AbstractSqlTxn {
     }
     
     protected final void fillParameters( PreparedStatement ps ) throws Exception {
-        int sz = parameterValues.size();
+        int sz = parameterNames.size();
+        
         for( int i=0; i<sz;i++) {
-            String name = null;
-            if(parameterNames!=null && parameterNames.size()>0) {
-                name = parameterNames.get(i);
-            }
             int colIndex = i+1;
-            Object value = parameterValues.get(i);
+            Object key = parameterNames.get(i);
+            Object value = parameterValues.get(key);
+            String name = (key instanceof Integer) ? null : key.toString();
             parameterHandler.setParameter(ps,colIndex,value,name);
         }
     }
@@ -202,7 +148,7 @@ public abstract class AbstractSqlTxn {
         return sqlContext;
     }
     
-    public final List getParameterValues() {
+    public final Map getParameterValues() {
         return parameterValues;
     }
     
@@ -215,7 +161,12 @@ public abstract class AbstractSqlTxn {
         return this;
     }
     
-    
-    
-    
+    protected void prepareStatement() {
+        if( vars != null && !vars.isEmpty() ) {
+            this.statement = ExprUtil.substituteValues( this.origStatement, vars );
+            //reparse the statement after parsing to update the parameter names
+            parameterNames.clear();
+            this.statement = SqlUtil.parseStatement(statement, parameterNames);
+        }
+    }
 }

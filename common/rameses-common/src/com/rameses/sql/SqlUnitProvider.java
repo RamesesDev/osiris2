@@ -16,6 +16,7 @@ package com.rameses.sql;
 public abstract class SqlUnitProvider {
     
     private SqlConf conf;
+    private SqlDialect dialect;
     
     public abstract String getType();
     
@@ -27,6 +28,14 @@ public abstract class SqlUnitProvider {
 
     public void setConf(SqlConf c) {
         this.conf = c;
+    }
+
+    public SqlDialect getDialect() {
+        return dialect;
+    }
+
+    public void setDialect(SqlDialect dialect) {
+        this.dialect = dialect;
     }
 
     

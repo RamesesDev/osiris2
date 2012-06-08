@@ -9,6 +9,7 @@
 
 package com.rameses.scheduler2;
 
+import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
@@ -32,6 +33,8 @@ public class ErrorTaskList implements Serializable {
     public void addError(TaskBean tb, String msg) throws Exception{
         TaskBean t = null;
         SqlContext sqlContext = SqlManager.getInstance().createContext(manager.getDataSource());
+        sqlContext.setDialect(AppContext.getDialect("system", null));
+        
         SqlExecutor sqle = sqlContext.createNamedExecutor("scheduler:log-error");
         Map map = new HashMap();
         map.put("id", tb.getId());
@@ -43,6 +46,8 @@ public class ErrorTaskList implements Serializable {
     
     public void resume(String id) throws Exception{
         SqlContext sqlContext = SqlManager.getInstance().createContext(manager.getDataSource());
+        sqlContext.setDialect(AppContext.getDialect("system", null));
+        
         SqlExecutor sqle = sqlContext.createNamedExecutor("scheduler:resume-error");
         sqle.setParameter(1, id).execute();
         TaskBean tb = tasks.remove( id );

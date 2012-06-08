@@ -9,6 +9,7 @@
 
 package com.rameses.scheduler2;
 
+import com.rameses.server.common.AppContext;
 import com.rameses.server.session.SessionServiceMBean;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
@@ -85,6 +86,8 @@ public final class ScheduleManager implements Serializable {
     public void addTask(Map map) throws Exception {
         TaskBean t = new TaskBean(map);
         SqlContext sqlContext = SqlManager.getInstance().createContext(this.datasource);
+        sqlContext.setDialect(AppContext.getDialect("system", null));
+        
         SqlExecutor sqle = sqlContext.createNamedExecutor("scheduler:add-task");
         sqle.setParameters( map  ).execute();
         this.pendingTasks.push(t);

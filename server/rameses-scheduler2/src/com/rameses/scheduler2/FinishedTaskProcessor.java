@@ -9,6 +9,7 @@
 
 package com.rameses.scheduler2;
 
+import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
@@ -36,6 +37,8 @@ public class FinishedTaskProcessor extends AbstractTaskProcessor {
         List<TaskBean> returnTasks = new ArrayList();
         List<TaskBean> ended = new ArrayList();
         SqlContext sqlContext = SqlManager.getInstance().createContext(super.getManager().getDataSource());
+        sqlContext.setDialect(AppContext.getDialect("system", null));
+        
         SqlExecutor sqle = sqlContext.createNamedExecutor("scheduler:update-next-date");
         while((t=queue.poll())!=null) {
             Map map = new HashMap();

@@ -80,7 +80,9 @@ public class CacheService implements CacheServiceMBean,Serializable,Runnable {
     
     private SqlContext getSqlContext() {
         DataSource ds = AppContext.getSystemDs();
-        return SqlManager.getInstance().createContext(ds);
+        SqlContext ctx = SqlManager.getInstance().createContext(ds);
+        ctx.setDialect(AppContext.getDialect("system", null));
+        return ctx;
     }
     
     //basic timeout is 1 minute

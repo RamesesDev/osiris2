@@ -61,8 +61,11 @@ public class ClusterService implements ClusterServiceMBean{
         dataSource = AppContext.getSystemDs();
         
         SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+        ctx.setDialect(AppContext.getDialect("system", null));
         
+        ctx.createNamedExecutor("cluster:remove-host").setParameter(1, hostname).execute();
         ctx.createNamedExecutor("cluster:add-host").setParameter(1, hostname).setParameter(2,context).setParameter(3,host).execute();
+        
         //load all cluster hosts if any.
         List<Map> results = ctx.createNamedQuery("cluster:list-hosts").setParameter(1, hostname).getResultList();
         
@@ -89,6 +92,8 @@ public class ClusterService implements ClusterServiceMBean{
 
         //remove all sessions associated with this host
         SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+        ctx.setDialect(AppContext.getDialect("system", null));
+        
         ctx.createNamedExecutor("cluster:remove-host").setParameter(1, hostname).execute();
         remoteHosts.clear();
         InitialContext ictx = new InitialContext();

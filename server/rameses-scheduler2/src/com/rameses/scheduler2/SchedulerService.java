@@ -50,6 +50,8 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
         System.out.println("STARTING SCHEDULER 2 @" + hostName);
         datasource = AppContext.getSystemDs();
         SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+        sqlc.setDialect(AppContext.getDialect("system", null));
+        
         SqlExecutor sqe = sqlc.createNamedExecutor("scheduler:load-tasks");
         sqe.setParameter("host", hostName);
         sqe.execute();
@@ -82,6 +84,8 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     
     public void stop() throws Exception {
         SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+        sqlc.setDialect(AppContext.getDialect("system", null));
+        
         SqlExecutor sqe = sqlc.createNamedExecutor("scheduler:unload-tasks");
         sqe.setParameter("host", clusterService.getCurrentHostName());
         sqe.execute();
@@ -118,6 +122,8 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     public void restart(String id) throws Exception {
         try {
             SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+            sqlc.setDialect(AppContext.getDialect("system", null));
+            
             Map map = new HashMap();
             map.put("host", this.clusterService.getCurrentHostName());
             map.put("id", id);
@@ -149,6 +155,8 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     public void addTask(Map task) throws Exception {
         try {
             SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+            sqlc.setDialect(AppContext.getDialect("system", null));
+            
             SqlExecutor sqe = sqlc.createNamedExecutor("scheduler:add-task");
             sqe.setParameters(task).execute();
 
@@ -168,6 +176,8 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     //before updating, make sure that task is suspended first
     public void updateTask(Map task)  throws Exception {
         SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+        sqlc.setDialect(AppContext.getDialect("system", null));
+        
         sqlc.createNamedExecutor("scheduler:update-task").setParameters(task).execute();
 
         try {
@@ -197,6 +207,8 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     public void remove(String id) throws Exception {
         try {
             SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
+            sqlc.setDialect(AppContext.getDialect("system", null));
+            
             sqlc.createNamedExecutor("scheduler:remove-active").setParameter(1, id).execute(); //removes active record
             sqlc.createNamedExecutor("scheduler:resume").setParameter(1, id).execute();        //removes suspended record
             sqlc.createNamedExecutor("scheduler:remove-task").setParameter(1, id).execute();   //removes task record

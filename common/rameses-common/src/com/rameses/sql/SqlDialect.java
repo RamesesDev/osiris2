@@ -13,6 +13,8 @@ package com.rameses.sql;
  *
  * @author Elmo
  */
-public interface SqlDialect {
+public interface SqlDialect 
+{
+    String getName();
     String getPagingStatement( String sql, int start, int limit, String [] pagingKeys  );
 }

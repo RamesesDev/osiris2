@@ -28,7 +28,7 @@ public final class SqlUtil {
     public SqlUtil() {
     }
     
-    private static Pattern pattern = Pattern.compile("\\$P\\{.+?\\}");
+    private static Pattern pattern = Pattern.compile("(\\$P\\{(.+?)\\})|(\\?)");
     
     
     /***
@@ -39,26 +39,30 @@ public final class SqlUtil {
      * "select * from table where fieldname = $P{fieldname}"
      * will return "select * from table where fieldname=?"
      *
-     * @param sql original select statement
-     * @param paramNames empty list to contain the param names extracted.
-     * must not be null.
+     * @param <b>sql</b> original select statement
+     * @param <b>paramNames</b> 
+     *  An empty list to contain the parameter names or parameter index extracted.
      *
-     * @return the corrected sql statement
+     * @return the parsed sql statement
      */
     public static String parseStatement( String sql, List paramNames ) {
-        if(! sql.contains("$P") ) return sql;
+        if( !sql.contains("$P") && !sql.contains("?") ) return sql;
         
         Matcher m = pattern.matcher(sql);
-        int start = 0;
         StringBuffer sb = new StringBuffer();
+        
+        int count = 1;
         while(m.find()) {
-            int end = m.start();
-            sb.append( sql.substring(start, end ) + "?" );
-            String name = m.group().replaceAll( "\\$P\\{|\\}", "").trim();
-            paramNames.add( name );
-            start = end + m.group().length();
+            if( m.group(1) != null ) {
+                paramNames.add( m.group(2).trim() );
+                m.appendReplacement(sb, "?");
+            }
+            else {
+                paramNames.add( count++ );
+            }
         }
-        sb.append( sql.substring(start) );
+        m.appendTail(sb);
+        
         return sb.toString();
     }
     

@@ -14,7 +14,7 @@ import com.rameses.schema.SchemaManager;
 import com.rameses.scripting.ScriptManager;
 import com.rameses.scripting.ScriptProxyInvocationHandler;
 import com.rameses.scripting.ScriptServiceLocal;
-import com.rameses.server.common.AppContext;
+import com.rameses.server.common.*;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.util.ExprUtil;
@@ -76,8 +76,7 @@ public final class LookupUtil {
         }
         
          //LOAD THE DIALECT. 
-        String sqlDialect = System.getProperty( dsName + ".sqldialect" );
-        if( sqlDialect == null ) sqlDialect = System.getProperty( "default.sqldialect" );
+        String sqlDialect = AppContext.getDialect(dsName, env);
         if( sqlDialect !=null ) sctx.setDialect( sqlDialect );
         
         //set catalog only if the ds name is not system
@@ -107,8 +106,7 @@ public final class LookupUtil {
             sqlContext.setCatalog( (String)env.get(DS_CATALOG)  );    
         }
         //LOAD THE DIALECT. 
-        String sqlDialect = System.getProperty( dsName + ".sqldialect" );
-        if( sqlDialect == null ) sqlDialect = System.getProperty( "default.sqldialect" );
+        String sqlDialect = AppContext.getDialect(dsName, env);
         if( sqlDialect !=null ) sqlContext.setDialect( sqlDialect );
         
         return new EntityManager( SchemaManager.getInstance(),sqlContext);

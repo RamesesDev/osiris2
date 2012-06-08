@@ -73,12 +73,13 @@ public class SqlContext {
     
     private SqlUnit getNamedSqlCache(String name ) {
         if(name.indexOf(".")<0) name = name + ".sql";
+        sqlManager.setDialect(dialect);
         return sqlManager.getNamedSqlUnit( name );
     }
     
     public SqlQuery createQuery(String statement) {
         SqlUnit sq = getSqlCache(statement);
-        SqlQuery q = new SqlQuery(this,sq.getStatement(),sq.getParamNames());
+        SqlQuery q = new SqlQuery(this,sq.getStatement(),sq.getParamNames(), sq.getOriginalStatement());
         if( dialect !=null) q.setDialect( dialect );
         if( this.catalog !=null ) q.setCatalog(catalog);
         return q;
@@ -86,7 +87,7 @@ public class SqlContext {
     
     public SqlQuery createNamedQuery(String name) {
         SqlUnit sq = getNamedSqlCache(name);
-        SqlQuery q = new SqlQuery( this, sq.getStatement(),sq.getParamNames());
+        SqlQuery q = new SqlQuery( this, sq.getStatement(),sq.getParamNames(), sq.getOriginalStatement());
         if( dialect !=null) q.setDialect( dialect );
         if( this.catalog !=null ) q.setCatalog(catalog);
         return q;
@@ -94,14 +95,14 @@ public class SqlContext {
     
     public SqlExecutor createExecutor(String statement) {
         SqlUnit sq = getSqlCache(statement);
-        SqlExecutor q = new SqlExecutor(this,sq.getStatement(),sq.getParamNames());
+        SqlExecutor q = new SqlExecutor(this,sq.getStatement(),sq.getParamNames(), sq.getOriginalStatement());
         if( this.catalog !=null ) q.setCatalog(catalog);
         return q;
     }
     
     public SqlExecutor createNamedExecutor( String name ) {
         SqlUnit sq = getNamedSqlCache(name);
-        SqlExecutor q = new SqlExecutor(this,sq.getStatement(),sq.getParamNames());
+        SqlExecutor q = new SqlExecutor(this,sq.getStatement(),sq.getParamNames(), sq.getOriginalStatement());
         if( this.catalog !=null ) q.setCatalog(catalog);
         return q;
     }

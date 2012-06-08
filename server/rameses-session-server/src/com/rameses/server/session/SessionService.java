@@ -17,6 +17,9 @@ import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import java.io.Serializable;
 import java.rmi.server.UID;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +37,8 @@ import javax.sql.DataSource;
  * @author jzamss
  */
 public class SessionService implements SessionServiceMBean,Serializable,Runnable {
+    
+    private static final Format DT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
     private ClusterServiceMBean clusterService;
     
@@ -63,6 +68,8 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
         
         //remove all sessions associated with this host. make this a priority
         SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+        ctx.setDialect(AppContext.getDialect("system", null));
+        
         ctx.createNamedExecutor("session:remove-host-sessions").setParameter(1, hostName).execute();
         
         //clear out all sessiosns connecting by sending messages to each
@@ -164,10 +171,16 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
             map.put("sessionid", sessionid );
             map.put("username", username);
             map.put("info", info);
-            map.put("dtaccessed", new java.util.Date());
+            
+            Date d = new java.util.Date();
+            String format = DT_FORMAT.format(d);
+            map.put("dtaccessed", java.sql.Timestamp.valueOf(format));
             map.put("host", hostName );
             map.put("dtexpiry", null);
+            
             SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+            ctx.setDialect(AppContext.getDialect("system", null));
+            
             ctx.createNamedExecutor("session:add-session").setParameters(map).execute();
             Session session = new Session(sessionid, username, info, timeout, this.pollTimeout);
             sessions.put( sessionid, session );
@@ -193,7 +206,10 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
         if(sessions.containsKey(sessionId)) {
             Session s = sessions.remove(sessionId);
             s.push(msg);
+            
             SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+            ctx.setDialect(AppContext.getDialect("system", null));
+            
             Map map = new HashMap();
             map.put("sessionid", sessionId);
             map.put("username",s.getUsername());
@@ -253,6 +269,8 @@ public class SessionService implements SessionServiceMBean,Serializable,Runnable
 
     public void notifyUser(String username, Object msg) throws Exception {
         SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+        ctx.setDialect(AppContext.getDialect("system", null));
+        
         List<Map> list = ctx.createNamedQuery("session:list-session-byuser").setParameter("username", username).getResultList();       
         for(Map m: list ) {
             String sessionId = (String)m.get("sessionid");

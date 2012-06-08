@@ -66,6 +66,10 @@ public class Folder implements Serializable, Comparable {
     public String getCaption() {
         return caption;
     }
+    
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
 
     public Folder getParent() {
         return parent;
@@ -155,24 +159,11 @@ public class Folder implements Serializable, Comparable {
     public int compareTo(Object o ) {
         if( o == null || !(o instanceof Folder) ) return 0;
         Folder i = (Folder)o;
-        if( getIndex()==null && i.getIndex()==null ) {
-            return 0;
-        }
-        else if( getIndex()!=null && i.getIndex()==null ) {
-            return 1;
-        }
-        else if( getIndex()==null && i.getIndex()!=null ) {
-            return -1;
-        }
-        else if( getIndex().intValue() < i.getIndex().intValue() ) {
-            return -1;
-        }
-        else if( getIndex().intValue() > i.getIndex().intValue() ) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
+        
+        int index1 = getIndex() == null ? 0 : getIndex();
+        int index2 = i.getIndex() == null ? 0 : i.getIndex();
+        
+        return index1 - index2;
     }
 
     public Integer getIndex() {

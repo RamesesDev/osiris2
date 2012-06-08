@@ -39,9 +39,20 @@ public class SimpleSqlUnitProvider extends SqlUnitProvider {
         InputStream is = null;
         try {
             if(name.indexOf(":")>0) {
-                String resName = name.substring( 0, name.indexOf(":") ) + ".sql";
+                String resName = name.substring( 0, name.indexOf(":") );
                 String subName = name.substring(name.indexOf(":")+1, name.indexOf(".sql"));
-                is = getConf().getResourceProvider().getResource(resName);
+                
+                if( getDialect() != null ) {
+                    String dname = getDialect().getName();
+                    try {
+                        is = getConf().getResourceProvider().getResource(resName + "_" + dname + ".sql");
+                    }
+                    catch(Exception e){}
+                }
+                if( is == null ) {
+                    is = getConf().getResourceProvider().getResource(resName + ".sql");
+                }
+                
                 String txt = getSubSqlUnit( subName, is );
                 if(txt.trim().length()==0)
                     throw new RuntimeException( subName + " for resource " + resName + " does not exist!");
@@ -49,7 +60,17 @@ public class SimpleSqlUnitProvider extends SqlUnitProvider {
                 return new SqlUnit(txt);
             }
             else {
-                is = getConf().getResourceProvider().getResource(name);
+                if( getDialect() != null ) {
+                    String resName = name.replaceAll("\\.sql$", "");
+                    String dname = getDialect().getName();
+                    try {
+                        is = getConf().getResourceProvider().getResource(resName + "_" + dname + ".sql");
+                    }catch(Exception e){}
+                }
+                if( is == null ) {
+                    is = getConf().getResourceProvider().getResource(name);
+                }
+                
                 String txt = StreamUtil.toString(is);
                 return new SqlUnit(txt);
             }
@@ -84,7 +105,8 @@ public class SimpleSqlUnitProvider extends SqlUnitProvider {
                     continue;                    
                 }
                 else if(started) {
-                    sb.append( line );
+                    //always add extra space per each line
+                    sb.append( line + " " );
                 }
             }
             return sb.toString();

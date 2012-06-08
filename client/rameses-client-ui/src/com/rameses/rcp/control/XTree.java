@@ -276,7 +276,9 @@ public class XTree extends JTree implements UIControl, TreeSelectionListener, Tr
                     if( n.getIcon()!=null ) {
                         String icon = n.getIcon();
                         ImageIcon ic = ControlSupport.getImageIcon(icon);
-                        super.setIcon(ic);
+                        if( ic != null ) {
+                            super.setIcon(ic);
+                        }
                     }
                     if( n.getTooltip() !=null) {
                         super.setToolTipText(n.getTooltip());

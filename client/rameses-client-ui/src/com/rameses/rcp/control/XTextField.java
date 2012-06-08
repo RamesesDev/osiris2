@@ -63,6 +63,8 @@ public class XTextField extends JTextField implements UIInput, Validatable, Acti
         //set default font
         Font f = ThemeUI.getFont("XTextField.font");
         if ( f != null ) setFont(f);
+        Color c = ThemeUI.getColor("XTextField.disabledTextColor");
+        if( c != null ) setDisabledTextColor(c);
     }
     
     public void paint(Graphics origGraphics) {

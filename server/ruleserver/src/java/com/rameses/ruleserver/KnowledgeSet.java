@@ -93,6 +93,14 @@ public final class KnowledgeSet implements Serializable {
                 builder.add( ResourceFactory.newByteArrayResource(  _fact.getBytes() ), ResourceType.DRL);
             }
             builder.add( ResourceFactory.newByteArrayResource(  content.getBytes() ), ResourceType.DRL);
+            
+            
+            //check for errors
+            if( builder.hasErrors() ) {
+                String errmsg = builder.getErrors().toString();
+                System.out.println("Error deploying rule " + packageName + ": " + errmsg);
+                throw new RuntimeException("Failed to deploy rule " + packageName + ".\n" + errmsg);
+            }
 
             //find the last package and add it to the current knowledge base.
             //- update: don't just add the last because sometimes it does not follow the expected order

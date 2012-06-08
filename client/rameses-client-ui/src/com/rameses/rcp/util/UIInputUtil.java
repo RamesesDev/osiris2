@@ -74,7 +74,7 @@ public class UIInputUtil {
             Object beanValue = resolver.getProperty(bean, name);
             boolean forceUpdate = false;
             if ( control instanceof JComponent ) {
-                //if the input is the a JTable check for the flag
+                //if the input is a JTable check for the flag
                 Object value = ((JComponent) control).getClientProperty(JTable.class);
                 forceUpdate = (value != null);
             }

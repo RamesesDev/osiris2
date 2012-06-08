@@ -63,8 +63,8 @@ public class XLookupField extends AbstractIconedTextField implements LookupSelec
     //<editor-fold defaultstate="collapsed" desc="  refresh/load  ">
     public void refresh() {
         Object value = UIControlUtil.getBeanValue(this);
+        selectedValue = value;
         if ( value != null ) {
-            selectedValue = value;
             if ( !ValueUtil.isEmpty(expression) ) {
                 value = UIControlUtil.evaluateExpr(value, expression);
             }

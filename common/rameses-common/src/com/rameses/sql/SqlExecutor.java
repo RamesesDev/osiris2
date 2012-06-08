@@ -12,6 +12,7 @@ package com.rameses.sql;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,15 +25,15 @@ public class SqlExecutor extends AbstractSqlTxn {
     private ExecutorExceptionHandler exceptionHandler;
     
     //contains list of parameterValues
-    private List<List> batchData;
+    private List<Map> batchData;
     
     /***
      * By default, DataSource is passed by the SqlManager
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlExecutor(SqlContext sm, String statement, List paramNames) {
-        super(sm,statement,paramNames);
+    SqlExecutor(SqlContext sm, String statement, List paramNames, String origStatement) {
+        super(sm,statement,paramNames, origStatement);
     }
         
     public Object execute() throws Exception {
@@ -44,6 +45,9 @@ public class SqlExecutor extends AbstractSqlTxn {
                 conn = connection;
             else
                 conn = sqlContext.getConnection();
+            
+            //prepare the statement
+            super.prepareStatement();
             
             //use database if specified
             if( super.getCatalog()!=null ) {
@@ -62,7 +66,7 @@ public class SqlExecutor extends AbstractSqlTxn {
                 return ps.executeUpdate();
             } else {
                 int i = 0;
-                for(List o: batchData)  {
+                for(Map o: batchData)  {
                     parameterValues = o;
                     fillParameters(ps);
                     ps.addBatch();
@@ -117,8 +121,12 @@ public class SqlExecutor extends AbstractSqlTxn {
         if(batchData==null) batchData = new ArrayList();
         if(parameterValues.size()==0)
             throw new RuntimeException("Add batch failed. There must be at least one parameter specified");
-        batchData.add(parameterValues);
-        allocate();
+        
+        Map batchParams = new HashMap();
+        batchParams.putAll(parameterValues);
+        batchData.add(batchParams);
+        
+        parameterValues.clear();
         return this;
     }
     
@@ -134,11 +142,11 @@ public class SqlExecutor extends AbstractSqlTxn {
         this.exceptionHandler = exceptionHandler;
     }
     
-    public List<List> getBatchData() {
+    public List<Map> getBatchData() {
         return batchData;
     }
     
-    public void setBatchData(List<List> batchData) {
+    public void setBatchData(List<Map> batchData) {
         this.batchData = batchData;
     }
     

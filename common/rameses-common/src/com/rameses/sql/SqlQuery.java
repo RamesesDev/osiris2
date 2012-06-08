@@ -36,9 +36,11 @@ public class SqlQuery extends AbstractSqlTxn {
      * however connection can be manually overridden by setting
      * setConnection.
      */
-    SqlQuery(SqlContext sm, String statement, List paramNames) {
-        super( sm, statement, paramNames );
+    SqlQuery(SqlContext sm, String statement, List paramNames, String origStatement) {
+        super( sm, statement, paramNames, origStatement );
     }
+    
+    
     
     public void setFetchHandler(FetchHandler resultHandler) {
         this.fetchHandler = resultHandler;
@@ -71,12 +73,19 @@ public class SqlQuery extends AbstractSqlTxn {
             if(parameterHandler==null)
                 parameterHandler = new BasicParameterHandler();
             
-            //get the results
-            String _sql = getFixedSqlStatement();
+            //keep the origStatement value
+            String oldOrigStatement = this.origStatement;
+            
             if( dialect != null && maxResults > 0 ) {
-                _sql = dialect.getPagingStatement( statement, firstResult, maxResults, pagingKeys );
+                this.origStatement = dialect.getPagingStatement( this.origStatement, firstResult, maxResults, pagingKeys );
+                parameterNames.clear();
+                this.statement = SqlUtil.parseStatement(this.origStatement, parameterNames);
             }
             
+            super.prepareStatement();
+            this.origStatement = oldOrigStatement; //reset the original value of origStatement
+            
+            String _sql = getFixedSqlStatement();
             ps = conn.prepareStatement( _sql );
             fillParameters(ps);
             
@@ -87,15 +96,7 @@ public class SqlQuery extends AbstractSqlTxn {
             //do paging here.
             rs = ps.executeQuery();
             List resultList = new ArrayList();
-            
-            //check first the size of the cursor against the size of the set.
-            //if maxResults > 0 and size of set > maxResults
-            /*
-            if( firstResult != 0 ) {
-                rs.absolute(firstResult);
-            }
-            
-             */
+
             fetchHandler.start();
             rowsFetched = 0;
             while(rs.next()) {
@@ -182,6 +183,9 @@ public class SqlQuery extends AbstractSqlTxn {
             else
                 conn = sqlContext.getConnection();
             
+            //prepare the statement
+            super.prepareStatement();
+            
             //use the database if specified
             if( super.getCatalog()!=null ) {
                 oldCatalogName = conn.getCatalog();
@@ -250,6 +254,10 @@ public class SqlQuery extends AbstractSqlTxn {
                 conn = connection;
             else
                 conn = sqlContext.getConnection();
+            
+            //prepare the statement
+            super.prepareStatement();
+            
             //use the database if specified
             if( super.getCatalog()!=null ) {
                 oldCatalogName = conn.getCatalog();

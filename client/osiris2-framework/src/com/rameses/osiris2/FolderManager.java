@@ -9,6 +9,7 @@
 
 package com.rameses.osiris2;
 
+import com.rameses.util.ValueUtil;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -54,7 +55,11 @@ public class FolderManager implements Serializable {
             }
             return folder;
         } else {
-            return (Folder) folders.get(fullId);
+            Folder f = (Folder) folders.get(fullId);
+            if( ValueUtil.isEmpty(f.getCaption()) ) {
+                f.setCaption(folder.getCaption());
+            }
+            return f;
         }
     }
 

@@ -1,10 +1,5 @@
 /*
  * MachineInfo.java
- *
- * Created on June 2, 2010, 2:35 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package com.rameses.util;
@@ -52,9 +47,8 @@ public abstract class MachineInfo {
         Process p = Runtime.getRuntime().exec(command);
         InputStream stdoutStream = new BufferedInputStream(p.getInputStream());
         StringBuffer buffer= new StringBuffer();
-        for (;;) {
-            int c = stdoutStream.read();
-            if (c == -1) break;
+        int c;
+        while ((c = stdoutStream.read()) != -1) {
             buffer.append((char)c);
         }
         
@@ -136,7 +130,6 @@ public abstract class MachineInfo {
         private String getMacFromIPConfig() {
             try {
                 String response = getProcessResponse("ipconfig /all");
-                System.out.println("Response -> " + response);
                 StringTokenizer tokenizer = new StringTokenizer(response, "\n");
 
                 int counter = 1;

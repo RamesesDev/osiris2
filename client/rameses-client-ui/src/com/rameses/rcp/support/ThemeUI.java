@@ -18,9 +18,11 @@ public final class ThemeUI {
     }
     
     public static Color getColor(String key) {
-        if ( "XTextField.focusBackground".equals(key) )
+        if( "XTextField.focusBackground".equals(key) )
             return new Color(254, 255, 208);
-        
+        if( "XTextField.disabledTextColor".equals(key) ) 
+            return new Color(0, 0, 0);
+
         return null;
     }
 }
