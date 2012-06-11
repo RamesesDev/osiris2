@@ -41,6 +41,7 @@ public class OsirisInvokerHandler implements InvocationHandler {
             Map clientEnv = OsirisContext.getEnv();
             ServiceProxy p = sc.create( serviceName, clientEnv );
             Object o = p.invoke( method.getName(), args );
+            
             /*
             if( o !=null  && (o instanceof AsyncResponse) ) {
                 //match first the listener
@@ -57,6 +58,7 @@ public class OsirisInvokerHandler implements InvocationHandler {
                 }
             }
             */
+            
             return o;
         } catch(Exception e) {
             e.printStackTrace();

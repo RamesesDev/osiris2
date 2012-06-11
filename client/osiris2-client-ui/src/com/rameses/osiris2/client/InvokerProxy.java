@@ -14,6 +14,8 @@ import com.rameses.rcp.common.ScheduledTask;
 import com.rameses.rcp.framework.ClientContext;
 import com.rameses.rcp.common.MsgBox;
 import com.rameses.service.EJBServiceContext;
+import com.rameses.service.ScriptServiceContext;
+import com.rameses.service.ServiceProxy;
 import com.rameses.util.BreakException;
 import com.rameses.util.ExceptionManager;
 import groovy.lang.GroovyClassLoader;
@@ -106,19 +108,38 @@ public class InvokerProxy  {
     }
     
     private Map<String,Class> interfaces = new HashMap();
+    
     public synchronized Object create(String name) {
+        return create(name, null);
+    }
+    
+    public synchronized Object create(String name, Class localInterface) {
         try {
-            Class cls = interfaces.get(name);
-            if(cls==null) {
-                if( !interfaces.containsKey(name) ) {
-                    EJBServiceContext ect = new EJBServiceContext(getAppEnv());
-                    ScriptInterfaceService s = ect.create( "ScriptService/local", ScriptInterfaceService.class );
-                    byte[] bytes = s.getScriptInfo( name );
-                    cls = classLoader.parseClass( new ByteArrayInputStream(bytes));
-                    interfaces.put( name, cls );
-                }
+            if( localInterface == ServiceProxy.class ) {
+                ScriptServiceContext sc = new ScriptServiceContext(getAppEnv());
+                Map clientEnv = OsirisContext.getEnv();
+                return sc.create( name, clientEnv );
             }
-            return Proxy.newProxyInstance(classLoader, new Class[]{cls}, new OsirisInvokerHandler( name, getAppEnv()));
+            
+            Class[] proxyInterface = null;
+            if( localInterface != null ) {
+                proxyInterface = new Class[]{localInterface};
+            }
+            else {
+                Class cls = interfaces.get(name);
+                if(cls==null) {
+                    if( !interfaces.containsKey(name) ) {
+                        EJBServiceContext ect = new EJBServiceContext(getAppEnv());
+                        ScriptInterfaceService s = ect.create( "ScriptService/local", ScriptInterfaceService.class );
+                        byte[] bytes = s.getScriptInfo( name );
+                        cls = classLoader.parseClass( new ByteArrayInputStream(bytes));
+                        interfaces.put( name, cls );
+                    }
+                }
+                proxyInterface = new Class[]{cls};
+            }
+            
+            return Proxy.newProxyInstance(classLoader, proxyInterface, new OsirisInvokerHandler( name, getAppEnv()));
             
         } catch(Exception e) {
             if( ClientContext.getCurrentContext().isDebugMode() ) {
