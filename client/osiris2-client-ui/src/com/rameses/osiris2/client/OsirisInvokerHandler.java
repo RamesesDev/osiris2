@@ -12,10 +12,15 @@ public class OsirisInvokerHandler implements InvocationHandler {
     
     private String serviceName;
     private Map appEnv;
+    private ServiceProxy proxy;
     
     public OsirisInvokerHandler( String serviceName, Map appEnv) {
         this.serviceName = serviceName;
         this.appEnv = appEnv;
+        
+        ScriptServiceContext sc = new ScriptServiceContext(appEnv);
+        Map clientEnv = OsirisContext.getEnv();
+        proxy = sc.create( serviceName, clientEnv );
     }
     
     public Object invoke(Object object, Method method, Object[] xargs) throws Throwable {
@@ -37,10 +42,7 @@ public class OsirisInvokerHandler implements InvocationHandler {
                 }
             }
             
-            ScriptServiceContext sc = new ScriptServiceContext(appEnv);            
-            Map clientEnv = OsirisContext.getEnv();
-            ServiceProxy p = sc.create( serviceName, clientEnv );
-            Object o = p.invoke( method.getName(), args );
+            Object o = proxy.invoke( method.getName(), args );
             
             /*
             if( o !=null  && (o instanceof AsyncResponse) ) {
