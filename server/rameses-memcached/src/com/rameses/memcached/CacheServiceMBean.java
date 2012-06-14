@@ -39,4 +39,6 @@ public interface CacheServiceMBean
     String getHost();
     void setPort( String port);
     String getPort();
+    void setCachePrefix(String cachePrefix);
+    String getCachePrefix();
 }

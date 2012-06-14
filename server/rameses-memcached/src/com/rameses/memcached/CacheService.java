@@ -29,6 +29,7 @@ public class CacheService implements CacheServiceMBean, Serializable {
     
     private String host;
     private String port;
+    private String cachePrefix;
     
     public void start() throws Exception {
         System.out.println("STARTING CACHE SERVICE");
@@ -50,27 +51,37 @@ public class CacheService implements CacheServiceMBean, Serializable {
         JndiUtil.unbind( ictx, AppContext.getPath() + jndiName );
     }
     
-   
-    //basic timeout is 1 minute
+
     public void put(String name, Object object) {
+        name = getResolvedKey(name);
         CacheManager.getInstance().getClient().set(name, DEFAULT_TIMEOUT, object);
     }
     
     public void put(String name, Object object, int timeout) {
         timeout = timeout / 1000;
+        name = getResolvedKey(name);
         CacheManager.getInstance().getClient().set(name, timeout, object);
     }
     
     public Object get(String name) {
+        name = getResolvedKey(name);
         return CacheManager.getInstance().getClient().get(name);
     }
 
     public void remove(String name) {
+        name = getResolvedKey(name);
         CacheManager.getInstance().getClient().delete(name);
     }
 
     public String showAllCache() {
         return null;
+    }
+    
+    private String getResolvedKey(String key) {
+        if( cachePrefix != null ) 
+            return cachePrefix + ":" + key;
+        
+        return key;
     }
 
     
@@ -86,7 +97,6 @@ public class CacheService implements CacheServiceMBean, Serializable {
     public void setJndiName(String jndiName) {
         this.jndiName = jndiName;
     }
-    //</editor-fold>
 
     public String getHost() {
         return host;
@@ -103,5 +113,14 @@ public class CacheService implements CacheServiceMBean, Serializable {
     public void setPort(String port) {
         this.port = port;
     }
+
+    public String getCachePrefix() {
+        return cachePrefix;
+    }
+
+    public void setCachePrefix(String cachePrefix) {
+        this.cachePrefix = cachePrefix;
+    }
+    //</editor-fold>
     
 }
