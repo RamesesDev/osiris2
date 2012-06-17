@@ -28,6 +28,10 @@ public class FieldInjectionHandler implements AnnotationFieldHandler {
                 return InvokerProxy.getInstance();
             else {
                 //return InvokerProxy.getInstance().create(serviceName, hostKey);
+                if( f.getType() != Object.class && f.getType().isInterface() ) {
+                    return InvokerProxy.getInstance().create(serviceName, f.getType());
+                }
+                
                 return InvokerProxy.getInstance().create(serviceName);
             }
         }
