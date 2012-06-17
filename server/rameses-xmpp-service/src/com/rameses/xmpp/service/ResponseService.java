@@ -46,6 +46,15 @@ public class ResponseService implements ResponseServiceMBean {
         proxy.invoke("sendResponse", new Object[]{ request, message});
     }
     
+    public Object getResponse(String requestId) throws Exception {
+        Map conf = new HashMap();
+        conf.put("app.host", remoteHost);
+        conf.put("app.context", remoteContext);
+        ScriptServiceContext ssc = new ScriptServiceContext(conf);
+        ServiceProxy proxy = ssc.create(remoteServiceName);
+        return proxy.invoke("getResponse", new Object[]{requestId});
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="  Getters/Setters  ">
     public String getRemoteHost() {
         return remoteHost;

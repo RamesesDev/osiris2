@@ -38,8 +38,8 @@ public class ScriptMessageListener implements PacketListener, PacketFilter {
                 if( objmsg instanceof Map ) 
                 {
                     Map msg = (Map) objmsg;
-                    String msgOrigin = (String) msg.get("originName");
-                    if( originName != null && !originName.equals(msgOrigin) ) return;
+                    String msgOrigin = (String) msg.get("origin");
+                    if( originName != null && originName.equals(msgOrigin) ) return;
                     
                     getScriptHandler().onMessage(objmsg);
                 }

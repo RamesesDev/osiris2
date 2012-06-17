@@ -10,7 +10,6 @@
 package com.rameses.scheduler2;
 
 import com.rameses.server.common.AppContext;
-import com.rameses.server.session.SessionServiceMBean;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
@@ -35,14 +34,13 @@ public final class ScheduleManager implements Serializable {
     private FinishedTaskProcessor finishedTasks = new FinishedTaskProcessor(this);
     private ErrorTaskList errorTasks = new ErrorTaskList(this);
     private SuspendedTaskList suspendedTasks = new SuspendedTaskList(this);
-    private SessionServiceMBean session;
     
     private DataSource datasource;
     private ScheduledExecutorService mainThread;
     
     /** Creates a new instance of ScheduleManager */
-    public ScheduleManager(SessionServiceMBean session) {
-        this.session = session;
+    public ScheduleManager() {
+
     }
     
     public PendingTaskProcessor getPendingTasks() {
@@ -97,10 +95,6 @@ public final class ScheduleManager implements Serializable {
         return suspendedTasks;
     }
     
-    public SessionServiceMBean getSessionService() {
-        return session;
-    }
-    
     public void notify(String id, String status)  {
         notify(id, status, null);
     }
@@ -114,7 +108,6 @@ public final class ScheduleManager implements Serializable {
                 SimpleDateFormat dformat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 map.put("currentdate", dformat.format(currentdate));
             }
-            this.getSessionService().notifyUser( SESSION_USERNAME, map );
         } catch(Exception err) {
             System.out.println("Notify error->"+err.getMessage());
         }

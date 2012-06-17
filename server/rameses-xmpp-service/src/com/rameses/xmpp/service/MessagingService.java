@@ -73,8 +73,7 @@ public class MessagingService implements MessagingServiceMBean {
     public void send(String connection, String username, Object message) throws Exception {
         if( !username.contains("@") ) {
             username = username + "@" + getDomain();
-        }
-        
+        }        
         XMPPConnectionManager.getInstance(connection).send(username, message);
     }
 

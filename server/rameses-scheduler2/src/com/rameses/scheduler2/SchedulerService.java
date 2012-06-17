@@ -9,10 +9,8 @@
 
 package com.rameses.scheduler2;
 
-import com.rameses.server.cluster.ClusterServiceMBean;
 import com.rameses.server.common.AppContext;
 import com.rameses.server.common.JndiUtil;
-import com.rameses.server.session.SessionServiceMBean;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlManager;
@@ -37,31 +35,24 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
     
     private ScheduleManager scheduleManager;
     private DataSource datasource;
-    private ClusterServiceMBean clusterService;
-    private SessionServiceMBean sessionService;
     
-    
-    
-    private String sessionId;
     
     public void start() throws Exception {
-        
-        String hostName = clusterService.getCurrentHostName();
-        System.out.println("STARTING SCHEDULER 2 @" + hostName);
+        System.out.println("STARTING SCHEDULER 2");
         datasource = AppContext.getSystemDs();
         SqlContext sqlc = SqlManager.getInstance().createContext(datasource);
         sqlc.setDialect(AppContext.getDialect("system", null));
         
         SqlExecutor sqe = sqlc.createNamedExecutor("scheduler:load-tasks");
-        sqe.setParameter("host", hostName);
+        sqe.setParameter("host", "");
         sqe.execute();
         
-        this.scheduleManager = new ScheduleManager(sessionService);
+        this.scheduleManager = new ScheduleManager();
         this.scheduleManager.setDataSource( this.datasource );
         
         //load the initial tasks
         SqlQuery sqry = sqlc.createNamedQuery("scheduler:load-pending-tasks");
-        sqry.setParameter("host", hostName);
+        sqry.setParameter("host", "");
         List<Map> list = sqry.getResultList();
         for(Map m : list ) {
             TaskBean tb = new TaskBean(m);
@@ -74,9 +65,7 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
             this.scheduleManager.getPendingTasks().push(tb);
         }
         
-        //create a session with zero timeout
-        this.sessionId = sessionService.register(ScheduleManager.SESSION_USERNAME,"task-scheduler",-1);
-        
+        //create a session with zero timeout        
         InitialContext ctx = new InitialContext();
         JndiUtil.bind( ctx, AppContext.getPath()+ SchedulerService.class.getSimpleName(), this );
         this.scheduleManager.start();
@@ -87,24 +76,12 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
         sqlc.setDialect(AppContext.getDialect("system", null));
         
         SqlExecutor sqe = sqlc.createNamedExecutor("scheduler:unload-tasks");
-        sqe.setParameter("host", clusterService.getCurrentHostName());
+        sqe.setParameter("host", "");
         sqe.execute();
         this.scheduleManager.stop();
-        this.sessionService.destroy(this.sessionId);
-        this.clusterService = null;
-        this.sessionService = null;
-        this.sessionId = null;
         System.out.println("STOPPING SCHEDULER 2");
         InitialContext ictx = new InitialContext();
         JndiUtil.unbind( ictx, AppContext.getPath()+ SchedulerService.class.getSimpleName() );
-    }
-    
-    public void setCluster(ClusterServiceMBean cluster) {
-        this.clusterService = cluster;
-    }
-    
-    public void setSession(SessionServiceMBean session) {
-        this.sessionService = session;
     }
     
     public void suspend(String id) throws Exception {
@@ -125,7 +102,7 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
             sqlc.setDialect(AppContext.getDialect("system", null));
             
             Map map = new HashMap();
-            map.put("host", this.clusterService.getCurrentHostName());
+            map.put("host", "");
             map.put("id", id);
             sqlc.createNamedExecutor("scheduler:load-single-task").setParameters(map).execute();
             Map m = (Map)sqlc.createNamedQuery("scheduler:get-single-task").setParameters(map).getSingleResult();
@@ -146,10 +123,6 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
             e.printStackTrace();
             throw e;
         }
-    }
-    
-    public String getSessionId() {
-        return this.sessionId;
     }
     
     public void addTask(Map task) throws Exception {
@@ -182,7 +155,7 @@ public class SchedulerService implements Serializable, SchedulerServiceMBean {
 
         try {
             Map map = new HashMap();
-            map.put("host", this.clusterService.getCurrentHostName());
+            map.put("host", "");
             map.put("id", task.get("id"));
             Map m = (Map)sqlc.createNamedQuery("scheduler:get-single-task").setParameters(map).getSingleResult();
             if(m.size()>0) {
