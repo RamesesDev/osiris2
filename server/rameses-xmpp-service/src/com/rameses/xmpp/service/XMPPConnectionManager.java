@@ -8,9 +8,11 @@
 package com.rameses.xmpp.service;
 
 import com.rameses.server.common.JsonUtil;
+import com.rameses.util.ExceptionManager;
 import java.util.Hashtable;
 import java.util.Map;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -36,31 +38,75 @@ public class XMPPConnectionManager {
     //local xmpp account
     private XMPPConnection conn;
     private ScriptMessageListener listener;
+    private String host;
+    private int port;
+    private String username;
+    private String password;
+    private ConnectionListener connListener;
+    private boolean disconnected;
+    
     
     public XMPPConnectionManager() {
     }
     
     public void connect(String host, int port, String username, String password) throws Exception {
+        this.host = host;
+        this.port = port;
+        this.username = username;
+        this.password = password;
         ConnectionConfiguration config = new ConnectionConfiguration(host, port);
         conn = new XMPPConnection(config);
-        conn.connect();
-        try{
-            conn.getAccountManager().createAccount(username, password);
-        }catch(Exception ex){}
         
-        if( listener != null ) {
-            conn.addPacketListener(listener, listener);
+        doConnect();
+    }
+    
+    
+    private void doConnect() {
+        if( disconnected ) return;
+        
+        try {
+            conn.connect();
+            if( connListener == null ) {
+                connListener = new Listener();
+                conn.addConnectionListener(connListener);
+            }
+            try{
+                conn.getAccountManager().createAccount(username, password);
+            }catch(Exception ex){}
+
+            if( listener != null ) {
+                conn.addPacketListener(listener, listener);
+            }
+
+            conn.login(username, password, conn.getConnectionID());        
+            conn.sendPacket(new Presence(Presence.Type.available, "Available", 1, Presence.Mode.available));
         }
-        
-        conn.login(username, password, conn.getConnectionID());        
-        conn.sendPacket(new Presence(Presence.Type.available, "Available", 1, Presence.Mode.available));
+        catch(Exception e) {
+            System.out.println("Failed to connect: " + ExceptionManager.getOriginal(e).getMessage());
+            new Thread(new Runnable() {
+                public void run() {
+                    System.out.println("trying to reconnect in 5 seconds.");
+                    try {
+                        Thread.sleep(5000);
+                        System.out.println("connecting...");
+                        doConnect();
+                    } 
+                    catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    
+                }
+            }).start();
+        }
     }
     
     public void disconnect() throws Exception {
+        disconnected = true;
         conn.disconnect();
     }
     
     public void disconnect(boolean removeAccount) throws Exception {
+        disconnected = true;
         if( removeAccount ) {
             try {
                 conn.getAccountManager().deleteAccount();
@@ -89,5 +135,30 @@ public class XMPPConnectionManager {
 
     public void setListener(ScriptMessageListener listener) {
         this.listener = listener;
+    }
+    
+    
+    private class Listener implements ConnectionListener {
+        
+        public void connectionClosed() {
+            System.out.println("connection closed.");
+            System.out.println("retrying to connect...");
+            doConnect();
+        }
+        public void connectionClosedOnError(Exception exception) {
+            System.out.println("connection closed on error");
+            System.out.println("retrying to connect...");
+            doConnect();
+        }
+        public void reconnectingIn(int i) {
+            System.out.println("reconnecting....");
+        }
+        public void reconnectionFailed(Exception exception) {
+            System.out.println("reconnection failed.");
+        }
+        public void reconnectionSuccessful() {
+            System.out.println("reconnected...");
+        }
+        
     }
 }
