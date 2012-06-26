@@ -65,18 +65,29 @@ public final class KnowledgeSet implements Serializable {
         try {
             String content = o.toString();
             //insert the ruleset if not yet exists
-            SqlExecutor se = ctx.createNamedExecutor("ruleserver:add-rule-set");
-            se.setParameter("ruleset", name);
-            se.setParameter("rulegroup", rulegroup);
+            Map ruleset = new HashMap();
+            ruleset.put("ruleset", name);
+            ruleset.put("rulegroup", rulegroup);
+            //remove first
+            SqlExecutor se = ctx.createNamedExecutor("ruleserver:remove-rule-set");
+            se.setParameters(ruleset);
+            se.execute();
+            
+            //insert ruleset
+            se = ctx.createNamedExecutor("ruleserver:add-rule-set");
+            se.setParameters(ruleset);
             se.execute();
 
-            //insert the rule package
-            se = ctx.createNamedExecutor("ruleserver:add-rule-package");
-            se.setParameter("ruleset", name);
-            se.setParameter("rulegroup", rulegroup);
-            se.setParameter("packagename", packageName);
-            se.setParameter("content", content);
-            se.execute();
+            //insert and ignore the rule package
+            try {
+                se = ctx.createNamedExecutor("ruleserver:add-rule-package");
+                se.setParameter("ruleset", name);
+                se.setParameter("rulegroup", rulegroup);
+                se.setParameter("packagename", packageName);
+                se.setParameter("content", content);
+                se.execute();
+            }
+            catch(Exception e) {}
 
             //retrieve the facts
             Map params = new HashMap();

@@ -9,7 +9,9 @@
 
 package com.rameses.sql.dialect;
 
+import com.rameses.sql.CrudSqlBuilder;
 import com.rameses.sql.SqlDialect;
+import com.rameses.sql.dialect.mssql.MsSqlCrudSqlBuilder;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
@@ -131,6 +133,10 @@ public class MsSqlDialect implements SqlDialect  {
         sresult.append(orderBuilder.toString());
 
         return sresult.toString();
+    }
+
+    public CrudSqlBuilder createCrudSqlBuilder() {
+        return new MsSqlCrudSqlBuilder();
     }
     
 }

@@ -53,12 +53,16 @@ public class ScriptServiceContext extends ServiceContext {
     }
     
     public <T> T create(String serviceName,  Map env, Class<T> clz) {
+        return create( serviceName, env, clz, ServiceProxy.class.getClassLoader() );
+    }
+    
+    public <T> T create(String serviceName,  Map env, Class<T> clz, ClassLoader loader) {
         ServiceProxy proxy = findScriptProxy(serviceName, env);
         if(clz.equals(ServiceProxy.class)) {
             return (T) proxy;
         }
         ServiceProxyInvocationHandler handler = new ServiceProxyInvocationHandler(proxy);
-        return  (T) Proxy.newProxyInstance( ServiceProxy.class.getClassLoader(), new Class[]{clz}, handler );
+        return  (T) Proxy.newProxyInstance( loader, new Class[]{clz}, handler );
     }
     
     

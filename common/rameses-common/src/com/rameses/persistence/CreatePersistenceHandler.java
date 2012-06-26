@@ -34,7 +34,7 @@ public class CreatePersistenceHandler extends AbstractPersistenceHandler {
     }
     
     protected SqlUnit getSqlUnit(CrudModel model) {
-        return CrudSqlBuilder.getInstance().getCreateSqlUnit(model);
+        return getCrudSqlBuilder().getCreateSqlUnit(model);
     }
     
     protected AbstractSqlTxn getSqlTransaction(String name) {

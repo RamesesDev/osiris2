@@ -84,12 +84,7 @@ public class Filter implements javax.servlet.Filter {
         }
         //-- For normal request
         else 
-        {
-            String ae = req.getHeader("accept-encoding");
-            if (ae != null && ae.indexOf("gzip") != -1) {
-                resp = new ResponseWrapper(resp);
-            }
-            
+        {            
             boolean isMultipart = ServletFileUpload.isMultipartContent(req);
             if( isMultipart ) {
                 req = new MultipartRequest( req );
@@ -110,10 +105,6 @@ public class Filter implements javax.servlet.Filter {
                 if( fieldId != null ) {
                     req.getSession().removeAttribute(fieldId);
                 }
-            }
-            
-            if ( resp instanceof ResponseWrapper ) {
-                ((ResponseWrapper) resp).finishResponse();
             }
         }
     }

@@ -1,4 +1,4 @@
-import javax.servlet.http.HttpServletRequest;
+import com.rameses.server.common.JsonUtil;
 import junit.framework.*;
 
 /*
@@ -16,7 +16,10 @@ public class Test1 extends TestCase {
     }
     
     public void testHello() throws Exception {
-        HttpServletRequest req;
+        System.out.println("Ñ Ñ Ñ");
+        for(Object o : JsonUtil.toObjectArray("[ {name: \"Ñ Ñ Ñ\"} ]") ) {
+            System.out.println( o );
+        }
     }    
     
 }

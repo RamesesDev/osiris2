@@ -14,7 +14,6 @@ import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SimpleField;
 import com.rameses.sql.AbstractSqlTxn;
 import com.rameses.sql.CrudModel;
-import com.rameses.sql.CrudSqlBuilder;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlExecutor;
 import com.rameses.sql.SqlUnit;
@@ -34,7 +33,7 @@ public class UpdatePersistenceHandler extends AbstractPersistenceHandler {
     }
     
     protected SqlUnit getSqlUnit(CrudModel model) {
-        return CrudSqlBuilder.getInstance().getUpdateSqlUnit(model);
+        return getCrudSqlBuilder().getUpdateSqlUnit(model);
     }
     
     protected AbstractSqlTxn getSqlTransaction(String name) {

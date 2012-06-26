@@ -20,6 +20,7 @@ import com.rameses.schema.SchemaManager;
 import com.rameses.schema.SchemaScanner;
 import com.rameses.sql.AbstractSqlTxn;
 import com.rameses.sql.CrudModel;
+import com.rameses.sql.CrudSqlBuilder;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import com.rameses.sql.SqlUnit;
@@ -65,6 +66,19 @@ public abstract class AbstractPersistenceHandler implements SchemaHandler {
     protected abstract String getAction();
     protected abstract SqlUnit getSqlUnit(CrudModel model);
     protected abstract AbstractSqlTxn getSqlTransaction(String name);
+    
+    private CrudSqlBuilder sqlBuilder;
+    
+    public CrudSqlBuilder getCrudSqlBuilder() {
+        if( sqlBuilder != null ) return sqlBuilder;
+        
+        if( sqlContext != null && sqlContext.getDialect() != null ) {
+            return (sqlBuilder = sqlContext.getDialect().createCrudSqlBuilder());
+        }
+        else {
+            return (sqlBuilder = CrudSqlBuilder.getInstance());
+        }
+    }
     
     public void startElement(SchemaElement element, Object data) {
         //check if element has tableName;

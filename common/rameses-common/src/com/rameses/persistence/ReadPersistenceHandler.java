@@ -47,7 +47,7 @@ public class ReadPersistenceHandler extends AbstractPersistenceHandler {
     }
     
     protected SqlUnit getSqlUnit(CrudModel model) {
-        return CrudSqlBuilder.getInstance().getReadSqlUnit(model);
+        return getCrudSqlBuilder().getReadSqlUnit(model);
     }
     
     protected AbstractSqlTxn getSqlTransaction(String name) {

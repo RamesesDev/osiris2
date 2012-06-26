@@ -32,7 +32,7 @@ public class DeletePersistenceHandler extends AbstractPersistenceHandler {
     }
 
     protected SqlUnit getSqlUnit(CrudModel model) {
-        return CrudSqlBuilder.getInstance().getDeleteSqlUnit(model);
+        return getCrudSqlBuilder().getDeleteSqlUnit(model);
     }
 
     protected AbstractSqlTxn getSqlTransaction(String name) {

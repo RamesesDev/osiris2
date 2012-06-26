@@ -9,7 +9,9 @@
 
 package com.rameses.sql.dialect;
 
+import com.rameses.sql.CrudSqlBuilder;
 import com.rameses.sql.SqlDialect;
+import com.rameses.sql.dialect.mysql.MySqlCrudSqlBuilder;
 
 /**
  *
@@ -24,6 +26,9 @@ public class MySqlDialect implements SqlDialect {
     public String getPagingStatement(String sql, int start, int limit, String[] pagingKeys) {
         return sql + " LIMIT " + start + "," + limit;
     }
-    
+
+    public CrudSqlBuilder createCrudSqlBuilder() {
+        return new MySqlCrudSqlBuilder();
+    }
     
 }

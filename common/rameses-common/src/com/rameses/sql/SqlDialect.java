@@ -17,4 +17,5 @@ public interface SqlDialect
 {
     String getName();
     String getPagingStatement( String sql, int start, int limit, String [] pagingKeys  );
+    CrudSqlBuilder createCrudSqlBuilder();
 }
