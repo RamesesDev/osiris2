@@ -43,6 +43,10 @@ public final class LineReader {
             try { is.close(); } catch(Exception ign){;}
         }
     }
+
+    public void read(InputStream is, LineReader lineReader) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
     
     public static interface Handler {
         void read(String text);

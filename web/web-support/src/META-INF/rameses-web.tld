@@ -28,10 +28,21 @@
   </tag-file>
   
   <tag-file>
+      <name>http-get</name>
+      <path>/META-INF/tags/http-get.tag</path>
+  </tag-file>
+    <tag-file>
+      <name>http-post</name>
+      <path>/META-INF/tags/http-post.tag</path>
+  </tag-file>
+  <tag-file>
       <name>email</name>
       <path>/META-INF/tags/email.tag</path>
   </tag-file>
-  
+   <tag-file>
+      <name>toJSON</name>
+      <path>/META-INF/tags/toJSON.tag</path>
+  </tag-file>
   <tag-file>
       <name>ant-build</name>
       <path>/META-INF/tags/ant-build.tag</path>

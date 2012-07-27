@@ -69,19 +69,19 @@
 			o = ac.invoke(method, new Object[]{params});
 		}
 
-		if( json!=null ) {
-			o = JsonUtil.toString(o);	
-			if( var == null ) {
-				out.write( (String) o );
-			}	
-		}
-		
-		if(var!=null) {
-			request.setAttribute(var, o);
-		}
-		
-		request.setAttribute("error", null);
-		
+                if( json!=null && o!=null ) {
+                        o = JsonUtil.toString(o);	
+                        if( var == null ) {
+                                out.write( (String) o );
+                        }	
+                }
+
+                if(var!=null) {
+                        request.setAttribute(var, o);
+                }
+                else if ( o!=null ){
+                    out.write( o.toString() );
+                }
 	}
 	catch(Exception e) {
 		if("true".equals(debug)) e.printStackTrace();

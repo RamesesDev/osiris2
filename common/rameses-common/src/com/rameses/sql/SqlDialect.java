@@ -9,12 +9,10 @@
 
 package com.rameses.sql;
 
-import java.util.List;
-
 /**
  *
  * @author Elmo
  */
 public interface SqlDialect {
-    String getPagingStatement( String sql, int start, int limit  );
+    String getPagingStatement( String sql, int start, int limit, String [] pagingKeys  );
 }

@@ -10,6 +10,7 @@
 package com.rameses.util;
 
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -31,10 +32,11 @@ public class URLDirectory {
         this.url = u;
     }
     
-    public URL[] list(ClassLoader loader) {
-        return list(null, loader);
+    public URL[] list(URLFilter filter) {
+        return list(filter, null);
     }
     
+    //class loader should eventually be deprecated
     public URL[] list(URLFilter filter, ClassLoader loader) {
         try {
             List list = new ArrayList();
@@ -56,7 +58,10 @@ public class URLDirectory {
                     }
                 }
             } 
-            else  {
+            else if( conn instanceof HttpURLConnection ) {
+                
+            }
+            else {
                 File f = new File(url.toURI());
                 if( f.isDirectory() ) {
                     File[] files = f.listFiles();
@@ -78,5 +83,30 @@ public class URLDirectory {
     public static interface URLFilter {
         boolean accept(URL u, String filter);
     }
+    
+    public static void scanFiles( URL u, int maxLevels, URLScanHandler handler ) {
+        handler.start();
+        _scanFileDir( u, 0, maxLevels, handler );
+        handler.end();
+    }
+    
+    private static void _scanFileDir( URL url,  int i, int maxLevels, URLScanHandler handler ) {
+        if( i > maxLevels ) return;
+        handler.handle( url, i );
+        i++;
+        handler.startChildren(i);
+        URLDirectory dir = new URLDirectory(url);
+        for(URL u : dir.list(null) ) {
+            _scanFileDir(u, i, maxLevels, handler );
+        }
+        handler.endChildren(i);
+    }
 
+    public static interface URLScanHandler {
+        void start();
+        void startChildren(int level);
+        void handle(URL u, int level);
+        void endChildren( int level);
+        void end();
+    }
 }

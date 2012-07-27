@@ -29,6 +29,7 @@ public class SqlQuery extends AbstractSqlTxn {
     private int maxResults;
     private int rowsFetched = 0;
     private SqlDialect dialect;
+    private String[] pagingKeys = new String[]{};
     
     /***
      * By default, DataSource is passed by the SqlManager
@@ -73,23 +74,27 @@ public class SqlQuery extends AbstractSqlTxn {
             //get the results
             String _sql = getFixedSqlStatement();
             if( dialect != null && maxResults > 0 ) {
-                _sql = dialect.getPagingStatement( statement, firstResult, maxResults );
+                _sql = dialect.getPagingStatement( statement, firstResult, maxResults, pagingKeys );
             }
             
             ps = conn.prepareStatement( _sql );
             fillParameters(ps);
             
+            if( maxResults > 0) {
+                ps.setFetchSize(maxResults);
+            }
+            
             //do paging here.
             rs = ps.executeQuery();
             List resultList = new ArrayList();
             
+            //check first the size of the cursor against the size of the set.
+            //if maxResults > 0 and size of set > maxResults
             /*
             if( firstResult != 0 ) {
                 rs.absolute(firstResult);
             }
-            if( maxResults > 0) {
-                ps.setFetchSize(maxResults);
-            }
+            
              */
             fetchHandler.start();
             rowsFetched = 0;
@@ -316,5 +321,16 @@ public class SqlQuery extends AbstractSqlTxn {
     public void setDialect(SqlDialect dialect) {
         this.dialect = dialect;
     }
+
+    public String[] getPagingKeys() {
+        return pagingKeys;
+    }
+
+    public void setPagingKeys(String[] pagingIds) {
+        this.pagingKeys = pagingIds;
+    }
     
+    public void setPagingKeys(String pagingIds) {
+        this.pagingKeys = new String[]{pagingIds};
+    }
 }

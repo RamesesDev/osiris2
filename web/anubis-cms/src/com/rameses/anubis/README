@@ -1,0 +1,59 @@
+
+   Project proj = CMSManager.findProject( "etracs.gazeebu1.com" );
+
+
+
+   public class CustomProject implements CmsConf {
+
+        public Project getProject() {
+            return new DefaultProject();
+        }
+
+        public class DefaultProject extends Project {
+            public Map getProjectInfo(String name) {
+               ...
+            }
+
+            public ServiceManager getServiceManager() {
+                return new DefaultServiceManager();
+            }
+            public FileManager getFileManager() {
+                return new DefaultFileManager();
+            }
+        }
+
+        public class DefaultServiceManager extends ServiceManager {
+            public Map getInfo(String name) {
+                ...
+            }
+            public ServiceAdapters[] getServiceAdapters() {
+                
+            }
+        }
+
+        public class DefaultFileManager extends FileManager {
+            public Map getFileInfo(String name) {
+                     
+            }
+            public Map getFolderInfo(String name) {
+                
+            }
+            public FileHandler[] getFileHandlers() {
+                return new FileHandler[] {
+                    new DefaultPageHandler();
+                }
+            }
+        }
+
+        public class DefaultPageHandler extends PageFileHandler {
+            public InputStream getMaster(String name, PageFileInstance pi) {
+                ...
+            }    
+            public InputStream getBlock(String name, PageFileInstance pi) {
+                ...
+            }    
+        }
+
+   }   
+
+   

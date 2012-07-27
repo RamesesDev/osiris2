@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -28,7 +27,6 @@ public class Filter implements javax.servlet.Filter {
     public static final String APP_CONF = "APP_CONF";
     
     private static final String UPLOAD_STATUS = "fileupload.status";
-    private static final String MOD_DIR = "/modules";
     
     protected FilterConfig filterConfig;
     
@@ -63,15 +61,8 @@ public class Filter implements javax.servlet.Filter {
         
         String path = req.getServletPath();
                         
-        //-- For module support
-        if( path.contains(":") ) 
-        {
-            path = MOD_DIR + path.replace(":", "/");
-            RequestDispatcher reqDisp = req.getRequestDispatcher( path );
-            reqDisp.forward(req, resp);
-        }        
         //-- File upload status support
-        else if( req.getParameter(UPLOAD_STATUS) != null ) 
+        if( req.getParameter(UPLOAD_STATUS) != null ) 
         {
             String fieldId = req.getParameter(UPLOAD_STATUS);
             Writer w = resp.getWriter();
