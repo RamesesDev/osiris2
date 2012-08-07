@@ -9,6 +9,7 @@
 
 package com.rameses.anubis;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -32,7 +33,7 @@ public abstract class Project extends HashMap  {
     public abstract Map getInfo();
     public abstract Map<String,Theme> getThemes();
     public abstract Map<String,Module> getModules();
-    
+    public abstract InputStream getResource(String name);
     
     protected abstract LocaleSupport loadLocaleSupport(String name);
     

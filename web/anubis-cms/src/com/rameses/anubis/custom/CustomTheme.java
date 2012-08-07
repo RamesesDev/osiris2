@@ -18,7 +18,7 @@ import java.util.Map;
 public class CustomTheme extends Theme {
     
     private static String MASTER_DIR = "/masters/";
-    
+    private static String TEMPLATE_DIR = "/templates/";
     
     public CustomTheme(String name, String url) {
         super(name, url);
@@ -41,6 +41,20 @@ public class CustomTheme extends Theme {
         return null;
     }
     
+    
+    public InputStream getTemplateResource(String name) {
+        InputStream is = null;
+        is = ContentUtil.findResource( getUrl()+TEMPLATE_DIR+name );
+        if(is!=null) return is;
+        
+        //check if there is an external url.
+        if(getProvider()!=null) {
+            is = ContentUtil.findResource( getProvider()+TEMPLATE_DIR+name );
+            if(is!=null) return is;
+        }
+        return null;
+    }
+    
     public InputStream getResource(String name) {
         InputStream is = null;
         is = ContentUtil.findResource(getUrl() + name );
@@ -51,6 +65,7 @@ public class CustomTheme extends Theme {
         }
         return null;
     }
+
 
  
 

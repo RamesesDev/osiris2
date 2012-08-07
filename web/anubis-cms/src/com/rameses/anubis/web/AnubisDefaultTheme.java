@@ -19,6 +19,7 @@ import java.util.Map;
 public class AnubisDefaultTheme extends Theme {
     
     private static String MASTER_DIR = "/theme/masters/";
+    private static String TEMPLATE_DIR = "/theme/templates/";
     
     public AnubisDefaultTheme(String url) {
         super("system", url);
@@ -35,6 +36,13 @@ public class AnubisDefaultTheme extends Theme {
         return null;
     }
     
+    public InputStream getTemplateResource(String name) {
+        InputStream is = null;
+        is = ContentUtil.findResource( getUrl()+TEMPLATE_DIR+name );
+        if(is!=null) return is;
+        return null;
+    }
+    
     public InputStream getResource(String name) {
         InputStream is = null;
         is = ContentUtil.findResource(getUrl() +"/theme/" +  name );
@@ -45,6 +53,7 @@ public class AnubisDefaultTheme extends Theme {
         }
         return null;
     }
-
+    
+    
     
 }

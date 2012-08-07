@@ -127,6 +127,10 @@ public class CustomProject extends Project {
         });
         return urlMapping;
     }
+
+    public InputStream getResource(String name) {
+        return ContentUtil.findResource( this.getUrl()+"/res"+name);
+    }
     
     
     

@@ -14,7 +14,6 @@ import com.rameses.anubis.AnubisContext;
 import com.rameses.anubis.Project;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,18 +31,22 @@ public class CmsResourceServlet extends HttpServlet {
         //run the CMS file
         
         Project project = AnubisContext.getCurrentContext().getProject();
-        String path = hreq.getServletPath();
-        if(hreq.getPathInfo()!=null) path = path + hreq.getPathInfo();
-        String urlPath = project.getUrl() + path;
-        
+        String path = hreq.getPathInfo();
         String mimeType = app.getMimeType( path );
-        URL u = new URL( urlPath );
         InputStream is = null;
         try {
-            CmsWebUtil.setCachedHeader(hres);
-        
-            is = u.openStream();
-            CmsWebUtil.output( app,mimeType, is, hreq, hres );
+            if( path.indexOf("/",1)>0) {
+                String testModname = path.substring(1, path.indexOf("/",1));
+                if( project.getModules().containsKey(testModname)) {
+                    String res = path.substring( path.indexOf("/",1 ));
+                    is = project.getModules().get(testModname).getResource(res);
+                }
+            }
+            if(is==null) is = project.getResource(path);
+            if( is != null ) {
+                CmsWebUtil.setCachedHeader(hres);
+                CmsWebUtil.output( app,mimeType, is, hreq, hres );    
+            }
         }
         catch(Exception e) {
             System.out.println("error " + e.getMessage());

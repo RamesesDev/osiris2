@@ -31,7 +31,6 @@ public abstract class Module extends HashMap {
     public abstract InputStream getResource(String name);
     public abstract InputStream getActionResource(String name);
    
-    public abstract InputStream getTemplateResource(String name);
     public abstract InputStream getWidgetResource(String name);
     
     public abstract InputStream getServiceAdapterSource(String name);

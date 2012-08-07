@@ -27,8 +27,8 @@ public class WebSessionContext extends SessionContext {
     private static String GET_USER = "session/getUserPrincipal";
     private static String GET_SESSION = "session/getSession";
     private static String REMOVE_SESSION = "session/removeSession";
-    private static String HAS_PERMISSION = "session/hasPermission";
-    private static String HAS_ROLE = "session/hasRole";
+    private static String HAS_PERMISSION = "session/checkPermission";
+    private static String HAS_ROLE = "session/checkRole";
     
     private Map session;
     private UserPrincipal user;
@@ -72,24 +72,23 @@ public class WebSessionContext extends SessionContext {
         return (Map)execute(GET_USER, null);
     }
     
-    public boolean hasPermission(String key) {
-        if( this.sessionid == null  ) return false;
-        return ((Boolean)execute(HAS_PERMISSION, null)).booleanValue();
+    public boolean checkPermission(String key) {
+        Map map = new HashMap();
+        map.put("key", key );
+        Object obj = execute(HAS_PERMISSION, map);
+        return ((Boolean)execute(HAS_PERMISSION, map)).booleanValue();
     }
     
-    public boolean hasRole(String role) {
-        if( this.sessionid == null  ) return false;
-        return ((Boolean)execute(HAS_ROLE, null)).booleanValue();
+    public boolean checkRole(String role) {
+        Map map = new HashMap();
+        map.put("role", role );
+        return ((Boolean)execute(HAS_ROLE, map)).booleanValue();
     }
     
     private Object execute(  String action, Map params ) {
         try {
-            if(params==null) {
-                params = new HashMap();
-                params.put("SESSION", this);
-            }
             ActionManager actionManager = AnubisContext.getCurrentContext().getProject().getActionManager();
-            return (Map)actionManager.getActionCommand(action).execute( params, params);
+            return actionManager.getActionCommand(action).execute( params, null );
         } catch(Exception e) {
             System.out.println("error executing action->"+action+": " +e.getMessage());
             throw new RuntimeException(e);

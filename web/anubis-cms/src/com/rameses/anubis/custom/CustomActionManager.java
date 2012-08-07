@@ -11,6 +11,7 @@ package com.rameses.anubis.custom;
 
 import com.rameses.anubis.ActionCommand;
 import com.rameses.anubis.ActionManager;
+import com.rameses.anubis.AnubisContext;
 import com.rameses.anubis.ContentUtil;
 import com.rameses.anubis.Module;
 import com.rameses.anubis.Project;
@@ -59,6 +60,7 @@ public class CustomActionManager extends ActionManager {
             sc.setProperty("PARAMS", params );
             sc.setProperty("PROJECT", project );
             sc.setProperty("SERVICE", project.getServiceManager() );
+            sc.setProperty("SESSION", AnubisContext.getCurrentContext());
             if( env != null ) {
                 for(Object o : env.entrySet()) {
                     Map.Entry me = (Map.Entry)o;

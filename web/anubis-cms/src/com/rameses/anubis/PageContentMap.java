@@ -10,6 +10,7 @@
 package com.rameses.anubis;
 
 
+import com.rameses.util.ExceptionManager;
 import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,8 +39,11 @@ public class PageContentMap extends HashMap {
     public Object get(Object key) {
         String skey = key.toString();
         if(skey.startsWith("_")) {
+            skey = skey.substring(1);
+            if( super.containsKey(skey)) return super.get(skey);
+            
             //GET THE BLOCK
-            return getBlockContent(skey.substring(1));
+            return getBlockContent(skey);
         } else if( skey.equals("PARAMS")) {
             return params;
         } else if (skey.equals("PAGE")) {
@@ -54,6 +58,9 @@ public class PageContentMap extends HashMap {
         else if( skey.equals("MODULE")) {
             if(page.getModule()==null) return new HashMap();
             return page.getModule();
+        } 
+        else if( skey.equals("THEME")) {
+            return page.getTheme();
         } 
         else if( skey.equals("PROJECT")) {
             return  page.getProject();
@@ -93,6 +100,10 @@ public class PageContentMap extends HashMap {
     
     public class CMSHelper {
         
+         public String getBlock( String name ) {
+            return getBlockContent(name);
+        }
+        
         public String getWidget( String name, Map options ) {
             PageContentMap map = new PageContentMap( page, params,  getFileHandler()  );
             map.put("OPTIONS", options);
@@ -104,25 +115,44 @@ public class PageContentMap extends HashMap {
         }
         
         public String getTemplate( String id, Object data ) {
-            return getTemplate(id, data, "DATA");
+            return getTemplate(id, data, "DATA",null,null);
         }
         
         public String getTemplate( String id, Object data, String varName ) {
-            PageContentMap map = new PageContentMap( page, params,  getFileHandler() );
-            map.put(varName, data );
-            return fileHandler.getTemplateContentProvider().getContent(id, page, map );
+            return getTemplate( id, data, varName, null,null);
         }
         
         public String getTemplate( String id, Object data, String varName, Map options ) {
+            return getTemplate( id, data, varName, options,null);
+        }
+       
+        public String getTemplate( String id, Object data, String varName, Map options, Map status ) {
             PageContentMap map = new PageContentMap( page, params,  getFileHandler() );
             if(varName==null) varName = "DATA";
             map.put(varName, data );
             if(options!=null) map.put("OPTIONS", options);
-            return fileHandler.getTemplateContentProvider().getContent(id, page, map );
+            try {
+                return fileHandler.getTemplateContentProvider().getContent(id, page, map );
+            }
+            catch(Exception e) {
+                if(status!=null ){
+                    e = ExceptionManager.getInstance().getOriginal(e); 
+                    status.put("exception",e);
+                    status.put("errmsg", e.getMessage());
+                    return "";
+                }
+                else {
+                     return "<font color=red>template " + id + " not found</font>";
+                }
+            }
         }
-         
+        
         public Folder getFolder( String name ) {
             return page.getProject().getFileManager().getFolder(name);
+        }
+        
+        public File getFileInfo(String name) {
+            return page.getProject().getFileManager().getFileInfo(name);
         }
         
         public String queue(String name, Map options ) {

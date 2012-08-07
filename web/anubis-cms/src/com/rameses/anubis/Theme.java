@@ -23,6 +23,7 @@ public abstract class Theme extends HashMap {
     
     protected abstract Map getInfo();
     public abstract InputStream getMasterResource(String name);
+    public abstract InputStream getTemplateResource(String name);
     public abstract InputStream getResource(String name);
     
     public Theme(String name, String url) {

@@ -120,6 +120,7 @@ public class CmsFilter implements Filter {
                     return;
                 }
                 catch(Exception e) {
+                    e.printStackTrace();
                     throw new ServletException(e.getMessage());
                 }
                 

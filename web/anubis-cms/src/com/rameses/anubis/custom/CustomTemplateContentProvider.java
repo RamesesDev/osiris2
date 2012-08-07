@@ -9,12 +9,11 @@
 
 package com.rameses.anubis.custom;
 
-import com.rameses.anubis.ContentUtil;
-import com.rameses.anubis.Module;
 import com.rameses.anubis.PageContentMap;
 import com.rameses.anubis.PageFileInstance;
 import com.rameses.anubis.Project;
 import com.rameses.anubis.TemplateContentProvider;
+import com.rameses.anubis.Theme;
 import java.io.InputStream;
 
 /**
@@ -34,14 +33,11 @@ import java.io.InputStream;
 
 public class CustomTemplateContentProvider extends TemplateContentProvider {
     
-    private static final String TEMPLATE_DIR =  "/content/templates/";
-    
-    
     public String getContent(String name, PageFileInstance pi, PageContentMap map) {
         try {
             return super.getContent(name,pi,map);
-        } catch(Exception ign) {
-            return "<font color=red>template " + name + " not found</font>";
+        } catch(Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
     
@@ -50,36 +46,13 @@ public class CustomTemplateContentProvider extends TemplateContentProvider {
         //CHECK GLOBAL / SHARED BLOCKS
         Project project = page.getProject();
         
-        String namespace = null;
-        String templateName = name;
-        if( name.indexOf(":")> 0 ) {
-            String[] arr = name.split(":");
-            namespace = arr[0];
-            templateName = arr[1];
-        }
         
         InputStream is = null;
-        if( namespace == null ) {
-            Module mod = page.getModule();
-            if( mod !=null ) {
-                is = mod.getTemplateResource( templateName );
-                if(is!=null) return is;
-            }
-            
-            is = ContentUtil.findResource( project.getUrl() + TEMPLATE_DIR + templateName );
-            //get default
-            if(is==null) {
-                Module defaultMod = project.getSystemModule();
-                if( defaultMod!=null) {
-                    is = defaultMod.getTemplateResource( templateName );
-                }
-            }
-        } else {
-            Module module = project.getModules().get(namespace);
-            if(module!=null) {
-                is =module.getTemplateResource(templateName);
-            }
-        }
+        Theme theme = page.getTheme();
+        is = theme.getTemplateResource( name );
+        if( is != null ) return is;
+        
+        is = project.getSystemTheme().getTemplateResource( name );
         return is;
     }
     

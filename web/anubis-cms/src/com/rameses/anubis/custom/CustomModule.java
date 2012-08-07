@@ -30,6 +30,7 @@ public class CustomModule extends Module {
     
     private static String WIDGET_DIR = "/content/widgets/";
     private static String TEMPLATE_DIR = "/content/templates/";
+    private static String RES_DIR = "/res";
     
     public CustomModule(String name, String url) {
         super(name, url);
@@ -94,7 +95,7 @@ public class CustomModule extends Module {
     
     //media resource, etc.
     public InputStream getResource(String name) {
-        return findStream(name);
+        return findStream(RES_DIR + name);
     }
     
     //page block

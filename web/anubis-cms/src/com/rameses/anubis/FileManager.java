@@ -105,7 +105,6 @@ public abstract class FileManager {
         }
         
         /* check url mapping first*/
-        
         String pageName = name.substring(0, name.lastIndexOf("."));   
         for(NameParser m: project.getUrlMapping()) {
             if( m.matches(pageName)) {

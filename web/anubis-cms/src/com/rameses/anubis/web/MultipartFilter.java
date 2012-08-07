@@ -54,7 +54,6 @@ public class MultipartFilter implements javax.servlet.Filter {
             
             Map param = new HashMap();
             String requestid = hreq.getParameter(UPLOAD_STATUS);
-            System.out.println("requestid " + requestid);
             param.put("requestid", requestid);
             Object status = null;
             try {
@@ -73,9 +72,12 @@ public class MultipartFilter implements javax.servlet.Filter {
         }
         //-- For normal request
         else {
-            boolean isMultipart = ServletFileUpload.isMultipartContent(hreq);
+            boolean isMultipart = ServletFileUpload.isMultipartContent(hreq);            
             if( isMultipart ) {
                 hreq = new MultipartRequest( hreq, config.getServletContext() );
+                String fieldId = req.getParameter("file_req_id");
+                Object file = ((MultipartRequest)hreq).getFileParameter(fieldId);
+                req.setAttribute("FILE", file);
             }
             chain.doFilter(hreq, resp);
         }

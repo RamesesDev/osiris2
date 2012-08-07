@@ -1,0 +1,8 @@
+sample comfiguration
+
+default.project=etracs
+project.url=file:///c:/cms_demo/projects
+project.host=gazeebu1.com
+cached=false
+paths.ignored=js,css,theme
+ext.ignored=jsp,ico,htm,html

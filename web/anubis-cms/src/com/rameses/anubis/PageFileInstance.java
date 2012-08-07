@@ -31,7 +31,7 @@ public class PageFileInstance extends FileInstance {
     private Map processQueue = new HashMap();
     private Set imports = new LinkedHashSet();
     
-    //private String master;
+    private String master;
     //private String theme;
     
     private PageFileHandler fileHandler;
@@ -42,22 +42,60 @@ public class PageFileInstance extends FileInstance {
         this.fileHandler = handler;
     }
     
+    /**
+     * There are two types of templates processed in the ff order:
+     * page templates -> master templates
+     * Page templates - matches the same name of the page in the theme/masters
+     * Master Templates - main templates
+     * Both templates exhibit inheritance styles based on the filename and
+     * filename is read from right to left. For example consider a page path
+     * /about/history. The matching page template for this would be about_history
+     * It looks and merges templates for about_history then about.
+     */
     public InputStream getContent() {
         PageContentMap map = new PageContentMap(this, getParams(), fileHandler );
-        String[] arrs = (getMaster()+",default").split(",");
-        String result = null;
         
-        for(int i=0; i<arrs.length;i++) {
+        //check first for page templates
+        String path = this.getFile().getPath();
+        if(path.startsWith("/")) path = path.substring(1);
+        while(true) {
+            String template = path.replace("/", "_");
             try {
-                String _master = arrs[i].trim();
-                result = fileHandler.getMasterContentProvider().getContent(_master,this,map);   
-                if(result!=null) break;
+                String tresult = fileHandler.getMasterContentProvider().getContent(template,this,map);
+                if(tresult!=null && tresult.trim().length()>0) {
+                    map.put("content", tresult);
+                }
+            } catch(Exception e) {
+                //System.out.println("template error->"+template + " "+e.getMessage());
             }
-            catch(Exception e) {
-               if(i >=arrs.length ) 
-                   throw new RuntimeException("Theme master not found");
+            if( path.lastIndexOf("/") <=0 ) break;
+            path = path.substring(0, path.lastIndexOf("/"));
+        }
+        
+        //check the master templates
+        String result = null;
+        String[] fallback = getMaster().split(",");
+        for(int i=0; i<fallback.length;i++) {
+            path = fallback[i].trim();
+            String tresult = null;
+            while(true) {
+                String _master = path;
+                try {
+                    tresult = fileHandler.getMasterContentProvider().getContent(_master,this,map);
+                    if(tresult!=null && tresult.trim().length()>0) {
+                        map.put("content", tresult);
+                    }
+                } catch(Exception ign){;}
+                if( path.lastIndexOf("_") <=0 ) break;
+                path = path.substring(0, path.lastIndexOf("_"));
+            }
+            if(tresult!=null) {
+                result = tresult;
+                break;
             }
         }
+        if(result == null)
+            throw new RuntimeException("No master found");
         
         //replace the processed queue;
         Map queue = this.getProcessQueue();
@@ -66,25 +104,31 @@ public class PageFileInstance extends FileInstance {
             Object[] res = (Object[])me.getValue();
             String widgetName = (String) res[0];
             Map options = (Map)res[1];
-            //PageContentMap pmap = new PageContentMap( pi, pi.getParams(), map.getContentHandler(), map.getFileHandler() );
             map.put("OPTIONS", options);
             result = result.replaceFirst(  me.getKey().toString(), fileHandler.getWidgetContentProvider().getContent(widgetName,this,map));
-        }        
+        }
         return new ByteArrayInputStream( result.getBytes() );
     }
     
     public String getMaster() {
-        //if this is module, check the modules master
-        String master = (String)getFile().get("master");
-        if( master !=null ) return master;
-        if( getFile().isFragment()) {
-            return "fragment";
+        if(master==null){
+            //if this is module, check the modules master
+            File file = super.getFile();
+            this.master = (String)file.get("master");
+            if( master ==null ) {
+                if( file.isFragment()) {
+                    this.master = "fragment";
+                } else if( getModule()!=null) {
+                    master = getModule().getDefaultMaster();
+                }
+                if(master==null) this.master = "default";
+            }
         }
-        if( getModule()!=null) {
-            master = getModule().getDefaultMaster();
-            if( master !=null) return master;
-        }
-        return "default";
+        return master;
+    }
+    
+    public void setMaster(String master) {
+        this.master = master;
     }
     
     public Theme getTheme() {
@@ -101,7 +145,7 @@ public class PageFileInstance extends FileInstance {
         theme = getProject().getDefaultTheme();
         if(theme!=null) return theme;
         return getProject().getSystemTheme();
-     }    
+    }
     
     
     public Set getScripts() {
@@ -120,35 +164,58 @@ public class PageFileInstance extends FileInstance {
         return tags;
     }
     
+    
+    private Map localMap;
     public Map toMap() {
-        Map map = new HashMap() {
+        if( localMap != null) return localMap;
+        localMap = new HashMap() {
             public Object get(Object key) {
-                if(!super.containsKey(key)) { 
+                if(!super.containsKey(key)) {
                     return "";
+                } else if(key.equals("master")) {
+                    return getMaster();
                 }
                 return super.get(key);
             }
+            
+            //except for lists and sets and master attribute, we should not allow
+            //updating of page properties
+            public Object put(Object key, Object value) {
+                if(key.equals("master")) {
+                    if( value!=null) {
+                        setMaster(value.toString());
+                        return super.put(key,value);
+                    }
+                    return super.get("master");
+                }
+                return super.put(key,value);
+            }
         };
-        map.putAll( getFile() );
-        map.put( "id", getId());
-        map.put( "title", getTitle());
-        map.put("tags", getTags());
-        map.put("href", getHref());
-        map.put("scripts", getScripts());
-        map.put("styles", getStyles());
-        map.put("imports", getImports());
-        map.put("theme", getTheme().getName());
-        map.put("secured", isSecured() );
-        return map;    
+        localMap.putAll( getFile() );
+        localMap.put( "id", getId());
+        localMap.put( "title", getTitle());
+        localMap.put("tags", getTags());
+        localMap.put("href", getHref());
+        localMap.put("scripts", getScripts());
+        localMap.put("styles", getStyles());
+        localMap.put("imports", getImports());
+        localMap.put("theme", getTheme().getName());
+        localMap.put("secured", isSecured() );
+        localMap.put("master", getMaster() );
+        localMap.put("name", getName() );
+        localMap.put("pagename", getPagename() );
+        return localMap;
     }
-
+    
+  
+    
     public Map getVars() {
         return vars;
     }
-
+    
     public Map getProcessQueue() {
         return processQueue;
     }
-
+    
     
 }

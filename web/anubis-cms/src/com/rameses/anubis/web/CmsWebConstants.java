@@ -30,7 +30,7 @@ public interface CmsWebConstants {
     public static String IGNORED_EXT = "jsp|ico|link|htm|html|class";
     public static String IGNORED_PATHS = "js|css|themes|services|actions|res|invoke";
     
-    public static String FILE_UPLOAD_UPDATE_STATUS_CMD = "update-upload-status";
-    public static String FILE_UPLOAD_CHECK_STATUS_CMD = "check-upload-status";
+    public static String FILE_UPLOAD_UPDATE_STATUS_CMD = "upload/updateStatus";
+    public static String FILE_UPLOAD_CHECK_STATUS_CMD = "upload/checkStatus";
     
 }
