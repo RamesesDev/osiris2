@@ -57,16 +57,17 @@ public class CustomActionManager extends ActionManager {
         public Object execute(Map params, Map env) throws Exception {
             if( params == null ) params = new HashMap();
             Script sc = script.getClass().newInstance();
-            sc.setProperty("PARAMS", params );
-            sc.setProperty("PROJECT", project );
-            sc.setProperty("SERVICE", project.getServiceManager() );
-            sc.setProperty("SESSION", AnubisContext.getCurrentContext());
             if( env != null ) {
                 for(Object o : env.entrySet()) {
                     Map.Entry me = (Map.Entry)o;
                     sc.setProperty( me.getKey()+"", me.getValue() );
                 }
             }
+            sc.setProperty("PARAMS", params );
+            sc.setProperty("PROJECT", project );
+            sc.setProperty("SERVICE", project.getServiceManager() );
+            sc.setProperty("SESSION", AnubisContext.getCurrentContext());
+            
             return sc.run();
         }
     }

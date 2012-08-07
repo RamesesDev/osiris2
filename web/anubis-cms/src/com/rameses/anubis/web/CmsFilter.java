@@ -133,8 +133,12 @@ public class CmsFilter implements Filter {
 
                 //set authenicated as true if there is sessionid
                 boolean allow_access = true;
-                if(file.isSecured() && !ctx.isLoggedIn()) {
-                    allow_access = false;
+                if(file.isSecured())
+                {
+                    if( !ctx.isLoggedIn() )
+                        allow_access = false;
+                    else if( !ctx.checkFilePermission(file) )
+                        allow_access = false;
                 }
                 
                 if( !allow_access) {

@@ -11,6 +11,7 @@ package com.rameses.anubis.web;
 
 import com.rameses.anubis.ActionManager;
 import com.rameses.anubis.AnubisContext;
+import com.rameses.anubis.FileInstance;
 import com.rameses.anubis.SessionContext;
 import com.rameses.anubis.UserPrincipal;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class WebSessionContext extends SessionContext {
     private static String GET_USER = "session/getUserPrincipal";
     private static String GET_SESSION = "session/getSession";
     private static String REMOVE_SESSION = "session/removeSession";
+    private static String HAS_FILE_PERMISSION = "session/checkFilePermission";
     private static String HAS_PERMISSION = "session/checkPermission";
     private static String HAS_ROLE = "session/checkRole";
     
@@ -72,17 +74,22 @@ public class WebSessionContext extends SessionContext {
         return (Map)execute(GET_USER, null);
     }
     
+    public boolean checkFilePermission(FileInstance file) {
+        Map map = new HashMap();
+        map.put("file", file);
+        return (Boolean) execute(HAS_FILE_PERMISSION, map);
+    }
+    
     public boolean checkPermission(String key) {
         Map map = new HashMap();
         map.put("key", key );
-        Object obj = execute(HAS_PERMISSION, map);
-        return ((Boolean)execute(HAS_PERMISSION, map)).booleanValue();
+        return (Boolean) execute(HAS_PERMISSION, map);
     }
     
     public boolean checkRole(String role) {
         Map map = new HashMap();
         map.put("role", role );
-        return ((Boolean)execute(HAS_ROLE, map)).booleanValue();
+        return (Boolean) execute(HAS_ROLE, map);
     }
     
     private Object execute(  String action, Map params ) {

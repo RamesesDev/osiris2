@@ -88,8 +88,16 @@ public class WebAnubisContext extends AnubisContext {
         return request;
     }
     
+    void setRequest(HttpServletRequest req) {
+        this.request = req;
+    }
+    
     public HttpServletResponse getResponse() {
         return response;
+    }
+    
+    void setResponse(HttpServletResponse resp) {
+        this.response = resp;
     }
 
     public ServletContext getServletContext() {

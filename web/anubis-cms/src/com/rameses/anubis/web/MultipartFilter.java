@@ -2,9 +2,6 @@
  * MultipartFilter.java
  *
  * Created on July 11, 2012, 2:29 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package com.rameses.anubis.web;
@@ -27,15 +24,18 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
- * @author Elmo
+ * @author jaycverg
  */
 public class MultipartFilter implements javax.servlet.Filter {
     
-    private static final String UPLOAD_STATUS = "fileupload.status";
+    public static final String UPLOAD_STATUS = "fileupload.status";
+    public static final String FILE_ID_KEY = "file_id";
+    public static final String FILE_ATTR_KEY = "FILE";
+    
     
     private FilterConfig config;
     
-    /** Creates a new instance of MultipartFilter */
+
     public MultipartFilter() {
     }
     
@@ -43,13 +43,13 @@ public class MultipartFilter implements javax.servlet.Filter {
         this.config = filterConfig;
     }
     
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException 
+    {
         HttpServletRequest hreq = (HttpServletRequest) req;
         
         //-- File upload status support
-        //System.out.println("checking: " + hreq.getParameter(UPLOAD_STATUS));
-        if( hreq.getParameter(UPLOAD_STATUS) != null ) {
-            
+        if( hreq.getParameter(UPLOAD_STATUS) != null ) 
+        {    
             Project p = AnubisContext.getCurrentContext().getProject();
             
             Map param = new HashMap();
@@ -71,14 +71,25 @@ public class MultipartFilter implements javax.servlet.Filter {
             }
         }
         //-- For normal request
-        else {
+        else 
+        {
             boolean isMultipart = ServletFileUpload.isMultipartContent(hreq);            
-            if( isMultipart ) {
+            if( isMultipart ) 
+            {
                 hreq = new MultipartRequest( hreq, config.getServletContext() );
-                String fieldId = req.getParameter("file_req_id");
+                String fieldId = req.getParameter(FILE_ID_KEY);
                 Object file = ((MultipartRequest)hreq).getFileParameter(fieldId);
-                req.setAttribute("FILE", file);
+                req.setAttribute(FILE_ATTR_KEY, file);
+                
+                //replace also the WebAnubisContext getRequest() value
+                AnubisContext ac = AnubisContext.getCurrentContext();
+                if( ac instanceof WebAnubisContext ) 
+                {
+                    WebAnubisContext wac = (WebAnubisContext) ac;
+                    wac.setRequest(hreq);
+                }
             }
+            
             chain.doFilter(hreq, resp);
         }
     }

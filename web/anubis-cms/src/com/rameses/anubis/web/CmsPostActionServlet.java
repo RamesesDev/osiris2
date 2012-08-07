@@ -46,8 +46,7 @@ public class CmsPostActionServlet extends HttpServlet {
             
             StringWriter w = new StringWriter();
             Map env = new HashMap();
-            env.put( "SESSION", AnubisContext.getCurrentContext().getSession());
-            env.put("out", System.out);
+            env.put("out", w);
             Object o = command.execute( params, env );
             
             String content = w.toString();

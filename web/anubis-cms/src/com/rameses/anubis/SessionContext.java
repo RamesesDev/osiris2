@@ -31,6 +31,7 @@ public abstract class SessionContext {
     public abstract Map destroySession();
     public abstract Map getSession();
     public abstract Map getUserPrincipal();
+    public abstract boolean checkFilePermission(FileInstance file);
     public abstract boolean checkPermission(String key);
     public abstract boolean checkRole(String role);
 
