@@ -12,6 +12,7 @@ package com.rameses.memcached;
 
 import com.rameses.server.common.AppContext;
 import com.rameses.server.common.JndiUtil;
+import com.rameses.util.ExceptionManager;
 import java.io.Serializable;
 import javax.naming.InitialContext;
 
@@ -53,24 +54,49 @@ public class CacheService implements CacheServiceMBean, Serializable {
     
 
     public void put(String name, Object object) {
-        name = getResolvedKey(name);
-        CacheManager.getInstance().getClient().set(name, DEFAULT_TIMEOUT, object);
+        try {
+            name = getResolvedKey(name);
+            CacheManager.getInstance().getClient().set(name, DEFAULT_TIMEOUT, object);
+        }
+        catch(Exception e) {
+            Exception orig = ExceptionManager.getOriginal(e);
+            System.out.println("Failed to put the object: " + e.getMessage());
+        }
     }
     
     public void put(String name, Object object, int timeout) {
-        timeout = timeout / 1000;
-        name = getResolvedKey(name);
-        CacheManager.getInstance().getClient().set(name, timeout, object);
+        try {
+            timeout = timeout / 1000;
+            name = getResolvedKey(name);
+            CacheManager.getInstance().getClient().set(name, timeout, object);
+        } 
+        catch(Exception e) {
+            Exception orig = ExceptionManager.getOriginal(e);
+            System.out.println("Failed to put the object: " + e.getMessage());
+        }
     }
     
     public Object get(String name) {
-        name = getResolvedKey(name);
-        return CacheManager.getInstance().getClient().get(name);
+        try {
+            name = getResolvedKey(name);
+            return CacheManager.getInstance().getClient().get(name);
+        }
+        catch(Exception e) {
+            Exception orig = ExceptionManager.getOriginal(e);
+            System.out.println("Failed to get the object: " + e.getMessage());
+        }
+        return null;
     }
 
     public void remove(String name) {
-        name = getResolvedKey(name);
-        CacheManager.getInstance().getClient().delete(name);
+        try {
+            name = getResolvedKey(name);
+            CacheManager.getInstance().getClient().delete(name);
+        }
+        catch(Exception e) {
+            Exception orig = ExceptionManager.getOriginal(e);
+            System.out.println("Failed to remove the object: " + e.getMessage());
+        }
     }
 
     public String showAllCache() {

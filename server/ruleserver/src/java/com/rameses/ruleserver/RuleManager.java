@@ -9,6 +9,7 @@
 
 package com.rameses.ruleserver;
 
+import com.rameses.server.common.AppContext;
 import com.rameses.sql.SqlContext;
 import com.rameses.sql.SqlManager;
 import java.util.Collection;
@@ -38,7 +39,7 @@ public final class RuleManager {
     public void loadAll() throws Exception {
         System.setProperty("drools.dateformat", "yyyy-MM-dd HH:mm");
         System.out.println("STARTING RULE SERVER @ " + new Date() );
-        SqlContext sqlc = SqlManager.getInstance().createContext(dataSource);
+        SqlContext sqlc = createSqlContext();
         
         RuleSetScanner scanner = new RuleSetScanner(sqlc);
         List<KnowledgeSet> results = scanner.getResults();
@@ -64,7 +65,7 @@ public final class RuleManager {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         KnowledgeSet newSet = new KnowledgeSet(ruleset,rulegroup, null);
         KnowledgeSet old = rulesets.get(newSet.getKey());
-        SqlContext sqlc = SqlManager.getInstance().createContext( dataSource );
+        SqlContext sqlc = createSqlContext();
         newSet.load( sqlc );
         rulesets.put( newSet.getKey(), newSet );
         if(old!=null) {
@@ -116,7 +117,7 @@ public final class RuleManager {
     
     public void addRulePackage(String ruleset, String rulegroup, String packagename, Object o, boolean deploy) throws Exception {
         //adds package to the database
-        SqlContext sqlc = SqlManager.getInstance().createContext( dataSource );
+        SqlContext sqlc = createSqlContext();
         KnowledgeSet ks = findKnowledgeSet( ruleset, rulegroup );
         ks.deployPackage( packagename, o, sqlc );
     }
@@ -126,9 +127,16 @@ public final class RuleManager {
     }
     
     public void removeRulePackage(String ruleset, String rulegroup, String pkgName, boolean deploy) throws Exception {
-        SqlContext sqlc = SqlManager.getInstance().createContext( dataSource );
+        SqlContext sqlc = createSqlContext();
         KnowledgeSet ks = findKnowledgeSet( ruleset, rulegroup );
         ks.undeployPackage( pkgName, sqlc );
+    }
+    
+    //helper method
+    private SqlContext createSqlContext() {
+        SqlContext ctx = SqlManager.getInstance().createContext(dataSource);
+        ctx.setDialect( AppContext.getDialect("system", null) );
+        return ctx;
     }
     
 }

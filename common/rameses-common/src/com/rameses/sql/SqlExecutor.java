@@ -40,6 +40,8 @@ public class SqlExecutor extends AbstractSqlTxn {
         Connection conn = null;
         PreparedStatement ps = null;
         String oldCatalogName = null;
+        String _sql = null;
+        
         try {
             if(connection!=null)
                 conn = connection;
@@ -59,7 +61,8 @@ public class SqlExecutor extends AbstractSqlTxn {
                 parameterHandler = new BasicParameterHandler();
             
             //get the results
-            ps = conn.prepareStatement( getFixedSqlStatement() );
+            _sql = getFixedSqlStatement();
+            ps = conn.prepareStatement( _sql );
             
             if(batchData==null) {
                 fillParameters(ps);
@@ -77,8 +80,11 @@ public class SqlExecutor extends AbstractSqlTxn {
             if(exceptionHandler!=null) {
                 exceptionHandler.handleException(this, ex);
                 return 0;
-            } else
+            } else {
+                System.out.println("DEBUG:");
+                System.out.println("SQL: " + _sql);
                 throw new RuntimeException(ex.getMessage());
+            }
         } finally {
             try {ps.close();} catch(Exception ign){;}
             try {

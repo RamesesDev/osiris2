@@ -34,6 +34,12 @@ public class DBServiceImpl implements DBService {
     }
     
     public Map getResultSet(String statement, Object parameters) throws Exception {
+        if( conf.get("readTimeout") == null ) {
+            conf.put("readTimeout", "0");
+        }
+        if( conf.get("connectionTimeout") == null ) {
+            conf.put("connectionTimeout", "0");
+        }
         ScriptServiceContext ssc = new ScriptServiceContext(conf);
         DBService dbs = ssc.create(serviceName, DBService.class);
         return dbs.getResultSet(statement, parameters);

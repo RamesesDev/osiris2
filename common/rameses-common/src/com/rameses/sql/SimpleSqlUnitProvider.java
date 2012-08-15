@@ -106,7 +106,7 @@ public class SimpleSqlUnitProvider extends SqlUnitProvider {
                 }
                 else if(started) {
                     //always add extra space per each line
-                    sb.append( line + " " );
+                    sb.append( line + " \n" );
                 }
             }
             return sb.toString();

@@ -14,6 +14,7 @@ import com.rameses.sql.SqlDialect;
 import com.rameses.sql.dialect.mssql.MsSqlCrudSqlBuilder;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -21,6 +22,8 @@ import java.util.StringTokenizer;
  * implementing paging routine for mssql server
  */
 public class MsSqlDialect implements SqlDialect  {
+    
+    private static final Pattern FN_PATTERN = Pattern.compile("[a-zA-Z]\\w+\\(.*?\\)");
     
     public String getName() {
         return "mssql";
@@ -56,12 +59,16 @@ public class MsSqlDialect implements SqlDialect  {
         int STATE_COLUMNS = 1;
         int STATE_FROM = 2;
         int STATE_WHERE = 3;
-        int STATE_ORDER = 4;
+        int STATE_GROUP = 4;
+        int STATE_HAVING = 5;
+        int STATE_ORDER = 6;
 
         StringBuilder selectBuilder = new StringBuilder();
         StringBuilder columnBuilder = new StringBuilder();
         StringBuilder fromBuilder = new StringBuilder();
         StringBuilder whereBuilder = new StringBuilder();
+        StringBuilder groupBuilder = new StringBuilder();
+        StringBuilder havingBuilder = new StringBuilder();
         StringBuilder orderBuilder = new StringBuilder();
 
         StringBuilder currentBuilder = null;
@@ -90,7 +97,19 @@ public class MsSqlDialect implements SqlDialect  {
                 currentBuilder.append( " " + s );
                 currentState = STATE_WHERE;
             }
-            else if( s.equalsIgnoreCase("order") && (currentState == STATE_WHERE || currentState == STATE_FROM) && stack.empty() ) 
+            else if( s.equalsIgnoreCase("group") && currentState <= STATE_WHERE && currentState != STATE_COLUMNS && stack.empty() ) 
+            {
+                currentBuilder = groupBuilder;
+                currentBuilder.append( " " + s );
+                currentState = STATE_GROUP;
+            }
+            else if( s.equalsIgnoreCase("having") && currentState <= STATE_GROUP && currentState != STATE_COLUMNS && stack.empty() ) 
+            {
+                currentBuilder = havingBuilder;
+                currentBuilder.append( " " + s );
+                currentState = STATE_HAVING;
+            }
+            else if( s.equalsIgnoreCase("order") && currentState <= STATE_HAVING && currentState != STATE_COLUMNS && stack.empty() ) 
             {
                 currentBuilder = orderBuilder;
                 currentBuilder.append( " " + s );
@@ -98,12 +117,16 @@ public class MsSqlDialect implements SqlDialect  {
             }
             else if(s.equals("(") || s.trim().startsWith("(") || s.trim().endsWith("(")) 
             {
-                stack.push(true);
+                if( currentState != STATE_WHERE ) {
+                    stack.push(true);
+                }
                 currentBuilder.append( " " + s );
             }
             else if(s.equals(")") || s.trim().startsWith(")") || s.trim().endsWith(")")) 
             {
-                stack.pop();
+                if( currentState != STATE_WHERE && !FN_PATTERN.matcher(s).matches() ) {
+                    stack.pop();
+                }
                 currentBuilder.append( " " + s );
             }
             else {
@@ -128,10 +151,17 @@ public class MsSqlDialect implements SqlDialect  {
         sresult.append("( select top " +  start + " " + ids + " ");
         sresult.append( " " + fromBuilder.toString());
         sresult.append( " " + whereBuilder.toString());
+        sresult.append( " " + groupBuilder.toString());
         sresult.append(" " + orderBuilder.toString());
         sresult.append(")");
+        sresult.append( " " + groupBuilder.toString());
         sresult.append(orderBuilder.toString());
-
+        
+        if( "true".equals((System.getProperty("app.debugMode")+"").toLowerCase()) ) {
+            System.out.println("mssql dialect debug: ");
+            System.out.println( sresult );
+        }
+        
         return sresult.toString();
     }
 

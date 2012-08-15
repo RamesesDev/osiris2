@@ -49,7 +49,7 @@ public class XMPPConnectionManager {
     public XMPPConnectionManager() {
     }
     
-    public void connect(String host, int port, String username, String password) throws Exception {
+    public synchronized void connect(String host, int port, String username, String password) throws Exception {
         this.host = host;
         this.port = port;
         this.username = username;
@@ -61,7 +61,7 @@ public class XMPPConnectionManager {
     }
     
     
-    private void doConnect() {
+    private synchronized  void doConnect() {
         if( disconnected ) return;
         
         try {
@@ -125,7 +125,8 @@ public class XMPPConnectionManager {
             conn.sendPacket(msg);
         }
         catch(Exception e) {
-            e.printStackTrace();
+            Exception orig = ExceptionManager.getOriginal(e);
+            System.out.println("Failed to send: " + orig.getMessage());
         }
     }
 

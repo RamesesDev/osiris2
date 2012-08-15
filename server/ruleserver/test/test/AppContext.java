@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package com.rameses.ruleserver;
+package test;
 
 
 import com.rameses.util.URLUtil;

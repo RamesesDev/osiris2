@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -62,11 +63,14 @@ public abstract class DBReportModel {
                 conf.putAll(params);
             }
             
-//            for(JRParameter jrp : mainReport.getParameters()) {
-//                if( !jrp.isSystemDefined() ) {
-//                    //this is userdefined
-//                }
-//            }
+            for(JRParameter jrp : mainReport.getParameters()) {
+                if( !jrp.isSystemDefined() ) {
+                    //this is userdefined
+                    if( "SUBREPORT_DIR".equals(jrp.getName()) ) {
+                        conf.put("SUBREPORT_DIR", "");
+                    }
+                }
+            }
             
             JRQuery jq = mainReport.getQuery();
             List paramList = new ArrayList();

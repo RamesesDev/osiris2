@@ -55,6 +55,8 @@ public class SqlQuery extends AbstractSqlTxn {
         PreparedStatement ps = null;
         ResultSet rs = null;
         String oldCatalogName = null;
+        String _sql = null;
+        
         try {
             if(connection!=null)
                 conn = connection;
@@ -85,7 +87,7 @@ public class SqlQuery extends AbstractSqlTxn {
             super.prepareStatement();
             this.origStatement = oldOrigStatement; //reset the original value of origStatement
             
-            String _sql = getFixedSqlStatement();
+            _sql = getFixedSqlStatement();
             ps = conn.prepareStatement( _sql );
             fillParameters(ps);
             
@@ -113,6 +115,8 @@ public class SqlQuery extends AbstractSqlTxn {
             return resultList;
             
         } catch(Exception ex) {
+            System.out.println("DEBUG:");
+            System.out.println("SQL: " + _sql);
             ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         } finally {
@@ -177,6 +181,8 @@ public class SqlQuery extends AbstractSqlTxn {
         PreparedStatement ps = null;
         ResultSet rs = null;
         String oldCatalogName = null;
+        String _sql = null;
+        
         try {
             if(connection!=null)
                 conn = connection;
@@ -199,7 +205,8 @@ public class SqlQuery extends AbstractSqlTxn {
                 parameterHandler = new BasicParameterHandler();
             
             //get the results
-            ps = conn.prepareStatement( getFixedSqlStatement() );
+            _sql = getFixedSqlStatement();
+            ps = conn.prepareStatement( _sql );
             fillParameters(ps);
             
             //do paging here.
@@ -213,6 +220,8 @@ public class SqlQuery extends AbstractSqlTxn {
             return val;
             
         } catch(Exception ex) {
+            System.out.println("DEBUG:");
+            System.out.println("SQL: " + _sql);
             ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         } finally {
@@ -339,6 +348,11 @@ public class SqlQuery extends AbstractSqlTxn {
     }
     
     public void setPagingKeys(String pagingIds) {
-        this.pagingKeys = new String[]{pagingIds};
+        if( pagingIds.contains(",") ) {
+            this.pagingKeys = pagingIds.split(",");
+        }
+        else {
+            this.pagingKeys = new String[]{pagingIds};
+        }
     }
 }

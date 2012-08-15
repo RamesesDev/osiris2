@@ -9,6 +9,7 @@
 
 package com.rameses.ruleserver;
 
+import com.rameses.server.common.AppContext;
 import java.io.Serializable;
 import javax.naming.InitialContext;
 
