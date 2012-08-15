@@ -94,7 +94,7 @@ public class Filter implements javax.servlet.Filter {
             }
             
             if( isCacheable(req, resp) ) {
-                resp.addHeader("Cache-Control", "max-age=86400");
+                resp.addHeader("Cache-Control", "max-age=2592000000"); //30 days
                 resp.addHeader("Cache-Control", "public");
             }
 

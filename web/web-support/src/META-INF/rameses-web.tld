@@ -12,14 +12,15 @@
   </tag>
   
   <tag>
-      <display-name>Secured Tag</display-name>
-      <name>secured</name>
-      <tag-class>com.rameses.web.tags.SecuredTagHandler</tag-class>
-      <body-content>jsp</body-content>
+      <display-name>JSProxy Tag</display-name>
+      <name>jsproxy</name>
+      <tag-class>com.rameses.web.tags.JSProxyTagHandler</tag-class>
+      <body-content>empty</body-content>
       <attribute>
-          <name>key</name>
-          <rtexprvalue>true</rtexprvalue>
-      </attribute>
+           <name>service</name>
+           <rtexprvalue>true</rtexprvalue>
+           <type>java.lang.String</type>
+       </attribute>
   </tag>
   
   <tag-file>
