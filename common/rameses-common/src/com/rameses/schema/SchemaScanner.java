@@ -12,6 +12,8 @@ package com.rameses.schema;
 import com.rameses.common.PropertyResolver;
 import com.rameses.util.BreakException;
 import com.rameses.util.ExprUtil;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 /**
@@ -58,6 +60,7 @@ public final class SchemaScanner {
                 //check first if we need to process this field. refer to parentLink stack above
                 SimpleField sf = (SimpleField)fld;
                 String refname = status.getFixedFieldName( sf );
+                String type = sf.getType();
                 
                 String mapfield = sf.getMapfield();
                 //if(mapfield!=null && mapfield.trim().length()>0) refname = mapfield;
@@ -66,10 +69,10 @@ public final class SchemaScanner {
                 Object val = null;
                 if(data!=null) {
                     if( mapfield!=null && mapfield.trim().length()>0) {
-                        val = propertyResolver.getProperty( data, mapfield );
+                        val = getResolvedValue( data, mapfield, type );
                     }    
                     else {
-                        val = propertyResolver.getProperty( data, refname );
+                        val = getResolvedValue( data, refname, type );
                     }    
                 }
                 
@@ -108,6 +111,7 @@ public final class SchemaScanner {
                     String refname = cf.getName();
                     Object val = null;
                     String ref = cf.getRef();
+                    String type = cf.getType();
                     
                     //bypass ref checks if it is a serializer. do not also check ref if 
                     if(cf.getSerializer()==null && ref==null) {
@@ -132,7 +136,7 @@ public final class SchemaScanner {
 
 
                     if(data!=null && refname!=null)
-                        val = propertyResolver.getProperty( data, refname );
+                        val = getResolvedValue( data, refname, type );
                     
                     handler.startComplexField( cf, refname, refElement,val );
                     handler.endComplexField( cf );
@@ -142,5 +146,27 @@ public final class SchemaScanner {
         handler.endElement( element );
     }
     
+    private static final Format TS_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    
+    private Object getResolvedValue( Object data, String name, String type ) {
+        Object value = propertyResolver.getProperty( data, name );
+        if( type == null || value == null )
+            return value;
+        
+        if( value instanceof java.util.Date ) {
+            if( value instanceof java.sql.Date )        return value;
+            if( value instanceof java.sql.Timestamp )   return value;
+            
+            String dtstr = TS_FORMAT.format(value);
+            return java.sql.Timestamp.valueOf(dtstr);   //use java.sql.Timestamp instead of java.util.Date
+        }
+        
+        if( "date".equals(type) )
+            return java.sql.Date.valueOf(value.toString());
+        else if( "timestamp".equals(type) )
+            return java.sql.Timestamp.valueOf(value.toString());
+        
+        return value;
+    }
     
 }
