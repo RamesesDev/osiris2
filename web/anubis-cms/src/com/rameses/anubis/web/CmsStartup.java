@@ -1,0 +1,56 @@
+/*
+ * CmsStartup.java
+ *
+ * Created on June 27, 2012, 6:09 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package com.rameses.anubis.web;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+
+/**
+ *
+ * @author Elmo
+ */
+public class CmsStartup extends HttpServlet {
+    
+    public void init(ServletConfig config) throws ServletException {
+        System.out.println("************* STARTING ANUBIS CMS WEB SERVER *************** ");
+        FileInputStream fis = null;
+        try {
+            ServletContext appContext = config.getServletContext();
+            LinkedHashMap conf = new LinkedHashMap();
+            //load the url patterns here.
+            File file = new File("anubis/hosts");
+            fis = new FileInputStream(file);
+            
+            String scached = System.getProperty("cached", "false");
+            boolean cached = Boolean.valueOf(scached);
+            
+            ProjectResolver resolver = new ProjectResolver(fis);
+            resolver.setCached( cached );
+            
+            URL u = appContext.getResource("/anubis.lib");
+            resolver.setDefaultModule( new AnubisDefaultModule( u.toString()) );
+            resolver.setDefaultTheme( new AnubisDefaultTheme( u.toString()) );
+            
+            appContext.setAttribute( ProjectResolver.class.getName(), resolver );
+            
+        } catch(Exception ex) {
+            throw new ServletException(ex);
+        } finally {
+            try { fis.close(); } catch(Exception e) {;}
+        }
+    }
+    
+}

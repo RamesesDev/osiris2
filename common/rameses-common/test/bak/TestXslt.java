@@ -7,8 +7,6 @@
 
 package bak;
 
-import com.rameses.io.StreamUtil;
-import com.rameses.util.TemplateProvider;
 import junit.framework.*;
 
 /**
@@ -29,8 +27,11 @@ public class TestXslt extends TestCase {
     
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testHello() throws Exception {
-        String s = StreamUtil.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("META-INF/templates/source.xml") );
-        TemplateProvider.getInstance().transform( "META-INF/templates/sample.xsl",s,System.out  );
+        //String s = StreamUtil.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("META-INF/templates/source.xml") );
+        //TemplateProvider.getInstance().transform( "META-INF/templates/sample.xsl",s,System.out  );
+        
+        String s = "the/cat/went/back/";
+        System.out.println(s.substring(s.lastIndexOf("/", 1)));
     }
     
 }
